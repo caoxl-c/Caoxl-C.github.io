@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>基于laravel, 使用redis做购物车 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LaravelFrameworkRedis购物车">
+  
+  
+  
+  
+  <meta name="description" content="三人行必有我师, 本文出自我的好朋友 葉蕓榕: laravel与Redis开发购物车 的博客">
+<meta name="keywords" content="Laravel,Framework,Redis,购物车">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Laravel, 使用Redis做购物车">
+<meta property="og:url" content="http://blog.caoxl.com/2018/07/16/Laravel-Redis-ShopCar/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="三人行必有我师, 本文出自我的好朋友 葉蕓榕: laravel与Redis开发购物车 的博客">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://caoxl.com/images/shop_car_home.png">
+<meta property="og:image" content="https://caoxl.com/images/shop_car.png">
+<meta property="og:updated_time" content="2019-08-22T03:55:11.502Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于Laravel, 使用Redis做购物车">
+<meta name="twitter:description" content="三人行必有我师, 本文出自我的好朋友 葉蕓榕: laravel与Redis开发购物车 的博客">
+<meta name="twitter:image" content="https://caoxl.com/images/shop_car_home.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Laravel-Redis-ShopCar" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      基于Laravel, 使用Redis做购物车
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/07/16/Laravel-Redis-ShopCar/" class="article-date">
+	  <time datetime="2018-07-16T09:19:56.000Z" itemprop="datePublished">2018-07-16</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>三人行必有我师, 本文出自我的好朋友 <a href="http://yeyunrong.com/2018/03/29/laravel%E4%B8%8ERedis%E5%BC%80%E5%8F%91%E8%B4%AD%E7%89%A9%E8%BD%A6/" target="_blank" rel="noopener">葉蕓榕: laravel与Redis开发购物车</a> 的博客</p>
+</blockquote>
+<a id="more"></a>
+<blockquote>
+<p>我在这里就不做过多赘述, 只写一些必要的东西</p>
+</blockquote>
+<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ul>
+<li>使用<code>laravel</code>内置的用户登陆认证系统并再其基础上进行修改</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">php</span> <span class="string">artisan make:auth</span></span><br><span class="line"></span><br><span class="line"><span class="attr">php</span> <span class="string">artisan migrate</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>安装<code>Redis</code></li>
+</ul>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">composer</span> <span class="meta">require</span> predis/predis</span><br></pre></td></tr></table></figure>
+<h1 id="直接上源码"><a href="#直接上源码" class="headerlink" title="直接上源码"></a>直接上源码</h1><h2 id="路由准备"><a href="#路由准备" class="headerlink" title="路由准备"></a>路由准备</h2><ul>
+<li><code>/routes/web.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ShopCar Routes</span></span><br><span class="line"></span><br><span class="line">Route::get(<span class="string">'shopping/add/&#123;id&#125;'</span>, <span class="string">'ShoppingController@add'</span>)-&gt;name(<span class="string">'shopping.add'</span>);</span><br><span class="line"></span><br><span class="line">Route::get(<span class="string">'shopping/shop_car_info'</span>, <span class="string">'ShoppingController@getShopCarInfo'</span>)-&gt;name(<span class="string">'shopping.shop_car_info'</span>);</span><br><span class="line"></span><br><span class="line">Route::get(<span class="string">'shopping/shop_add/&#123;id&#125;'</span>, <span class="string">'ShoppingController@shopCarAdd'</span>)-&gt;name(<span class="string">'shopping.shop_add'</span>);</span><br><span class="line"></span><br><span class="line">Route::get(<span class="string">'shopping/shop_del/&#123;id&#125;'</span>, <span class="string">'ShoppingController@shopCarDel'</span>)-&gt;name(<span class="string">'shopping.shop_del'</span>);</span><br><span class="line"></span><br><span class="line">Route::get(<span class="string">'shopping/shop_clean/&#123;id&#125;'</span>, <span class="string">'ShoppingController@cleanShopCar'</span>)-&gt;name(<span class="string">'shopping.shop_clean'</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="前端页面"><a href="#前端页面" class="headerlink" title="前端页面"></a>前端页面</h2><ul>
+<li><code>home.blade.php</code></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">@extends('layouts.app')</span><br><span class="line"></span><br><span class="line">@section('content')</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"container"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"row justify-content-center"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"col-md-8"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"card"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                &#123;&#123;--@include('shared.message')--&#125;&#125;</span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"card-header"</span>&gt;</span>Dashboard<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"card-body"</span>&gt;</span></span><br><span class="line">                    @if (session('status'))</span><br><span class="line">                        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"alert alert-success"</span> <span class="attr">role</span>=<span class="string">"alert"</span>&gt;</span></span><br><span class="line">                            &#123;&#123; session('status') &#125;&#125;</span><br><span class="line">                        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">                    @endif</span><br><span class="line"></span><br><span class="line">                    You are logged in!</span><br><span class="line">                <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"card-body"</span>&gt;</span></span><br><span class="line">                    商品0001<span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/shopping/add/1"</span>&gt;</span>加入购物车<span class="tag">&lt;/<span class="name">a</span>&gt;</span> <span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                    商品0002<span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/shopping/add/2"</span>&gt;</span>加入购物车<span class="tag">&lt;/<span class="name">a</span>&gt;</span> <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">                    商品0003<span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/shopping/add/3"</span>&gt;</span>加入购物车<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"card-body"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/shopping/shop_car_info"</span>&gt;</span>购物车<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">@endsection</span><br></pre></td></tr></table></figure>
+<p><img src="https://caoxl.com/images/shop_car_home.png" alt="home.blade.php"></p>
+<ul>
+<li><code>shopcar.blade.php</code></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">@extends('layouts.app')</span><br><span class="line"></span><br><span class="line">@section('content')</span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"container"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"row"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"col-md-8 col-md-offset-2"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"card"</span>&gt;</span></span><br><span class="line">                    &#123;&#123;--@include('shared.messages')--&#125;&#125;</span><br><span class="line"></span><br><span class="line">                    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"card-body"</span>&gt;</span></span><br><span class="line">                        @if($allGoodsKey)</span><br><span class="line">                            @for($i = 0; $i <span class="tag">&lt; <span class="attr">count</span>($<span class="attr">allGoodsKey</span>); $<span class="attr">i</span>++)</span></span><br><span class="line">                                &lt;p&gt;</span><br><span class="line">                                    商品ID: &#123;&#123; $allGoodsInfo[$allGoodsKey[$i]]['id'] &#125;&#125; <span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                                    商品昵称: &#123;&#123; $allGoodsInfo[$allGoodsKey[$i]]['gname'] &#125;&#125; <span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                                    商品价格: &#123;&#123; $allGoodsInfo[$allGoodsKey[$i]]['price'] &#125;&#125; <span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                                    商品数量: &#123;&#123; $allGoodsNum[$allGoodsKey[$i]] &#125;&#125; <span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">                                    商品总价: &#123;&#123; $allGoodsNum[$allGoodsKey[$i]] * $allGoodsInfo[$allGoodsKey[$i]]['price'] &#125;&#125;<span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;nbsp;</span></span><br><span class="line"></span><br><span class="line">                                    <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&#123;&#123;</span> <span class="attr">route</span>('<span class="attr">shopping.shop_add</span>', $<span class="attr">allGoodsInfo</span>[$<span class="attr">allGoodsKey</span>[$<span class="attr">i</span>]]['<span class="attr">id</span>']) &#125;&#125;&gt;</span>+增加<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;nbsp;</span></span><br><span class="line">                                    <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&#123;&#123;</span> <span class="attr">route</span>('<span class="attr">shopping.shop_del</span>', $<span class="attr">allGoodsInfo</span>[$<span class="attr">allGoodsKey</span>[$<span class="attr">i</span>]]['<span class="attr">id</span>']) &#125;&#125;&gt;</span>-减少<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;nbsp;</span></span><br><span class="line">                                    <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&#123;&#123;</span> <span class="attr">route</span>('<span class="attr">shopping.shop_clean</span>', $<span class="attr">allGoodsInfo</span>[$<span class="attr">allGoodsKey</span>[$<span class="attr">i</span>]]['<span class="attr">id</span>']) &#125;&#125;&gt;</span>清除<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="symbol">&amp;nbsp;</span><span class="symbol">&amp;nbsp;</span></span><br><span class="line">                                <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">                            @endfor</span><br><span class="line"></span><br><span class="line">                        @else</span><br><span class="line">                            <span class="tag">&lt;<span class="name">h2</span>&gt;</span>购物车空空如也~<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">                        @endif</span><br><span class="line">                    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"card-body"</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&#123;&#123;</span> <span class="attr">route</span>('<span class="attr">home</span>') &#125;&#125;&gt;</span>去购物<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">@endsection</span><br></pre></td></tr></table></figure>
+<p><img src="https://caoxl.com/images/shop_car.png" alt="shopcar.blade.php"></p>
+<h2 id="后端代码"><a href="#后端代码" class="headerlink" title="后端代码"></a>后端代码</h2><ul>
+<li><code>ShoppingController</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">Redis</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">Auth</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ShoppingController</span> <span class="keyword">extends</span> <span class="title">Controller</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加商品</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> $goods_id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> \Illuminate\Http\RedirectResponse</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">add</span><span class="params">($goods_id)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $user = Auth::user();</span><br><span class="line"></span><br><span class="line">        $users_table = Redis::exists(<span class="string">'ShoppingCar :'</span> . $user-&gt;id);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ($users_table) &#123;</span><br><span class="line">            <span class="comment">// 用户表存在</span></span><br><span class="line">            <span class="comment">// 检查该商品ID是否存在</span></span><br><span class="line">            $GoodsId = Redis::hexists(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ($GoodsId) &#123;</span><br><span class="line">                <span class="comment">// 存在取出该商品数量, 进行+1操作</span></span><br><span class="line">                $num = Redis::hget(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id);</span><br><span class="line">                $newNum = $num + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 修改完之后的保存</span></span><br><span class="line">                Redis::hset(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id, $newNum);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 将数量设置为1</span></span><br><span class="line">                Redis::hset(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id, <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 用户表不存在</span></span><br><span class="line">            Redis::hmset(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, <span class="keyword">array</span>($goods_id =&gt; <span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        $goods_info_table = Redis::hexists(<span class="string">'GoodsInfo:Goods'</span>, $goods_id);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!$goods_info_table) &#123;</span><br><span class="line">            <span class="comment">// 先将商品数组信息取出并转换成Json格式</span></span><br><span class="line">            Redis::hset(<span class="string">'GoodsInfo:Goods'</span>, $goods_id, json_encode(<span class="keyword">$this</span>-&gt;getGoodsInfo($goods_id)));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通知用户</span></span><br><span class="line">        session()-&gt;flash(<span class="string">'Success'</span>, <span class="string">'添加成功'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> redirect()-&gt;route(<span class="string">'home'</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取用户全部商品</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> \Illuminate\Contracts\View\Factory|\Illuminate\View\View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getShopCarInfo</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $user = Auth::user();</span><br><span class="line"></span><br><span class="line">        $allGoodsKey = Redis::hkeys(<span class="string">'ShoppingCar :'</span> . $user-&gt;id);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == $allGoodsKey) &#123;</span><br><span class="line">            $allGoodsNum  = <span class="keyword">false</span>;</span><br><span class="line">            $allGoodsInfo = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; count($allGoodsKey); $i++) &#123;</span><br><span class="line">            $allGoodsNum[$allGoodsKey[$i]]  = Redis::hget(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $allGoodsKey[$i]);</span><br><span class="line">            $allGoodsInfo[$allGoodsKey[$i]] = json_decode(Redis::hget(<span class="string">'GoodsInfo:Goods'</span>, $allGoodsKey[$i]), <span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> view(<span class="string">'shopping_car.shopcar'</span>, [</span><br><span class="line">            <span class="string">'allGoodsInfo'</span> =&gt; $allGoodsInfo,</span><br><span class="line">            <span class="string">'allGoodsNum'</span>  =&gt; $allGoodsNum,</span><br><span class="line">            <span class="string">'allGoodsKey'</span>  =&gt; $allGoodsKey</span><br><span class="line">        ]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getGoodsInfo</span><span class="params">($goods_id)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $GoodsInfo= <span class="keyword">array</span>(</span><br><span class="line"></span><br><span class="line">            <span class="number">1</span> =&gt; <span class="keyword">array</span>(</span><br><span class="line">                <span class="string">'id'</span>    =&gt; <span class="number">1</span>,</span><br><span class="line">                <span class="string">'gname'</span> =&gt; <span class="string">'goods1'</span>,</span><br><span class="line">                <span class="string">'price'</span> =&gt; <span class="string">'1'</span></span><br><span class="line">            ),</span><br><span class="line"></span><br><span class="line">            <span class="number">2</span> =&gt; <span class="keyword">array</span>(</span><br><span class="line">                <span class="string">'id'</span>    =&gt; <span class="number">2</span>,</span><br><span class="line">                <span class="string">'gname'</span> =&gt; <span class="string">'goods2'</span>,</span><br><span class="line">                <span class="string">'price'</span> =&gt; <span class="string">'2'</span></span><br><span class="line">            ),</span><br><span class="line">            <span class="number">3</span> =&gt; <span class="keyword">array</span>(</span><br><span class="line">                <span class="string">'id'</span>    =&gt; <span class="number">3</span>,</span><br><span class="line">                <span class="string">'gname'</span> =&gt; <span class="string">'goods3'</span>,</span><br><span class="line">                <span class="string">'price'</span> =&gt; <span class="string">'3'</span></span><br><span class="line">            ),</span><br><span class="line">            <span class="number">4</span> =&gt; <span class="keyword">array</span>(</span><br><span class="line">                <span class="string">'id'</span>    =&gt; <span class="number">4</span>,</span><br><span class="line">                <span class="string">'gname'</span> =&gt; <span class="string">'goods4'</span>,</span><br><span class="line">                <span class="string">'price'</span> =&gt; <span class="string">'4'</span></span><br><span class="line">            ),</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $GoodsInfo[$goods_id];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 购物车内添加商品</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> $goods_id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> \Illuminate\Contracts\View\Factory|\Illuminate\View\View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">shopCarAdd</span><span class="params">($goods_id)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $user = Auth::user();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!$user) &#123;</span><br><span class="line">            redirect()-&gt;route(<span class="string">'home'</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 取出该商品数</span></span><br><span class="line">        $num    = Redis::hget(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id);</span><br><span class="line">        $newNum = $num + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 修改完之后的保存</span></span><br><span class="line">        Redis::hset(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id, $newNum);</span><br><span class="line"></span><br><span class="line">        $allGoodsKey = Redis::hkeys(<span class="string">'ShoppingCar :'</span> . $user-&gt;id);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; count($allGoodsKey); $i++) &#123;</span><br><span class="line">            $allGoodsNum[$allGoodsKey[$i]]  = Redis::hget(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $allGoodsKey[$i]);</span><br><span class="line">            $allGoodsInfo[$allGoodsKey[$i]] = json_decode(Redis::hget(<span class="string">'GoodsInfo:Goods'</span>, $allGoodsKey[$i]), <span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> view(<span class="string">'shopping_car.shopcar'</span>, [</span><br><span class="line">            <span class="string">'allGoodsInfo'</span> =&gt; $allGoodsInfo,</span><br><span class="line">            <span class="string">'allGoodsNum'</span>  =&gt; $allGoodsNum,</span><br><span class="line">            <span class="string">'allGoodsKey'</span>  =&gt; $allGoodsKey</span><br><span class="line">        ]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 购物车内减少商品</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> $goods_id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> \Illuminate\Contracts\View\Factory|\Illuminate\View\View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">shopCarDel</span><span class="params">($goods_id)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $user = Auth::user();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!$user) &#123;</span><br><span class="line">            redirect()-&gt;route(<span class="string">'home'</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        $goods = Redis::hexists(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ($goods) &#123;</span><br><span class="line">            <span class="comment">// 存在; 取出该商品数进行减1操作</span></span><br><span class="line">            $num = Redis::hget(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ($num &gt; <span class="number">1</span>) &#123;</span><br><span class="line">                $newNum = $num - <span class="number">1</span>;</span><br><span class="line">                Redis::hset(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id, $newNum);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 删除指定商品</span></span><br><span class="line">                Redis::hdel(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        $allGoodsKey = Redis::hkeys(<span class="string">'ShoppingCar :'</span> . $user-&gt;id);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == $allGoodsKey) &#123;</span><br><span class="line">            $allGoodsNum  = <span class="keyword">false</span>;</span><br><span class="line">            $allGoodsInfo = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; count($allGoodsKey); $i++) &#123;</span><br><span class="line">            $allGoodsNum[$allGoodsKey[$i]]  = Redis::hget(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $allGoodsKey[$i]);</span><br><span class="line">            $allGoodsInfo[$allGoodsKey[$i]] = json_decode(Redis::hget(<span class="string">'GoodsInfo:Goods'</span>, $allGoodsKey[$i]), <span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> view(<span class="string">'shopping_car.shopcar'</span>, [</span><br><span class="line">            <span class="string">'allGoodsInfo'</span> =&gt; $allGoodsInfo,</span><br><span class="line">            <span class="string">'allGoodsNum'</span>  =&gt; $allGoodsNum,</span><br><span class="line">            <span class="string">'allGoodsKey'</span>  =&gt; $allGoodsKey</span><br><span class="line">        ]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 清空购物车</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> $goods_id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> \Illuminate\Contracts\View\Factory|\Illuminate\View\View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">cleanShopCar</span><span class="params">($goods_id)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $user = Auth::user();</span><br><span class="line">        Redis::hdel(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $goods_id);</span><br><span class="line"></span><br><span class="line">        $allGoodsKey = Redis::hkeys(<span class="string">'ShoppingCar :'</span> . $user-&gt;id);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == $allGoodsKey) &#123;</span><br><span class="line">            $allGoodsNum  = <span class="keyword">false</span>;</span><br><span class="line">            $allGoodsInfo = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; count($allGoodsKey); $i++) &#123;</span><br><span class="line">            $allGoodsNum[$allGoodsKey[$i]]  = Redis::hget(<span class="string">'ShoppingCar :'</span> . $user-&gt;id, $allGoodsKey[$i]);</span><br><span class="line">            $allGoodsInfo[$allGoodsKey[$i]] = json_decode(Redis::hget(<span class="string">'GoodsInfo:Goods'</span>, $allGoodsKey[$i]), <span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> view(<span class="string">'shopping_car.shopcar'</span>, [</span><br><span class="line">            <span class="string">'allGoodsInfo'</span> =&gt; $allGoodsInfo,</span><br><span class="line">            <span class="string">'allGoodsNum'</span>  =&gt; $allGoodsNum,</span><br><span class="line">            <span class="string">'allGoodsKey'</span>  =&gt; $allGoodsKey</span><br><span class="line">        ]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用到的Redis讲解"><a href="#使用到的Redis讲解" class="headerlink" title="使用到的Redis讲解"></a>使用到的<code>Redis</code>讲解</h3><ul>
+<li><strong><code>Redis::exists()</code></strong></li>
+</ul>
+<blockquote>
+<p>检查给定 key 是否存在。</p>
+<blockquote>
+<p>若 key 存在，返回 1 ，否则返回 0 。</p>
+</blockquote>
+</blockquote>
+<ul>
+<li><strong><code>Redis::hexists()</code></strong></li>
+</ul>
+<blockquote>
+<p>查看哈希表 <code>key</code> 中，给定域 <code>field</code> 是否存在。</p>
+<blockquote>
+<p>如果哈希表含有给定域，返回 1 。<br>    如果哈希表不含有给定域，或 key 不存在，返回 0 。</p>
+</blockquote>
+</blockquote>
+<ul>
+<li><strong><code>Redis::hget()</code></strong></li>
+</ul>
+<blockquote>
+<p>返回哈希表 <code>key</code> 中给定域 <code>field</code> 的值。</p>
+<blockquote>
+<p>给定域的值。<br>    当给定域不存在或是给定 <code>key</code> 不存在时，返回 <code>nil</code> 。</p>
+</blockquote>
+</blockquote>
+<ul>
+<li><strong><code>Redis::hset()</code></strong></li>
+</ul>
+<blockquote>
+<p>将哈希表 <code>key</code> 中的域 <code>field</code> 的值设为 <code>value</code> 。<br>  如果 <code>key</code> 不存在，一个新的哈希表被创建并进行 <code>HSET</code> 操作。<br>  如果域 <code>field</code> 已经存在于哈希表中，旧值将被覆盖。</p>
+<blockquote>
+<p>如果 <code>field</code> 是哈希表中的一个新建域，并且值设置成功，返回 <code>1</code> 。<br>    如果哈希表中域 <code>field</code> 已经存在且旧值已被新值覆盖，返回 <code>0</code> 。</p>
+</blockquote>
+</blockquote>
+<ul>
+<li><strong><code>Redis::hmset()</code></strong></li>
+</ul>
+<blockquote>
+<p>同时将多个 <code>field-value</code> (域-值)对设置到哈希表 <code>key</code> 中。<br>  此命令会覆盖哈希表中已存在的域。<br>  如果 <code>key</code> 不存在，一个空哈希表被创建并执行 <code>HMSET</code> 操作。</p>
+<blockquote>
+<p>如果命令执行成功，返回 <code>OK</code> 。<br>   当 <code>key</code> 不是哈希表(<code>hash</code>)类型时，返回一个错误。</p>
+</blockquote>
+</blockquote>
+<ul>
+<li><strong><code>Redis::hkeys()</code></strong></li>
+</ul>
+<blockquote>
+<p>返回哈希表 <code>key</code> 中的所有域。</p>
+<blockquote>
+<p>一个包含哈希表中所有域的表。<br>    当 <code>key</code> 不存在时，返回一个空表。</p>
+</blockquote>
+</blockquote>
+<ul>
+<li><strong><code>Redis::hdel()</code></strong></li>
+</ul>
+<blockquote>
+<p>删除哈希表 <code>key</code> 中的一个或多个指定域，不存在的域将被忽略。</p>
+<blockquote>
+<p>被成功移除的域的数量，不包括被忽略的域。</p>
+</blockquote>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://redisdoc.com/" target="_blank" rel="noopener">Redis 命令参考</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/07/16/Laravel-Redis-ShopCar/" target="_blank" title="基于Laravel, 使用Redis做购物车">http://blog.caoxl.com/2018/07/16/Laravel-Redis-ShopCar/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/">Framework</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/">Redis</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/购物车/">购物车</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/17/Laravel-Lumen-Routes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Laravel/Lumen/Dingo 的路由
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/16/PHP-Laravel-MySQL-lock/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">数据库 锁机制</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#环境准备"><span class="nav-number">1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#直接上源码"><span class="nav-number">2.</span> <span class="nav-text">直接上源码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#路由准备"><span class="nav-number">2.1.</span> <span class="nav-text">路由准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前端页面"><span class="nav-number">2.2.</span> <span class="nav-text">前端页面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后端代码"><span class="nav-number">2.3.</span> <span class="nav-text">后端代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用到的Redis讲解"><span class="nav-number">2.3.1.</span> <span class="nav-text">使用到的Redis讲解</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

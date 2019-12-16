@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>swoft 基于swoole | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="SwooleSwoft">
+  
+  
+  
+  
+  <meta name="description" content="Swoft: 首个基于 Swoole 原生协程的新时代 PHP 高性能协程全栈框架">
+<meta name="keywords" content="Swoole,Swoft">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swoft 基于Swoole">
+<meta property="og:url" content="http://blog.caoxl.com/2019/02/27/Swoft-Swoole/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Swoft: 首个基于 Swoole 原生协程的新时代 PHP 高性能协程全栈框架">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:39:00.204Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Swoft 基于Swoole">
+<meta name="twitter:description" content="Swoft: 首个基于 Swoole 原生协程的新时代 PHP 高性能协程全栈框架">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Swoft-Swoole" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Swoft 基于Swoole
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/02/27/Swoft-Swoole/" class="article-date">
+	  <time datetime="2019-02-27T03:21:53.000Z" itemprop="datePublished">2019-02-27</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><code>Swoft</code>: 首个基于 <code>Swoole</code> 原生协程的新时代 <code>PHP</code> 高性能协程全栈框架</p>
+</blockquote>
+<a id="more"></a>
+<blockquote>
+<p>首个基于 Swoole 原生协程的新时代 PHP 高性能协程全栈框架，内置协程网络服务器及常用的协程客户端，<br>常驻内存，不依赖传统的 PHP-FPM，全异步非阻塞 IO 实现，以类似于同步客户端的写法实现异步客户端的<br>使用，没有复杂的异步回调，没有繁琐的 yield, 有类似 Go 语言的协程、灵活的注解、强大的全局<br>依赖注入容器、完善的服务治理、灵活强大的 AOP、标准的 PSR 规范实现等等，可以用于构建高性能的Web系统<br>、API、中间件、基础服务等等。</p>
+</blockquote>
+<h1 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h1><ul>
+<li>基于 <code>Swoole</code>扩展</li>
+<li>内置协程网络服务器</li>
+<li><code>WebSocket</code>服务器</li>
+<li><code>MVC</code>分层设计</li>
+<li>高性能路由</li>
+<li>强大的<code>AOP</code>(面向切面编程)</li>
+<li>灵活的注解功能</li>
+<li>全局的依赖注入容器</li>
+<li>基于 <code>PSR-7</code> 的 <code>HTTP</code> 消息实现</li>
+<li>基于 <code>PSR-11</code> 的容器规范实现</li>
+<li>基于 <code>PSR-14</code> 的事件管理器</li>
+<li>基于 <code>PSR-15</code> 的中间件</li>
+<li>基于 <code>PSR-16</code> 的缓存设计</li>
+<li>可扩展的高性能 <code>RPC</code></li>
+<li><code>RESTful</code> 支持</li>
+<li>国际化(<code>i18n</code>)支持</li>
+<li>快速灵活的参数验证器</li>
+<li>完善的服务治理，熔断、降级、负载、注册与发现</li>
+<li>通用连接池 <code>Mysql</code>、<code>Redis</code>、<code>RPC</code></li>
+<li>数据库 <code>ORM</code></li>
+<li>协程、异步任务投递</li>
+<li>自定义用户进程</li>
+<li>协程和同步阻塞客户端无缝自动切换</li>
+<li>别名机制</li>
+<li>跨平台热更新自动 <code>Reload</code></li>
+<li>强大的日志系统</li>
+</ul>
+<h1 id="基础信息"><a href="#基础信息" class="headerlink" title="基础信息"></a>基础信息</h1><h2 id="环境要求"><a href="#环境要求" class="headerlink" title="环境要求"></a>环境要求</h2><h3 id="必须安装的"><a href="#必须安装的" class="headerlink" title="必须安装的"></a>必须安装的</h3><ul>
+<li><code>PHP &gt; 7.0</code>, 推荐<code>7.1+</code></li>
+<li><code>Composer</code></li>
+<li><code>Redis</code>的异步客户端 <code>hiredis</code></li>
+<li>连接迭代器依赖 <code>pcre</code> 库</li>
+<li><code>Swoole</code>扩展, 版本<code>&gt;=2.1</code><ul>
+<li><code>Swoole</code>开启协程和异步<code>Redis</code></li>
+</ul>
+</li>
+<li><code>PDO</code>扩展</li>
+</ul>
+<h3 id="有冲突的"><a href="#有冲突的" class="headerlink" title="有冲突的"></a>有冲突的</h3><p>下面列出一些已知的和<code>swoole</code>有冲突的<code>php</code>扩展，请使用<code>swoft</code>时不要安装或禁用它们：</p>
+<ul>
+<li><code>xdebug</code></li>
+<li><code>xhprof</code></li>
+<li><code>blackfire</code></li>
+<li><code>zend</code></li>
+<li><code>trace</code></li>
+<li><code>uopz</code></li>
+</ul>
+<h3 id="推荐环境配置"><a href="#推荐环境配置" class="headerlink" title="推荐环境配置"></a>推荐环境配置</h3><blockquote>
+<p>可以查看 <a href="https://github.com/swoft-cloud/swoft" target="_blank" rel="noopener">swoft</a> 下 <a href="https://github.com/swoft-cloud/swoft/blob/master/Dockerfile" target="_blank" rel="noopener">Dockerfile</a> 文件</p>
+</blockquote>
+<h2 id="安装Swoft"><a href="#安装Swoft" class="headerlink" title="安装Swoft"></a>安装Swoft</h2><h3 id="Composer安装"><a href="#Composer安装" class="headerlink" title="Composer安装"></a>Composer安装</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer create-project swoft/swoft swoft</span><br></pre></td></tr></table></figure>
+<h3 id="手动安装"><a href="#手动安装" class="headerlink" title="手动安装"></a>手动安装</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">clone</span> https:<span class="comment">//github.com/swoft-cloud/swoft</span></span><br><span class="line">cd swoft</span><br><span class="line">composer install --no-dev <span class="comment"># 不安装 dev 依赖会更快一些</span></span><br><span class="line">cp .env.example .env</span><br><span class="line">vim .env <span class="comment"># 根据需要调整启动参数</span></span><br></pre></td></tr></table></figure>
+<h3 id="Docker安装"><a href="#Docker安装" class="headerlink" title="Docker安装"></a>Docker安装</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p <span class="number">80</span>:<span class="number">80</span> swoft/swoft</span><br></pre></td></tr></table></figure>
+<h3 id="Docker-Compose-安装"><a href="#Docker-Compose-安装" class="headerlink" title="Docker-Compose 安装"></a>Docker-Compose 安装</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">clone</span> https:<span class="comment">//github.com/swoft-cloud/swoft</span></span><br><span class="line">cd swoft</span><br><span class="line">docker-compose up</span><br></pre></td></tr></table></figure>
+<h2 id="开发准备"><a href="#开发准备" class="headerlink" title="开发准备"></a>开发准备</h2><ul>
+<li>安装<code>PHP7.1</code>, <code>autoconf</code>, <code>openssl</code>, <code>redis</code></li>
+<li>下载安装<code>Hiredis</code></li>
+<li>下载安装`Swoole</li>
+</ul>
+<h2 id="快速起步"><a href="#快速起步" class="headerlink" title="快速起步"></a>快速起步</h2><h3 id="服务启动与管理"><a href="#服务启动与管理" class="headerlink" title="服务启动与管理"></a>服务启动与管理</h3><h3 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl swoft]<span class="comment"># php bin/swoft -h</span></span><br><span class="line"> ____                __ _</span><br><span class="line">/ ___|_      _____  / _| |_</span><br><span class="line">\___ \ \ /\ / / _ \| |_| __|</span><br><span class="line"> ___) \ V  V / (_) |  _| |_</span><br><span class="line">|____/ \_/\_/ \___/|_|  \__|</span><br><span class="line"></span><br><span class="line">Usage:</span><br><span class="line">  php bin/swoft -h &#123;command&#125; [arguments] [options]</span><br><span class="line"></span><br><span class="line">Commands:</span><br><span class="line">  app     There are some help command <span class="keyword">for</span> application[built-in]</span><br><span class="line">  dev     Some commands <span class="keyword">for</span> application dev[built-in]</span><br><span class="line">  entity  The group command <span class="keyword">list</span> of database entity</span><br><span class="line">  gen     Generate some common application template classes[built-in]</span><br><span class="line">  rpc     The group command <span class="keyword">list</span> of rpc server</span><br><span class="line">  server  The group command <span class="keyword">list</span> of HTTP-Server</span><br><span class="line">  test    Test command</span><br><span class="line">  ws      There are some commands <span class="keyword">for</span> manage the webSocket server</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">  -h, --help     Display help information</span><br><span class="line">  -v, --version  Display version information</span><br></pre></td></tr></table></figure>
+<h3 id="HTTP服务器"><a href="#HTTP服务器" class="headerlink" title="HTTP服务器"></a><code>HTTP</code>服务器</h3><blockquote>
+<p>是否同时启动RPC服务器取决于 <code>.env</code> 文件配置</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 启动服务，根据 .env 配置决定是否是守护进程</span></span><br><span class="line">php bin/swoft start</span><br><span class="line"></span><br><span class="line"><span class="comment">// 守护进程启动，覆盖 .env 守护进程(DAEMONIZE)的配置</span></span><br><span class="line">php bin/swoft start -d</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重启</span></span><br><span class="line">php bin/swoft restart</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重新加载</span></span><br><span class="line">php bin/swoft reload</span><br><span class="line"></span><br><span class="line"><span class="comment">// 关闭服务</span></span><br><span class="line">php bin/swoft stop</span><br></pre></td></tr></table></figure>
+<h3 id="WebSocket服务器"><a href="#WebSocket服务器" class="headerlink" title="WebSocket服务器"></a><code>WebSocket</code>服务器</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 启动服务，根据 .env 配置决定是否是守护进程</span></span><br><span class="line">php bin/swoft ws:start</span><br><span class="line"></span><br><span class="line"><span class="comment">// 守护进程启动，覆盖 .env 守护进程(DAEMONIZE)的配置</span></span><br><span class="line">php bin/swoft ws:start -d</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重启</span></span><br><span class="line">php bin/swoft ws:restart</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重新加载</span></span><br><span class="line">php bin/swoft ws:reload</span><br><span class="line"></span><br><span class="line"><span class="comment">// 关闭服务</span></span><br><span class="line">php bin/swoft ws:stop</span><br></pre></td></tr></table></figure>
+<h3 id="RPC服务器"><a href="#RPC服务器" class="headerlink" title="RPC服务器"></a><code>RPC</code>服务器</h3><blockquote>
+<p>使用独立的RPC服务器</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 启动服务，根据 .env 配置决定是否是守护进程</span></span><br><span class="line">php bin/swoft rpc:start</span><br><span class="line"></span><br><span class="line"><span class="comment">// 守护进程启动，覆盖 .env 守护进程(DAEMONIZE)的配置</span></span><br><span class="line">php bin/swoft rpc:start -d</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重启</span></span><br><span class="line">php bin/swoft rpc:restart</span><br><span class="line"></span><br><span class="line"><span class="comment">// 重新加载</span></span><br><span class="line">php bin/swoft rpc:reload</span><br><span class="line"></span><br><span class="line"><span class="comment">// 关闭服务</span></span><br><span class="line">php bin/swoft rpc:stop</span><br></pre></td></tr></table></figure>
+<h2 id="env环境配置"><a href="#env环境配置" class="headerlink" title="env环境配置"></a><code>env</code>环境配置</h2><p>在执行 <code>composer install</code> 的时候程序会自动复制环境变量配置文件。 若没有，可手动复制项目根目录的 <code>.env.example</code> 并命名为 <code>.env</code></p>
+<h3 id="可用配置项"><a href="#可用配置项" class="headerlink" title="可用配置项"></a>可用配置项</h3><p>下面是官方的 <code>.env</code> 文件支持的env配置项, 你也可以按需添加自己需要的配置</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Application</span></span><br><span class="line">TIME_ZONE=Asia/Shanghai</span><br><span class="line">LOG_ENABLE=<span class="keyword">false</span></span><br><span class="line">APP_DEBUG=<span class="keyword">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Server</span></span><br><span class="line"><span class="comment"># pid 文件，要同时在一台机器上运行多个server时，注意要更改pid文件</span></span><br><span class="line">PFILE=/tmp/swoft.pid</span><br><span class="line"><span class="comment"># 项目名，要同时在一台机器上运行多个server时，注意要更改名称以方便区分</span></span><br><span class="line">PNAME=php-swoft</span><br><span class="line"><span class="comment"># 是否同时启动 RPC</span></span><br><span class="line">TCPABLE=<span class="keyword">true</span></span><br><span class="line"><span class="comment"># 是否同时启动 定时任务</span></span><br><span class="line">CRONABLE=<span class="keyword">false</span></span><br><span class="line"><span class="comment"># 是否启用热重载。仅推荐在开发时启用</span></span><br><span class="line">AUTO_RELOAD=<span class="keyword">true</span></span><br><span class="line">AUTO_REGISTER=<span class="keyword">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># HTTP 服务器设置</span></span><br><span class="line">HTTP_HOST=<span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line">HTTP_PORT=<span class="number">80</span></span><br><span class="line">HTTP_MODE=SWOOLE_PROCESS</span><br><span class="line">HTTP_TYPE=SWOOLE_SOCK_TCP</span><br><span class="line"></span><br><span class="line"><span class="comment"># WebSocket 服务器设置(它是继承自http服务器的，跟http有相同的配置项，更多请查看对应组件文档)</span></span><br><span class="line">WS_ENABLE_HTTP=<span class="keyword">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># TCP</span></span><br><span class="line">TCP_HOST=<span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line">TCP_PORT=<span class="number">8099</span></span><br><span class="line">TCP_MODE=SWOOLE_PROCESS</span><br><span class="line">TCP_TYPE=SWOOLE_SOCK_TCP</span><br><span class="line">TCP_PACKAGE_MAX_LENGTH=<span class="number">2048</span></span><br><span class="line">TCP_OPEN_EOF_CHECK=<span class="keyword">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Crontab</span></span><br><span class="line">CRONTAB_TASK_COUNT=<span class="number">1024</span></span><br><span class="line">CRONTAB_TASK_QUEUE=<span class="number">2048</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Swoole Settings</span></span><br><span class="line">WORKER_NUM=<span class="number">1</span></span><br><span class="line">MAX_REQUEST=<span class="number">100000</span></span><br><span class="line">DAEMONIZE=<span class="number">0</span></span><br><span class="line">DISPATCH_MODE=<span class="number">2</span></span><br><span class="line">TASK_IPC_MODE=<span class="number">1</span></span><br><span class="line">MESSAGE_QUEUE_KEY=<span class="number">1879052289</span></span><br><span class="line">TASK_TMPDIR=/tmp/</span><br><span class="line">LOG_FILE=@runtime/logs/swoole.log</span><br><span class="line">TASK_WORKER_NUM=<span class="number">1</span></span><br><span class="line">PACKAGE_MAX_LENGTH=<span class="number">2048</span></span><br><span class="line">OPEN_HTTP2_PROTOCOL=<span class="keyword">false</span></span><br><span class="line">SSL_CERT_FILE=/path/to/ssl_cert_file</span><br><span class="line">SSL_KEY_FILE=/path/to/ssl_key_file</span><br><span class="line"></span><br><span class="line"><span class="comment"># Database Master nodes</span></span><br><span class="line">DB_NAME=dbMaster</span><br><span class="line">DB_URI=<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">3306</span>/test?user=root&amp;password=<span class="number">123456</span>&amp;charset=utf8,<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">3306</span>/test?user=root&amp;password=<span class="number">123456</span>&amp;charset=utf8</span><br><span class="line">DB_MIN_ACTIVE=<span class="number">5</span></span><br><span class="line">DB_MAX_ACTIVE=<span class="number">10</span></span><br><span class="line">DB_MAX_WAIT=<span class="number">20</span></span><br><span class="line">DB_MAX_WAIT_TIME=<span class="number">3</span></span><br><span class="line">DB_MAX_IDLE_TIME=<span class="number">60</span></span><br><span class="line">DB_TIMEOUT=<span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Database Slave nodes</span></span><br><span class="line">DB_SLAVE_NAME=dbSlave</span><br><span class="line">DB_SLAVE_URI=<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">3306</span>/test?user=root&amp;password=<span class="number">123456</span>&amp;charset=utf8,<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">3306</span>/test?user=root&amp;password=<span class="number">123456</span>&amp;charset=utf8</span><br><span class="line">DB_SLAVE_MIN_ACTIVE=<span class="number">5</span></span><br><span class="line">DB_SLAVE_MAX_ACTIVE=<span class="number">10</span></span><br><span class="line">DB_SLAVE_MAX_WAIT=<span class="number">20</span></span><br><span class="line">DB_SLAVE_MAX_WAIT_TIME=<span class="number">3</span></span><br><span class="line">DB_SLAVE_MAX_IDLE_TIME=<span class="number">60</span></span><br><span class="line">DB_SLAVE_TIMEOUT=<span class="number">3</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Redis</span></span><br><span class="line">REDIS_NAME=redis</span><br><span class="line">REDIS_DB=<span class="number">2</span></span><br><span class="line">REDIS_URI=<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>,<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span></span><br><span class="line">REDIS_MIN_ACTIVE=<span class="number">5</span></span><br><span class="line">REDIS_MAX_ACTIVE=<span class="number">10</span></span><br><span class="line">REDIS_MAX_WAIT=<span class="number">20</span></span><br><span class="line">REDIS_MAX_WAIT_TIME=<span class="number">3</span></span><br><span class="line">REDIS_MAX_IDLE_TIME=<span class="number">60</span></span><br><span class="line">REDIS_TIMEOUT=<span class="number">3</span></span><br><span class="line">REDIS_SERIALIZE=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># other redis node</span></span><br><span class="line">REDIS_DEMO_REDIS_DB=<span class="number">6</span></span><br><span class="line">REDIS_DEMO_REDIS_PREFIX=demo_redis_</span><br><span class="line"></span><br><span class="line"><span class="comment"># User service (demo service)</span></span><br><span class="line">USER_POOL_NAME=user</span><br><span class="line">USER_POOL_URI=<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8099</span>,<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8099</span></span><br><span class="line">USER_POOL_MIN_ACTIVE=<span class="number">5</span></span><br><span class="line">USER_POOL_MAX_ACTIVE=<span class="number">10</span></span><br><span class="line">USER_POOL_MAX_WAIT=<span class="number">20</span></span><br><span class="line">USER_POOL_TIMEOUT=<span class="number">200</span></span><br><span class="line">USER_POOL_MAX_WAIT_TIME=<span class="number">3</span></span><br><span class="line">USER_POOL_MAX_IDLE_TIME=<span class="number">60</span></span><br><span class="line">USER_POOL_USE_PROVIDER=<span class="keyword">false</span></span><br><span class="line">USER_POOL_BALANCER=random</span><br><span class="line">USER_POOL_PROVIDER=consul</span><br><span class="line"></span><br><span class="line"><span class="comment"># User service breaker (demo service)</span></span><br><span class="line">USER_BREAKER_FAIL_COUNT = <span class="number">3</span></span><br><span class="line">USER_BREAKER_SUCCESS_COUNT = <span class="number">6</span></span><br><span class="line">USER_BREAKER_DELAY_TIME = <span class="number">5000</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Consul</span></span><br><span class="line">CONSUL_ADDRESS=http:<span class="comment">//127.0.0.1</span></span><br><span class="line">CONSUL_PORT=<span class="number">8500</span></span><br><span class="line">CONSUL_REGISTER_NAME=user</span><br><span class="line">CONSUL_REGISTER_ETO=<span class="keyword">false</span></span><br><span class="line">CONSUL_REGISTER_SERVICE_ADDRESS=<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">CONSUL_REGISTER_SERVICE_PORT=<span class="number">8099</span></span><br><span class="line">CONSUL_REGISTER_CHECK_NAME=user</span><br><span class="line">CONSUL_REGISTER_CHECK_TCP=<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8099</span></span><br><span class="line">CONSUL_REGISTER_CHECK_INTERVAL=<span class="number">10</span></span><br><span class="line">CONSUL_REGISTER_CHECK_TIMEOUT=<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h2 id="应用结构简介"><a href="#应用结构简介" class="headerlink" title="应用结构简介"></a>应用结构简介</h2><p>一个完整的swoft应用可以包含：</p>
+<ul>
+<li>HTTP服务(跟传统的框架差不多)</li>
+<li>WebSocket服务</li>
+<li>Rpc服务</li>
+</ul>
+<blockquote>
+<p><code>swoft-cloud/swoft</code> 即是一个完整应用的demo。当然，如果你只想使用一部分功能也是可以的</p>
+</blockquote>
+<h1 id="框架核心"><a href="#框架核心" class="headerlink" title="框架核心"></a>框架核心</h1><h2 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h2><h3 id="框架生命周期"><a href="#框架生命周期" class="headerlink" title="框架生命周期"></a>框架生命周期</h3><p><code>Swoft</code> 的一切都是建立在 <code>Swoole</code> 扩展之上运行的，想要了解整个生命周期就必须要了解 <a href="https://wiki.swoole.com/" target="_blank" rel="noopener">Swoole 的生命周期</a>，此部分可查阅 <a href="https://wiki.swoole.com/" target="_blank" rel="noopener">Swoole</a>文档 获得更多的资料。</p>
+<p>在 Swoft 服务启动阶段，我们主要关注 <code>OnWorkerStart</code> 事件，此事件会在 <code>Worker</code> 启动的时候触发，这个过程也是 <code>Swoft</code> 众多机制实现的关键，这时 <code>Swoft</code> 会</p>
+<ul>
+<li>扫描目录</li>
+<li>读取配置文件</li>
+<li>收集注解信息</li>
+<li>收集事件监听器</li>
+<li>…</li>
+</ul>
+<p>然后根据扫描到的注解信息执行对应的功能逻辑，并储存在与注解相对应的 <code>Collector</code> 容器内，包括但不限于注册路由信息，注册事件监听器，注册中间件，注册过滤器等等。</p>
+<h3 id="请求生命周期"><a href="#请求生命周期" class="headerlink" title="请求生命周期"></a>请求生命周期</h3><p>每一个请求的开始到结束，都是由 <code>Swoole</code> 本身的 <code>onRequest()</code> 或 <code>onReceive()</code> 事件监听并委托给 <code>Dispatcher</code> 来处理并响应的，而 <code>Dispatcher</code> 的主要职责是负责调度请求生命周期内的各个参与者(组件)。</p>
+<h3 id="HTTP-Server"><a href="#HTTP-Server" class="headerlink" title="HTTP Server"></a>HTTP Server</h3><p>在 <code>HTTP Server</code> 的情况下，将由 <code>ServerDispatcher</code>来负责调度，参与者主要包括 <code>RequestContext</code>, <code>ExceptionHandler</code>, <code>RequestHandler</code> 。</p>
+<ul>
+<li><code>RequestionContext(请求上下文)</code>: 作为当前的请求信息的容器将贯穿整个请求生命周期，负责信息的储存和传递；</li>
+<li><code>ExceptionHandler(异常处理器)</code>: 则是在遇到异常的情况下出来收拾场面的，确保在各种异常情况下依旧能给客户端返回一个预期内的结果</li>
+<li><code>RequestHandler(请求处理器)</code>: 则是整个请求生命周期的核心组件，其实也就是 <code>Middleware(中间件)</code> ，该组件实现了 <code>PSR-15</code> 协议<ul>
+<li>负责将 <code>Request -&gt; Router -&gt; Controller -&gt; Action -&gt; Renderer -&gt; Response</code> 这整个请求流程贯穿起来，其实也就是从 <code>Request</code> 到 <code>Response</code> 的过程</li>
+<li>只要在任意一个环节返回一个有效的 <code>Response</code> 对象便能对该请求做出响应并返回。</li>
+</ul>
+</li>
+</ul>
+<h3 id="RPC-Server"><a href="#RPC-Server" class="headerlink" title="RPC Server"></a>RPC Server</h3><p>在 <code>RPC Server</code> 的情况下，由 <code>ServiceDispatcher</code> 来负责调度，与 <code>HTTP Server</code> 类似，<br>区别在于参与者只有 <code>RequestContext</code> 和 <code>RequestHandler</code>，而 <code>RequestHandler</code> 内的 <code>Middleware</code> 也和 <code>HTTP Server</code> 的类似</p>
+<p>比较明显的区别在于 <code>RPC Server</code> 下会有一个 <code>ServicePacker(数据打包器)</code> 来负责<strong>将服务方法或异常返回的数据打包成一个统一的数据格式</strong>，并返回给客户端。</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p><code>swoft</code> 的配置与其他框架稍微有一些区别，有几份：</p>
+<ul>
+<li><code>config/server.php</code>: swoft 服务器配置，主要是对<code>swoole</code>的配置</li>
+<li><code>config/beans/*</code>: <code>swoft beans</code> 配置，用于配置一些通过数组方式创建的<code>bean</code>，关于bean的创建方式请查看相关章节。</li>
+<li><code>config/properties/*</code>: 这里面就是通常的 应用配置 数据了<ul>
+<li>只会加载里面的 <code>app.php</code> 文件，其他文件都是在 <code>app.php</code> 内部 <code>include</code>进来的</li>
+</ul>
+</li>
+<li><code>config/define.php</code>:定义了一些通用的常量和路径别名</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">! defined(<span class="string">'DS'</span>) &amp;&amp; define(<span class="string">'DS'</span>, DIRECTORY_SEPARATOR);</span><br><span class="line"><span class="comment">// App name</span></span><br><span class="line">! defined(<span class="string">'APP_NAME'</span>) &amp;&amp; define(<span class="string">'APP_NAME'</span>, <span class="string">'swoft'</span>);</span><br><span class="line"><span class="comment">// Project base path</span></span><br><span class="line">! defined(<span class="string">'BASE_PATH'</span>) &amp;&amp; define(<span class="string">'BASE_PATH'</span>, dirname(<span class="keyword">__DIR__</span>, <span class="number">1</span>));</span><br></pre></td></tr></table></figure>
+<h3 id="配置的使用"><a href="#配置的使用" class="headerlink" title="配置的使用"></a>配置的使用</h3><ul>
+<li><p>应用配置对象是 <code>Swoft\Core\Config</code> 的实例。</p>
+</li>
+<li><p>获取配置对象;</p>
+<ul>
+<li><code>\Swoft::getProperties()</code> OR <code>\Swoft\App::getProperties()</code></li>
+<li><code>\Swoft::getBean(&#39;config&#39;)</code> OR <code>\Swoft\App::getBean(&#39;config&#39;)</code></li>
+</ul>
+</li>
+<li><p>获取配置</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过全局函数使用</span></span><br><span class="line">$value = \config(<span class="string">'key'</span>, <span class="string">'default value'</span>);</span><br><span class="line"><span class="comment">// 通过 "." 符号获取子级配置</span></span><br><span class="line">$value = \config(<span class="string">'section.subkey'</span>, <span class="string">'default value'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通过获取config对象来使用</span></span><br><span class="line">$config = \Swoft::getBean(<span class="string">'config'</span>);</span><br><span class="line"></span><br><span class="line">$value = $config-&gt;get(<span class="string">'key'</span>, <span class="string">'default value'</span>);</span><br><span class="line">$value = $config-&gt;get(<span class="string">'section.subkey'</span>, <span class="string">'default value'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置值</span></span><br><span class="line">$config-&gt;set(<span class="string">'my-name'</span>, <span class="string">'tom'</span>);</span><br><span class="line"><span class="keyword">echo</span> $config-&gt;get(<span class="string">'my-name'</span>); <span class="comment">// tom</span></span><br></pre></td></tr></table></figure>
+<h3 id="路径别名"><a href="#路径别名" class="headerlink" title="路径别名"></a>路径别名</h3><p>路径别名 主要是配置了一些常用的路径，给他们取了一些别名以方便使用。</p>
+<h4 id="已有别名"><a href="#已有别名" class="headerlink" title="已有别名"></a>已有别名</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// config/define.php</span></span><br><span class="line"><span class="comment">// Register alias</span></span><br><span class="line">$aliases = [</span><br><span class="line">    <span class="string">'@root'</span>       =&gt; BASE_PATH, <span class="comment">// 项目所在路径</span></span><br><span class="line">    <span class="string">'@env'</span>        =&gt; <span class="string">'@root'</span>,</span><br><span class="line">    <span class="string">'@app'</span>        =&gt; <span class="string">'@root/app'</span>,</span><br><span class="line">    <span class="string">'@res'</span>        =&gt; <span class="string">'@root/resources'</span>,</span><br><span class="line">    <span class="string">'@runtime'</span>    =&gt; <span class="string">'@root/runtime'</span>,</span><br><span class="line">    <span class="string">'@configs'</span>    =&gt; <span class="string">'@root/config'</span>,</span><br><span class="line">    <span class="string">'@resources'</span>  =&gt; <span class="string">'@root/resources'</span>,</span><br><span class="line">    <span class="string">'@beans'</span>      =&gt; <span class="string">'@configs/beans'</span>,</span><br><span class="line">    <span class="string">'@properties'</span> =&gt; <span class="string">'@configs/properties'</span>,</span><br><span class="line">    <span class="string">'@console'</span>    =&gt; <span class="string">'@beans/console.php'</span>,</span><br><span class="line">    <span class="string">'@commands'</span>   =&gt; <span class="string">'@app/command'</span>,</span><br><span class="line">    <span class="string">'@vendor'</span>     =&gt; <span class="string">'@root/vendor'</span>,</span><br><span class="line">];</span><br><span class="line">  </span><br><span class="line">\Swoft\App::setAliases($aliases);</span><br></pre></td></tr></table></figure>
+<h4 id="别名使用"><a href="#别名使用" class="headerlink" title="别名使用"></a>别名使用</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过全局函数使用</span></span><br><span class="line">$path = \alias(<span class="string">'@app'</span>);</span><br><span class="line">$path = \alias(<span class="string">'@app/Controllers'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通过顶级类 \Swoft 使用</span></span><br><span class="line">$path = \Swoft::getAlias(<span class="string">'@app'</span>);</span><br><span class="line">$path = \Swoft::getAlias(<span class="string">'@app/Controllers'</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取全部的别名:</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$aliaes = \Swoft::getAliases();</span><br></pre></td></tr></table></figure>
+<h2 id="Bean容器"><a href="#Bean容器" class="headerlink" title="Bean容器"></a>Bean容器</h2><p><code>Swoft</code> 中一个 <code>Bean</code> 就是一个类的一个对象实例。 容器就是一个巨大的工厂，用于存放和管理 <code>Bean</code> 生命周期。</p>
+<h3 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h3><h4 id="Bean"><a href="#Bean" class="headerlink" title="@Bean"></a>@Bean</h4><blockquote>
+<p>命名空间：<code>\Swoft\Bean\Annotation\Bean</code></p>
+</blockquote>
+<ul>
+<li><code>name</code>定义<code>Bean</code>别名,缺省默认类名</li>
+<li><code>scope</code>注入<code>Bean</code>类型,默认单例, <code>Scope::SINGLETON/Scope::PROTOTYPE</code>(每次创建)</li>
+<li><code>ref</code>指定引入<code>Bean</code>,用于定义在接口上面,指定使用哪个接口实现.</li>
+</ul>
+<h4 id="Inject"><a href="#Inject" class="headerlink" title="@Inject"></a>@Inject</h4><blockquote>
+<p>命名空间：<code>\Swoft\Bean\Annotation\Inject</code></p>
+</blockquote>
+<ul>
+<li><code>name</code>定义属性注入的<code>bean</code>名称，缺省属性自动类型名称</li>
+</ul>
+<h3 id="定义Bean"><a href="#定义Bean" class="headerlink" title="定义Bean"></a>定义Bean</h3><p><code>bean</code>有两种方式定义，注解和数组配置</p>
+<h4 id="数组定义"><a href="#数组定义" class="headerlink" title="数组定义"></a>数组定义</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 配置创建</span></span><br><span class="line">$beanConfig = [</span><br><span class="line">    <span class="string">'class'</span> =&gt; MyBean::class,</span><br><span class="line">    <span class="string">'pro1'</span> =&gt; <span class="string">'v1'</span>,</span><br><span class="line">    <span class="string">'pro2'</span> =&gt; <span class="string">'v2'</span>,</span><br><span class="line">    [ <span class="comment">// 构造函数参数</span></span><br><span class="line">        <span class="string">'arg1'</span>,</span><br><span class="line">        <span class="string">'$&#123;beanName&#125;'</span></span><br><span class="line">    ]</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>数组中必须要有<code>class</code>字段定义</li>
+<li><code>pro1/pro1</code>和类面的成员变量名称是一一对应的</li>
+<li>属性值和构造函数参数值,都可以通过 <code>${xxx}</code> 和 <code>${config.xx}</code>, 注入<code>Bean</code>和引用<code>properties</code>配置信息</li>
+</ul>
+<h4 id="注解定义"><a href="#注解定义" class="headerlink" title="注解定义"></a>注解定义</h4><p>注解定义使用PHP文档注解，在类上做一些标记，通过解析类注解，实现不同的功能。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @\Swoft\Bean\Annotation\Bean("userData")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">XxxBean</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="操作Bean"><a href="#操作Bean" class="headerlink" title="操作Bean"></a>操作Bean</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">App::getBean(<span class="string">"name"</span>);</span><br><span class="line">ApplicationContext::getBean(<span class="string">'name'</span>);</span><br><span class="line">BeanFactory::getBean(<span class="string">'name'</span>);</span><br><span class="line">BeanFactory::hasBean(<span class="string">"name"</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>App/AppplicaionContext/BeanFactory</code>都可从容器中得到<code>Bean</code></li>
+<li><code>hasBean</code>某个<code>bean</code>是否存在</li>
+</ul>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><h4 id="别名定义"><a href="#别名定义" class="headerlink" title="别名定义"></a>别名定义</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @\Swoft\Bean\Annotation\Bean("userData")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserData</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getData</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> [];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @\Swoft\Bean\Annotation\Bean()</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserLogic</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * @\Swoft\Bean\Annotation\Inject("userData")</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> \UserData</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> $userData;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">getUser</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;userData-&gt;getData();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="缺省定义"><a href="#缺省定义" class="headerlink" title="缺省定义"></a>缺省定义</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @\Swoft\Bean\Annotation\Bean("userData")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserData</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getData</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> [];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @\Swoft\Bean\Annotation\Bean()</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserLogic</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * @\Swoft\Bean\Annotation\Inject()</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> \UserData</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> $userData;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">getUser</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;userData-&gt;getData();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="接口引用"><a href="#接口引用" class="headerlink" title="接口引用"></a>接口引用</h4><ul>
+<li>接口上面指定了使用的实现<code>bean</code>别名</li>
+<li>接口使用处，无需指定使用那个别名，会根据接口上面的引用注入不同的实例<code>bean</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* @\Swoft\Bean\Annotation\Bean(ref="boy")</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">UserInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"> <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getData</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* @\Swoft\Bean\Annotation\Bean("boy")</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserBoy</span> <span class="keyword">implements</span> \<span class="title">UserInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getData</span><span class="params">()</span></span></span><br><span class="line"><span class="function">     </span>&#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="string">'boy'</span>;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* @\Swoft\Bean\Annotation\Bean("girl")</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserGirl</span> <span class="keyword">implements</span> \<span class="title">UserInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getData</span><span class="params">()</span></span></span><br><span class="line"><span class="function">     </span>&#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="string">'girl'</span>;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* @\Swoft\Bean\Annotation\Bean()</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserLogic</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="comment">/**</span></span><br><span class="line"><span class="comment">      * @\Swoft\Bean\Annotation\Inject()</span></span><br><span class="line"><span class="comment">      * <span class="doctag">@var</span> \UserInterface</span></span><br><span class="line"><span class="comment">      */</span></span><br><span class="line">     <span class="keyword">private</span> $userData;</span><br><span class="line">    </span><br><span class="line">     <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">getUser</span><span class="params">()</span></span></span><br><span class="line"><span class="function">     </span>&#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;userData-&gt;getData();</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><p>swoft 应用由一个个组件构成，核心为 <code>swoft-framework</code> 组件。</p>
+<h3 id="组件注册"><a href="#组件注册" class="headerlink" title="组件注册"></a>组件注册</h3><h4 id="内部组件"><a href="#内部组件" class="headerlink" title="内部组件"></a>内部组件</h4><p><code>app/</code> 目录和 <code>vendor/swoft</code> 会被自动的扫描，收集注解信息。</p>
+<h4 id="自定义组件"><a href="#自定义组件" class="headerlink" title="自定义组件"></a>自定义组件</h4><p>在配置文件 <code>config/properties/app.php</code> 添加如下配置</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'components'</span> =&gt; [</span><br><span class="line">    <span class="string">'custom'</span> =&gt; [</span><br><span class="line">        <span class="comment">// Your package namespace.</span></span><br><span class="line">        <span class="string">'Package\\Namespace'</span>,</span><br><span class="line">    ],</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+<p>之后，<code>swoft</code>启动时就会到对应的包里去扫描，收集信息</p>
+<h2 id="事件管理"><a href="#事件管理" class="headerlink" title="事件管理"></a>事件管理</h2><p>在<code>swoft</code>我们将事件分为三大类：</p>
+<ul>
+<li><code>swoole server</code> 的回调事件</li>
+<li><code>swoft server</code>的事件,基于<code>swoole</code>的回调处理,扩展了一些可用事件以增强自定义性</li>
+<li>应用内的自定义事件管理和使用, 也是我们通常了解和使用的事件管理了</li>
+</ul>
+<blockquote>
+<p><code>swoole</code>和<code>server</code>级别的事件监听器，应当放置在<code>boot</code>阶段。(即通常应放置于 <code>App\Boot</code> 空间下)</p>
+</blockquote>
+<h3 id="Swoole-Server事件"><a href="#Swoole-Server事件" class="headerlink" title="Swoole Server事件"></a><code>Swoole Server</code>事件</h3><ul>
+<li>TAG: <code>@SwooleListener(&quot;event name&quot;)</code></li>
+</ul>
+<p>用注解tag <code>@SwooleListener(&quot;event name&quot;)</code> 来注册<code>swoole</code>的回调事件监听, 支持所有<code>swoole</code>官网列出来的事件回调名<br>具体请查看 <code>SwooleEvent::class</code> 以及 <code>swoole</code> 官网。</p>
+<blockquote>
+<p>请谨慎使用<code>@SwooleListener</code>。 它是直接注册到 <code>swoole server</code>上的(<strong>监听相同事件将会被覆盖</strong>)，操作不当可能导致出现问题。</p>
+</blockquote>
+<h3 id="Swoft-Server-事件"><a href="#Swoft-Server-事件" class="headerlink" title="Swoft Server 事件"></a><code>Swoft Server</code> 事件</h3><ul>
+<li>TAG: <code>@ServerListener(&quot;event name&quot;)</code></li>
+</ul>
+<p>用注解tag <code>@ServerListener(&quot;event name&quot;)</code> 来注册服务器级别的事件监听。</p>
+<p>它是对 <code>@SwooleListener</code> 的补充扩展，除了支持 <code>swoole</code> 的事件以外，还增加了一些额外的可用事件监听。</p>
+<p>两者的区别是:</p>
+<ul>
+<li><code>SwooleListener</code> 中一个事件的监听器只允许一个，并且是直接注册到 <code>swoole server</code> 上的(<strong>监听相同事件将会被覆盖</strong>)</li>
+<li><code>ServerListener</code> 允许对<code>swoole</code>事件添加多个监听器, 会逐个通知</li>
+<li><code>ServerListener</code> 不影响基础<code>swoole</code>事件的监听</li>
+</ul>
+<h3 id="Examples"><a href="#Examples" class="headerlink" title="Examples"></a>Examples</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Boot</span>\<span class="title">Listener</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Bootstrap</span>\<span class="title">Listeners</span>\<span class="title">Interfaces</span>\<span class="title">StartInterface</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Bean</span>\<span class="title">Annotation</span>\<span class="title">ServerListener</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Bootstrap</span>\<span class="title">SwooleEvent</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoole</span>\<span class="title">Server</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Class MyServerListener</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@package</span> App\Boot\Listener</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@ServerListener</span>(event=SwooleEvent::ON_START)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyServerListener</span> <span class="keyword">implements</span> <span class="title">StartInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onStart</span><span class="params">(Server $server)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        \output()-&gt;writeln(<span class="string">'TestStartListener'</span>);</span><br><span class="line">        var_dump(<span class="string">'TestStartListener'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="自定义事件"><a href="#自定义事件" class="headerlink" title="自定义事件"></a>自定义事件</h3><p>基本的事件注册与触发管理</p>
+<ul>
+<li>implement the Psr 14 - Event dispatcher</li>
+<li>支持设置事件优先级</li>
+<li>支持快速的事件组注册</li>
+<li>支持通配符事件的监听</li>
+</ul>
+<blockquote>
+<p>作为核心服务组件，事件管理会自动启用</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'eventManager'</span>    =&gt; [</span><br><span class="line">    <span class="string">'class'</span> =&gt; \Swoft\Event\EventManager::class,</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+<h4 id="注册事件监听"><a href="#注册事件监听" class="headerlink" title="注册事件监听"></a>注册事件监听</h4><p>用注解tag <code>@Listener(&quot;event name&quot;)</code> 来注册用户自定义的事件监听</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 应用加载事件</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Listener</span>(AppEvent::APPLICATION_LOADER)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ApplicationLoaderListener</span> <span class="keyword">implements</span> <span class="title">EventHandlerInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> EventInterface $event      事件对象</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">(EventInterface $event)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// do something ....</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>事件名称管理推荐放置在一个单独类的常量里面，方便管理和维护</p>
+</blockquote>
+<ul>
+<li>触发事件</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\Swoft::trigger(<span class="string">'event name'</span>, <span class="keyword">null</span>, $arg0, $arg1);</span><br><span class="line"><span class="comment">// OR use \Swoft\App::tigger();</span></span><br></pre></td></tr></table></figure>
+<h2 id="连接池"><a href="#连接池" class="headerlink" title="连接池"></a>连接池</h2><h3 id="基础属性"><a href="#基础属性" class="headerlink" title="基础属性"></a>基础属性</h3><ul>
+<li><code>name</code>连接池节点名称,用于服务发现</li>
+<li><code>uri</code>连接地址信息</li>
+<li><code>maxActive</code>最大活跃连接</li>
+<li><code>maxWait</code>最大等待连接</li>
+<li><code>minActive</code>最小活跃链接数</li>
+<li><code>maxIdleTime</code>连接最大空闲时间,单位秒</li>
+<li><code>maxWaitTime</code>连接最大等待时间,单位秒</li>
+<li><code>timeout</code>超时时间,单位秒</li>
+</ul>
+<h3 id="具体使用"><a href="#具体使用" class="headerlink" title="具体使用"></a>具体使用</h3><ul>
+<li><a href="https://doc.swoft.org/master/zh-CN/db/config.html" target="_blank" rel="noopener">db连接池</a></li>
+<li><a href="https://doc.swoft.org/master/zh-CN/cache/config.html" target="_blank" rel="noopener">redis连接池</a></li>
+</ul>
+<h2 id="AOP切面编程"><a href="#AOP切面编程" class="headerlink" title="AOP切面编程"></a>AOP切面编程</h2><blockquote>
+<p>AOP 为Aspect Oriented Programming的缩写,意为：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。</p>
+</blockquote>
+<h3 id="AOP用途"><a href="#AOP用途" class="headerlink" title="AOP用途"></a>AOP用途</h3><p>利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高开发的效率</p>
+<ul>
+<li>日志记录</li>
+<li>性能统计</li>
+<li>安全控制</li>
+<li>事务处理</li>
+<li>异常处理</li>
+</ul>
+<h3 id="组成部分"><a href="#组成部分" class="headerlink" title="组成部分"></a>组成部分</h3><p>AOP 由 <code>切面</code>、<code>通知</code>、<code>连接点</code>、<code>切入点</code>，四部分组成。</p>
+<h4 id="切面-Aspect"><a href="#切面-Aspect" class="headerlink" title="切面 (Aspect)"></a>切面 (Aspect)</h4><p>其实就是共有功能的实现。如日志切面、权限切面、事务切面等。在实际应用中通常是一个存放共有功能实现的普通PHP类(<strong>切面类</strong>)，之所以能被AOP容器识别成切面，是在配置中指定的。</p>
+<h4 id="通知-Advice"><a href="#通知-Advice" class="headerlink" title="通知 (Advice)"></a>通知 (Advice)</h4><p>是切面的具体实现。以 <code>目标方法</code> （要被代理的方法）为参照点，根据放置的地方不同，<br>可分为<code>前置通知（Before）</code>、<code>后置通知（AfterReturning）</code>、<code>异常通知（AfterThrowing）</code>、<code>最终通知（After）</code>与<code>环绕通知（Around）</code>5种。<br>在实际应用中通常是指向切面类中的一个方法，具体属于哪类通知，同样是在配置中指定的。</p>
+<h4 id="连接点-Joinpoint"><a href="#连接点-Joinpoint" class="headerlink" title="连接点 (Joinpoint)"></a>连接点 (Joinpoint)</h4><p>就是程序在运行过程中能够插入切面的地点。例如，方法调用、异常抛出或字段修改等，但Swoft只支持方法级的连接点。</p>
+<h4 id="切入点-Pointcut"><a href="#切入点-Pointcut" class="headerlink" title="切入点 (Pointcut)"></a>切入点 (Pointcut)</h4><p>用于定义通知应该切入到哪些连接点上。不同的通知通常需要切入到不同的连接点上，这种精准的匹配是由切入点的正则表达式来定义的。</p>
+<h3 id="注解Tag"><a href="#注解Tag" class="headerlink" title="注解Tag"></a>注解Tag</h3><h4 id="定义切面类"><a href="#定义切面类" class="headerlink" title="定义切面类"></a>定义切面类</h4><h5 id="Aspect"><a href="#Aspect" class="headerlink" title="@Aspect()"></a>@Aspect()</h5><p>定义一个类为切面类</p>
+<h5 id="PointBean"><a href="#PointBean" class="headerlink" title="@PointBean()"></a>@PointBean()</h5><p>定义<code>bean</code>切入点 - 这个<code>bean</code>类里的方法执行都会经过此切面类的代理</p>
+<ul>
+<li><code>include</code> 定义需要切入的实体名称集合</li>
+<li><code>exclude</code> 定义需要排除的实体名称集合</li>
+</ul>
+<h5 id="PointAnnotation"><a href="#PointAnnotation" class="headerlink" title="@PointAnnotation()"></a>@PointAnnotation()</h5><p>定义注解切入点 - 所有包含使用了对应注解的方法都会经过此切面类的代理</p>
+<ul>
+<li><code>include</code>定义需要切入的注解名称集合</li>
+<li><code>exclude</code>定义需要排除的注解集合</li>
+</ul>
+<h5 id="PointExecution"><a href="#PointExecution" class="headerlink" title="@PointExecution()"></a>@PointExecution()</h5><p>定义匹配切入点 - 指明要代理目标类的哪些方法</p>
+<ul>
+<li><code>include</code> 定义需要切入的匹配集合, 匹配的类方法,支持正则表达式</li>
+<li><code>exclude</code> 定义需要排序的匹配集合, 匹配的类方法,支持正则表达式</li>
+</ul>
+<h4 id="定义通知点"><a href="#定义通知点" class="headerlink" title="定义通知点"></a>定义通知点</h4><p>上面的几个tag，标明了切面类的作用范围。下面的几个tag则是进一步限制(或者说标记)要在那些点上进行切入</p>
+<ul>
+<li><code>@Before()</code> 标记方法为前置通知 - 在目标方法执行前先执行此方法</li>
+<li><code>@After()</code> 标记方法为后置通知 - 在目标方法执行后执行此方法</li>
+<li><code>@AfterReturning()</code> 标记方法为最终返回通知</li>
+<li><code>@AfterThrowing()</code> 标记方法为异常通知 - 在目标方法执行抛出异常时执行此方法</li>
+<li><code>@Around()</code> 标记方法为环绕通知 - 在目标方法执行前、后都执行此方法</li>
+</ul>
+<blockquote>
+<p>如上所述，<code>@Before()</code> <code>@After()</code> 就跟我们平常使用的 <code>beforeAction</code> <code>afterAction</code> 功能类似。 :)</p>
+</blockquote>
+<h4 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h4><ul>
+<li>定义切面后，框架会自动在对应的切入点，查询方法</li>
+<li><code>@PointBean</code>、<code>@PointAnnotation</code>、<code>@PointExecution</code> 三种定义的关系是<strong>并集</strong>，三种里面定义的排除也是并集后在排除</li>
+</ul>
+<blockquote>
+<p>提示： 为了便于理解和使用，一个切面类尽量只使用上面三个中的一个。</p>
+</blockquote>
+<h5 id="使用实例"><a href="#使用实例" class="headerlink" title="使用实例"></a>使用实例</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * the test of aspcet</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Aspect</span>()</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@PointBean</span>(</span></span><br><span class="line"><span class="comment"> *     include=&#123;AopBean::class&#125;,</span></span><br><span class="line"><span class="comment"> * )</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@PointAnnotation</span>(</span></span><br><span class="line"><span class="comment"> *     include=&#123;</span></span><br><span class="line"><span class="comment"> *      Cacheable::class,</span></span><br><span class="line"><span class="comment"> *      CachePut::class</span></span><br><span class="line"><span class="comment"> *      &#125;</span></span><br><span class="line"><span class="comment"> *  )</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@PointExecution</span>(</span></span><br><span class="line"><span class="comment"> *     include=&#123;</span></span><br><span class="line"><span class="comment"> *      "Swoft\Testing\Aop\RegBean::reg.*",</span></span><br><span class="line"><span class="comment"> *     &#125;</span></span><br><span class="line"><span class="comment"> * )</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AllPointAspect</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Before</span>()</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">before</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        var_dump(<span class="string">' before1 '</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@After</span>()</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">after</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        var_dump(<span class="string">' after1 '</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@AfterReturning</span>()</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">afterReturn</span><span class="params">(JoinPoint $joinPoint)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $result = $joinPoint-&gt;getReturn();</span><br><span class="line">        <span class="keyword">return</span> $result.<span class="string">' afterReturn1 '</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Around</span>()</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> ProceedingJoinPoint $proceedingJoinPoint</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> mixed</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">around</span><span class="params">(ProceedingJoinPoint $proceedingJoinPoint)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;test .= <span class="string">' around-before1 '</span>;</span><br><span class="line">        $result = $proceedingJoinPoint-&gt;proceed();</span><br><span class="line">        <span class="keyword">$this</span>-&gt;test .= <span class="string">' around-after1 '</span>;</span><br><span class="line">        <span class="keyword">return</span> $result.<span class="keyword">$this</span>-&gt;test;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@AfterThrowing</span>()</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">afterThrowing</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"aop=1 afterThrowing !\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="AOP实现原理"><a href="#AOP实现原理" class="headerlink" title="AOP实现原理"></a>AOP实现原理</h2><p>AOP 框架底层是通过动态代理模式实现。代理是一种常用的设计模式，其目的就是为其他对象提供一个代理以控制对某个对象的访问。代理类负责为委托类预处理消息，过滤消息并转发消息，以及进行消息被委托类执行后的后续处理。</p>
+<ul>
+<li>静态代理: 由程序员创建代理类或特定工具自动生成源代码再对其编译</li>
+<li>动态代理: 在程序运行时运用反射机制动态创建而成。</li>
+</ul>
+<h3 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h3><p><code>Swoft</code> 动态代理定义，继承<code>Swoft\Proxy\Handler\HandlerInterface</code>接口，实现<code>invoke</code>方法。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestHandler</span> <span class="keyword">implements</span> <span class="title">HandlerInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> object</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> $target;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($target)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;target = $target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">invoke</span><span class="params">($method, $parameters)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $before = <span class="string">'before'</span>;</span><br><span class="line">        $result = <span class="keyword">$this</span>-&gt;target-&gt;$method(...$parameters);</span><br><span class="line">        $after = <span class="string">'after'</span>;</span><br><span class="line">        $result .= $before.$after;</span><br><span class="line">        <span class="keyword">return</span> $result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$object  = <span class="keyword">new</span> ProxyTest(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">$handler = <span class="keyword">new</span> TestHandler($object);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* <span class="doctag">@var</span> ProxyTest $proxy 这个代理类具有ProxyTest所有功能，可以直接当ProxyTest实例使用，没有任何区别*/</span></span><br><span class="line">$proxy = Proxy::newProxyInstance(ProxyTest::class, $handler);</span><br></pre></td></tr></table></figure>
+<h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><h3 id="1-编写的代码"><a href="#1-编写的代码" class="headerlink" title="1. 编写的代码"></a>1. 编写的代码</h3><p>首先我们在 <code>app</code> 目录下创建一个 <code>Exception</code> 目录，建立一个异常捕获的处理控制器 <code>SwoftExceptionHandler</code></p>
+<p>用到的注解:<br><code>@ExceptionHandler()</code> class注解，声明当前类是异常处理类 <code>@Handler()</code> method注解，需要捕获的异常类; 例如<code>Exception::class</code>为php自带或者自己定义的异常处理类</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@ExceptionHandler</span>()</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@package</span> App\Exception</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SwoftExceptionHandler</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Handler</span>(Exception::class)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> Response   $response</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> \Throwable $throwable</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Response</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handlerException</span><span class="params">(Response $response, \Throwable $throwable)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $file      = $throwable-&gt;getFile();</span><br><span class="line">        $line      = $throwable-&gt;getLine();</span><br><span class="line">        $code      = $throwable-&gt;getCode();</span><br><span class="line">        $exception = $throwable-&gt;getMessage();</span><br><span class="line"></span><br><span class="line">        $data = [<span class="string">'msg'</span> =&gt; $exception, <span class="string">'file'</span> =&gt; $file, <span class="string">'line'</span> =&gt; $line, <span class="string">'code'</span> =&gt; $code];</span><br><span class="line">        App::error(json_encode($data));</span><br><span class="line">        <span class="keyword">return</span> $response-&gt;json($data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-配置能被Swoft扫描到"><a href="#2-配置能被Swoft扫描到" class="headerlink" title="2.配置能被Swoft扫描到"></a>2.配置能被Swoft扫描到</h3><p>在<code>config/properties/app.php</code>中 的<code>beanScan</code>中增加<code>App\Exception</code>, 配置如下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> [</span><br><span class="line">    <span class="string">'version'</span>      =&gt; <span class="string">'1.0'</span>,</span><br><span class="line">    <span class="string">'autoInitBean'</span> =&gt; <span class="keyword">true</span>,</span><br><span class="line">    <span class="string">'bootScan'</span>     =&gt; [</span><br><span class="line">        <span class="string">'App\Commands'</span>,</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">'beanScan'</span>     =&gt; [</span><br><span class="line">        <span class="string">'App\Controllers'</span>,</span><br><span class="line">        <span class="string">'App\Models'</span>,</span><br><span class="line">        <span class="string">'App\Middlewares'</span>,</span><br><span class="line">        <span class="string">'App\Exception'</span>,</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">'env'</span>          =&gt; <span class="string">'Base'</span>,</span><br><span class="line">    <span class="string">'db'</span>           =&gt; <span class="keyword">require</span> <span class="keyword">__DIR__</span> . DS . <span class="string">'db.php'</span>,</span><br><span class="line">    <span class="string">'cache'</span>        =&gt; <span class="keyword">require</span> <span class="keyword">__DIR__</span> . DS . <span class="string">'cache.php'</span>,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>修改完成后，重新启动<code>swoft</code>即可。</p>
+<h1 id="组件列表"><a href="#组件列表" class="headerlink" title="组件列表"></a>组件列表</h1><h2 id="认证管理"><a href="#认证管理" class="headerlink" title="认证管理"></a>认证管理</h2><h3 id="权限控制"><a href="#权限控制" class="headerlink" title="权限控制"></a>权限控制</h3><p>现在支持:</p>
+<ul>
+<li><code>BasicAuth</code></li>
+<li><code>BearerToken(JWT)</code></li>
+<li><code>ACL</code></li>
+</ul>
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer <span class="keyword">require</span> swoft/auth</span><br></pre></td></tr></table></figure>
+<h4 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h4><p>本组件目前实现了 <code>BasicAuth</code> 和 <code>BearerToken</code> 的验证,以及简单的 <code>ACL</code>，使用方法简单，<br>在 <code>config/beans/base.php</code> 中的 <code>serverDispatcher.middlewares</code> 里 添加 <code>\Swoft\Auth\Middleware\AuthMiddleware::class</code> 中间件，如下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'serverDispatcher'</span> =&gt; [</span><br><span class="line">    <span class="string">'middlewares'</span> =&gt; [</span><br><span class="line">        \Swoft\Auth\Middleware\AuthMiddleware::class,</span><br><span class="line">    ]</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+<p>然后在配置文件 <code>config/properties/app.php</code> 中添加</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'auth'</span> =&gt; [</span><br><span class="line">    <span class="string">'jwt'</span> =&gt; [</span><br><span class="line">       <span class="string">'algorithm'</span> =&gt; <span class="string">'HS256'</span>,</span><br><span class="line">       <span class="string">'secret'</span> =&gt; <span class="string">'1231231'</span></span><br><span class="line">    ],</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意 <code>secret</code> 不要使用上述值，修改为你自己的值</li>
+</ul>
+<h4 id="配置验证管理-AuthManagerInterface"><a href="#配置验证管理-AuthManagerInterface" class="headerlink" title="配置验证管理 AuthManagerInterface"></a>配置验证管理 <code>AuthManagerInterface</code></h4><p><code>AuthManager</code> 是登录验证的核心，本类实现了 <code>Token</code> 的验证及缓存，你可以继承这个类实现多种方式登录(配合<code>accountType</code>实现)，下面就是一个 <code>basicAuth</code> 的 Demo</p>
+<p>首先实现一个 <code>Swoft\Auth\Mapping\AccountTypeInterface</code> 作为我们登录的通道</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Auth</span>\<span class="title">Mapping</span>\<span class="title">AccountTypeInterface</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Auth</span>\<span class="title">Bean</span>\<span class="title">AuthResult</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Bean</span>()</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AdminNormalAccount</span> <span class="keyword">implements</span> <span class="title">AccountTypeInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Inject</span>()</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> AdminUserDAO</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> $dao;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> ROLE = <span class="string">'role'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> \Swoft\Db\Exception\DbException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">login</span><span class="params">(array $data)</span> : <span class="title">AuthResult</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $identity = $data[<span class="string">'identity'</span>];</span><br><span class="line">        $credential = $data[<span class="string">'credential'</span>];</span><br><span class="line">        $user = <span class="keyword">$this</span>-&gt;dao::findOneByUsername($identity);</span><br><span class="line">        $result = <span class="keyword">new</span> AuthResult();</span><br><span class="line">        <span class="keyword">if</span>($user <span class="keyword">instanceof</span> AdminUserBean &amp;&amp; $user-&gt;verify($credential))&#123;</span><br><span class="line">            $result-&gt;setExtendedData([<span class="keyword">self</span>::ROLE =&gt; $user-&gt;getIsAdministrator()]);</span><br><span class="line">            $result-&gt;setIdentity($user-&gt;getId());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> $result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> \Swoft\Db\Exception\DbException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">authenticate</span><span class="params">(string $identity)</span> : <span class="title">bool</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;dao::issetUserById($identity);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后在我们自己的 <code>AuthManagerService</code> 实现这个登录</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">se Swoft\Auth\AuthManager;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Auth</span>\<span class="title">Mapping</span>\<span class="title">AuthManagerInterface</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Auth</span>\<span class="title">Bean</span>\<span class="title">AuthSession</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Bean</span>()</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AuthManagerService</span> <span class="keyword">extends</span> <span class="title">AuthManager</span> <span class="keyword">implements</span> <span class="title">AuthManagerInterface</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> $cacheClass = Redis::class;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> bool 开启缓存</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> $cacheEnable = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">adminBasicLogin</span><span class="params">(string $identity, string $credential)</span> : <span class="title">AuthSession</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;login(AdminNormalAccount::class, [</span><br><span class="line">            <span class="string">'identity'</span> =&gt; $identity,</span><br><span class="line">            <span class="string">'credential'</span> =&gt; $credential</span><br><span class="line">        ]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后在 <code>config/beans/base.php</code> 中把系统默认的 <code>AuthManager Bean</code> 替换为我们自己的 <code>AuthManagerService</code>，添加如下代码进行替换</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">\Swoft\Auth\Mapping\AuthManagerInterface::class =&gt; [</span><br><span class="line">    <span class="string">'class'</span>=&gt;App\Domain\User\Service\AuthManagerService::class</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+<p>现在我们就可以在一个 <code>Controller</code> 中使用刚才实现的登录方式了</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Auth</span>\<span class="title">Constants</span>\<span class="title">AuthConstants</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Http</span>\<span class="title">Message</span>\<span class="title">Server</span>\<span class="title">Request</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Http</span>\<span class="title">Server</span>\<span class="title">Bean</span>\<span class="title">Annotation</span>\<span class="title">Controller</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Http</span>\<span class="title">Server</span>\<span class="title">Bean</span>\<span class="title">Annotation</span>\<span class="title">RequestMapping</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Http</span>\<span class="title">Server</span>\<span class="title">Bean</span>\<span class="title">Annotation</span>\<span class="title">RequestMethod</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoft</span>\<span class="title">Auth</span>\<span class="title">Mapping</span>\<span class="title">AuthManagerInterface</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Controller</span>(prefix="/oauth")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AuthorizationsResource</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">     <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@RequestMapping</span>(route="token", method=&#123;RequestMethod::POST&#125;)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">oauth</span><span class="params">(Request $request)</span> : <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $identity = $request-&gt;getAttribute(AuthConstants::BASIC_USER_NAME) ?? <span class="string">''</span>;</span><br><span class="line">        $credential = $request-&gt;getAttribute(AuthConstants::BASIC_PASSWORD) ?? <span class="string">''</span>;</span><br><span class="line">        <span class="keyword">if</span>(!$identity || !$credential)&#123;</span><br><span class="line">            <span class="keyword">return</span> [</span><br><span class="line">                <span class="string">"code"</span> =&gt; <span class="number">400</span>,</span><br><span class="line">                <span class="string">"message"</span> =&gt; <span class="string">"Identity and Credential are required."</span></span><br><span class="line">            ];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/** <span class="doctag">@var</span> AuthManagerService $manager */</span></span><br><span class="line">        $manager = App::getBean(AuthManagerInterface::class);</span><br><span class="line">        <span class="comment">/** <span class="doctag">@var</span> AuthSession $session */</span></span><br><span class="line">        $session = $manager-&gt;adminBasicLogin($identity, $credential);</span><br><span class="line">        $data = [</span><br><span class="line">            <span class="string">'token'</span> =&gt; $session-&gt;getToken(),</span><br><span class="line">            <span class="string">'expire'</span> =&gt; $session-&gt;getExpirationTime()</span><br><span class="line">        ];</span><br><span class="line">        <span class="keyword">return</span> $data;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在可以通过 Postman 或 其它请求方式 请求我们的登录接口了</p>
+<p>// 待续…</p>
+<h2 id="命令行"><a href="#命令行" class="headerlink" title="命令行"></a>命令行</h2><h2 id="HTTP服务"><a href="#HTTP服务" class="headerlink" title="HTTP服务"></a>HTTP服务</h2><h2 id="WebSocket服务"><a href="#WebSocket服务" class="headerlink" title="WebSocket服务"></a>WebSocket服务</h2><h2 id="RPC服务"><a href="#RPC服务" class="headerlink" title="RPC服务"></a>RPC服务</h2><h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><h2 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h2><h2 id="Session会话"><a href="#Session会话" class="headerlink" title="Session会话"></a>Session会话</h2><h2 id="RPC客户端"><a href="#RPC客户端" class="headerlink" title="RPC客户端"></a>RPC客户端</h2><h2 id="HTTP客户端"><a href="#HTTP客户端" class="headerlink" title="HTTP客户端"></a>HTTP客户端</h2><h2 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h2><h2 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h2><h2 id="国际化"><a href="#国际化" class="headerlink" title="国际化"></a>国际化</h2><h2 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h2><h2 id="内存操作"><a href="#内存操作" class="headerlink" title="内存操作"></a>内存操作</h2><h2 id="服务治理"><a href="#服务治理" class="headerlink" title="服务治理"></a>服务治理</h2><h2 id="开发者工具"><a href="#开发者工具" class="headerlink" title="开发者工具"></a>开发者工具</h2>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/02/27/Swoft-Swoole/" target="_blank" title="Swoft 基于Swoole">http://blog.caoxl.com/2019/02/27/Swoft-Swoole/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoft/">Swoft</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoole/">Swoole</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/02/27/Framework-Based-On-Swoole/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          基于 Swoole 的框架
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/02/27/LaravelS-Swoole/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">LaravelS 基于Swoole</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#特性"><span class="nav-number">1.</span> <span class="nav-text">特性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基础信息"><span class="nav-number">2.</span> <span class="nav-text">基础信息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境要求"><span class="nav-number">2.1.</span> <span class="nav-text">环境要求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#必须安装的"><span class="nav-number">2.1.1.</span> <span class="nav-text">必须安装的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有冲突的"><span class="nav-number">2.1.2.</span> <span class="nav-text">有冲突的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推荐环境配置"><span class="nav-number">2.1.3.</span> <span class="nav-text">推荐环境配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Swoft"><span class="nav-number">2.2.</span> <span class="nav-text">安装Swoft</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Composer安装"><span class="nav-number">2.2.1.</span> <span class="nav-text">Composer安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#手动安装"><span class="nav-number">2.2.2.</span> <span class="nav-text">手动安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker安装"><span class="nav-number">2.2.3.</span> <span class="nav-text">Docker安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-Compose-安装"><span class="nav-number">2.2.4.</span> <span class="nav-text">Docker-Compose 安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发准备"><span class="nav-number">2.3.</span> <span class="nav-text">开发准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速起步"><span class="nav-number">2.4.</span> <span class="nav-text">快速起步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务启动与管理"><span class="nav-number">2.4.1.</span> <span class="nav-text">服务启动与管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#帮助命令"><span class="nav-number">2.4.2.</span> <span class="nav-text">帮助命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP服务器"><span class="nav-number">2.4.3.</span> <span class="nav-text">HTTP服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WebSocket服务器"><span class="nav-number">2.4.4.</span> <span class="nav-text">WebSocket服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RPC服务器"><span class="nav-number">2.4.5.</span> <span class="nav-text">RPC服务器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#env环境配置"><span class="nav-number">2.5.</span> <span class="nav-text">env环境配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#可用配置项"><span class="nav-number">2.5.1.</span> <span class="nav-text">可用配置项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用结构简介"><span class="nav-number">2.6.</span> <span class="nav-text">应用结构简介</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#框架核心"><span class="nav-number">3.</span> <span class="nav-text">框架核心</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#生命周期"><span class="nav-number">3.1.</span> <span class="nav-text">生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#框架生命周期"><span class="nav-number">3.1.1.</span> <span class="nav-text">框架生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求生命周期"><span class="nav-number">3.1.2.</span> <span class="nav-text">请求生命周期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP-Server"><span class="nav-number">3.1.3.</span> <span class="nav-text">HTTP Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RPC-Server"><span class="nav-number">3.1.4.</span> <span class="nav-text">RPC Server</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置"><span class="nav-number">3.2.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置的使用"><span class="nav-number">3.2.1.</span> <span class="nav-text">配置的使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路径别名"><span class="nav-number">3.2.2.</span> <span class="nav-text">路径别名</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#已有别名"><span class="nav-number">3.2.2.1.</span> <span class="nav-text">已有别名</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#别名使用"><span class="nav-number">3.2.2.2.</span> <span class="nav-text">别名使用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bean容器"><span class="nav-number">3.3.</span> <span class="nav-text">Bean容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#注解"><span class="nav-number">3.3.1.</span> <span class="nav-text">注解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Bean"><span class="nav-number">3.3.1.1.</span> <span class="nav-text">@Bean</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Inject"><span class="nav-number">3.3.1.2.</span> <span class="nav-text">@Inject</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义Bean"><span class="nav-number">3.3.2.</span> <span class="nav-text">定义Bean</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数组定义"><span class="nav-number">3.3.2.1.</span> <span class="nav-text">数组定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注解定义"><span class="nav-number">3.3.2.2.</span> <span class="nav-text">注解定义</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作Bean"><span class="nav-number">3.3.3.</span> <span class="nav-text">操作Bean</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例"><span class="nav-number">3.3.4.</span> <span class="nav-text">实例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#别名定义"><span class="nav-number">3.3.4.1.</span> <span class="nav-text">别名定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缺省定义"><span class="nav-number">3.3.4.2.</span> <span class="nav-text">缺省定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#接口引用"><span class="nav-number">3.3.4.3.</span> <span class="nav-text">接口引用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#组件"><span class="nav-number">3.4.</span> <span class="nav-text">组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#组件注册"><span class="nav-number">3.4.1.</span> <span class="nav-text">组件注册</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#内部组件"><span class="nav-number">3.4.1.1.</span> <span class="nav-text">内部组件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自定义组件"><span class="nav-number">3.4.1.2.</span> <span class="nav-text">自定义组件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件管理"><span class="nav-number">3.5.</span> <span class="nav-text">事件管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Swoole-Server事件"><span class="nav-number">3.5.1.</span> <span class="nav-text">Swoole Server事件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Swoft-Server-事件"><span class="nav-number">3.5.2.</span> <span class="nav-text">Swoft Server 事件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Examples"><span class="nav-number">3.5.3.</span> <span class="nav-text">Examples</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义事件"><span class="nav-number">3.5.4.</span> <span class="nav-text">自定义事件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#注册事件监听"><span class="nav-number">3.5.4.1.</span> <span class="nav-text">注册事件监听</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#连接池"><span class="nav-number">3.6.</span> <span class="nav-text">连接池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基础属性"><span class="nav-number">3.6.1.</span> <span class="nav-text">基础属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体使用"><span class="nav-number">3.6.2.</span> <span class="nav-text">具体使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOP切面编程"><span class="nav-number">3.7.</span> <span class="nav-text">AOP切面编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AOP用途"><span class="nav-number">3.7.1.</span> <span class="nav-text">AOP用途</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#组成部分"><span class="nav-number">3.7.2.</span> <span class="nav-text">组成部分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#切面-Aspect"><span class="nav-number">3.7.2.1.</span> <span class="nav-text">切面 (Aspect)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通知-Advice"><span class="nav-number">3.7.2.2.</span> <span class="nav-text">通知 (Advice)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接点-Joinpoint"><span class="nav-number">3.7.2.3.</span> <span class="nav-text">连接点 (Joinpoint)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#切入点-Pointcut"><span class="nav-number">3.7.2.4.</span> <span class="nav-text">切入点 (Pointcut)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注解Tag"><span class="nav-number">3.7.3.</span> <span class="nav-text">注解Tag</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#定义切面类"><span class="nav-number">3.7.3.1.</span> <span class="nav-text">定义切面类</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Aspect"><span class="nav-number">3.7.3.1.1.</span> <span class="nav-text">@Aspect()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#PointBean"><span class="nav-number">3.7.3.1.2.</span> <span class="nav-text">@PointBean()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#PointAnnotation"><span class="nav-number">3.7.3.1.3.</span> <span class="nav-text">@PointAnnotation()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#PointExecution"><span class="nav-number">3.7.3.1.4.</span> <span class="nav-text">@PointExecution()</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义通知点"><span class="nav-number">3.7.3.2.</span> <span class="nav-text">定义通知点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#说明"><span class="nav-number">3.7.3.3.</span> <span class="nav-text">说明</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#使用实例"><span class="nav-number">3.7.3.3.1.</span> <span class="nav-text">使用实例</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOP实现原理"><span class="nav-number">3.8.</span> <span class="nav-text">AOP实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#动态代理"><span class="nav-number">3.8.1.</span> <span class="nav-text">动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用"><span class="nav-number">3.8.1.1.</span> <span class="nav-text">使用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常处理"><span class="nav-number">3.9.</span> <span class="nav-text">异常处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-编写的代码"><span class="nav-number">3.9.1.</span> <span class="nav-text">1. 编写的代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-配置能被Swoft扫描到"><span class="nav-number">3.9.2.</span> <span class="nav-text">2.配置能被Swoft扫描到</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#组件列表"><span class="nav-number">4.</span> <span class="nav-text">组件列表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#认证管理"><span class="nav-number">4.1.</span> <span class="nav-text">认证管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#权限控制"><span class="nav-number">4.1.1.</span> <span class="nav-text">权限控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#安装"><span class="nav-number">4.1.1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用-1"><span class="nav-number">4.1.1.2.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置验证管理-AuthManagerInterface"><span class="nav-number">4.1.1.3.</span> <span class="nav-text">配置验证管理 AuthManagerInterface</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命令行"><span class="nav-number">4.2.</span> <span class="nav-text">命令行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP服务"><span class="nav-number">4.3.</span> <span class="nav-text">HTTP服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebSocket服务"><span class="nav-number">4.4.</span> <span class="nav-text">WebSocket服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RPC服务"><span class="nav-number">4.5.</span> <span class="nav-text">RPC服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-number">4.6.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库"><span class="nav-number">4.7.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#视图"><span class="nav-number">4.8.</span> <span class="nav-text">视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Session会话"><span class="nav-number">4.9.</span> <span class="nav-text">Session会话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RPC客户端"><span class="nav-number">4.10.</span> <span class="nav-text">RPC客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP客户端"><span class="nav-number">4.11.</span> <span class="nav-text">HTTP客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#任务"><span class="nav-number">4.12.</span> <span class="nav-text">任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程"><span class="nav-number">4.13.</span> <span class="nav-text">进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#国际化"><span class="nav-number">4.14.</span> <span class="nav-text">国际化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日志"><span class="nav-number">4.15.</span> <span class="nav-text">日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存操作"><span class="nav-number">4.16.</span> <span class="nav-text">内存操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务治理"><span class="nav-number">4.17.</span> <span class="nav-text">服务治理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发者工具"><span class="nav-number">4.18.</span> <span class="nav-text">开发者工具</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mysql 查看表结构 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MySQL">
+  
+  
+  
+  
+  <meta name="description" content="简单描述表结构, 字段类型1desc table_name;">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 查看表结构">
+<meta property="og:url" content="http://blog.caoxl.com/2018/07/26/MySQL-show-tables/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="简单描述表结构, 字段类型1desc table_name;">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:28:34.679Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL 查看表结构">
+<meta name="twitter:description" content="简单描述表结构, 字段类型1desc table_name;">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MySQL-show-tables" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MySQL 查看表结构
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/07/26/MySQL-show-tables/" class="article-date">
+	  <time datetime="2018-07-26T01:41:59.000Z" itemprop="datePublished">2018-07-26</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h1 id="简单描述表结构-字段类型"><a href="#简单描述表结构-字段类型" class="headerlink" title="简单描述表结构, 字段类型"></a>简单描述表结构, 字段类型</h1><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">desc</span> <span class="built_in">table_name</span>;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p><strong>例如:</strong></p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [skb]&gt; desc users;</span><br><span class="line">+----------------+------------------+------+-----+---------+----------------+</span><br><span class="line">|<span class="string"> Field          </span>|<span class="string"> Type             </span>|<span class="string"> Null </span>|<span class="string"> Key </span>|<span class="string"> Default </span>|<span class="string"> Extra          </span>|</span><br><span class="line">+----------------+------------------+------+-----+---------+----------------+</span><br><span class="line">|<span class="string"> id             </span>|<span class="string"> int(10) unsigned </span>|<span class="string"> NO   </span>|<span class="string"> PRI </span>|<span class="string"> NULL    </span>|<span class="string"> auto_increment </span>|</span><br><span class="line">|<span class="string"> name           </span>|<span class="string"> varchar(191)     </span>|<span class="string"> NO   </span>|<span class="string">     </span>|<span class="string"> NULL    </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> email          </span>|<span class="string"> varchar(191)     </span>|<span class="string"> NO   </span>|<span class="string"> UNI </span>|<span class="string"> NULL    </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> password       </span>|<span class="string"> varchar(191)     </span>|<span class="string"> NO   </span>|<span class="string">     </span>|<span class="string"> NULL    </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> homepage       </span>|<span class="string"> varchar(191)     </span>|<span class="string"> NO   </span>|<span class="string">     </span>|<span class="string"> NULL    </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> remember_token </span>|<span class="string"> varchar(100)     </span>|<span class="string"> YES  </span>|<span class="string">     </span>|<span class="string"> NULL    </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> created_at     </span>|<span class="string"> timestamp        </span>|<span class="string"> YES  </span>|<span class="string">     </span>|<span class="string"> NULL    </span>|<span class="string">                </span>|</span><br><span class="line">|<span class="string"> updated_at     </span>|<span class="string"> timestamp        </span>|<span class="string"> YES  </span>|<span class="string">     </span>|<span class="string"> NULL    </span>|<span class="string">                </span>|</span><br><span class="line">+----------------+------------------+------+-----+---------+----------------+</span><br></pre></td></tr></table></figure>
+<h1 id="查看表中列的注释信息"><a href="#查看表中列的注释信息" class="headerlink" title="查看表中列的注释信息"></a>查看表中列的注释信息</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> information_schema.columns </span><br><span class="line"><span class="keyword">where</span> table_schema = <span class="string">'db'</span>      <span class="comment"># 表所在数据库</span></span><br><span class="line"><span class="keyword">and</span> table_name = <span class="string">'table_name'</span>; <span class="comment"># 要查询的表</span></span><br></pre></td></tr></table></figure>
+<p><strong>例如:</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> information_schema.<span class="keyword">columns</span>  <span class="keyword">where</span> table_schema = <span class="string">'skb'</span> <span class="keyword">and</span> <span class="built_in">table_name</span> = <span class="string">'skb_users'</span>;</span><br></pre></td></tr></table></figure>
+<h1 id="只查询列名和注释"><a href="#只查询列名和注释" class="headerlink" title="只查询列名和注释"></a>只查询列名和注释</h1><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">column_name</span>, column_comment <span class="keyword">from</span> information_schema.<span class="keyword">columns</span> </span><br><span class="line"><span class="keyword">where</span> table_schema = <span class="string">'db'</span>      # 表所在数据库</span><br><span class="line"><span class="keyword">and</span> <span class="built_in">table_name</span> = <span class="string">'table_name'</span>; # 要查询的表</span><br></pre></td></tr></table></figure>
+<p><strong>例如:</strong></p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [skb]&gt; select column_name, column_comment from information_schema.columns  where table_schema = 'skb' and table_name = 'skb_users'; </span><br><span class="line">+-------------+-------------------------------------------------------------+</span><br><span class="line">|<span class="string"> column_name </span>|<span class="string"> column_comment                                              </span>|</span><br><span class="line">+-------------+-------------------------------------------------------------+</span><br><span class="line">|<span class="string"> id          </span>|<span class="string">                                                             </span>|</span><br><span class="line">|<span class="string"> username    </span>|<span class="string"> 用户名                                                      </span>|</span><br><span class="line">|<span class="string"> password    </span>|<span class="string"> 密码                                                        </span>|</span><br><span class="line">|<span class="string"> openid      </span>|<span class="string"> 微信ID                                                      </span>|</span><br><span class="line">|<span class="string"> nickname    </span>|<span class="string"> 微信昵称,用户昵称                                           </span>|</span><br><span class="line">|<span class="string"> avatar      </span>|<span class="string"> 微信头像,用户头像                                           </span>|</span><br><span class="line">|<span class="string"> mobile      </span>|<span class="string"> 微信手机号,用户手机号                                       </span>|</span><br><span class="line">|<span class="string"> is_del      </span>|<span class="string"> 1表示删除,0表示未删除                                       </span>|</span><br><span class="line">|<span class="string"> role        </span>|<span class="string"> 1表示仅是用户,2表示仅是师傅,3表示两者皆是                   </span>|</span><br><span class="line">|<span class="string"> created_at  </span>|<span class="string">                                                             </span>|</span><br><span class="line">|<span class="string"> updated_at  </span>|<span class="string">                                                             </span>|</span><br><span class="line">|<span class="string"> deleted_at  </span>|<span class="string">                                                             </span>|</span><br><span class="line">|<span class="string"> money       </span>|<span class="string"> 余额                                                        </span>|</span><br><span class="line">+-------------+-------------------------------------------------------------+</span><br><span class="line">13 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h1 id="查看表的注释"><a href="#查看表的注释" class="headerlink" title="查看表的注释"></a>查看表的注释</h1><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">table_name</span>, table_comment <span class="keyword">from</span> information_schema.<span class="keyword">tables</span> </span><br><span class="line"><span class="keyword">where</span> table_schema = <span class="string">'db'</span>      # 表所在数据库</span><br><span class="line"><span class="keyword">and</span> <span class="built_in">table_name</span> = <span class="string">'table_name'</span>; # 要查询的表</span><br></pre></td></tr></table></figure>
+<p><strong>例如:</strong></p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [skb]&gt; select table<span class="emphasis">_name, table_</span>comment from information<span class="emphasis">_schema.tables  where table_</span>schema = <span class="emphasis">'skb'</span> and table<span class="emphasis">_name = 'skb_</span>users'; </span><br><span class="line"><span class="code">+------------+</span>---------------+</span><br><span class="line">| table<span class="emphasis">_name | table_</span>comment |</span><br><span class="line"><span class="code">+------------+</span>---------------+</span><br><span class="line">| skb<span class="emphasis">_users  |               |</span></span><br><span class="line"><span class="emphasis">+------------+---------------+</span></span><br><span class="line"><span class="emphasis">1 row in set (0.00 sec)</span></span><br></pre></td></tr></table></figure>
+<h1 id="查看表生成的DDL"><a href="#查看表生成的DDL" class="headerlink" title="查看表生成的DDL"></a>查看表生成的<code>DDL</code></h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> table_name;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更美观的显示</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> table_name \G;</span><br></pre></td></tr></table></figure>
+<p><strong>例如:</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [skb]&gt; show create table skb_users\G;</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">       Table: skb_users</span><br><span class="line">Create Table: CREATE TABLE `skb_users` (</span><br><span class="line">  `id` int(10) unsigned <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `username` varchar(191) COLLATE utf8mb4_unicode_ci <span class="keyword">NOT</span> <span class="literal">NULL</span> COMMENT <span class="string">'用户名'</span>,</span><br><span class="line">  `password` varchar(191) COLLATE utf8mb4_unicode_ci<span class="built_in"> DEFAULT </span><span class="literal">NULL</span> COMMENT <span class="string">'密码'</span>,</span><br><span class="line">  `openid` varchar(191) COLLATE utf8mb4_unicode_ci<span class="built_in"> DEFAULT </span><span class="literal">NULL</span> COMMENT <span class="string">'微信ID'</span>,</span><br><span class="line">  `nickname` varchar(191) COLLATE utf8mb4_unicode_ci <span class="keyword">NOT</span> <span class="literal">NULL</span> COMMENT <span class="string">'微信昵称,用户昵称'</span>,</span><br><span class="line">  `avatar` varchar(191) COLLATE utf8mb4_unicode_ci <span class="keyword">NOT</span> <span class="literal">NULL</span> COMMENT <span class="string">'微信头像,用户头像'</span>,</span><br><span class="line">  `mobile` char(191) COLLATE utf8mb4_unicode_ci<span class="built_in"> DEFAULT </span><span class="literal">NULL</span> COMMENT <span class="string">'微信手机号,用户手机号'</span>,</span><br><span class="line">  `is_del` tinyint(4)<span class="built_in"> DEFAULT </span><span class="string">'0'</span> COMMENT <span class="string">'1表示删除,0表示未删除'</span>,</span><br><span class="line">  `role` tinyint(4) <span class="keyword">NOT</span> <span class="literal">NULL</span><span class="built_in"> DEFAULT </span><span class="string">'1'</span> COMMENT <span class="string">'1表示仅是用户,2表示仅是师傅,3表示两者皆是'</span>,</span><br><span class="line">  `created_at` timestamp <span class="literal">NULL</span><span class="built_in"> DEFAULT </span><span class="literal">NULL</span>,</span><br><span class="line">  `updated_at` timestamp <span class="literal">NULL</span><span class="built_in"> DEFAULT </span><span class="literal">NULL</span>,</span><br><span class="line">  `deleted_at` timestamp <span class="literal">NULL</span><span class="built_in"> DEFAULT </span><span class="literal">NULL</span>,</span><br><span class="line">  `money` double(8,2) <span class="keyword">NOT</span> <span class="literal">NULL</span> COMMENT <span class="string">'余额'</span>,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) <span class="attribute">ENGINE</span>=MyISAM <span class="attribute">AUTO_INCREMENT</span>=5<span class="built_in"> DEFAULT </span><span class="attribute">CHARSET</span>=utf8mb4 <span class="attribute">COLLATE</span>=utf8mb4_unicode_ci</span><br><span class="line">1 row <span class="keyword">in</span> <span class="builtin-name">set</span> (0.00 sec)</span><br><span class="line"></span><br><span class="line">ERROR: <span class="literal">No</span> query specified</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/07/26/MySQL-show-tables/" target="_blank" title="MySQL 查看表结构">http://blog.caoxl.com/2018/07/26/MySQL-show-tables/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/26/ThirdParty-use-bankcard/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          根据银行卡号获取银行信息 「阿里API」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/24/Linux-exec-sql/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Linux服务器执行sql文件</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简单描述表结构-字段类型"><span class="nav-number">1.</span> <span class="nav-text">简单描述表结构, 字段类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看表中列的注释信息"><span class="nav-number">2.</span> <span class="nav-text">查看表中列的注释信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#只查询列名和注释"><span class="nav-number">3.</span> <span class="nav-text">只查询列名和注释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看表的注释"><span class="nav-number">4.</span> <span class="nav-text">查看表的注释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看表生成的DDL"><span class="nav-number">5.</span> <span class="nav-text">查看表生成的DDL</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>crontab is so easy | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LinxCrontab">
+  
+  
+  
+  
+  <meta name="description" content="Crontab是一个Unix/Linux系统下的常用的定时执行工具，可以在无需人工干预的情况下运行指定作业。">
+<meta name="keywords" content="Linx,Crontab">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Crontab Is So Easy">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/24/Crontab-Is-So-Easy/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Crontab是一个Unix/Linux系统下的常用的定时执行工具，可以在无需人工干预的情况下运行指定作业。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.vpser.net/uploads/2011/05/crontab-e-nano.jpg">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Crontab Is So Easy">
+<meta name="twitter:description" content="Crontab是一个Unix/Linux系统下的常用的定时执行工具，可以在无需人工干预的情况下运行指定作业。">
+<meta name="twitter:image" content="https://www.vpser.net/uploads/2011/05/crontab-e-nano.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Crontab-Is-So-Easy" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Crontab Is So Easy
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/24/Crontab-Is-So-Easy/" class="article-date">
+	  <time datetime="2018-01-24T08:12:57.000Z" itemprop="datePublished">2018-01-24</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>Crontab是一个Unix/Linux系统下的常用的定时执行工具，可以在无需人工干预的情况下运行指定作业。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="CentOS下-安装Crontab"><a href="#CentOS下-安装Crontab" class="headerlink" title="CentOS下 安装Crontab"></a>CentOS下 安装Crontab</h2><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum install vixie-cron crontabs     <span class="comment"> //安装Crontab</span></span><br><span class="line"></span><br><span class="line">chkconfig crond <span class="keyword">on</span>                  //设为开机自启动</span><br><span class="line">service crond <span class="built_in">start</span>                <span class="comment"> //启动</span></span><br></pre></td></tr></table></figure>
+<p><strong>说明：</strong> <code>vixie-cron</code>软件包是<code>cron</code>的主程序；<code>crontabs</code>软件包是用来安装、卸装、 或列举用来驱动 <code>cron</code> 守护进程的表格的程序。</p>
+<h2 id="Debian下-安装Crontab"><a href="#Debian下-安装Crontab" class="headerlink" title="Debian下 安装Crontab"></a>Debian下 安装Crontab</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">apt-<span class="keyword">get</span> install cron             <span class="comment">//大部分情况下Debian都已安装。</span></span><br><span class="line"></span><br><span class="line">/etc/<span class="keyword">init</span>.d/cron restart        <span class="comment">//重启Crontab</span></span><br></pre></td></tr></table></figure>
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><h2 id="查看crontab定时执行任务列表"><a href="#查看crontab定时执行任务列表" class="headerlink" title="查看crontab定时执行任务列表"></a>查看crontab定时执行任务列表</h2><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">crontab -l</span></span><br></pre></td></tr></table></figure>
+<h2 id="添加crontab定时执行任务"><a href="#添加crontab定时执行任务" class="headerlink" title="添加crontab定时执行任务"></a>添加crontab定时执行任务</h2><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">crontab -e</span></span><br></pre></td></tr></table></figure>
+<p>输入crontab任务命令时可能会因为crontab默认编辑器的不同。</p>
+<p><img src="https://www.vpser.net/uploads/2011/05/crontab-e-nano.jpg" alt></p>
+<p>如上图所示为 <a href="https://www.vpser.net/manage/nano.html" target="_blank" rel="noopener">nano编辑器</a>，使用比较简单，直接在文件末尾按crontab命令格式输入即可，Ctrl+x退出，再输y 回车保存。</p>
+<p>另外一种是<code>vi编辑器</code>，首先按i键，在文件末尾按crontab命令格式输入，再按ESC键，再输入<code>:wq</code> 回车即可。</p>
+<h2 id="crontab-任务命令书写格式"><a href="#crontab-任务命令书写格式" class="headerlink" title="crontab 任务命令书写格式"></a>crontab 任务命令书写格式</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">格式：	minute	hour	dayofmonth	month	dayofweek	command</span><br><span class="line">解释：	分钟	小时	日期	月付	周	命令</span><br><span class="line">范围：	<span class="number">0</span><span class="number">-59</span>	<span class="number">0</span>～<span class="number">23</span>	<span class="number">1</span>～<span class="number">31</span>	<span class="number">1</span>～<span class="number">12</span>	<span class="number">0</span>～<span class="number">7</span>，<span class="number">0</span>和<span class="number">7</span>都代表周日</span><br></pre></td></tr></table></figure>
+<p>在crontab中我们会经常用到<code>* ,   -  /n</code>这4个符号，好吧还是再画个表格，更清楚些：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">符号</th>
+<th style="text-align:left">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>*(星号)</code></td>
+<td style="text-align:left">代表所有有效的值。 如：0 23 <em> </em> * backup 不论几月几日周几的23点整都执行backup命令。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>,(逗号)</code></td>
+<td style="text-align:left">代表分割开多个值。如：30 9 1,16,20 <em> </em> command 每月的1、16、20号9点30分执行command命令。</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>-(减号)</code></td>
+<td style="text-align:left">代表一段时间范围。如0 9-17 <em> </em> * checkmail 每天9点到17点的整点执行checkmail命令</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>/n</code></td>
+<td style="text-align:left">代表每隔n长时间。如 <em>/5 </em> <em> </em> * check 每隔5分钟执行一次check命令，与0-59/5一样。</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>下面举一些例子来加深理解：</strong></p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">每天凌晨<span class="number">3</span>:<span class="number">00</span>执行备份程序：<span class="number">0</span> <span class="number">3</span> * * * /root/backup.sh</span><br><span class="line"></span><br><span class="line">每周日<span class="number">8</span>点<span class="number">30</span>分执行日志清理程序：<span class="number">30</span> <span class="number">8</span> * * <span class="number">7</span> /root/clear.sh</span><br><span class="line"></span><br><span class="line">每周<span class="number">1</span>周<span class="number">5</span> <span class="number">0</span>点整执行test程序：<span class="number">0</span> <span class="number">0</span> * * <span class="number">1</span>,<span class="number">5</span> test</span><br><span class="line"></span><br><span class="line">每年的<span class="number">5</span>月<span class="number">12</span>日<span class="number">14</span>点执行wenchuan程序：<span class="number">0</span> <span class="number">14</span> <span class="number">12</span> <span class="number">5</span> * /root/wenchuan</span><br><span class="line"></span><br><span class="line">每晚<span class="number">18</span>点到<span class="number">23</span>点每<span class="number">15</span>分钟重启一次php-fpm：*/<span class="number">15</span> <span class="number">18</span><span class="number">-23</span> * * * /etc/init.d/php-fpm</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://www.vpser.net/manage/crontab.html" target="_blank" rel="noopener">Linux VPS/服务器上用Crontab来定时执行实现VPS自动化</a></li>
+<li><a href="https://www.vpser.net/manage/nano.html" target="_blank" rel="noopener">nano编辑器使用教程</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/24/Crontab-Is-So-Easy/" target="_blank" title="Crontab Is So Easy">http://blog.caoxl.com/2018/01/24/Crontab-Is-So-Easy/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Crontab/">Crontab</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linx/">Linx</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/24/Nginx-Dev-Notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Nginx 「通用日志」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/24/LNMP-How-To-Add-Vhost/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">LNMP 配置教程</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CentOS下-安装Crontab"><span class="nav-number">1.1.</span> <span class="nav-text">CentOS下 安装Crontab</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Debian下-安装Crontab"><span class="nav-number">1.2.</span> <span class="nav-text">Debian下 安装Crontab</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用方法"><span class="nav-number">2.</span> <span class="nav-text">使用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看crontab定时执行任务列表"><span class="nav-number">2.1.</span> <span class="nav-text">查看crontab定时执行任务列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加crontab定时执行任务"><span class="nav-number">2.2.</span> <span class="nav-text">添加crontab定时执行任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#crontab-任务命令书写格式"><span class="nav-number">2.3.</span> <span class="nav-text">crontab 任务命令书写格式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

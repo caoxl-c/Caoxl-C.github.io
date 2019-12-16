@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>git 服务器 搭建/自动部署/远程连接 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Git">
+  
+  
+  
+  
+  <meta name="description" content="对于不想给Github之类的代码托管掏钱的人.搭建一个自己的Git服务器很有必要">
+<meta name="keywords" content="Git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git 服务器 搭建&#x2F;自动部署&#x2F;远程连接">
+<meta property="og:url" content="http://blog.caoxl.com/2018/06/14/Git-Server-Deploy/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="对于不想给Github之类的代码托管掏钱的人.搭建一个自己的Git服务器很有必要">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://caoxl.com/images/deploy1.png">
+<meta property="og:image" content="http://caoxl.com/images/deploy2.png">
+<meta property="og:image" content="http://caoxl.com/images/deploy3.png">
+<meta property="og:updated_time" content="2019-08-22T03:42:12.281Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Git 服务器 搭建&#x2F;自动部署&#x2F;远程连接">
+<meta name="twitter:description" content="对于不想给Github之类的代码托管掏钱的人.搭建一个自己的Git服务器很有必要">
+<meta name="twitter:image" content="http://caoxl.com/images/deploy1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Git-Server-Deploy" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Git 服务器 搭建/自动部署/远程连接
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/06/14/Git-Server-Deploy/" class="article-date">
+	  <time datetime="2018-06-14T01:41:20.000Z" itemprop="datePublished">2018-06-14</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Git-Svn/">Git / Svn</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>对于不想给Github之类的代码托管掏钱的人.搭建一个自己的Git服务器很有必要</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="GIT服务器搭建"><a href="#GIT服务器搭建" class="headerlink" title="GIT服务器搭建"></a><code>GIT</code>服务器搭建</h1><ul>
+<li><ol>
+<li>安装<code>git</code></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum <span class="keyword">install</span> git</span><br><span class="line"></span><br><span class="line">// Ubuntu</span><br><span class="line">sudo apt-<span class="keyword">get</span> <span class="keyword">install</span> git</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="2">
+<li>创建<code>git</code>用户/组</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">useradd</span> <span class="string">git</span></span><br><span class="line"><span class="attr">groupadd</span> <span class="string">git</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果忘记git用户密码: <code>sudo passwd git</code> 重置即可</p>
+</blockquote>
+<ul>
+<li><ol start="3">
+<li>创建<code>git</code>裸仓库</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo git init <span class="comment">--bare sample.git</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="4">
+<li>创建证书登录</li>
+</ol>
+</li>
+</ul>
+<p>收集所有需要登录的用户的公钥，就是他们自己的<code>id_rsa.pub</code>文件，<br>把所有公钥导入到<code>/root/.ssh/authorized_keys</code>文件里，一行一个。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git<span class="built_in"> config </span>--global user.email <span class="string">"code0809@163.com"</span></span><br><span class="line">git<span class="built_in"> config </span>--global user.name <span class="string">"SoulMate94."</span></span><br><span class="line"></span><br><span class="line">ssh-keygen -t rsa -C <span class="string">"code0809@163.com"</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="5">
+<li>初始化<code>Git</code>仓库</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo git init <span class="params">--bare</span> dirname.git        <span class="string">//</span> dirname 设置为自己想要的项目目录名称</span><br></pre></td></tr></table></figure>
+<p><code>Git</code>就会创建一个裸仓库，裸仓库没有工作区，因为服务器上的<code>Git</code>仓库纯粹是为了共享，<br>所以不让用户直接登录到服务器上去改工作区，并且服务器上的<code>Git</code>仓库通常都以<code>.git</code>结尾。然后，把<code>owner</code>改为<code>git</code>：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">sudo</span> <span class="selector-tag">chown</span> <span class="selector-tag">-R</span> <span class="selector-tag">git</span><span class="selector-pseudo">:git</span> <span class="selector-tag">dirname</span><span class="selector-class">.git</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="6">
+<li>禁用shell登录：</li>
+</ol>
+</li>
+</ul>
+<p>出于安全考虑，第二步创建的<code>git</code>用户不允许登录<code>shell</code>，这可以通过编辑<code>/etc/passwd</code>文件完成。找到类似下面的一行：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/passwd</span><br><span class="line"><span class="symbol">git:</span><span class="symbol">x:</span><span class="number">1002:1002</span><span class="symbol">:</span>,,,<span class="symbol">:/home/git</span><span class="symbol">:/bin/bash</span></span><br></pre></td></tr></table></figure>
+<p>改为:</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">git:</span><span class="symbol">x:</span><span class="number">1001:1001</span><span class="symbol">:</span>,,,<span class="symbol">:/home/git</span><span class="symbol">:/usr/bin/git-shell</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这样，<code>git</code>用户可以正常通过<code>ssh</code>使用<code>git</code>，但无法登录<code>shell</code>，<br>因为我们为<code>git</code>用户指定的<code>git-shell</code>每次一登录就自动退出。</p>
+</blockquote>
+<ul>
+<li><ol start="7">
+<li>克隆远程仓库：</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone git@server:/dirname.git</span><br><span class="line"></span><br><span class="line">Cloning <span class="keyword">into</span> <span class="string">'dirname'</span>...</span><br><span class="line">warning: You appear <span class="built_in">to</span> have cloned <span class="keyword">an</span> <span class="literal">empty</span> repository.</span><br></pre></td></tr></table></figure>
+<h1 id="添加远程仓库到本地"><a href="#添加远程仓库到本地" class="headerlink" title="添加远程仓库到本地"></a>添加远程仓库到本地</h1><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br><span class="line">git remote add origin git<span class="variable">@server</span><span class="symbol">:/dirname</span>.git</span><br></pre></td></tr></table></figure>
+<h2 id="查看远程仓库"><a href="#查看远程仓库" class="headerlink" title="查看远程仓库"></a>查看远程仓库</h2><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git remote -v</span><br><span class="line"></span><br><span class="line">例<span class="symbol">:</span></span><br><span class="line">origin  git<span class="variable">@47</span>.<span class="number">91.221</span>.<span class="number">85</span><span class="symbol">:/home/wwwroot/git/sample</span>.git (fetch)</span><br><span class="line">origin  git<span class="variable">@47</span>.<span class="number">91.221</span>.<span class="number">85</span><span class="symbol">:/home/wwwroot/git/sample</span>.git (push)</span><br></pre></td></tr></table></figure>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 在第一次进行push时,我们加上-u参数,后期push时就不用再加-u参数</span><br><span class="line">git push -u origin <span class="literal">master</span></span><br><span class="line"></span><br><span class="line">// 正常工作中</span><br><span class="line">git pull origin <span class="keyword">master</span>      <span class="title">// 拉取仓库代码, 解决冲突</span></span><br><span class="line"><span class="title">git</span> add .                   // 将文件添加到本地版本库</span><br><span class="line">git commit -m <span class="string">"注释"</span>         // 将文件修改提交到仓库</span><br><span class="line">git push origin <span class="keyword">master</span>      <span class="title">// 这里origin</span> 仅代表远程仓库在本地的连接名称</span><br></pre></td></tr></table></figure>
+<h2 id="远程仓库操作命令"><a href="#远程仓库操作命令" class="headerlink" title="远程仓库操作命令:"></a>远程仓库操作命令:</h2><ul>
+<li>检出</li>
+</ul>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">clone</span> <span class="title">git</span>@server:/dirname.git</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看</li>
+</ul>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">git remote -v</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>添加</li>
+</ul>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add remoteName(连接名) git<span class="variable">@server</span><span class="symbol">:/dirname</span>.git</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除</li>
+</ul>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">git</span> <span class="variable">remote</span> <span class="variable">rm</span> <span class="function"><span class="title">remoteName</span>(连接名)</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>修改</li>
+</ul>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">git </span><span class="string">remote </span><span class="built_in">set-url</span> <span class="built_in">--push</span> <span class="string">remoteName(</span>连接名) <span class="string">git@</span><span class="string">server:</span>/<span class="string">dirname.</span><span class="string">git</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>拉取</li>
+</ul>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">git</span> <span class="variable">pull</span> <span class="function"><span class="title">remoteName</span>(连接名)</span></span><br></pre></td></tr></table></figure>
+<p><strong>Git pull 强制覆盖本地文件 ?</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">fetch</span> <span class="comment">--all</span></span><br><span class="line">git <span class="keyword">reset</span> <span class="comment">--hard origin/master</span></span><br><span class="line">git pull</span><br></pre></td></tr></table></figure>
+<ul>
+<li>推送</li>
+</ul>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">git</span> <span class="variable">push</span> <span class="function"><span class="title">remoteNmae</span>(连接名)</span></span><br></pre></td></tr></table></figure>
+<h1 id="PHPStorm连接远程服务器"><a href="#PHPStorm连接远程服务器" class="headerlink" title="PHPStorm连接远程服务器"></a><code>PHPStorm</code>连接远程服务器</h1><ul>
+<li><ol>
+<li>首先打开<code>phpstorm</code>选择：<code>Tools-&gt;Deployment-&gt;Configuration</code></li>
+</ol>
+</li>
+</ul>
+<p><img src="http://caoxl.com/images/deploy1.png" alt="连接远程服务器"></p>
+<ul>
+<li><ol start="2">
+<li>点击新建</li>
+</ol>
+</li>
+</ul>
+<p><img src="http://caoxl.com/images/deploy2.png" alt="配置远程服务器"></p>
+<ul>
+<li><ol start="3">
+<li>操作测试/成功截图</li>
+</ol>
+</li>
+</ul>
+<p><img src="http://caoxl.com/images/deploy3.png" alt="上传成功"></p>
+<h1 id="远程服务器自动部署"><a href="#远程服务器自动部署" class="headerlink" title="远程服务器自动部署"></a>远程服务器自动部署</h1><blockquote>
+<p><code>sample</code> 为自定义目录名称</p>
+</blockquote>
+<ul>
+<li><code>sample.git/hooks/post-receive</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="built_in">unset</span> GIT_INDEX_FILE</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"=&gt; update source code to the latest"</span></span><br><span class="line"><span class="keyword">while</span> <span class="built_in">read</span> oldrev newrev ref</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    branch=$(git rev-parse --symbolic --abbrev-ref <span class="variable">$refname</span>)</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"<span class="variable">$branch</span>"</span></span><br><span class="line">    git --work-tree=/home/wwwroot/sample --git-dir=/home/wwwroot/git/sample.git</span><br><span class="line">    git checkout <span class="variable">$branch</span> -f</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p><strong>需要自定义:</strong></p>
+<blockquote>
+<p><code>--work-tree=/home/wwwroot/sample</code> 是工作目录<br><code>--git-dir=/home/wwwroot/git/sample.git</code> 是<code>.git</code>目录</p>
+</blockquote>
+<ul>
+<li><code>sample.git/config</code></li>
+</ul>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[core]</span><br><span class="line">        <span class="attr">repositoryformatversion</span> = <span class="number">0</span></span><br><span class="line">        <span class="attr">filemode</span> = <span class="literal">true</span></span><br><span class="line">        <span class="attr">bare</span> = <span class="literal">false</span></span><br><span class="line">        <span class="attr">logallrefupdates</span> = <span class="literal">true</span></span><br><span class="line">        <span class="attr">ignorecase</span> = <span class="literal">true</span></span><br><span class="line">        <span class="attr">precomposeunicode</span> = <span class="literal">true</span></span><br><span class="line">        <span class="attr">worktree</span> = /home/wwwroot/sample</span><br><span class="line"></span><br><span class="line">[receive]</span><br><span class="line">        <span class="attr">denycurrentbranch</span> = ignore</span><br></pre></td></tr></table></figure>
+<p><strong>需要自定义:</strong></p>
+<blockquote>
+<p><code>worktree = /home/wwwroot/sample</code> 是工作目录</p>
+</blockquote>
+<h2 id="用户权限设置"><a href="#用户权限设置" class="headerlink" title="用户权限设置"></a>用户权限设置</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Git 仓库的 owner 修改为 git</span></span><br><span class="line">chown -R git:git dirname.git</span><br><span class="line"></span><br><span class="line"><span class="comment">// .ssh 文件夹的 owner 修改为 git</span></span><br><span class="line">chown -R git:git .ssh</span><br><span class="line"></span><br><span class="line"><span class="comment">// 工作目录文件夹的 owner 修改为 git</span></span><br><span class="line">chown -R git:git work_dir</span><br></pre></td></tr></table></figure>
+<h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p><strong><em>配置里面不能有<code>//</code>注释符!</em></strong></p>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/06/14/Git-Server-Deploy/" target="_blank" title="Git 服务器 搭建/自动部署/远程连接">http://blog.caoxl.com/2018/06/14/Git-Server-Deploy/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/">Git</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/06/14/Swoole-Socket-Intro/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Swoole 体验篇 (Socket服务器)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/13/Heart-Rate-PRO/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">心跳检测</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GIT服务器搭建"><span class="nav-number">1.</span> <span class="nav-text">GIT服务器搭建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#添加远程仓库到本地"><span class="nav-number">2.</span> <span class="nav-text">添加远程仓库到本地</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看远程仓库"><span class="nav-number">2.1.</span> <span class="nav-text">查看远程仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作"><span class="nav-number">2.2.</span> <span class="nav-text">操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#远程仓库操作命令"><span class="nav-number">2.3.</span> <span class="nav-text">远程仓库操作命令:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHPStorm连接远程服务器"><span class="nav-number">3.</span> <span class="nav-text">PHPStorm连接远程服务器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#远程服务器自动部署"><span class="nav-number">4.</span> <span class="nav-text">远程服务器自动部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#用户权限设置"><span class="nav-number">4.1.</span> <span class="nav-text">用户权限设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意"><span class="nav-number">4.2.</span> <span class="nav-text">注意</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

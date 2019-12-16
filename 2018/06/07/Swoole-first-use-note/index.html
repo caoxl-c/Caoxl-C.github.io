@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>swoole 初步了解 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Swoole">
+  
+  
+  
+  
+  <meta name="description" content="Swoole 初步了解 Swoole这个名字不是一个英文单词，是由我创造的一个音近字。我最早想到的名字是叫做sword-server，寓意是为广大PHPer创造一把锋利的剑，后来联想到google也是凭空创造出来的，所以我就给它命名为swoole。 &amp;lt;韩天峰&amp;gt;">
+<meta name="keywords" content="Swoole">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swoole 初步了解">
+<meta property="og:url" content="http://blog.caoxl.com/2018/06/07/Swoole-first-use-note/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Swoole 初步了解 Swoole这个名字不是一个英文单词，是由我创造的一个音近字。我最早想到的名字是叫做sword-server，寓意是为广大PHPer创造一把锋利的剑，后来联想到google也是凭空创造出来的，所以我就给它命名为swoole。 &amp;lt;韩天峰&amp;gt;">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:40:20.132Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Swoole 初步了解">
+<meta name="twitter:description" content="Swoole 初步了解 Swoole这个名字不是一个英文单词，是由我创造的一个音近字。我最早想到的名字是叫做sword-server，寓意是为广大PHPer创造一把锋利的剑，后来联想到google也是凭空创造出来的，所以我就给它命名为swoole。 &amp;lt;韩天峰&amp;gt;">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Swoole-first-use-note" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Swoole 初步了解
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/06/07/Swoole-first-use-note/" class="article-date">
+	  <time datetime="2018-06-07T06:22:10.000Z" itemprop="datePublished">2018-06-07</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h1 id="Swoole-初步了解"><a href="#Swoole-初步了解" class="headerlink" title="Swoole 初步了解"></a><code>Swoole</code> 初步了解</h1><blockquote>
+<p><code>Swoole</code>这个名字不是一个英文单词，是由我创造的一个音近字。<br>我最早想到的名字是叫做<code>sword-server</code>，寓意是为广大PHPer创造一把锋利的剑，<br>后来联想到<code>google</code>也是凭空创造出来的，所以我就给它命名为<code>swoole</code>。 &lt;韩天峰&gt;</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><ul>
+<li><code>PECL</code> 一键安装</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pecl <span class="keyword">install</span> swoole</span><br></pre></td></tr></table></figure>
+<ul>
+<li>源码安装</li>
+</ul>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 下载源码并解压</span></span><br><span class="line">cd swoole-src-swoole<span class="number">-1.8</span><span class="number">.0</span>-table/</span><br><span class="line">phpize</span><br><span class="line">./configure --<span class="keyword">enable</span>-async-mysql</span><br><span class="line">sudo <span class="built_in">make</span></span><br><span class="line">sudo <span class="built_in">make</span> install</span><br></pre></td></tr></table></figure>
+<h2 id="配置-php-ini"><a href="#配置-php-ini" class="headerlink" title="配置 php.ini"></a>配置 <code>php.ini</code></h2><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">extension</span>=swoole.so</span><br></pre></td></tr></table></figure>
+<h1 id="基础实例"><a href="#基础实例" class="headerlink" title="基础实例"></a>基础实例</h1><h2 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Server</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $serv;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;serv = <span class="keyword">new</span> swoole_server(<span class="string">"0.0.0.0"</span>, <span class="number">9501</span>);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;serv-&gt;set(<span class="keyword">array</span>(</span><br><span class="line">            <span class="string">'worker_num'</span>    =&gt; <span class="number">8</span>,</span><br><span class="line">            <span class="string">'daemonize'</span>     =&gt; <span class="keyword">false</span>,</span><br><span class="line">            <span class="string">'max_request'</span>   =&gt; <span class="number">10000</span>,</span><br><span class="line">            <span class="string">'dispatch_mode'</span> =&gt; <span class="number">2</span>,</span><br><span class="line">            <span class="string">'debug_mode'</span>    =&gt; <span class="number">1</span></span><br><span class="line">        ));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">$this</span>-&gt;serv-&gt;on(<span class="string">'Start'</span>, <span class="keyword">array</span>(<span class="keyword">$this</span>, <span class="string">'onStart'</span>));</span><br><span class="line">        <span class="keyword">$this</span>-&gt;serv-&gt;on(<span class="string">'Connect'</span>, <span class="keyword">array</span>(<span class="keyword">$this</span>, <span class="string">'onConnect'</span>));</span><br><span class="line">        <span class="keyword">$this</span>-&gt;serv-&gt;on(<span class="string">'Receive'</span>, <span class="keyword">array</span>(<span class="keyword">$this</span>, <span class="string">'onReceive'</span>));</span><br><span class="line">        <span class="keyword">$this</span>-&gt;serv-&gt;on(<span class="string">'Close'</span>, <span class="keyword">array</span>(<span class="keyword">$this</span>, <span class="string">'onClose'</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">$this</span>-&gt;serv-&gt;start();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onStart</span><span class="params">( $serv )</span> </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"Start\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onConnect</span><span class="params">( $serv, $fd, $from_id )</span> </span>&#123;</span><br><span class="line">        $serv-&gt;send( $fd, <span class="string">"Hello &#123;$fd&#125;!"</span> );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onReceive</span><span class="params">( swoole_server $serv, $fd, $from_id, $data )</span> </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"Get Message From Client &#123;$fd&#125;:&#123;$data&#125;\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onClose</span><span class="params">( $serv, $fd, $from_id )</span> </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"Client &#123;$fd&#125; close connection\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 启动服务器</span></span><br><span class="line">$server = <span class="keyword">new</span> Server();</span><br></pre></td></tr></table></figure>
+<h2 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h2><p>从代码中可以看出，创建一个<code>swoole_server</code>基本分三步:</p>
+<ol>
+<li>通过构造函数创建<code>swoole_server</code>对象</li>
+<li>调用<strong>set</strong>函数设置<code>swoole_server</code>的相关配置选项</li>
+<li>调用<strong>on</strong>函数设置相关回调函数</li>
+</ol>
+<blockquote>
+<ul>
+<li><code>onStart</code>回调在<code>server</code>运行前被调用，</li>
+<li><code>onConnect</code>在有新客户端连接过来时被调用，</li>
+<li><code>onReceive</code>函数在有数据发送到<code>server</code>时被调用</li>
+<li><code>onClose</code>在有客户端断开连接时被调用。</li>
+</ul>
+</blockquote>
+<h3 id="配置选项说明"><a href="#配置选项说明" class="headerlink" title="配置选项说明"></a>配置选项说明</h3><ul>
+<li><p><code>worker_num</code>:     指定启动的<code>worker</code>进程数。</p>
+</li>
+<li><p><code>max_request</code>:    每个<code>worker</code>进程允许处理的最大任务数。</p>
+</li>
+<li><p><code>max_conn</code>:      服务器允许维持的最大<code>TCP</code>连接数</p>
+</li>
+<li><p><code>ipc_mode</code>:      设置进程间的通信方式。</p>
+<ul>
+<li><code>1</code> =&gt; 使用unix socket通信</li>
+<li><code>2</code> =&gt; 使用消息队列通信</li>
+<li><code>3</code> =&gt; 使用消息队列通信，并设置为争抢模式</li>
+</ul>
+</li>
+<li><p><code>dispatch_mode</code>: 指定数据包分发策略。</p>
+<ul>
+<li><code>1</code> =&gt; 轮循模式，收到会轮循分配给每一个<code>worker</code>进程</li>
+<li><code>2</code> =&gt; 固定模式，根据连接的文件描述符分配<code>worker</code>。这样可以保证同一个连接发来的数据只会被同一个<code>worker</code>处理</li>
+<li><code>3</code> =&gt; 抢占模式，主进程会根据<code>Worker</code>的忙闲状态选择投递，只会投递给处于闲置状态的<code>Worker</code></li>
+</ul>
+</li>
+<li><p><code>task_worker_num</code>:   服务器开启的<code>task</code>进程数。</p>
+<blockquote>
+<p>设置此参数后，必须要给<code>swoole_server</code>设置<code>onTask/onFinish</code>两个回调函数，否则启动服务器会报错。</p>
+</blockquote>
+</li>
+<li><p><code>task_max_request</code>:  每个<code>task</code>进程允许处理的最大任务数。</p>
+</li>
+<li><p><code>task_ipc_mode</code>:  设置<code>task</code>进程与<code>worker</code>进程之间通信的方式。</p>
+</li>
+<li><p><code>daemonize</code>:  设置程序进入后台作为守护进程运行。</p>
+<blockquote>
+<p>说明:长时间运行的服务器端程序必须启用此项。如果不启用守护进程，当ssh终端退出后，程序将被终止运行。<br>启用守护进程后，标准输入和输出会被重定向到 <code>log_file</code>，如果 <code>log_file</code>未设置，则所有输出会被丢弃。</p>
+</blockquote>
+</li>
+<li><p><code>log_file</code>:   指定日志文件路径</p>
+<blockquote>
+<p>说明:在<code>swoole</code>运行期发生的异常信息会记录到这个文件中。默认会打印到屏幕。<br>注意 <code>log_file</code> 不会自动切分文件，所以需要定期清理此文件。</p>
+</blockquote>
+</li>
+<li><p><code>heartbeat_check_interval</code>:  设置心跳检测间隔</p>
+<blockquote>
+<p>说明:此选项表示每隔多久轮循一次，单位为秒。每次检测时遍历所有连接，<br>如果某个连接在间隔时间内没有数据发送，则强制关闭连接（会有<code>onClose</code>回调）。</p>
+</blockquote>
+</li>
+<li><p><code>heartbeat_idle_time</code>:  设置某个连接允许的最大闲置时间。</p>
+<blockquote>
+<p>说明:该参数配合<code>heartbeat_check_interval</code>使用。每次遍历所有连接时，如果某个连接在<code>heartbeat_idle_time</code>时间内没有数据发送，<br>则强制关闭连接。默认设置为<code>heartbeat_check_interval * 2</code>。</p>
+</blockquote>
+</li>
+<li><p><code>open_eof_check</code>: 打开eof检测功能</p>
+<blockquote>
+<p>说明:与 <code>package_eof</code> 配合使用。此选项将检测客户端连接发来的数据，当数据包结尾是指定的<code>package_eof</code> 字符串时<br>才会将数据包投递至<code>Worker</code>进程，否则会一直拼接数据包直到缓存溢出或超时才会终止。<br>一旦出错，该连接会被判定为恶意连接，数据包会被丢弃并强制关闭连接。</p>
+</blockquote>
+</li>
+<li><p><code>package_eof</code>:  设置EOF字符串</p>
+<blockquote>
+<p>说明:<code>package_eof</code>最大只允许传入<code>8</code>个字节的字符串</p>
+</blockquote>
+</li>
+<li><p><code>open_length_check</code>:  打开包长检测</p>
+<blockquote>
+<p>说明:包长检测提供了<code>固定包头+包体</code>这种格式协议的解析，。<br>启用后，可以保证<code>Worker</code>进程<code>onReceive</code>每次都会收到一个完整的数据包。</p>
+</blockquote>
+</li>
+<li><p><code>package_length_offset</code>:  包头中第几个字节开始存放了长度字段</p>
+<blockquote>
+<p>说明:配合<code>open_length_check</code>使用，用于指明长度字段的位置。</p>
+</blockquote>
+</li>
+<li><p><code>package_body_offset</code>:  从第几个字节开始计算长度</p>
+<blockquote>
+<p>说明:配合<code>open_length_check</code>使用，用于指明包头的长度。</p>
+</blockquote>
+</li>
+<li><p><code>package_length_type</code>:  指定包长字段的类型</p>
+<ul>
+<li><code>s</code> =&gt; int16_t 机器字节序</li>
+<li><code>S</code> =&gt; uint16_t 机器字节序</li>
+<li><code>n</code> =&gt; uint16_t 大端字节序</li>
+<li><code>N</code> =&gt; uint32_t 大端字节序</li>
+<li><code>L</code> =&gt; uint32_t 机器字节序</li>
+<li><code>l</code> =&gt; int 机器字节序<blockquote>
+<p>说明:配合open_length_check使用，指定长度字段的类型，参数如下:</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p><code>package_max_length</code>:  设置最大数据包尺寸</p>
+<blockquote>
+<p>说明:该值决定了数据包缓存区的大小。如果缓存的数据超过了该值，<br>则会引发错误。具体错误处理由开启的协议解析的类型决定。</p>
+</blockquote>
+</li>
+<li><p><code>open_cpu_affinity</code>:  启用<code>CPU</code>亲和性设置</p>
+<blockquote>
+<p>说明:在多核的硬件平台中，启用此特性会将<code>swoole</code>的<code>reactor</code>线程/<code>worker</code>进程绑定到固定的一个核上。<br>可以避免进程/线程的运行时在多个核之间互相切换，提高<code>CPU Cache</code>的命中率。</p>
+</blockquote>
+</li>
+<li><p><code>open_tcp_nodelay</code>:  启用<code>open_tcp_nodelay</code></p>
+<blockquote>
+<p>说明:开启后<code>TCP</code>连接发送数据时会无关闭<code>Nagle</code>合并算法，<br>立即发往客户端连接。在某些场景下，如<code>http</code>服务器，可以提升响应速度。</p>
+</blockquote>
+</li>
+<li><p><code>tcp_defer_accept</code>:  启用<code>tcp_defer_accept</code>特性</p>
+<blockquote>
+<p>说明:启动后，只有一个<code>TCP</code>连接有数据发送时才会触发<code>accept</code>。</p>
+</blockquote>
+</li>
+<li><p><code>ssl_cert_file</code>/<code>ssl_key_file</code>:  设置SSL隧道加密</p>
+<blockquote>
+<p>说明:设置值为一个文件名字符串，指定<code>cert</code>证书和<code>key</code>的路径。</p>
+</blockquote>
+</li>
+<li><p><code>open_tcp_keepalive</code>:  打开<code>TCP</code>的<code>KEEP_ALIVE</code>选项</p>
+<blockquote>
+<p>说明:使用TCP内置的<code>keep_alive</code>属性，用于保证连接不会因为长时闲置而被关闭。</p>
+</blockquote>
+</li>
+<li><p><code>tcp_keepidle</code>:  指定探测间隔。</p>
+<blockquote>
+<p>说明:配合<code>open_tcp_keepalive</code>使用，如果某个连接在<code>tcp_keepidle</code>内没有任何数据来往，则进行探测。</p>
+</blockquote>
+</li>
+<li><p><code>tcp_keepinterval</code>:  指定探测时的发包间隔</p>
+<blockquote>
+<p>说明:配合<code>open_tcp_keepalive</code>使用</p>
+</blockquote>
+</li>
+<li><p><code>tcp_keepcount</code>:  指定探测的尝试次数</p>
+<blockquote>
+<p>说明:配合<code>open_tcp_keepalive</code>使用，若<code>tcp_keepcount</code>次尝试后仍无响应，则判定连接已关闭</p>
+</blockquote>
+</li>
+<li><p><code>backlog</code>:  指定<code>Listen</code>队列长度</p>
+<blockquote>
+<p>说明:此参数将决定最多同时有多少个等待<code>accept</code>的连接。</p>
+</blockquote>
+</li>
+<li><p><code>reactor_num</code>:  指定<code>Reactor</code>线程数</p>
+<blockquote>
+<p>说明:设置主进程内事件处理线程的数量，默认会启用CPU核数相同的数量，<br>一般设置为CPU核数的1-4倍，最大不得超过CPU核数*4。</p>
+</blockquote>
+</li>
+<li><p><code>task_tmpdir</code>:  设置task的数据临时目录</p>
+<blockquote>
+<p>说明:在<code>swoole_server</code>中，如果投递的数据超过<code>8192</code>字节，<br>将启用临时文件来保存数据。这里的<code>task_tmpdir</code>就是用来设置临时文件保存的位置。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">Client</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">	<span class="keyword">private</span> $client;</span></span><br><span class="line"></span><br><span class="line"><span class="php">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="php">		<span class="keyword">$this</span>-&gt;client = <span class="keyword">new</span> swoole_client(SWOOLE_SOCK_TCP);</span></span><br><span class="line"><span class="php">	&#125;</span></span><br><span class="line"><span class="php">	</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">connect</span><span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span>( !<span class="keyword">$this</span>-&gt;client-&gt;connect(<span class="string">"127.0.0.1"</span>, <span class="number">9501</span> , <span class="number">1</span>) ) &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> <span class="string">"Error: &#123;$fp-&gt;errMsg&#125;[&#123;$fp-&gt;errCode&#125;]\n"</span>;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        $message = <span class="keyword">$this</span>-&gt;client-&gt;recv();</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> <span class="string">"Get Message From Server:&#123;$message&#125;\n"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        fwrite(STDOUT, <span class="string">"请输入消息:"</span>);  </span></span><br><span class="line"><span class="php">        $msg = trim(fgets(STDIN));</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;client-&gt;send( $msg );</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$client = <span class="keyword">new</span> Client();</span></span><br><span class="line"><span class="php">$client-&gt;connect();</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里，通过<code>swoole_client</code>创建一个基于<code>TCP</code>的客户端实例，<br>并调用<code>connect</code>函数向指定的<code>IP</code>及端口发起连接请求。随后即可通过<code>recv()</code>和<code>send()</code>两个函数来接收和发送请求。<br>需要注意的是，这里我使用了默认的<strong>同步阻塞客户端</strong>，因此<code>recv</code>和<code>send</code>操作都会产生网络阻塞。</p>
+</blockquote>
+<h1 id="Swoole-异步任务Task"><a href="#Swoole-异步任务Task" class="headerlink" title="Swoole 异步任务Task"></a><code>Swoole</code> 异步任务<code>Task</code></h1><h2 id="Task简介"><a href="#Task简介" class="headerlink" title="Task简介"></a><code>Task</code>简介</h2><p><code>Swoole</code>的业务逻辑部分是同步阻塞运行的，如果遇到一些耗时较大的操作，例如访问数据库、广播消息等，就会影响服务器的响应速度。<br>因此<code>Swoole</code>提供了<code>Task</code>功能，将这些耗时操作放到另外的进程去处理，当前进程继续执行后面的逻辑。</p>
+<h2 id="开启Task功能"><a href="#开启Task功能" class="headerlink" title="开启Task功能"></a>开启<code>Task</code>功能</h2><p>开启<code>Task</code>功能只需要在<code>swoole_server</code>的配置项中添加<code>task_worker_num</code>一项即可，如下:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$serv-&gt;set(<span class="keyword">array</span>(</span><br><span class="line">    <span class="string">'task_worker_num'</span> =&gt; <span class="number">8</span></span><br><span class="line">));</span><br></pre></td></tr></table></figure>
+<p>即可开启<code>task</code>功能。此外，必须给<code>swoole_server</code>绑定两个回调函数:<code>onTask</code>和<code>onFinish</code>。<br>这两个回调函数分别用于<strong>执行<code>Task</code>任务</strong>和<strong>处理<code>Task</code>任务</strong>的返回结果。</p>
+<h2 id="使用Task首先是发起一个Task，代码如下"><a href="#使用Task首先是发起一个Task，代码如下" class="headerlink" title="使用Task首先是发起一个Task，代码如下:"></a>使用<code>Task</code>首先是发起一个<code>Task</code>，代码如下:</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onReceive</span> <span class="params">(swoole_server $serv, $fd, $from_id, $data )</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Get Message From Client &#123;$fd&#125;:&#123;$data&#125;\n"</span>;</span><br><span class="line">    <span class="comment">// send a task to task worker</span></span><br><span class="line">    $parm = <span class="keyword">array</span>(</span><br><span class="line">        <span class="string">'fd'</span> =&gt; $fd</span><br><span class="line">    );</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// start a task</span></span><br><span class="line">    $serv-&gt;task(json_encode($param));</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Continue Handle Worker\n"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，发起一个任务时，只需通过<code>swoole_server</code>对象调用<code>task</code>函数即可发起一个任务。<br><code>swoole</code>内部会将这个请求投递给<code>task_worker</code>，而当前<code>Worker</code>进程会继续执行。</p>
+<p>当一个任务发起后，<code>task_worker</code>进程会响应<code>onTask</code>回调函数，如下:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onTask</span><span class="params">($serv, $task_id, $from_id, $data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"This Task &#123;$task_id&#125; from Worker &#123;$from_id&#125;\n"</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Data: &#123;$data&#125;\n"</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span>($i = <span class="number">0</span>; $i &lt; <span class="number">10</span>; $i ++) &#123;</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"Task &#123;$task_id&#125; Handle &#123;$i&#125; times...\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    $fd = json_decode($data, <span class="keyword">true</span>)[<span class="string">'fd'</span>];</span><br><span class="line">    $serv-&gt;send($fd, <span class="string">"Data in Task &#123;$task_id&#125;"</span>);        </span><br><span class="line">    <span class="keyword">return</span> <span class="string">"Task &#123;$task_id&#125;'s result"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里我用<code>sleep</code>函数和循环模拟了一个长耗时任务。在<code>onTask</code>回调中，我们通过<code>task_id</code>和<code>from_id</code>(也就是<code>worker_id</code>)来区分不同进程投递的不同<code>task</code>。<br>当一个<code>task</code>执行结束后，通过<code>return</code>一个字符串将执行结果返回给<code>Worker</code>进程。<br><code>Worker</code>进程将通过<code>onFinish</code>回调函数接收这个处理结果。</p>
+</blockquote>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">public</span> function <span class="literal">on</span>Finish(<span class="variable">$serv</span>, <span class="variable">$task_id</span>, <span class="variable">$data</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attribute">echo</span> <span class="string">"Task &#123;<span class="variable">$task_id</span>&#125; finish\n"</span>;</span><br><span class="line">    <span class="attribute">echo</span> <span class="string">"Result: &#123;<span class="variable">$data</span>&#125;\n"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在<code>onFinish</code>回调中，会接收到<code>Task</code>任务的处理结果<code>$data</code>。在这里处理这个返回结果即可。</p>
+<h2 id="swoole-client"><a href="#swoole-client" class="headerlink" title="swoole_client"></a><code>swoole_client</code></h2><blockquote>
+<p>在这里讲解如何使用<code>swoole_client</code>是因为，在写服务端代码的时候，不可避免的需要用到客户端来进行测试。<br><code>swoole</code>提供了<code>swoole_client</code>用于编写测试客户端，下面我将讲解如何使用这个工具。</p>
+</blockquote>
+<p><code>swoole_client</code>有两种工作模式:<strong>同步阻塞模式</strong>和<strong>异步回调模式</strong></p>
+<p>其中，同步阻塞模式在上一章中已经给出示例，其使用和一般的<code>socket</code>基本无异。<br>因此，我将重点讲解<code>swoole_client</code>的<strong>异步回调模式</strong>。</p>
+<ul>
+<li>创建一个异步<code>client</code>的代码如下:</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$client = <span class="keyword">new</span> swoole_client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_ASYNC);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>其中，SWOOLE_SOCK_ASYNC选项即表明创建一个异步client。</p>
+</blockquote>
+<p>既然是异步，那当然需要回调函数。swoole_client一共有四个回调函数，如下:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$client-&gt;on(<span class="string">"connect"</span>, <span class="function"><span class="keyword">function</span> <span class="params">($cli)</span> </span>&#123;</span><br><span class="line">    $cli-&gt;send(<span class="string">"hello world\n"</span>);</span><br><span class="line">&#125;);</span><br><span class="line">$client-&gt;on(<span class="string">"receive"</span>, <span class="function"><span class="keyword">function</span> <span class="params">($cli, $data)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Received: "</span>.$data.<span class="string">"\n"</span>;</span><br><span class="line">&#125;);</span><br><span class="line">$client-&gt;on(<span class="string">"error"</span>, <span class="function"><span class="keyword">function</span> <span class="params">($cli)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Connect failed\n"</span>;</span><br><span class="line">&#125;);</span><br><span class="line">$client-&gt;on(<span class="string">"close"</span>, <span class="function"><span class="keyword">function</span> <span class="params">($cli)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Connection close\n"</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>这几个回调函数的作用基本和<code>swoole_server</code>类似，只有参数不同，因此不再赘述。</p>
+<h1 id="Timer计时器、心跳检测、Task进阶"><a href="#Timer计时器、心跳检测、Task进阶" class="headerlink" title="Timer计时器、心跳检测、Task进阶"></a><code>Timer</code>计时器、心跳检测、<code>Task</code>进阶</h1><h2 id="Timer定时器"><a href="#Timer定时器" class="headerlink" title="Timer定时器"></a><code>Timer定时器</code></h2><blockquote>
+<p>在实际应用中，往往会遇到需要每隔一段时间重复做一件事，比如心跳检测、订阅消息、数据库备份等工作。<br>通常，我们会借助<code>PHP的time()</code>以及相关函数自己实现一个定时器，或者使用<code>crontab</code>工具来实现。<br>但是，自定义的定时器容易出错，而使用<code>crontab</code>则需要编写额外的脚本文件，无论是迁移还是调试都比较麻烦。</p>
+<p>因此，<code>Swoole</code>提供了一个内置的<code>Timer</code>定时器功能,通过函数<code>addtimer</code>即可在<code>Swoole</code>中添加一个定时器，<br>该定时器会在建立之后，按照预先设定好的时间间隔，每到对应的时间就会调用一次回调函数<code>onTimer</code>通知<code>Server</code>。</p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">$this</span>-&gt;serv-&gt;on(<span class="string">'Timer'</span>, <span class="keyword">array</span>(<span class="keyword">$this</span>, <span class="string">'onTimer'</span>));</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onWorkerStart</span><span class="params">($serv, $worker_id)</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="comment">// 在Worker进程开启时绑定定时器</span></span></span><br><span class="line"><span class="php">    <span class="comment">// 只有当worker_id为0时才添加定时器,避免重复添加</span></span></span><br><span class="line"><span class="php">    <span class="keyword">if</span> ($worker_id == <span class="number">0</span>) &#123;</span></span><br><span class="line"><span class="php">        $serv-&gt;addTimer(<span class="number">500</span>);</span></span><br><span class="line"><span class="php">        $serv-&gt;addTimer(<span class="number">1000</span>);</span></span><br><span class="line"><span class="php">        $serv-&gt;addTimer(<span class="number">1500</span>);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onTimer</span><span class="params">($serv, $interval)</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">switch</span> ($interval) &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">case</span> <span class="number">500</span>: &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> <span class="string">"Do Thing A at interval 500\n"</span>;</span></span><br><span class="line"><span class="php">            <span class="keyword">break</span>;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        <span class="keyword">case</span> <span class="number">1000</span>: &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> <span class="string">"Do Thing B at interval 1000\n"</span>;</span></span><br><span class="line"><span class="php">            <span class="keyword">break</span>;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        <span class="keyword">case</span> <span class="number">1500</span>: &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> <span class="string">"Do Thing C at interval 1500\n"</span>;</span></span><br><span class="line"><span class="php">            <span class="keyword">break</span>;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，在<code>onWorkerStart</code>回调函数中，通过<code>addtimer</code>添加了三个定时器，时间间隔分别为<code>500</code>、<code>1000</code>、<code>1500</code>。<br>而在<code>onTimer</code>回调中，正好通过间隔的不同来区分不同的定时器回调，从而执行不同的操作。</p>
+<blockquote>
+<p>需要注意的是，在上述示例中，<strong>当1000ms的定时器被触发时，500ms的定时器同样会被触发</strong>，<br>但是不能保证会在1000ms定时器前触发还是后触发，因此需要注意，定时器中的操作不能依赖其他定时器的执行结果。</p>
+</blockquote>
+<h2 id="心跳检测"><a href="#心跳检测" class="headerlink" title="心跳检测"></a>心跳检测</h2><p>使用<code>Timer</code>定时器功能可以实现发送心跳包的功能。事实上，<code>Swoole</code>已经内置了心跳检测功能，能自动<code>close</code>掉长时间没有数据来往的连接。<br>而开启心跳检测功能，只需要设置<code>heartbeat_check_interval</code>和<code>heartbeat_idle_time</code>即可。如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$this-&gt;serv-&gt;set(</span><br><span class="line">    array(</span><br><span class="line">        &apos;heartbeat_check_interval&apos; =&gt; 60,</span><br><span class="line">        &apos;heartbeat_idle_time&apos; =&gt; 600,</span><br><span class="line">    )</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h2 id="Task进阶-MySQL连接池"><a href="#Task进阶-MySQL连接池" class="headerlink" title="Task进阶:MySQL连接池"></a><code>Task</code>进阶:<code>MySQL</code>连接池</h2><blockquote>
+<p>在<code>PHP</code>中，访问<code>MySQL</code>数据库往往是性能提升的瓶颈。而<code>MySQL</code>连接池我想大家都不陌生，这是一个很好的提升数据库访问性能的方式。<br>传统的<code>MySQL</code>连接池，是预先申请一定数量的连接，每一个新的请求都会占用其中一个连接，请求结束后再将连接放回池中，<br>如果所有连接都被占用，新来的连接则会进入等待状态。</p>
+<p>知道了<code>MySQL</code>连接池的实现原理，那我们来看如何使用<code>Swoole</code>实现一个连接池。<br>首先，<code>Swoole</code>允许开启一定量的<code>Task Worker</code>进程，我们可以让每个进程都拥有一个<code>MySQL</code>连接，并保持这个连接，这样，我们就创建了一个连接池。</p>
+<p>其次，设置<code>swoole</code>的<code>dispatch_mode</code>为<strong>抢占模式</strong>(主进程会根据<code>Worker</code>的忙闲状态选择投递，<br>只会投递给处于闲置状态的<code>Worker</code>)。这样，每个<code>task</code>都会被投递给闲置的<code>Task Worker</code>。<br>这样，我们保证了每个新的<code>task</code>都会被闲置的<code>Task Worker</code>处理，如果全部<code>Task Worker</code>都被占用，则会进入等待队列。</p>
+</blockquote>
+<p>下面直接上关键代码:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onWorkerStart</span><span class="params">($serv, $worker_id)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"onWorkerStart\n"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判定是否为Task Worker进程</span></span><br><span class="line">    <span class="keyword">if</span> ($worker_id &gt;= $serv-&gt;setting[<span class="string">'worker_num'</span>]) &#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;pdo = <span class="keyword">new</span> PDO(</span><br><span class="line">            <span class="string">"mysql:host=localhost;port=3306;dbname=Test"</span>,</span><br><span class="line">            <span class="string">'root'</span>,</span><br><span class="line">            <span class="string">'123456'</span>,</span><br><span class="line">            <span class="keyword">array</span>(</span><br><span class="line">                PDO::MYSQL_ATTR_INIT_COMMAND =&gt; <span class="string">"SET NAMES 'UTF8';"</span>,</span><br><span class="line">                PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,</span><br><span class="line">                PDO::ATTR_PERSISTENT =&gt; <span class="keyword">true</span></span><br><span class="line">            )</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先，在每个<code>Task Worker</code>进程中，创建一个<code>MySQL</code>连接。这里我选用了<code>PDO</code>扩展。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onReceive</span><span class="params">(swoole_server $serv, $fd, $from_id, $data)</span> </span>&#123;</span><br><span class="line">    $sql = <span class="keyword">array</span>(</span><br><span class="line">        <span class="string">'sql'</span>  =&gt; <span class="string">'select * from Test where pid &gt; ?'</span>,</span><br><span class="line">        <span class="string">'parm'</span> =&gt; <span class="keyword">array</span>(<span class="number">0</span>),</span><br><span class="line">        <span class="string">'fd'</span>   =&gt; $fd</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    $serv-&gt;task(json_encode($sql));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其次，在需要的时候，通过task函数投递一个任务（也就是发起一次<code>SQL</code>请求）</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onTask</span><span class="params">($serv,$task_id,$from_id, $data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   	$sql = json_decode( $data , <span class="keyword">true</span> );</span><br><span class="line">	</span><br><span class="line">     $statement = <span class="keyword">$this</span>-&gt;pdo-&gt;prepare($sql[<span class="string">'sql'</span>]);</span><br><span class="line">     $statement-&gt;execute($sql[<span class="string">'param'</span>]);    	</span><br><span class="line"></span><br><span class="line">     $result = $statement-&gt;fetchAll(PDO::FETCH_ASSOC);</span><br><span class="line">     $serv-&gt;send( $sql[<span class="string">'fd'</span>],json_encode($result));</span><br><span class="line">	</span><br><span class="line">	    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>最后，在<code>onTask</code>回调中，根据请求过来的SQL语句以及相应的参数，发起一次<code>MySQL</code>请求，<br>并将获取到的结果通过<code>send</code>发送给客户端（或者通过<code>return</code>返回给<code>Worker</code>进程）。<br>而且，这样的一次<code>MySQL</code>请求还不会阻塞<code>Worker</code>进程，<code>Worker</code>进程可以继续处理其他的逻辑。</p>
+</blockquote>
+<h1 id="Swoole多端口监听、热重启以及Timer进阶-简单crontab"><a href="#Swoole多端口监听、热重启以及Timer进阶-简单crontab" class="headerlink" title="Swoole多端口监听、热重启以及Timer进阶:简单crontab"></a><code>Swoole</code>多端口监听、热重启以及<code>Timer</code>进阶:简单<code>crontab</code></h1><h2 id="多端口监听"><a href="#多端口监听" class="headerlink" title="多端口监听"></a>多端口监听</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$serv = <span class="keyword">new</span> swoole_server(<span class="string">"192.168.1.1"</span>, <span class="number">9501</span>);     <span class="comment">// 监听外网的9501端口</span></span><br><span class="line">$serv-&gt;addlistener(<span class="string">"127.0.0.1"</span>, <span class="number">9502</span> , SWOOLE_TCP); <span class="comment">// 监听本地的9502端口</span></span><br><span class="line"></span><br><span class="line">$serv-&gt;start(); <span class="comment">// addlistener必须在start前调用</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>此时，<code>swoole_server</code>就会同时监听两个<code>host</code>下的两个端口。这里要注意的是，<br>来自两个端口的数据会在同一个<code>onReceive</code>中获取到，这时就要用到<code>swoole</code>的另一个成员函数<code>connection_info</code>，<br>通过这个函数获取到<code>fd</code>的<code>from_port</code>，就可以判定消息的类型</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$info = $serv-&gt;connection_info($fd, $from_id);</span><br><span class="line"><span class="comment">//来自9502的内网管理端口</span></span><br><span class="line"><span class="keyword">if</span>($info[<span class="string">'from_port'</span>] == <span class="number">9502</span>) &#123;</span><br><span class="line">    $serv-&gt;send($fd, <span class="string">"welcome admin\n"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//来自外网</span></span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">    $serv-&gt;send($fd, <span class="string">'Swoole: '</span>.$data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="服务器热重启"><a href="#服务器热重启" class="headerlink" title="服务器热重启"></a>服务器热重启</h2><blockquote>
+<p>所谓热重启，就是当服务器相关代码有所变动之后，无需停止服务，而是在服务器仍然运行的状态下更新文件。</p>
+</blockquote>
+<p><code>Swoole</code>通过内置的<code>reload</code>函数以及两个自定义信号量实现了这一功能</p>
+<p><code>Swoole</code>可用的三个信号:<code>SIGTERM</code>，<code>SIGUSR1</code>，<code>SIGUSR2</code></p>
+<ul>
+<li><code>SIGTERM</code>用于停止服务器</li>
+<li><code>SIGUSR1</code>用于重启全部的<code>Worker</code>进程</li>
+<li><code>SIGUSR2</code>用于重启全部的<code>Task Worker</code>进程</li>
+</ul>
+<h3 id="那要如何实现热更新代码文件呢？"><a href="#那要如何实现热更新代码文件呢？" class="headerlink" title="那要如何实现热更新代码文件呢？"></a>那要如何实现热更新代码文件呢？</h3><p>Swoole的回调函数中有这个一个回调<code>onWorkerStart</code>;该回调会在<code>Worker</code>进程启动时被调用。<br>因此，当<code>swoole_server</code>收到<code>SIGUSR1</code>信号并重启全部<code>Worker</code>进程后，<br><code>onWorkerStart</code>就会被调用。如果在<code>onWorkerStart</code>中<code>require</code>全部的代码文件，<br>每次<code>onWorkerStart</code>后都会重新<code>require</code>一次php文件，这样就能实现代码文件的热更新。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onStart</span><span class="params">( $serv )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cli_set_process_title(<span class="string">"reload_master"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onWorkerStart</span><span class="params">( $serv , $worker_id)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">require_once</span> <span class="string">"reload_page.php"</span>;</span><br><span class="line">    Test(); <span class="comment">// reload_page.php中定义的一个函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先，在<code>onStart</code>回调函数中通过php的<code>cli_set_process_title</code>函数设置进程名。<br>在<code>onWorkerStart中</code>，<code>require</code>相关的php文件。 然后，新建一个<code>reload.sh</code>文件，输入如下内容:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"Reloading..."</span></span><br><span class="line">cmd=$(pidof reload_master)</span><br><span class="line"></span><br><span class="line"><span class="built_in">kill</span> -USR1 <span class="string">"<span class="variable">$cmd</span>"</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"Reloaded"</span></span><br></pre></td></tr></table></figure>
+<p>这样，就可以通过执行这个脚本重启服务器了 </p>
+<h2 id="Timer补充-after函数"><a href="#Timer补充-after函数" class="headerlink" title="Timer补充:after函数"></a><code>Timer</code>补充:<code>after</code>函数</h2><p>在<code>swoole-1.7.7stable</code>版本中，<code>Timer</code>新增了一个函数<code>after</code>。<br>该函数的作用是在指定的时间间隔后执行回调函数，并且只执行一次。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$serv-&gt;after( <span class="number">1000</span> , <span class="keyword">array</span>(<span class="keyword">$this</span>, <span class="string">'onAfter'</span>) , $str );</span><br></pre></td></tr></table></figure>
+<p>这里指定在<code>1000ms</code>后，执行<code>onAfter</code>回调函数，函数参数为<code>$str</code></p>
+<h1 id="Swoole的自定义协议功能的使用"><a href="#Swoole的自定义协议功能的使用" class="headerlink" title="Swoole的自定义协议功能的使用"></a><code>Swoole</code>的自定义协议功能的使用</h1><h2 id="为什么要提供自定义协议"><a href="#为什么要提供自定义协议" class="headerlink" title="为什么要提供自定义协议 ?"></a>为什么要提供自定义协议 ?</h2><p>熟悉TCP通信的朋友都会知道，<strong>TCP是一个流式协议</strong>。客户端向服务器发送的一段数据，可能并不会被服务器一次就完整的收到;<br>客户端向服务器发送的多段数据，可能服务器一次就收到了全部的数据。</p>
+<p>而实际应用中，我们希望在服务器端能一次接收一段完整的数据，不多也不少</p>
+<p>传统的TCP服务器中，往往需要由程序员维护一个缓存区，先将读到的数据放进缓存区中，然后再通过预先设定好的协议内容，来区分一段完整数据的开头、长度和结尾，<br>并将一段完整的数据交给逻辑部分处理。这就是自定义协议的功能。</p>
+<p>而在<code>Swoole</code>中，已经在底层实现了一个数据缓存区，并内置好了几个常用的协议类型，<br>直接在底层做好了数据的拆分，保证了在<code>onReceive</code>回调函数中，一定能收到一个（或数个）完整的数据段。<br>数据缓存区的大小可以通过配置选项<code>package_max_length</code>来控制。</p>
+<p>下面我就将讲解如何使用这些内置协议。</p>
+<h2 id="EOF标记型协议"><a href="#EOF标记型协议" class="headerlink" title="EOF标记型协议"></a><code>EOF</code>标记型协议</h2><blockquote>
+<p>第一个比较常用的协议就是EOF标记协议。协议的内容是通过规定一个一定不会出现在正常数据中的字符或者字符串，<br>用这个来标记一段完整数据的结尾<br>这样，只要发现这个结尾，就可以认定之前的数据已经结束，可以开始接收一个新的数据段了。</p>
+</blockquote>
+<p>在<code>Swoole</code>中，可以通过<code>open_eof_check</code>和<code>package_eof</code>两个配置项来开启。<br>其中，<code>open_eof_check</code>指定开启了<code>EOF</code>检测，<code>package_eof</code>指定了具体的<code>EOF</code>标记</p>
+<p>通过这两个选项，Swoole底层就会自动根据EOF标记来缓存和拆分收到的数据包</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$this-&gt;serv-&gt;set(<span class="built_in">array</span>(</span><br><span class="line">    <span class="symbol">'package_max_length</span> =&gt; <span class="number">8192</span>,</span><br><span class="line">    <span class="symbol">'open_eof_check'</span>    =&gt; <span class="literal">true</span>,</span><br><span class="line">    <span class="symbol">'package_eof'</span>       =&gt; <span class="string">"\r\n"</span></span><br><span class="line">));</span><br></pre></td></tr></table></figure>
+<p>就这样，<code>swoole</code>就已经开启了<strong>EOF标记协议</strong>的解析。那么让我们来测试一下效果:</p>
+<ul>
+<li>服务器</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// server</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onReceive</span><span class="params">(swoole_serve $serv, $fd, $from_id, $data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Get Message From Client &#123;$fd&#125;:&#123;$data&#125;\n"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>客户端</li>
+</ul>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$msg_eof</span> = <span class="string">"This is a Msg\r\n"</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$i</span> = 0;</span><br><span class="line"><span class="keyword">while</span>(<span class="variable">$i</span> &lt; <span class="number">100</span>) &#123;</span><br><span class="line">    <span class="variable">$this</span>-&gt;client-&gt;send(<span class="variable">$msg_eof</span>);</span><br><span class="line">    <span class="variable">$i</span> ++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>然后运行一下，你会发现:哎不对啊，为什么还是一次收到了好多数据啊！<br>  这是因为，在Swoole中，采用的不是遍历识别的方法，而只是简单的检查每一次接收到的数据的末尾是不是定义好的EOF标记。因此，在开启EOF检测后，onReceive回调中还是可能会一次收到多个数据包。<br>  这要怎么办？你会发现，虽然是多个数据包，但是实际上收到的是N个完整的数据片段，那就只需要根据EOF把每个包再拆出来，一个个处理就好啦。</p>
+</blockquote>
+<ul>
+<li>修改后的服务器端代码如下:</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// server</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onReceive</span><span class="params">(swoole_serve $serv, $fd, $from_id, $data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $data_list = explode(<span class="string">"\r\n"</span>, $data);</span><br><span class="line">    <span class="keyword">foreach</span>($data_list <span class="keyword">as</span> $msg) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">empty</span>($msg) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Get Message From Client &#123;$fd&#125;:&#123;$data&#125;\n"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="固定包头类型协议"><a href="#固定包头类型协议" class="headerlink" title="固定包头类型协议"></a>固定包头类型协议</h2><p>固定包头协议是在实际应用中最常用的协议。<br>该协议的内容是<strong>规定一个固定长度的包头</strong>，在包头的固定位置有一个指定好的字段存放了后续数据的实际长度<br>这样，服务器端可以先读取固定长度的数据，从中提取出长度，然后再读取指定长度的数据，即可获取一段完整的数据。</p>
+<p>在Swoole中，同样提供了固定包头的协议格式。<br>需要注意的是，<code>Swoole</code>只允许二进制形式的包头，因此，需要使用<code>pack</code>、<code>unpack</code>来打包、解包。</p>
+<blockquote>
+<p>通过设置<code>open_length_check</code>选项，即可打开固定包头协议解析功能<br>。此外还有<code>package_length_offset</code>，<code>package_body_offset</code>和<code>package_length_type</code>三个配置项用于控制解析功能。</p>
+<ul>
+<li><code>package_length_offset</code>规定了包头中第几个字节开始是长度字段，</li>
+<li><code>package_body_offset</code>规定了包头的长度，</li>
+<li><code>package_length_type</code>规定了长度字段的类型。</li>
+</ul>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">$this</span>-&gt;serv-&gt;set(<span class="keyword">array</span>(</span><br><span class="line">    <span class="string">'package_max_length'</span>    =&gt; <span class="number">8192</span>,</span><br><span class="line">    <span class="string">'open_length_check'</span>     =&gt; <span class="keyword">true</span>,</span><br><span class="line">    <span class="string">'package_length_offset'</span> =&gt; <span class="number">0</span>,</span><br><span class="line">    <span class="string">'package_body_offset'</span>   =&gt; <span class="number">4</span>,</span><br><span class="line">    <span class="string">'package_length_type'</span>   =&gt; <span class="string">'N'</span></span><br><span class="line">));</span><br></pre></td></tr></table></figure>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><ul>
+<li>服务器端</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public <span class="keyword">function</span> onReceive(swoole_server <span class="variable">$serv</span>, <span class="variable">$fd</span>, <span class="variable">$from_id</span>, <span class="variable">$data</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="variable">$length</span> = unpack(<span class="string">"N"</span>, <span class="variable">$data</span>)[1];</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"Length = &#123;<span class="variable">$length</span>&#125;\n"</span>;</span><br><span class="line">    <span class="variable">$msg</span> = substr(<span class="variable">$data</span>, -<span class="variable">$length</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"Get Message From Client &#123;<span class="variable">$fd</span>&#125;:&#123;<span class="variable">$msg</span>&#125;\n"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>客户端</li>
+</ul>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$msg_lenght</span> = pack(<span class="string">"N"</span>, strlen(<span class="variable">$msg_normal</span>)).<span class="variable">$msg_normal</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$i</span> = 0;</span><br><span class="line"><span class="keyword">while</span>(<span class="variable">$i</span> &lt; <span class="number">100</span>) &#123;</span><br><span class="line">    <span class="variable">$this</span>-&gt;client-&gt;send(<span class="variable">$msg_lengt</span>);</span><br><span class="line">    <span class="variable">$i</span>++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="特别篇-Http协议-Swoole内置的http-server"><a href="#特别篇-Http协议-Swoole内置的http-server" class="headerlink" title="特别篇:Http协议-Swoole内置的http_server"></a>特别篇:<code>Http</code>协议-<code>Swoole</code>内置的<code>http_server</code></h2><p> 从<code>Swoole-1.7.7-stable</code>开始，<code>Swoole</code>在内部封装并实现了一个<code>Http</code>服务器。<br> 是的，没错，再也不用在<code>PHP</code>层缓存和解析<code>http</code>协议了，<code>Swoole</code>直接内置<code>Http</code>服务器了。</p>
+<ul>
+<li><p><code>swoole_http_server</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$http = <span class="keyword">new</span> swoole_http_server(<span class="string">"127.0.0.1"</span>, <span class="number">9501</span>);</span><br><span class="line">$http-&gt;on(<span class="string">'request'</span>, <span class="function"><span class="keyword">function</span> <span class="params">(swoole_http_request $request, swoole_http_response $response)</span> </span>&#123;</span><br><span class="line">    $response-&gt;end(<span class="string">"&lt;h1&gt;Hello Swoole.&lt;/h1&gt;"</span>);</span><br><span class="line">&#125;);</span><br><span class="line">$http-&gt;start();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<blockquote>
+<p>只需创建一个<code>swoole_http_server</code>对象并设置<code>onRequest</code>回调函数，即可实现一个<code>http</code>服务器。</p>
+</blockquote>
+<p>在onRequest回调中，共有两个参数。</p>
+<ul>
+<li>参数<code>$request</code>存放了来自客户端的请求，包括<code>Http</code>请求的头部信息、<code>Http</code>请求相关的服务器信息、<code>Http</code>请求的<code>GET</code>和<code>POST</code>参数以及<code>HTTP</code>请求携带的<code>COOKIE</code>信息。</li>
+<li>参数<code>$response</code>用于发送数据给客户端，可以通过该参数设置HTTP响应的<code>Header</code>信息、<code>cookie</code>信息和状态码。</li>
+</ul>
+<p>此外，<code>swoole_http_server</code>还提供<code>WebSocket</code>功能，使用此功能需要设置<code>onMessage</code>回调函数，如下:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$http_server-&gt;on(<span class="string">'message'</span>, <span class="function"><span class="keyword">function</span><span class="params">(swoole_http_request $request, swoole_http_response $response)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> $request-&gt;message;</span><br><span class="line">    $response-&gt;message(json_encode(<span class="keyword">array</span>(<span class="string">"data1"</span>, <span class="string">"data2"</span>)));</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>通过<code>$request-&gt;message</code>获取<code>WebSocket</code>发送来的消息，再通过<code>$response-&gt;message()</code>回复消息即可。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://wiki.swoole.com/wiki/page/p-originate.html" target="_blank" rel="noopener">Swoole文档</a></li>
+<li><a href="https://github.com/LinkedDestiny/swoole-doc" target="_blank" rel="noopener">Swoole入门教程及文档</a></li>
+<li><a href="https://github.com/LinkedDestiny/swoole-doc/blob/master/doc/01.swoole_server%E9%85%8D%E7%BD%AE%E9%80%89%E9%A1%B9.md" target="_blank" rel="noopener">swoole_server配置选项</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/06/07/Swoole-first-use-note/" target="_blank" title="Swoole 初步了解">http://blog.caoxl.com/2018/06/07/Swoole-first-use-note/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoole/">Swoole</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/06/08/Linux-install-redis/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Linux 安装redis
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/03/29/Solve-a-pit-for-HttpToHttps/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">关于如何禁止谷歌浏览器强制转 HTTPS</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Swoole-初步了解"><span class="nav-number">1.</span> <span class="nav-text">Swoole 初步了解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置-php-ini"><span class="nav-number">2.1.</span> <span class="nav-text">配置 php.ini</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基础实例"><span class="nav-number">3.</span> <span class="nav-text">基础实例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端"><span class="nav-number">3.1.</span> <span class="nav-text">服务端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解析"><span class="nav-number">3.2.</span> <span class="nav-text">解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置选项说明"><span class="nav-number">3.2.1.</span> <span class="nav-text">配置选项说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端"><span class="nav-number">3.3.</span> <span class="nav-text">客户端</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Swoole-异步任务Task"><span class="nav-number">4.</span> <span class="nav-text">Swoole 异步任务Task</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Task简介"><span class="nav-number">4.1.</span> <span class="nav-text">Task简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开启Task功能"><span class="nav-number">4.2.</span> <span class="nav-text">开启Task功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Task首先是发起一个Task，代码如下"><span class="nav-number">4.3.</span> <span class="nav-text">使用Task首先是发起一个Task，代码如下:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#swoole-client"><span class="nav-number">4.4.</span> <span class="nav-text">swoole_client</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Timer计时器、心跳检测、Task进阶"><span class="nav-number">5.</span> <span class="nav-text">Timer计时器、心跳检测、Task进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Timer定时器"><span class="nav-number">5.1.</span> <span class="nav-text">Timer定时器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#心跳检测"><span class="nav-number">5.2.</span> <span class="nav-text">心跳检测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Task进阶-MySQL连接池"><span class="nav-number">5.3.</span> <span class="nav-text">Task进阶:MySQL连接池</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Swoole多端口监听、热重启以及Timer进阶-简单crontab"><span class="nav-number">6.</span> <span class="nav-text">Swoole多端口监听、热重启以及Timer进阶:简单crontab</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多端口监听"><span class="nav-number">6.1.</span> <span class="nav-text">多端口监听</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器热重启"><span class="nav-number">6.2.</span> <span class="nav-text">服务器热重启</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#那要如何实现热更新代码文件呢？"><span class="nav-number">6.2.1.</span> <span class="nav-text">那要如何实现热更新代码文件呢？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Timer补充-after函数"><span class="nav-number">6.3.</span> <span class="nav-text">Timer补充:after函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Swoole的自定义协议功能的使用"><span class="nav-number">7.</span> <span class="nav-text">Swoole的自定义协议功能的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要提供自定义协议"><span class="nav-number">7.1.</span> <span class="nav-text">为什么要提供自定义协议 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EOF标记型协议"><span class="nav-number">7.2.</span> <span class="nav-text">EOF标记型协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#固定包头类型协议"><span class="nav-number">7.3.</span> <span class="nav-text">固定包头类型协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实例"><span class="nav-number">7.3.1.</span> <span class="nav-text">实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#特别篇-Http协议-Swoole内置的http-server"><span class="nav-number">7.4.</span> <span class="nav-text">特别篇:Http协议-Swoole内置的http_server</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>基于lumen5.4 使用jwt | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="FrameworkLumenJWT">
+  
+  
+  
+  
+  <meta name="description" content="JWT在Lumen5.4中的应用 在公司Lumen5.4框架中使用了JWT  Lumen5.4开发记录另见: Lumen5.4-开发记录-转">
+<meta name="keywords" content="Framework,Lumen,JWT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Lumen5.4 使用JWT">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/17/JWT-Lumen54-Custom/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="JWT在Lumen5.4中的应用 在公司Lumen5.4框架中使用了JWT  Lumen5.4开发记录另见: Lumen5.4-开发记录-转">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:20:56.171Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于Lumen5.4 使用JWT">
+<meta name="twitter:description" content="JWT在Lumen5.4中的应用 在公司Lumen5.4框架中使用了JWT  Lumen5.4开发记录另见: Lumen5.4-开发记录-转">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-JWT-Lumen54-Custom" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      基于Lumen5.4 使用JWT
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/17/JWT-Lumen54-Custom/" class="article-date">
+	  <time datetime="2018-01-17T03:44:58.000Z" itemprop="datePublished">2018-01-17</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h2 id="JWT在Lumen5-4中的应用"><a href="#JWT在Lumen5-4中的应用" class="headerlink" title="JWT在Lumen5.4中的应用"></a>JWT在Lumen5.4中的应用</h2><blockquote>
+<p>在公司Lumen5.4框架中使用了JWT</p>
+<ul>
+<li>Lumen5.4开发记录另见: <a href="http://blog.caoxl.com/2018/01/05/Lumen54-%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95-%E8%BD%AC/">Lumen5.4-开发记录-转</a></li>
+</ul>
+</blockquote>
+<a id="more"></a>
+<h2 id="启用自定义-JWT-认证"><a href="#启用自定义-JWT-认证" class="headerlink" title="启用自定义 JWT 认证"></a>启用自定义 JWT 认证</h2><ul>
+<li>composer.json中添加(推荐composer安装)<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"require"</span>: &#123;</span><br><span class="line">    <span class="string">"firebase/php-jwt"</span>: <span class="string">"^5.0"</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>首先在 bootstrap/app.php 中启用：</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$app-&gt;routeMiddleware([</span><br><span class="line">    <span class="string">'auth_jwt'</span> =&gt; App\Http\Middleware\Auth\JWT::<span class="class"><span class="keyword">class</span>,</span></span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>然后修改 app/Http/Middleware/Auth/JWT.php 为：</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Middleware</span>\<span class="title">Auth</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Closure</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Firebase</span>\<span class="title">JWT</span>\<span class="title">JWT</span> <span class="title">as</span> <span class="title">FirebaseJWT</span>;</span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">JWT</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">protected</span> $auth = <span class="keyword">false</span>;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">try</span> &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">if</span> (<span class="keyword">isset</span>($_SERVER[<span class="string">'HTTP_AUTHORIZATION'</span>])) &#123;</span></span><br><span class="line"><span class="php">                <span class="keyword">$this</span>-&gt;auth = FirebaseJWT::decode(</span></span><br><span class="line"><span class="php">                    $_SERVER[<span class="string">'HTTP_AUTHORIZATION'</span>],</span></span><br><span class="line"><span class="php">                    env(<span class="string">'APP_KEY'</span>),</span></span><br><span class="line"><span class="php">                    [<span class="string">'HS256'</span>]</span></span><br><span class="line"><span class="php">                );</span></span><br><span class="line"><span class="php">            &#125;</span></span><br><span class="line"><span class="php">        &#125; <span class="keyword">catch</span> (\<span class="keyword">Exception</span> $e) &#123;</span></span><br><span class="line"><span class="php">        &#125; <span class="keyword">finally</span> &#123;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">($request, Closure $next)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span> (<span class="keyword">false</span> === <span class="keyword">$this</span>-&gt;auth) &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">return</span> response()-&gt;json([</span></span><br><span class="line"><span class="php">                <span class="string">'error'</span> =&gt; <span class="string">'Unauthorized'</span></span></span><br><span class="line"><span class="php">            ], <span class="number">401</span>);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        $request-&gt;attributes-&gt;add([</span></span><br><span class="line"><span class="php">            <span class="string">'auth_jwt'</span> =&gt; <span class="keyword">$this</span>-&gt;auth,</span></span><br><span class="line"><span class="php">        ]);</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> $next($request);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<h2 id="将中间件的值传递给控制器"><a href="#将中间件的值传递给控制器" class="headerlink" title="将中间件的值传递给控制器"></a>将中间件的值传递给控制器</h2><blockquote>
+<p>Pass value from middleware to controller</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">/ <span class="number">1.</span> Middleware</span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">($request, Closure $next)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $request-&gt;attributes-&gt;add([</span><br><span class="line">      	<span class="string">'key'</span> =&gt; <span class="string">'value'</span></span><br><span class="line"> 	]);</span><br><span class="line">  </span><br><span class="line">  	<span class="keyword">return</span> $next($request);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 2. Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getVauleFromMiddleware</span><span class="params">(Request $req)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  	<span class="keyword">echo</span> $req-&gt;get(<span class="string">'key'</span>);    <span class="comment">// output: value</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过这种方式，可以对不同的路由使用不同的认证（非常语义化），然后把各种认证的结果（jwt，七牛）传递到控制器，可以使控制器不用再操心认证逻辑，减少控制器代码量。</p>
+<h2 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h2><blockquote>
+<p>CORS是一个W3C标准，全称是”跨域资源共享”（Cross-origin resource sharing）。</p>
+</blockquote>
+<p>如果是客户端是浏览器，则在调用 API 的时候，基本上无法避免跨域问题。</p>
+<p>不过处理也很简单，需要浏览器和服务器同时配合：浏览器在发起 OPTIONS preflight 请求的时候，服务器返回认可的一些信息就行了。</p>
+<p><strong>具体如下：</strong></p>
+<ul>
+<li>app/Http/Middleware/CORS.php<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Middleware</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Closure</span>;</span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">CORS</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">	&#123;</span></span><br><span class="line"><span class="php">	&#125;</span></span><br><span class="line"><span class="php">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">($request, Closure $next)</span></span></span></span><br><span class="line"><span class="php">	&#123;</span></span><br><span class="line"><span class="php">        $headers = [</span></span><br><span class="line"><span class="php">            <span class="string">'Access-Control-Allow-Origin'</span>  =&gt; <span class="string">'*'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'Access-Control-Allow-Methods'</span> =&gt; <span class="string">'*'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'Access-Control-Allow-Headers'</span> =&gt; <span class="string">'Access-Control-Allow-Origin, AUTHORIZATION'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'Access-Control-Max-Age'</span>       =&gt; <span class="number">86400</span>,</span></span><br><span class="line"><span class="php">        ];</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span> (<span class="string">'OPTIONS'</span> == $request-&gt;getMethod()) &#123;</span></span><br><span class="line"><span class="php">        	<span class="keyword">return</span> response(<span class="keyword">null</span>, <span class="number">200</span>, $headers);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> $next($request)-&gt;withHeaders($headers);</span></span><br><span class="line"><span class="php">	&#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>bootstrap/app.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 指定全局中间件</span></span><br><span class="line">$app-&gt;middleware([</span><br><span class="line">   <span class="string">'cors'</span> =&gt; App\Http\Middleware\CORS::class,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>jQuery AJAX Demo</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$.ajax(&#123;</span><br><span class="line">  url: <span class="string">'http://api.example.com/path/to/resource'</span>,</span><br><span class="line">  <span class="built_in">type</span>: <span class="string">'GET'</span>,</span><br><span class="line">  dataType: <span class="string">'json'</span>,</span><br><span class="line">  async: <span class="literal">false</span>,</span><br><span class="line">  cors: <span class="literal">true</span> ,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    <span class="string">'Access-Control-Allow-Origin'</span>: <span class="string">'*'</span>,</span><br><span class="line">    <span class="string">'AUTHORIZATION'</span>: <span class="string">'JWT_STRING'</span></span><br><span class="line">  &#125;,</span><br><span class="line">  success: <span class="function"><span class="keyword">function</span> <span class="params">(res)</span></span> &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="built_in">error</span>: <span class="function"><span class="keyword">function</span> <span class="params">(xhr, status)</span></span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">use</span> \<span class="title">Firebase</span>\<span class="title">JWT</span>\<span class="title">JWT</span>;</span><br><span class="line"></span><br><span class="line">$key = <span class="string">"example_key"</span>;</span><br><span class="line">$token = <span class="keyword">array</span>(</span><br><span class="line">    <span class="string">"iss"</span> =&gt; <span class="string">"http://example.org"</span>,</span><br><span class="line">    <span class="string">"aud"</span> =&gt; <span class="string">"http://example.com"</span>,</span><br><span class="line">    <span class="string">"iat"</span> =&gt; <span class="number">1356999524</span>,</span><br><span class="line">    <span class="string">"nbf"</span> =&gt; <span class="number">1357000000</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">$jwt = JWT::encode($token, $key);</span><br><span class="line">$decoded = JWT::decode($jwt, $key, <span class="keyword">array</span>(<span class="string">'HS256'</span>));</span><br><span class="line"></span><br><span class="line">print_r($decoded);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$decoded_array = (<span class="keyword">array</span>) $decoded;</span><br><span class="line"></span><br><span class="line">JWT::$leeway = <span class="number">60</span>; <span class="comment">// $leeway in seconds</span></span><br><span class="line">$decoded = JWT::decode($jwt, $key, <span class="keyword">array</span>(<span class="string">'HS256'</span>));</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Example-with-RS256-openssl"><a href="#Example-with-RS256-openssl" class="headerlink" title="Example with RS256 (openssl)"></a>Example with RS256 (openssl)</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">    <span class="meta">&lt;?php</span></span><br><span class="line">    <span class="keyword">use</span> \<span class="title">Firebase</span>\<span class="title">JWT</span>\<span class="title">JWT</span>;</span><br><span class="line">    </span><br><span class="line">    $privateKey = <span class="string">&lt;&lt;&lt;EOD</span></span><br><span class="line"><span class="string">    -----BEGIN RSA PRIVATE KEY-----</span></span><br><span class="line"><span class="string">    MIICXAIBAAKBgQC8kGa1pSjbSYZVebtTRBLxBz5H4i2p/llLCrEeQhta5kaQu/Rn</span></span><br><span class="line"><span class="string">    vuER4W8oDH3+3iuIYW4VQAzyqFpwuzjkDI+17t5t0tyazyZ8JXw+KgXTxldMPEL9</span></span><br><span class="line"><span class="string">    5+qVhgXvwtihXC1c5oGbRlEDvDF6Sa53rcFVsYJ4ehde/zUxo6UvS7UrBQIDAQAB</span></span><br><span class="line"><span class="string">    AoGAb/MXV46XxCFRxNuB8LyAtmLDgi/xRnTAlMHjSACddwkyKem8//8eZtw9fzxz</span></span><br><span class="line"><span class="string">    bWZ/1/doQOuHBGYZU8aDzzj59FZ78dyzNFoF91hbvZKkg+6wGyd/LrGVEB+Xre0J</span></span><br><span class="line"><span class="string">    Nil0GReM2AHDNZUYRv+HYJPIOrB0CRczLQsgFJ8K6aAD6F0CQQDzbpjYdx10qgK1</span></span><br><span class="line"><span class="string">    cP59UHiHjPZYC0loEsk7s+hUmT3QHerAQJMZWC11Qrn2N+ybwwNblDKv+s5qgMQ5</span></span><br><span class="line"><span class="string">    5tNoQ9IfAkEAxkyffU6ythpg/H0Ixe1I2rd0GbF05biIzO/i77Det3n4YsJVlDck</span></span><br><span class="line"><span class="string">    ZkcvY3SK2iRIL4c9yY6hlIhs+K9wXTtGWwJBAO9Dskl48mO7woPR9uD22jDpNSwe</span></span><br><span class="line"><span class="string">    k90OMepTjzSvlhjbfuPN1IdhqvSJTDychRwn1kIJ7LQZgQ8fVz9OCFZ/6qMCQGOb</span></span><br><span class="line"><span class="string">    qaGwHmUK6xzpUbbacnYrIM6nLSkXgOAwv7XXCojvY614ILTK3iXiLBOxPu5Eu13k</span></span><br><span class="line"><span class="string">    eUz9sHyD6vkgZzjtxXECQAkp4Xerf5TGfQXGXhxIX52yH+N2LtujCdkQZjXAsGdm</span></span><br><span class="line"><span class="string">    B2zNzvrlgRmgBrklMTrMYgm1NPcW+bRLGcwgW2PTvNM=</span></span><br><span class="line"><span class="string">    -----END RSA PRIVATE KEY-----</span></span><br><span class="line"><span class="string">EOD;</span></span><br><span class="line">    </span><br><span class="line">    $publicKey = <span class="string">&lt;&lt;&lt;EOD</span></span><br><span class="line"><span class="string">    -----BEGIN PUBLIC KEY-----</span></span><br><span class="line"><span class="string">    MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8kGa1pSjbSYZVebtTRBLxBz5H</span></span><br><span class="line"><span class="string">    4i2p/llLCrEeQhta5kaQu/RnvuER4W8oDH3+3iuIYW4VQAzyqFpwuzjkDI+17t5t</span></span><br><span class="line"><span class="string">    0tyazyZ8JXw+KgXTxldMPEL95+qVhgXvwtihXC1c5oGbRlEDvDF6Sa53rcFVsYJ4</span></span><br><span class="line"><span class="string">    ehde/zUxo6UvS7UrBQIDAQAB</span></span><br><span class="line"><span class="string">    -----END PUBLIC KEY-----</span></span><br><span class="line"><span class="string">EOD;</span></span><br><span class="line">    </span><br><span class="line">    $token = <span class="keyword">array</span>(</span><br><span class="line">        <span class="string">"iss"</span> =&gt; <span class="string">"example.org"</span>,</span><br><span class="line">        <span class="string">"aud"</span> =&gt; <span class="string">"example.com"</span>,</span><br><span class="line">        <span class="string">"iat"</span> =&gt; <span class="number">1356999524</span>,</span><br><span class="line">        <span class="string">"nbf"</span> =&gt; <span class="number">1357000000</span></span><br><span class="line">    );</span><br><span class="line">    </span><br><span class="line">    $jwt = JWT::encode($token, $privateKey, <span class="string">'RS256'</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Encode:\n"</span> . print_r($jwt, <span class="keyword">true</span>) . <span class="string">"\n"</span>;</span><br><span class="line">    </span><br><span class="line">    $decoded = JWT::decode($jwt, $publicKey, <span class="keyword">array</span>(<span class="string">'RS256'</span>));</span><br><span class="line">    $decoded_array = (<span class="keyword">array</span>) $decoded;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Decode:\n"</span> . print_r($decoded_array, <span class="keyword">true</span>) . <span class="string">"\n"</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Lumen5-4-Example"><a href="#Lumen5-4-Example" class="headerlink" title="Lumen5.4-Example"></a>Lumen5.4-Example</h2>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/17/JWT-Lumen54-Custom/" target="_blank" title="基于Lumen5.4 使用JWT">http://blog.caoxl.com/2018/01/17/JWT-Lumen54-Custom/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/">Framework</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JWT/">JWT</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lumen/">Lumen</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/17/Lets-Encrypt-My-Homepage/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Let&#39;s Encrypt 简单使用
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/17/JWT-Laravel52-User-Auth/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">JWT 多用户认证</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JWT在Lumen5-4中的应用"><span class="nav-number">1.</span> <span class="nav-text">JWT在Lumen5.4中的应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启用自定义-JWT-认证"><span class="nav-number">2.</span> <span class="nav-text">启用自定义 JWT 认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将中间件的值传递给控制器"><span class="nav-number">3.</span> <span class="nav-text">将中间件的值传递给控制器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CORS"><span class="nav-number">4.</span> <span class="nav-text">CORS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Example"><span class="nav-number">5.</span> <span class="nav-text">Example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Example-with-RS256-openssl"><span class="nav-number">6.</span> <span class="nav-text">Example with RS256 (openssl)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lumen5-4-Example"><span class="nav-number">7.</span> <span class="nav-text">Lumen5.4-Example</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

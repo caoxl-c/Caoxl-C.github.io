@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>vi / vim 基础知识 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LinuxViVim">
+  
+  
+  
+  
+  <meta name="description" content="Vi 基础知识 三种模式：命令模式、输入模式、末行模式。">
+<meta name="keywords" content="Linux,Vi,Vim">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vi &#x2F; Vim 基础知识">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/22/Vi-Vim-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Vi 基础知识 三种模式：命令模式、输入模式、末行模式。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:28:30.422Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vi &#x2F; Vim 基础知识">
+<meta name="twitter:description" content="Vi 基础知识 三种模式：命令模式、输入模式、末行模式。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Vi-Vim-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Vi / Vim 基础知识
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/22/Vi-Vim-Notes/" class="article-date">
+	  <time datetime="2018-01-22T02:46:47.000Z" itemprop="datePublished">2018-01-22</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/开发工具/">开发工具</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h1 id="Vi-基础知识"><a href="#Vi-基础知识" class="headerlink" title="Vi 基础知识"></a>Vi 基础知识</h1><ul>
+<li>三种模式：命令模式、输入模式、末行模式。</li>
+</ul>
+<a id="more"></a>
+<h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><p>vi 启动后默认进入的是命令模式。输入 i、a 都能进入编辑模式。无论在任何模式下要按 esc 都进入命令模式。</p>
+<p><strong>常用命令 :</strong></p>
+<ul>
+<li><code>x:</code>删除当前光标所在的字符</li>
+<li><code>nx:</code>删除当前行包含光标后n个字符</li>
+<li><code>D:</code>删除当前行光标后的所有的字符</li>
+<li><code>dd:</code>删除当前光标所在的行</li>
+<li><code>ndd:</code>删除当前行(包括当前行)后面的n行</li>
+<li><code>yy:</code>复制当前行</li>
+<li><code>p:</code>粘贴</li>
+<li><code>u:</code>撤销</li>
+</ul>
+<h2 id="末行模式"><a href="#末行模式" class="headerlink" title="末行模式"></a>末行模式</h2><p>命令模式下输入 <code>:</code> 即可进入末行模式。末行模式下可以执行的操作有：</p>
+<p><strong>常用命令 :</strong></p>
+<p><code>:set nonu</code> 取消行号<br><code>:n</code> 将光标定位到第n行<br><code>:$</code> 回到文件的最末行<br><code>:/string</code> 把string字符串进行高亮显示<br><code>:nohls</code>  取消高亮显示<br><code>:w</code> 保存<br><code>:q</code> 退出<br><code>:wq</code> 保存并退出或输入 :x也行<br><code>:wq!</code>    强制保存并退出<br><code>:q!</code> 强制退出<br><code>:[range]s/源字符串/目标字符串/[pattern]</code> 替换字符串</p>
+<h2 id="vi或者vim的常用指令"><a href="#vi或者vim的常用指令" class="headerlink" title="vi或者vim的常用指令"></a>vi或者vim的常用指令</h2><ul>
+<li><code>vi  filename ：</code> 编辑一个文件（如果文件不存在则自动创建，否则打开）</li>
+<li><code>vi  filename1  filename2：</code>编辑多个文件<ul>
+<li><code>:next</code>  :n编辑下一个文件</li>
+<li><code>:prev</code> 编辑上一个文件</li>
+</ul>
+</li>
+<li><code>vi  +n     filename：</code>编辑一个文件，光标位于第n行<ul>
+<li><code>+1：</code>第一行</li>
+<li><code>+$：</code>最后一行 </li>
+</ul>
+</li>
+</ul>
+<h1 id="配置-Vi"><a href="#配置-Vi" class="headerlink" title="配置 Vi"></a>配置 Vi</h1><p>配置 Vi 就是对 ~/.vimrc 文件的配置，如下是我现在正常使用的配置内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 在启动 vim 时 当前用户家目录下的 .vimrc 文件会被自动读取</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 所以一般情况下把 .vimrc 文件创建在当前用户的根目录下</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 该文件可以包含一些设置甚至脚本</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 去掉有关 vi 一致性模式 避免以前版本的一些 bug 和局限</span></span><br><span class="line">set nocompatible</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 显示行号</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">set</span> nummber</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 检测文件的类型</span></span><br><span class="line">filetype on </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 记录历史的行数</span></span><br><span class="line">set history=1000 </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 背景使用黑色</span></span><br><span class="line">set background=dark </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 语法高亮显示</span></span><br><span class="line">syntax on</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 下面两行在进行编写代码时 在格式对齐上很有用</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 自动对齐 也就是把当前行的对齐格式应用到下一行</span></span><br><span class="line">set autoindent</span><br><span class="line"><span class="meta">#</span><span class="bash"> 依据上面的对齐格式 智能的选择对齐方式</span></span><br><span class="line">set smartindent</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 第一行设置 tab 键为 4 个空格</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 第二行设置当行之间交错时使用 4 个空格</span></span><br><span class="line">set tabstop=4</span><br><span class="line">set shiftwidth=4</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 去除 vim 的 GUI 版本中的 toolbar</span></span><br><span class="line">set guioptions-=T</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置匹配模式 类似当输入一个左括号时会匹配相应的那个右括号</span></span><br><span class="line">set showmatch</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 在编辑过程中，在右下角显示光标位置的状态行</span></span><br><span class="line">set ruler</span><br><span class="line"><span class="meta">#</span><span class="bash"> 关闭搜索匹配时的高亮显示</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">set</span> nohls</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 搜索提示</span></span><br><span class="line">set incsearch</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置所在行提示</span></span><br><span class="line">set cul</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置文件编码</span></span><br><span class="line">set fileencoding=utf-8</span><br></pre></td></tr></table></figure>
+<h1 id="Vi-快捷键"><a href="#Vi-快捷键" class="headerlink" title="Vi 快捷键"></a>Vi 快捷键</h1><p><strong>说明：快捷键在非编辑模式下有用。</strong></p>
+<p>vi 编辑器中ctrl+s 为终止屏幕输出，即是停止回显，ctrl+q 恢复屏幕输出。</p>
+<ul>
+<li><p><code>dd</code> 剪切某行内容到 VIM 缓冲区</p>
+</li>
+<li><p><code>yy</code> 复制某行内容到 VIM 缓冲区</p>
+</li>
+<li><p><code>gg</code> 跳至文件头</p>
+</li>
+<li><p><code>GG</code> 跳至文件尾</p>
+</li>
+<li><p><code>P</code> 向光标上粘贴 VIM 缓冲区中的 <strong>最新</strong> 内容</p>
+</li>
+<li><p><code>p</code> 向光标下粘贴 VIM 缓冲区中的 <strong>最新</strong> 内容</p>
+</li>
+<li><p><code>ZZ</code> 保存并退出</p>
+</li>
+<li><p><code>dd</code> 剪切本行</p>
+</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><u><a href="https://vim.rtorr.com/" target="_blank" rel="noopener">Vim Cheat Sheet</a></u></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/22/Vi-Vim-Notes/" target="_blank" title="Vi / Vim 基础知识">http://blog.caoxl.com/2018/01/22/Vi-Vim-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vi/">Vi</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vim/">Vim</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/22/Virtual-Directory-And-Virtual-Host-On-Nginx/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Nginx 虚拟目录和虚拟主机的配置
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/22/VIM-Flow-Notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">VIM 流</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Vi-基础知识"><span class="nav-number">1.</span> <span class="nav-text">Vi 基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#命令模式"><span class="nav-number">1.1.</span> <span class="nav-text">命令模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#末行模式"><span class="nav-number">1.2.</span> <span class="nav-text">末行模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vi或者vim的常用指令"><span class="nav-number">1.3.</span> <span class="nav-text">vi或者vim的常用指令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置-Vi"><span class="nav-number">2.</span> <span class="nav-text">配置 Vi</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Vi-快捷键"><span class="nav-number">3.</span> <span class="nav-text">Vi 快捷键</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

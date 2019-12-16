@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>laravel 5.8 杂记 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LaravelFacadesContracts">
+  
+  
+  
+  
+  <meta name="description" content="Laravel 5.8 Laravel 5.8 在 Laravel 5.7 的基础上继续进行优化，包括引入新的 Eloquent 关联关系（has-one-through）、优化邮箱验证、基于约定的授权策略类自动注册、 DynamoDB 缓存及 Session 驱动、优化任务调度器的时区配置、支持分配多个认证 guard 到广播频道、PSR-16 缓存驱动规范、优化 artisan serve 命">
+<meta name="keywords" content="Laravel,Facades,Contracts">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel 5.8 杂记">
+<meta property="og:url" content="http://blog.caoxl.com/2019/05/20/Laravel-58-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Laravel 5.8 Laravel 5.8 在 Laravel 5.7 的基础上继续进行优化，包括引入新的 Eloquent 关联关系（has-one-through）、优化邮箱验证、基于约定的授权策略类自动注册、 DynamoDB 缓存及 Session 驱动、优化任务调度器的时区配置、支持分配多个认证 guard 到广播频道、PSR-16 缓存驱动规范、优化 artisan serve 命">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:52:10.796Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel 5.8 杂记">
+<meta name="twitter:description" content="Laravel 5.8 Laravel 5.8 在 Laravel 5.7 的基础上继续进行优化，包括引入新的 Eloquent 关联关系（has-one-through）、优化邮箱验证、基于约定的授权策略类自动注册、 DynamoDB 缓存及 Session 驱动、优化任务调度器的时区配置、支持分配多个认证 guard 到广播频道、PSR-16 缓存驱动规范、优化 artisan serve 命">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Laravel-58-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Laravel 5.8 杂记
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/05/20/Laravel-58-Notes/" class="article-date">
+	  <time datetime="2019-05-20T08:02:45.000Z" itemprop="datePublished">2019-05-20</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h1 id="Laravel-5-8"><a href="#Laravel-5-8" class="headerlink" title="Laravel 5.8"></a>Laravel 5.8</h1><blockquote>
+<p><code>Laravel 5.8</code> 在 <code>Laravel 5.7</code> 的基础上继续进行优化，<br>包括引入新的 Eloquent 关联关系（<code>has-one-through</code>）、优化邮箱验证、基于约定的授权策略类自动注册、 <code>DynamoDB</code> 缓存及 <code>Session</code> 驱动、优化任务调度器的时区配置、支持分配多个认证 <code>guard</code> 到广播频道、<code>PSR-16</code> 缓存驱动规范、优化 <code>artisan serve</code> 命令、支持 <code>PHPUnit 8.0</code>、支持 <code>Carbon 2.0</code> 、支持 <code>Pheanstalk 4.0</code> ，以及多个 bug 修复和可用性的提升。</p>
+</blockquote>
+<blockquote>
+<p><a href="https://learnku.com/docs/laravel/5.8/releases/3876" target="_blank" rel="noopener">5.8 发行说明</a></p>
+</blockquote>
+<h1 id="Laravel-必知"><a href="#Laravel-必知" class="headerlink" title="Laravel 必知"></a>Laravel 必知</h1><h2 id="Laravel的请求周期"><a href="#Laravel的请求周期" class="headerlink" title="Laravel的请求周期 ?"></a>Laravel的请求周期 ?</h2><ul>
+<li>Laravel应用的所有请求入口<code>public/index.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">define(<span class="string">'LARAVEL_START'</span>, microtime(<span class="keyword">true</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Register The Auto Loader</span></span><br><span class="line"><span class="comment">// 加载 Composer 生成的自动加载设置</span></span><br><span class="line"><span class="keyword">require</span> <span class="keyword">__DIR__</span>.<span class="string">'/../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Turn On The Lights</span></span><br><span class="line"><span class="comment">// 然后从 bootstrap/app.php 脚本中检索 Laravel 应用程序的实例</span></span><br><span class="line">$app = <span class="keyword">require_once</span> <span class="keyword">__DIR__</span>.<span class="string">'/../bootstrap/app.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Run The Application</span></span><br><span class="line"><span class="comment">// 根据进入应用程序的请求类型来将传入的请求发送到 HTTP 内核或控制台内核</span></span><br><span class="line">$kernel = $app-&gt;make(Illuminate\Contracts\Http\Kernel::class);</span><br><span class="line"></span><br><span class="line">$response = $kernel-&gt;handle(</span><br><span class="line">    $request = Illuminate\Http\Request::capture()</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">$response-&gt;send();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Perform any final actions for the request lifecycle</span></span><br><span class="line"><span class="comment">// TTP 内核的 handle 方法签名相当简单：获取一个 Request ，返回一个 Response</span></span><br><span class="line">$kernel-&gt;terminate($request, $response);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>HTTP / Console 内核 <code>app/Http/Kernel.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Console</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Console</span>\<span class="title">Scheduling</span>\<span class="title">Schedule</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Foundation</span>\<span class="title">Console</span>\<span class="title">Kernel</span> <span class="title">as</span> <span class="title">ConsoleKernel</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Kernel</span> <span class="keyword">extends</span> <span class="title">ConsoleKernel</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// The Artisan commands provided by your application.</span></span><br><span class="line">    <span class="comment">// Artisan CMD</span></span><br><span class="line">    <span class="keyword">protected</span> $commands = [</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Define the application's command schedule.</span></span><br><span class="line">    <span class="comment">// 定义应用程序的定时任务</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">schedule</span><span class="params">(Schedule $schedule)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// $schedule-&gt;command('inspire')</span></span><br><span class="line">        <span class="comment">//          -&gt;hourly();</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Register the commands for the application.</span></span><br><span class="line">    <span class="comment">// 注册应用程序的命令</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">commands</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;load(<span class="keyword">__DIR__</span>.<span class="string">'/Commands'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">require</span> base_path(<span class="string">'routes/console.php'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>服务提供者 <code>config/app.php</code></li>
+</ul>
+<blockquote>
+<p>内核启动操作中最重要的便是你应用的 <code>服务提供者</code> 了。<br>所有应用下的服务提供者均配置到了 <code>config/app.php</code> 配置文件中的 <code>providers</code> 数组中</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'providers'</span> =&gt; [</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * Laravel Framework Service Providers...</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        Illuminate\Auth\AuthServiceProvider::class,</span><br><span class="line">        Illuminate\Broadcasting\BroadcastServiceProvider::class,</span><br><span class="line">        Illuminate\Bus\BusServiceProvider::class,</span><br><span class="line">        Illuminate\Cache\CacheServiceProvider::class,</span><br><span class="line">        Illuminate\Foundation\Providers\ConsoleSupportServiceProvider::class,</span><br><span class="line">        Illuminate\Cookie\CookieServiceProvider::class,</span><br><span class="line">        Illuminate\Database\DatabaseServiceProvider::class,</span><br><span class="line">        Illuminate\Encryption\EncryptionServiceProvider::class,</span><br><span class="line">        Illuminate\Filesystem\FilesystemServiceProvider::class,</span><br><span class="line">        Illuminate\Foundation\Providers\FoundationServiceProvider::class,</span><br><span class="line">        Illuminate\Hashing\HashServiceProvider::class,</span><br><span class="line">        Illuminate\Mail\MailServiceProvider::class,</span><br><span class="line">        Illuminate\Notifications\NotificationServiceProvider::class,</span><br><span class="line">        Illuminate\Pagination\PaginationServiceProvider::class,</span><br><span class="line">        Illuminate\Pipeline\PipelineServiceProvider::class,</span><br><span class="line">        Illuminate\Queue\QueueServiceProvider::class,</span><br><span class="line">        Illuminate\Redis\RedisServiceProvider::class,</span><br><span class="line">        Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,</span><br><span class="line">        Illuminate\Session\SessionServiceProvider::class,</span><br><span class="line">        Illuminate\Translation\TranslationServiceProvider::class,</span><br><span class="line">        Illuminate\Validation\ValidationServiceProvider::class,</span><br><span class="line">        Illuminate\View\ViewServiceProvider::class,</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * Package Service Providers...</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * Application Service Providers...</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        App\Providers\AppServiceProvider::class,</span><br><span class="line">        App\Providers\AuthServiceProvider::class,</span><br><span class="line">        <span class="comment">// App\Providers\BroadcastServiceProvider::class,</span></span><br><span class="line">        App\Providers\EventServiceProvider::class,</span><br><span class="line">        App\Providers\RouteServiceProvider::class,</span><br><span class="line"></span><br><span class="line">    ],</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>第一步，所有服务提供者的 <code>register</code> 方法会被调用，然后一旦所有服务提供者均注册后， <code>boot</code> 方法才被调用。</p>
+</blockquote>
+<ul>
+<li>请求调度 <code>routes/***.php</code></li>
+</ul>
+<blockquote>
+<p>一旦启动且所有服务提供者被注册，<code>Request</code> 会被递送给路由。路由将会调度请求，交给绑定的路由或控制器，也当然包括路由绑定的中间件。</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Route::middleware(<span class="string">'auth:api'</span>)-&gt;get(<span class="string">'/user'</span>, <span class="function"><span class="keyword">function</span> <span class="params">(Request $request)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> $request-&gt;user();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>聚焦服务提供者</li>
+</ul>
+<blockquote>
+<p>服务提供者是 <code>Laravel</code> 真正意义的生命周期中的关键。应用实例一旦创建，服务提供者就被注册，然后请求被启动的应用接管。<br>默认的服务提供会存放在 <code>app/Providers</code> 下面。</p>
+</blockquote>
+<h2 id="什么是服务容器"><a href="#什么是服务容器" class="headerlink" title="什么是服务容器 ?"></a>什么是服务容器 ?</h2><blockquote>
+<p>Laravel 服务容器是一个用于来<strong>管理类的依赖和执行依赖注入</strong>的强大工具</p>
+</blockquote>
+<ul>
+<li><p>服务绑定</p>
+<ul>
+<li>简单绑定: <code>$this-&gt;app-&gt;bind();</code></li>
+<li>绑定一个单例: <code>$this-&gt;app-&gt;singleton();</code></li>
+<li>绑定实例: <code>$this-&gt;app-&gt;instance();</code></li>
+<li>绑定基本值: <code>$this-&gt;app-&gt;when()-&gt;needs()-&gt;give();</code></li>
+<li>绑定接口到实现: <code>$this-&gt;app-&gt;bind(&#39;App\Contracts\EventPusher&#39;);</code></li>
+<li>扩展绑定: <code>$this-&gt;app-&gt;extend();</code></li>
+</ul>
+</li>
+<li><p>解析实例</p>
+<ul>
+<li><code>make</code>方法: <code>$this-&gt;app-&gt;make();</code></li>
+<li><code>makeWith</code>: <code>$this-&gt;app-&gt;makeWith()</code>;</li>
+</ul>
+</li>
+<li><p>自动注入</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(UserRepository $users)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;users = $users;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>容器事件</li>
+</ul>
+<blockquote>
+<p>服务容器每次解析对象会触发一个事件，你可以使用 <code>resolving</code> 方法监听这个事件 :</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">$this</span>-&gt;app-&gt;resolving(<span class="function"><span class="keyword">function</span> <span class="params">($object, $app)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Called when container resolves object of any type...</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="什么是依赖注入"><a href="#什么是依赖注入" class="headerlink" title="什么是依赖注入 ?"></a>什么是依赖注入 ?</h3><blockquote>
+<p>依赖注入这个花哨的名词实质上是指: 类的依赖通过构造函数,或者某些情况下通过”setter”方法</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">proteced $user;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(User $user)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;user = $user;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="什么是服务提供者"><a href="#什么是服务提供者" class="headerlink" title="什么是服务提供者 ?"></a>什么是服务提供者 ?</h2><blockquote>
+<p>服务提供者是所有 <code>Laravel</code> 应用程序的引导中心。你的应用程序，以及 通过服务器引导的 <code>Laravel</code> 核心服务都是通过服务提供器引导。</p>
+<p>但是，「引导」是什么意思呢？ 通常，我们的可以理解为<strong>注册</strong>，比如注册服务容器绑定，事件监听器，中间件，甚至是路由。服务提供者是配置应用程序的中心.</p>
+</blockquote>
+<ul>
+<li>编写服务提供者</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan make:provider TestServiceProvider</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注册服务提供者</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// config/app.php</span></span><br><span class="line"><span class="string">'providers'</span> =&gt; [</span><br><span class="line">    <span class="comment">// 其他服务提供者</span></span><br><span class="line"></span><br><span class="line">    App\Providers\ComposerServiceProvider::class,</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+<h2 id="什么是-Facades"><a href="#什么是-Facades" class="headerlink" title="什么是 Facades ?"></a>什么是 <code>Facades</code> ?</h2><blockquote>
+<p><code>Facades</code> 为应用的 服务容器 提供了一个「静态」 接口。<br><code>Laravel Facades</code> 实际是服务容器中底层类的 「静态代理」 ，相对于传统静态方法，在使用时能够提供更加灵活、更加易于测试、更加优雅的语法。</p>
+</blockquote>
+<ul>
+<li>Facades 相较于依赖注入</li>
+</ul>
+<blockquote>
+<p>依赖注入的主要好处之一是能交换注入类的实现。在测试的时候非常有用，因为你可以注入一个 <figure class="highlight plain"><figcaption><span>`stub`，并断言 `stub` 上的各种方法。</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- Facades 相较于辅助函数</span><br><span class="line"></span><br><span class="line">&gt; `Facade` 和辅助函数之间没有实际的区别。当你使用辅助函数时，你可以像测试相应的 `Facade` 那样进行测试。</span><br><span class="line"></span><br><span class="line">- Facades 工作原理</span><br><span class="line"></span><br><span class="line">&gt; 在 `Laravel` 应用中，`Facade` 就是一个可以从容器访问对象的类。其中核心的部件就是 `Facade` 类。</span><br><span class="line">&gt; `Facade` 基类使用了 `__callStatic()` 魔术方法，直到对象从容器中被解析出来后，才会进行调用。</span><br><span class="line"></span><br><span class="line">- `__callStatic()`</span><br><span class="line"></span><br><span class="line">```php</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="什么是-Contracts"><a href="#什么是-Contracts" class="headerlink" title="什么是 Contracts ?"></a>什么是 <code>Contracts</code> ?</h2><blockquote>
+<p><code>Contracts</code> 契约<br><code>Laravel</code> 的契约是一组由框架提供，定义了核心服务的 <code>interface</code> 集合。</p>
+</blockquote>
+<h2 id="什么是控制反转"><a href="#什么是控制反转" class="headerlink" title="什么是控制反转 ?"></a>什么是控制反转 ?</h2><blockquote>
+<p>IoC (控制反转)，是面向对象编程中的一种设计原则，可以用来减低计算机代码之间的耦合度。</p>
+</blockquote>
+<ul>
+<li>实现控制反转的方式<ul>
+<li>依赖注入(Dependency Injection(DI))</li>
+<li>依赖查找 (Dependency Lookup)</li>
+</ul>
+</li>
+</ul>
+<h2 id="什么是-Eloquent-ORM"><a href="#什么是-Eloquent-ORM" class="headerlink" title="什么是 Eloquent ORM ?"></a>什么是 <code>Eloquent ORM</code> ?</h2><blockquote>
+<p><code>Laravel</code> 的 <code>Eloquent ORM</code> 提供了一个漂亮、简洁的 <code>ActiveRecord</code> 实现来和数据库交互。每个数据库表都有一个对应的「模型」用来与该表交互。</p>
+</blockquote>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/05/20/Laravel-58-Notes/" target="_blank" title="Laravel 5.8 杂记">http://blog.caoxl.com/2019/05/20/Laravel-58-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Contracts/">Contracts</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Facades/">Facades</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/05/24/Linux-Actual-Combat/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Linux 实战
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/05/16/Docker-DockerFile/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Docker DockerFile</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Laravel-5-8"><span class="nav-number">1.</span> <span class="nav-text">Laravel 5.8</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Laravel-必知"><span class="nav-number">2.</span> <span class="nav-text">Laravel 必知</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel的请求周期"><span class="nav-number">2.1.</span> <span class="nav-text">Laravel的请求周期 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是服务容器"><span class="nav-number">2.2.</span> <span class="nav-text">什么是服务容器 ?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是依赖注入"><span class="nav-number">2.2.1.</span> <span class="nav-text">什么是依赖注入 ?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是服务提供者"><span class="nav-number">2.3.</span> <span class="nav-text">什么是服务提供者 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是-Facades"><span class="nav-number">2.4.</span> <span class="nav-text">什么是 Facades ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是-Contracts"><span class="nav-number">2.5.</span> <span class="nav-text">什么是 Contracts ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是控制反转"><span class="nav-number">2.6.</span> <span class="nav-text">什么是控制反转 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是-Eloquent-ORM"><span class="nav-number">2.7.</span> <span class="nav-text">什么是 Eloquent ORM ?</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

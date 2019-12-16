@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>jwt 基础知识 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="JWTPHP">
+  
+  
+  
+  
+  <meta name="description" content="基于Token的身份验证——JWT 基于Token的身份验证用来替代传统的cookie+session身份验证方法中的session。">
+<meta name="keywords" content="JWT,PHP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JWT 基础知识">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/17/JWT-Basic-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="基于Token的身份验证——JWT 基于Token的身份验证用来替代传统的cookie+session身份验证方法中的session。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JWT 基础知识">
+<meta name="twitter:description" content="基于Token的身份验证——JWT 基于Token的身份验证用来替代传统的cookie+session身份验证方法中的session。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-JWT-Basic-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      JWT 基础知识
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/17/JWT-Basic-Notes/" class="article-date">
+	  <time datetime="2018-01-17T02:11:35.000Z" itemprop="datePublished">2018-01-17</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h2 id="基于Token的身份验证——JWT"><a href="#基于Token的身份验证——JWT" class="headerlink" title="基于Token的身份验证——JWT"></a>基于Token的身份验证——JWT</h2><blockquote>
+<p>基于Token的身份验证用来替代传统的cookie+session身份验证方法中的session。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="JWT是啥？"><a href="#JWT是啥？" class="headerlink" title="JWT是啥？"></a>JWT是啥？</h2><p>JWT就是一个字符串，经过加密处理与校验处理的字符串，形式为：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">A</span><span class="selector-class">.B</span><span class="selector-class">.C</span></span><br><span class="line"><span class="selector-tag">header</span><span class="selector-class">.payload</span><span class="selector-class">.secret</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>A由JWT头部信息<code>header</code>加密得到</li>
+<li>B由JWT用到的身份验证信息<code>json</code>数据加密得到</li>
+<li>C由A和B加密得到，是校验部分</li>
+</ul>
+<h2 id="怎样生成A？-header"><a href="#怎样生成A？-header" class="headerlink" title="怎样生成A？ (header)"></a>怎样生成A？ (header)</h2><p>header格式为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"typ"</span>: <span class="string">"JWT"</span>,</span><br><span class="line">    <span class="attr">"alg"</span>: <span class="string">"HS256"</span> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它就是一个json串，两个字段是必须的，不能多也不能少。<code>alg</code>字段指定了生成C的算法，默认值是 <code>HS256</code><br>将header用base64加密，得到A<br>通常，JWT库中，可以把A部分固定写死，用户最多指定一个 <code>alg</code> 的取值</p>
+<h2 id="怎样计算B？-payload"><a href="#怎样计算B？-payload" class="headerlink" title="怎样计算B？ (payload)"></a>怎样计算B？ (payload)</h2><p>根据JWT claim set[用base64]加密得到的。claim set是一个json数据，是表明用户身份的数据，可自行指定字段很灵活，也有固定字段表示特定含义（但不一定要包含特定字段，只是推荐）。<br>这里偷懒，直接用php中的代码来表示claim set了，重在说明字段含义:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$token = <span class="keyword">array</span>(</span><br><span class="line">    <span class="string">"iss"</span> =&gt; <span class="string">"http://example.org"</span>,   <span class="comment">#非必须。issuer 请求实体，可以是发起请求的用户的信息，也可是jwt的签发者。</span></span><br><span class="line">    <span class="string">"iat"</span> =&gt; <span class="number">1356999524</span>,                <span class="comment">#非必须。issued at。 token创建时间，unix时间戳格式</span></span><br><span class="line">    <span class="string">"exp"</span> =&gt; <span class="string">"1548333419"</span>,            <span class="comment">#非必须。expire 指定token的生命周期。unix时间戳格式</span></span><br><span class="line">    <span class="string">"aud"</span> =&gt; <span class="string">"http://example.com"</span>,   <span class="comment">#非必须。接收该JWT的一方。</span></span><br><span class="line">    <span class="string">"sub"</span> =&gt; <span class="string">"jrocket@example.com"</span>,  <span class="comment">#非必须。该JWT所面向的用户</span></span><br><span class="line">    <span class="string">"nbf"</span> =&gt; <span class="number">1357000000</span>,   <span class="comment"># 非必须。not before。如果当前时间在nbf里的时间之前，则Token不被接受；一般都会留一些余地，比如几分钟。</span></span><br><span class="line">    <span class="string">"jti"</span> =&gt; <span class="string">'222we'</span>,     <span class="comment"># 非必须。JWT ID。针对当前token的唯一标识</span></span><br><span class="line"></span><br><span class="line">    <span class="string">"GivenName"</span> =&gt; <span class="string">"Jonny"</span>, <span class="comment"># 自定义字段</span></span><br><span class="line">    <span class="string">"Surname"</span> =&gt; <span class="string">"Rocket"</span>,  <span class="comment"># 自定义字段</span></span><br><span class="line">    <span class="string">"Email"</span> =&gt; <span class="string">"jrocket@example.com"</span>, <span class="comment"># 自定义字段</span></span><br><span class="line">    <span class="string">"Role"</span> =&gt; [<span class="string">"Manager"</span>, <span class="string">"Project Administrator"</span>] <span class="comment"># 自定义字段</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>JWT遵循 <code>RFC7519</code>，里面提到claim set的json数据中，自定义字段的key是一个string，value是一个json数据。因此随意编写吧，很灵活。</p>
+<p>个人初学，认为一个最基本最简单最常用的claim set为：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$token=<span class="keyword">array</span>(</span><br><span class="line">    <span class="string">"user_id"</span> =&gt; <span class="number">123456</span>,     <span class="comment">#用户id，表明用户</span></span><br><span class="line">    <span class="string">"iat"</span>     =&gt; <span class="number">1356999524</span>, <span class="comment">#token发布时间</span></span><br><span class="line">    <span class="string">"exp"</span>     =&gt; <span class="number">1556999524</span>, <span class="comment">#token过期时间</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>将claim set加密后得到<code>B</code>，学名<code>payload</code></p>
+<h2 id="怎样计算C？-secret"><a href="#怎样计算C？-secret" class="headerlink" title="怎样计算C？ (secret)"></a>怎样计算C？ (secret)</h2><p>将<code>A.B</code>使用HS256加密（其实是用header中指定的算法），当然加密过程中还需要密钥（自行指定的一个字符串）。<br>加密得到 <code>C</code> ，学名<code>signature</code>，其实就是一个字符串。作用类似于CRC校验，保证加密没有问题。</p>
+<p>好了，现在<code>A.B.C</code>就是生成的token了。</p>
+<h2 id="怎样使用token？"><a href="#怎样使用token？" class="headerlink" title="怎样使用token？"></a>怎样使用token？</h2><p>可以放到HTTP请求的请求头中，通常是<code>Authorization</code>字段。<br>也有人说放到cookie。不过移动端app用cookie似乎不方便。</p>
+<h2 id="token应用流程？"><a href="#token应用流程？" class="headerlink" title="token应用流程？"></a>token应用流程？</h2><p> 1.初次登录：用户初次登录，输入用户名密码<br> 2.密码验证：服务器从数据库取出用户名和密码进行验证<br> 3.生成JWT：服务器端验证通过，根据从数据库返回的信息，以及预设规则，生成JWT<br> 4.返还JWT：服务器的HTTP RESPONSE中将JWT返还<br> 5.带JWT的请求：以后客户端发起请求，HTTP REQUEST HEADER中的Authorizatio字段都要有值，为JWT</p>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/17/JWT-Basic-Notes/" target="_blank" title="JWT 基础知识">http://blog.caoxl.com/2018/01/17/JWT-Basic-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JWT/">JWT</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/17/JWT-Laravel52-User-Auth/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          JWT 多用户认证
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/16/JSON-WEB-TOKEN/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">JSON-WEB-TOKEN</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于Token的身份验证——JWT"><span class="nav-number">1.</span> <span class="nav-text">基于Token的身份验证——JWT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JWT是啥？"><span class="nav-number">2.</span> <span class="nav-text">JWT是啥？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎样生成A？-header"><span class="nav-number">3.</span> <span class="nav-text">怎样生成A？ (header)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎样计算B？-payload"><span class="nav-number">4.</span> <span class="nav-text">怎样计算B？ (payload)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎样计算C？-secret"><span class="nav-number">5.</span> <span class="nav-text">怎样计算C？ (secret)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎样使用token？"><span class="nav-number">6.</span> <span class="nav-text">怎样使用token？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#token应用流程？"><span class="nav-number">7.</span> <span class="nav-text">token应用流程？</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

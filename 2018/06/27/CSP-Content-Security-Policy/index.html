@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>csp 学习笔记 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="InternetCSP">
+  
+  
+  
+  
+  <meta name="description" content="CSP Is Dead, Long Live CSP!On the Insecurity of Whitelists and the Future of Content Security Policy">
+<meta name="keywords" content="Internet,CSP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSP 学习笔记">
+<meta property="og:url" content="http://blog.caoxl.com/2018/06/27/CSP-Content-Security-Policy/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="CSP Is Dead, Long Live CSP!On the Insecurity of Whitelists and the Future of Content Security Policy">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:44:42.074Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSP 学习笔记">
+<meta name="twitter:description" content="CSP Is Dead, Long Live CSP!On the Insecurity of Whitelists and the Future of Content Security Policy">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-CSP-Content-Security-Policy" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      CSP 学习笔记
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/06/27/CSP-Content-Security-Policy/" class="article-date">
+	  <time datetime="2018-06-27T03:01:05.000Z" itemprop="datePublished">2018-06-27</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>CSP Is Dead, Long Live CSP!<br>On the Insecurity of Whitelists and the Future of Content Security Policy</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="CSP"><a href="#CSP" class="headerlink" title="CSP ?"></a>CSP ?</h1><blockquote>
+<p><code>Content Security Policy</code> 内容安全策略</p>
+</blockquote>
+<h1 id="诞生场景"><a href="#诞生场景" class="headerlink" title="诞生场景"></a>诞生场景</h1><p>能不能根本上解决跨域脚本攻击问题，浏览器自动禁止外部注入恶意脚本？</p>
+<p>这就是”网页安全政策”（<code>Content Security Policy</code>，缩写 <code>CSP</code>）的来历</p>
+<h1 id="CSP简介"><a href="#CSP简介" class="headerlink" title="CSP简介"></a><code>CSP</code>简介</h1><blockquote>
+<p>CSP 的实质就是白名单制度，开发者明确告诉客户端，哪些外部资源可以加载和执行，等同于提供白名单。<br>它的实现和执行全部由浏览器完成，开发者只需提供配置。</p>
+</blockquote>
+<h1 id="启用CSP"><a href="#启用CSP" class="headerlink" title="启用CSP"></a>启用<code>CSP</code></h1><h2 id="通过-HTTP-头信息的-Content-Security-Policy-的字段"><a href="#通过-HTTP-头信息的-Content-Security-Policy-的字段" class="headerlink" title="通过 HTTP 头信息的 Content-Security-Policy 的字段"></a>通过 <code>HTTP</code> 头信息的 <code>Content-Security-Policy</code> 的字段</h2><figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy</span>: <span class="keyword">script-src</span> <span class="string">'self'</span>; <span class="keyword">object-src</span> <span class="string">'none'</span>;</span><br><span class="line"><span class="keyword">style-src</span> cdn.example.org third-party.org; <span class="keyword">child-src</span> https:</span><br></pre></td></tr></table></figure>
+<h2 id="通过网页的-lt-meta-gt-标签"><a href="#通过网页的-lt-meta-gt-标签" class="headerlink" title="通过网页的&lt;meta&gt;标签"></a>通过网页的<code>&lt;meta&gt;</code>标签</h2><figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta http-equiv="Content-Security-Policy" content="<span class="keyword">script-src</span> <span class="string">'self'</span>; <span class="keyword">object-src</span> <span class="string">'none'</span>; <span class="keyword">style-src</span> cdn.example.org third-party.org; <span class="keyword">child-src</span> https:"&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>说明:</strong></p>
+<p>上面的代码中,<code>CSP</code>做了如下配置</p>
+<ul>
+<li>脚本:   只信任当前域名</li>
+<li><object>标签:   不信任任何URL, 即不加载任何资源</object></li>
+<li>样式表:  只信任<code>cdn.example.org</code>和<code>third-party.org</code></li>
+<li>框架(frame):    必须适应<code>HTTPS</code>协议加载</li>
+<li>其他资源: 没有限制</li>
+</ul>
+<p><strong>启用后，不符合 CSP 的外部资源就会被阻止加载。</strong></p>
+<h1 id="CSP限制选项"><a href="#CSP限制选项" class="headerlink" title="CSP限制选项"></a><code>CSP</code>限制选项</h1><p><code>CSP</code> 提供了很多限制选项，涉及安全的各个方面。</p>
+<h2 id="资源加载限制"><a href="#资源加载限制" class="headerlink" title="资源加载限制"></a>资源加载限制</h2><ul>
+<li><code>script-src</code>: 外部脚本</li>
+<li><code>style-src</code>:  样式表</li>
+<li><code>img-src</code>:    图像</li>
+<li><code>media-src</code>:  媒体文件(音频和视频)</li>
+<li><code>font-src</code>:   字体文件</li>
+<li><code>object-src</code>: 插件</li>
+<li><code>child-src</code>:   框架</li>
+<li><code>frame-ancestors</code>:    嵌入的外部资源</li>
+<li><code>connect-src</code>:    <code>HTTP</code> 连接(通过XHR、WebSockets、EventSource等)</li>
+<li><code>worker-src</code>: <code>worker</code>脚本</li>
+<li><code>mainfest-src</code>:   <code>manifest</code>文件</li>
+</ul>
+<h2 id="default-src"><a href="#default-src" class="headerlink" title="default-src"></a><code>default-src</code></h2><p><code>default-src</code>用来设置上面各个选项的<strong>默认值</strong>。</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-<span class="keyword">Security</span>-<span class="keyword">Policy</span>: <span class="keyword">default</span>-src <span class="string">'self'</span></span><br></pre></td></tr></table></figure>
+<p>上面代码限制所有的外部资源，都只能从当前域名加载。</p>
+<blockquote>
+<p>如果同时设置某个单项限制（比如<code>font-src</code>）和<code>default-src</code>，前者会覆盖后者，<br>即字体文件会采用<code>font-src</code>的值，其他资源依然采用default-src的值。</p>
+</blockquote>
+<h2 id="URL限制"><a href="#URL限制" class="headerlink" title="URL限制"></a><code>URL</code>限制</h2><ul>
+<li><code>frame-ancestors</code>:    限制嵌入框架的网页</li>
+<li><code>base-uri</code>:   限制&lt;base#href&gt;</li>
+<li><code>form-action</code>:    限制&lt;form#action&gt;</li>
+</ul>
+<h2 id="其他限制"><a href="#其他限制" class="headerlink" title="其他限制"></a>其他限制</h2><ul>
+<li><code>block-all-mixed-content</code>: HTTPS网页不得加载HTTP资源(浏览器已经默认开启)</li>
+<li><code>upgrade-insecure-requests</code>: 自动将网页上所有加载外部资源的HTTP链接换成HTTPS协议</li>
+<li><code>plugin-types</code>: 限制可以使用的插件格式</li>
+<li><code>sandbox</code>: 浏览器行为的限制,比如不能有弹出窗口等</li>
+</ul>
+<h2 id="report-uri"><a href="#report-uri" class="headerlink" title="report-uri"></a><code>report-uri</code></h2><p>有时，我们不仅希望防止 XSS，还希望记录此类行为。<code>report-uri</code>就用来告诉浏览器，应该把注入行为报告给哪个网址。</p>
+<figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy</span>: <span class="keyword">default-src</span> <span class="string">'self'</span>; ...; <span class="keyword">report-uri</span> /my_amazing_csp_report_parser;</span><br></pre></td></tr></table></figure>
+<p>上面代码指定，将注入行为报告给<code>/my_amazing_csp_report_parser</code>这个 <code>URL</code>。</p>
+<h1 id="Content-Security-Policy-Report-Only"><a href="#Content-Security-Policy-Report-Only" class="headerlink" title="Content-Security-Policy-Report-Only"></a><code>Content-Security-Policy-Report-Only</code></h1><p>除了<code>Content-Security-Policy</code>，还有一个<code>Content-Security-Policy-Report-Only</code>字段，<br>表示不执行限制选项，只是记录违反限制的行为。</p>
+<p>它必须与<code>report-uri</code>选项配合使用。</p>
+<figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy-Report-Only</span>: <span class="keyword">default-src</span> <span class="string">'self'</span>; ...; <span class="keyword">report-uri</span> /my_amazing_csp_report_parser;</span><br></pre></td></tr></table></figure>
+<h1 id="选项值"><a href="#选项值" class="headerlink" title="选项值"></a>选项值</h1><p>每个限制选项可以设置以下几种值，这些值就构成了白名单。</p>
+<ul>
+<li>主机名: exaple.org, <a href="https://example.com:443" target="_blank" rel="noopener">https://example.com:443</a></li>
+<li>路径名: example.org/resources/js/</li>
+<li>通配符: <em>.example.org, </em>://<em>.example.com:</em> (表示任意协议、任意子域名、任意端口)</li>
+<li>协议名: https、data</li>
+<li>关键字’self’: 当前域名,需要加引号</li>
+<li>关键字’none’: 禁止加载任何外部资源,需要加引号</li>
+</ul>
+<p>多个值也可以并列，用空格分隔。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-<span class="string">Policy:</span> script-src <span class="string">'self'</span> <span class="string">https:</span><span class="comment">//apis.google.com</span></span><br></pre></td></tr></table></figure>
+<p>如果同一个限制选项使用多次，只有第一次会生效。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 错误的写法</span></span><br><span class="line">script-src https:<span class="regexp">//</span>host1.com; script-src https:<span class="regexp">//</span>host2.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 正确的写法</span></span><br><span class="line">script-src https:<span class="regexp">//</span>host1.com https:<span class="regexp">//</span>host2.com</span><br></pre></td></tr></table></figure>
+<h1 id="script-src-的特殊值"><a href="#script-src-的特殊值" class="headerlink" title="script-src 的特殊值"></a><code>script-src</code> 的特殊值</h1><p>除了常规值，<code>script-src</code> 还可以设置一些特殊值。注意，下面这些值都必须放在单引号里面。</p>
+<ul>
+<li><code>unsafa-inline</code>: 允许执行页面内嵌的<code>&amp;lt;script&gt;</code>标签和事件监听函数</li>
+<li><code>unsafe-eval</code>: 允许将字符串当做代码执行,比如使用<code>eval</code>,<code>setTimeout</code>,<code>setInterval</code>和<code>Function</code>等函数</li>
+<li><code>nonce</code>值: 每次HTTP回应给出一个授权<code>token</code>, 页面内嵌脚本必须有这个token,才会执行</li>
+<li><code>hash</code>值: 列出允许执行的脚本代码的<code>Hash</code>值,页面内嵌脚本的哈希值只有吻合的情况下,才会执行</li>
+</ul>
+<h1 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h1><ol>
+<li><code>script-src</code>和<code>object-src</code>是必设的，除非设置了<code>default-src</code>。</li>
+</ol>
+<p>因为攻击者只要能注入脚本，其他限制都可以规避。而<code>object-src</code>必设是因为 <code>Flash</code> 里面可以执行外部脚本。</p>
+<ol start="2">
+<li><code>script-src</code>不能使用<code>unsafe-inline</code>关键字（除非伴随一个<code>nonce</code>值），也不能允许设置<code>data:URL</code>。</li>
+</ol>
+<p>举例:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;img <span class="attribute">src</span>=<span class="string">"x"</span> <span class="attribute">onerror</span>=<span class="string">"evil()"</span>&gt;</span><br><span class="line">&lt;script <span class="attribute">src</span>=<span class="string">"data:text/javascript,evil()"</span>&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>必须特别注意 <code>JSONP</code> 的回调函数。</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span></span></span><br><span class="line"><span class="tag">    <span class="attr">src</span>=<span class="string">"/path/jsonp?callback=alert(document.domain)//"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上面的代码中，虽然加载的脚本来自当前域名，但是通过改写回调函数，攻击者依然可以执行恶意代码。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://www.ruanyifeng.com/blog/2016/09/csp.html" target="_blank" rel="noopener">Content Security Policy 入门教程</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP" target="_blank" rel="noopener">内容安全策略( CSP )</a></li>
+<li><a href="https://ai.google/research/pubs/pub45542" target="_blank" rel="noopener">CSP Is Dead, Long Live CSP!</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/06/27/CSP-Content-Security-Policy/" target="_blank" title="CSP 学习笔记">http://blog.caoxl.com/2018/06/27/CSP-Content-Security-Policy/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSP/">CSP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/">Internet</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/06/27/JSON-JSONP/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          说说JSON和JSONP
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/27/XML-exchange-Array/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">XML与Array互相转换</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP"><span class="nav-number">1.</span> <span class="nav-text">CSP ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#诞生场景"><span class="nav-number">2.</span> <span class="nav-text">诞生场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP简介"><span class="nav-number">3.</span> <span class="nav-text">CSP简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启用CSP"><span class="nav-number">4.</span> <span class="nav-text">启用CSP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通过-HTTP-头信息的-Content-Security-Policy-的字段"><span class="nav-number">4.1.</span> <span class="nav-text">通过 HTTP 头信息的 Content-Security-Policy 的字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过网页的-lt-meta-gt-标签"><span class="nav-number">4.2.</span> <span class="nav-text">通过网页的&lt;meta&gt;标签</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP限制选项"><span class="nav-number">5.</span> <span class="nav-text">CSP限制选项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#资源加载限制"><span class="nav-number">5.1.</span> <span class="nav-text">资源加载限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#default-src"><span class="nav-number">5.2.</span> <span class="nav-text">default-src</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URL限制"><span class="nav-number">5.3.</span> <span class="nav-text">URL限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他限制"><span class="nav-number">5.4.</span> <span class="nav-text">其他限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#report-uri"><span class="nav-number">5.5.</span> <span class="nav-text">report-uri</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Content-Security-Policy-Report-Only"><span class="nav-number">6.</span> <span class="nav-text">Content-Security-Policy-Report-Only</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选项值"><span class="nav-number">7.</span> <span class="nav-text">选项值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#script-src-的特殊值"><span class="nav-number">8.</span> <span class="nav-text">script-src 的特殊值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#注意"><span class="nav-number">9.</span> <span class="nav-text">注意</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">10.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

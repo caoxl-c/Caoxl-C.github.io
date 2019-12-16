@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>腾讯信鸽推送 「开发日志」 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="第三方ThirdParty信鸽推送腾讯">
+  
+  
+  
+  
+  <meta name="description" content="简单记录腾讯信鸽推送开发日志  腾讯信鸽推送 文档   iOS 推送工作原理APNsApple Push Notification Service，直译过来就是“苹果推送通知服务”，即苹果专门的推送服务器。 由于 Apple 对设备的控制非常严格，iOS 内应用消息的推送必须要经过 APNs。">
+<meta name="keywords" content="第三方,ThirdParty,信鸽,推送,腾讯">
+<meta property="og:type" content="article">
+<meta property="og:title" content="腾讯信鸽推送 「开发日志」">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/23/Tencent-XG-Push-Log/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="简单记录腾讯信鸽推送开发日志  腾讯信鸽推送 文档   iOS 推送工作原理APNsApple Push Notification Service，直译过来就是“苹果推送通知服务”，即苹果专门的推送服务器。 由于 Apple 对设备的控制非常严格，iOS 内应用消息的推送必须要经过 APNs。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://segmentfault.com/image?src=https://blog.avoscloud.com/wp-content/uploads/2014/05/registration_sequence_2x.png&objectId=1190000000520755&token=5bf9906773e763d2e743a8f503f71556">
+<meta property="og:updated_time" content="2019-08-22T06:45:57.554Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="腾讯信鸽推送 「开发日志」">
+<meta name="twitter:description" content="简单记录腾讯信鸽推送开发日志  腾讯信鸽推送 文档   iOS 推送工作原理APNsApple Push Notification Service，直译过来就是“苹果推送通知服务”，即苹果专门的推送服务器。 由于 Apple 对设备的控制非常严格，iOS 内应用消息的推送必须要经过 APNs。">
+<meta name="twitter:image" content="https://segmentfault.com/image?src=https://blog.avoscloud.com/wp-content/uploads/2014/05/registration_sequence_2x.png&objectId=1190000000520755&token=5bf9906773e763d2e743a8f503f71556">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Tencent-XG-Push-Log" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      腾讯信鸽推送 「开发日志」
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/23/Tencent-XG-Push-Log/" class="article-date">
+	  <time datetime="2018-01-23T06:54:33.000Z" itemprop="datePublished">2018-01-23</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/第三方应用/">第三方应用</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>简单记录腾讯信鸽推送开发日志</p>
+<blockquote>
+<p><u><a href="http://docs.developer.qq.com/xg/" target="_blank" rel="noopener">腾讯信鸽推送 文档</a></u></p>
+</blockquote>
+</blockquote>
+<h1 id="iOS-推送工作原理"><a href="#iOS-推送工作原理" class="headerlink" title="iOS 推送工作原理"></a>iOS 推送工作原理</h1><h2 id="APNs"><a href="#APNs" class="headerlink" title="APNs"></a>APNs</h2><p><code>Apple Push Notification Service</code>，直译过来就是“苹果推送通知服务”，即苹果专门的推送服务器。</p>
+<p>由于 Apple 对设备的控制非常严格，iOS 内应用消息的推送必须要经过 APNs。</p>
+<a id="more"></a>
+<h2 id="被推送消息的转发顺序"><a href="#被推送消息的转发顺序" class="headerlink" title="被推送消息的转发顺序"></a>被推送消息的转发顺序</h2><p><strong><em>应用服务器（Provider）=&gt; APNs =&gt; iPhone／iOS =&gt; App。</em></strong></p>
+<p><img src="https://segmentfault.com/image?src=https://blog.avoscloud.com/wp-content/uploads/2014/05/registration_sequence_2x.png&amp;objectId=1190000000520755&amp;token=5bf9906773e763d2e743a8f503f71556" alt="转发顺序"></p>
+<h2 id="工作原理说明"><a href="#工作原理说明" class="headerlink" title="工作原理说明"></a>工作原理说明</h2><blockquote>
+<p>苹果利用自己专门的<code>推送服务器（APNs）</code>接收来自我们自己的应用服务器的需要被推送的信息，然后推送到<code>指定的iOS设备</code>上，然后由设备通知到我们的应用程序，设备以通知或者声音的形式通知用户有新的消息。</p>
+<p><strong>推送的前提是装有我们应用的设备需要向APNs服务器注册</strong>，注册成功后APNs服务器会返给我们一个device_token，拿到这个token后我们将这个token发给我们自己的应用服务器，当有需要被推送的消息时，我们的应用服务器会将消息按指定的格式打包，然后结合设备的device_token一并发给APNs服务器，由于我们的应用和APNs维持一个基于TCP的长连接，APNs将新消息推送到我们设备上，然后在屏幕上显示出新消息来。</p>
+</blockquote>
+<h2 id="推送数据格式"><a href="#推送数据格式" class="headerlink" title="推送数据格式"></a>推送数据格式</h2><p><code>JSON</code>，且 APNs 限制了每个 <code>notification</code> 的 <code>payload</code> 最大长度是 <strong>256</strong> 字节。举例：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"aps"</span>: &#123;</span><br><span class="line">        <span class="attr">"alert"</span>: <span class="string">"老板赞了你"</span>, </span><br><span class="line">        <span class="attr">"sound"</span>: <span class="string">"default"</span>,</span><br><span class="line">	    <span class="attr">"badge"</span>: <span class="number">1</span>;</span><br><span class="line">    &#125;, </span><br><span class="line">    <span class="attr">"msg"</span>: <span class="string">"这里是额外消息，不显示在通知界面上。"</span></span><br><span class="line">  	<span class="string">"action"</span>: &#123;</span><br><span class="line">  		<span class="attr">"type"</span>: <span class="number">2</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>alert</code> 的内容就是会显示在用户手机上的推送信息，它的值可以是一个 <code>String</code>，也可以是一个 <code>JSON</code>。当它是文本消息的时候，系统就会把这些文字显示到一个 <code>alertView</code>中；如果它也是由一个 <code>JSON</code> 组成的话，其包含的字段如下：</p>
+<ul>
+<li>body</li>
+<li>action-loc-key</li>
+<li>loc-key</li>
+<li>loc-args</li>
+<li>launch-image</li>
+</ul>
+<p>body 部分就是 <code>alertView</code> 中将要展现出来的文本消息，loc-* 属性主要是用来实现<strong>本地化</strong>消息，<code>launch-image</code> 只是app 主 bundle 里的一个图片文件的名称，一般来说我们不指定这一属性。</p>
+<ul>
+<li><code>badge</code> 是会在应用 icon 右上角显示的数量（注意是整型），提示有多少条未读消息等。</li>
+<li><code>sound</code> 就是当推送信息送达是手机播放的声音，传 <code>defalut</code> 就标明使用系统默认声音，如果传比如 <code>beep.wav</code> 就会播放在我们应用工程目录下名称为 <em>beep.wav</em> 的音频文件。</li>
+<li><code>aps</code> 之外的可以自定义数据结构。</li>
+</ul>
+</li>
+</ul>
+<h2 id="本地化"><a href="#本地化" class="headerlink" title="本地化"></a>本地化</h2><blockquote>
+<p>有两种办法可以实现推送消息的本地化：<br>  1，在推送的payload中使用<code>loc-key</code>和<code>loc-args</code>来指定进行本地化，这样Provider方只需要按照统一的格式来发送即可，消息的解析和组装则由客户端来完成。<br>  2，如果推送的payload里面不包含<code>loc-key/loc-args</code>信息，那么Provider方就需要自己做本地化处理，然后给不同的device发送不同的消息，为了做到这一点，还需要app在上传device token的时候也把用户的语言设置信息传回来。</p>
+</blockquote>
+<h1 id="腾讯信鸽接入"><a href="#腾讯信鸽接入" class="headerlink" title="腾讯信鸽接入"></a>腾讯信鸽接入</h1><h2 id="客户端配置"><a href="#客户端配置" class="headerlink" title="客户端配置"></a>客户端配置</h2><p>这个主要是 iOS 去完成的，这里略过，详见：<u><a href="http://developer.qq.com/wiki/xg/iOS%E6%8E%A5%E5%85%A5/iOS%20%E8%AF%81%E4%B9%A6%E8%AE%BE%E7%BD%AE%E6%8C%87%E5%8D%97/iOS%20%E8%AF%81%E4%B9%A6%E8%AE%BE%E7%BD%AE%E6%8C%87%E5%8D%97.html" target="_blank" rel="noopener">iOS接入-腾讯信鸽</a></u>。</p>
+<h2 id="服务端配置"><a href="#服务端配置" class="headerlink" title="服务端配置"></a>服务端配置</h2><p>服务端接入及调用腾讯信鸽非常简单，可以通过提供的服务端 SDK，也可以直接使用提供的 <code>RESTful API</code>。下面以在 <code>Lumen</code> 中集成腾讯信鸽的 <code>PHP SDK</code> 为例说明。</p>
+<ul>
+<li>引入类文件</li>
+</ul>
+<p>腾讯信鸽的 <code>PHP SDK</code> 主要只有一个类文件 <code>XingeApp.php</code>。把它放在 <code>app/Tools/XingeApp.php</code> 下，命名空间为设置为：<code>namespace App\Tools</code>。</p>
+<ul>
+<li>配置 <code>access_id</code> 和 <code>secret_key</code></li>
+</ul>
+<p>相应的配置文件放在 <code>config/txxg.php</code> 中，内容只有以下两个：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">/*</span><br><span class="line"><span class="string">|--------------------------------------------------------------------------</span></span><br><span class="line"><span class="string">| 腾讯信鸽配置</span></span><br><span class="line"><span class="string">|--------------------------------------------------------------------------</span></span><br><span class="line"><span class="string">|</span></span><br><span class="line"><span class="string">| Add this config file in .gitignore and put it on the prod server manually</span></span><br><span class="line"><span class="string">|</span></span><br><span class="line">*/</span><br><span class="line">return [</span><br><span class="line">    'access_id' =&gt; '<span class="number">1024</span>',</span><br><span class="line">    'secret_key' =&gt; 'xxxx',    <span class="comment">// 32 bit(md5)</span></span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p><strong><code>access_id</code> 和 <code>secret_key</code> 在注册了腾讯信鸽后会提供，填在这里就行了。</strong></p>
+<ul>
+<li>在工具类中调用 SDK 中的方法</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Tools</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tol</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">iosPush</span><span class="params">($account, $msg, $msg_num)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $txxg_path = base_path().<span class="string">'/config/txxg.php'</span>;</span><br><span class="line">        $txxg      = <span class="keyword">false</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (file_exists($txxg_path))</span><br><span class="line">            $txxg = <span class="keyword">include_once</span> $txxg_path;</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">if</span> (!$txxg ||</span><br><span class="line">            !$txxg[<span class="string">'access_id'</span>] ||</span><br><span class="line">            !$txxg[<span class="string">'secret_key'</span>]) abort(</span><br><span class="line">            <span class="number">500</span>,</span><br><span class="line">            <span class="string">'腾讯信鸽配置不存在或不正确(config/txxg.php)'</span></span><br><span class="line">        );</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">list</span>(</span><br><span class="line">            $accessId,</span><br><span class="line">            $secretKey,</span><br><span class="line">            ) = array_values($txxg);</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">return</span> XingeApp::PushAccountIos(</span><br><span class="line">            $accessId,</span><br><span class="line">            $secretKey,</span><br><span class="line">            $msg,</span><br><span class="line">            $account,</span><br><span class="line">            XingeApp::IOSENV_PROD,</span><br><span class="line">            $msg_num</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>之后在控制器中如果要给 <code>App</code> 发送推送消息，则只需要执行 <code>Tol::iosPush()</code> 就可以了。（注意引入该工具类先）</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://developer.qq.com/wiki/xg/%E4%BF%A1%E9%B8%BD%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D/%E4%BF%A1%E9%B8%BD%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D.html" target="_blank" rel="noopener">信鸽开发者手册</a></li>
+<li><a href="http://xg.qq.com/xg/ctr_index/download.md" target="_blank" rel="noopener">下载 SDK-腾讯信鸽</a></li>
+<li><a href="https://www.lvtao.net/ios/apple-ios-push.html" target="_blank" rel="noopener">苹果推送(APNs)ios push小结</a></li>
+<li><a href="https://segmentfault.com/a/1190000000520755" target="_blank" rel="noopener">细说 iOS 消息推送</a></li>
+<li><a href="http://blog.csdn.net/zphappy/article/details/6658504" target="_blank" rel="noopener">移动手机消息推送机制</a></li>
+<li><a href="http://tanqisen.github.io/blog/2013/02/27/ios-push-apns/" target="_blank" rel="noopener">一步一步实现iOS应用PUSH功能</a></li>
+<li><a href="http://docs.jiguang.cn/" target="_blank" rel="noopener">极光官方文档</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/23/Tencent-XG-Push-Log/" target="_blank" title="腾讯信鸽推送 「开发日志」">http://blog.caoxl.com/2018/01/23/Tencent-XG-Push-Log/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ThirdParty/">ThirdParty</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/信鸽/">信鸽</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/推送/">推送</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/第三方/">第三方</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/腾讯/">腾讯</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/23/Wechat-Platform-And-Alipay-Dev-Log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          支付宝/微信 「开发日志」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/23/JieKou-Dev-Log/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">接口网 短信接口「开发日志」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#iOS-推送工作原理"><span class="nav-number">1.</span> <span class="nav-text">iOS 推送工作原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#APNs"><span class="nav-number">1.1.</span> <span class="nav-text">APNs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#被推送消息的转发顺序"><span class="nav-number">1.2.</span> <span class="nav-text">被推送消息的转发顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工作原理说明"><span class="nav-number">1.3.</span> <span class="nav-text">工作原理说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#推送数据格式"><span class="nav-number">1.4.</span> <span class="nav-text">推送数据格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本地化"><span class="nav-number">1.5.</span> <span class="nav-text">本地化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#腾讯信鸽接入"><span class="nav-number">2.</span> <span class="nav-text">腾讯信鸽接入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端配置"><span class="nav-number">2.1.</span> <span class="nav-text">客户端配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端配置"><span class="nav-number">2.2.</span> <span class="nav-text">服务端配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

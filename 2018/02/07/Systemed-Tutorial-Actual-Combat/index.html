@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>systemd 入门教程:「实战篇」 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LinuxSystemd">
+  
+  
+  
+  
+  <meta name="description" content="上一篇文章，我介绍了 Systemd 的主要命令，今天介绍如何使用它完成一些基本的任务。  原文地址: http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html">
+<meta name="keywords" content="Linux,Systemd">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Systemd 入门教程:「实战篇」">
+<meta property="og:url" content="http://blog.caoxl.com/2018/02/07/Systemed-Tutorial-Actual-Combat/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="上一篇文章，我介绍了 Systemd 的主要命令，今天介绍如何使用它完成一些基本的任务。  原文地址: http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Systemd 入门教程:「实战篇」">
+<meta name="twitter:description" content="上一篇文章，我介绍了 Systemd 的主要命令，今天介绍如何使用它完成一些基本的任务。  原文地址: http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Systemed-Tutorial-Actual-Combat" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Systemd 入门教程:「实战篇」
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/02/07/Systemed-Tutorial-Actual-Combat/" class="article-date">
+	  <time datetime="2018-02-07T02:36:36.000Z" itemprop="datePublished">2018-02-07</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p><u><a href="http://blog.caoxl.com/2018/02/07/Systemed-Tutorial-Commands/">上一篇文章</a></u>，我介绍了 Systemd 的主要命令，今天介绍如何使用它完成一些基本的任务。</p>
+<blockquote>
+<p>原文地址: <a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html</a></p>
+</blockquote>
+<a id="more"></a>
+<h1 id="一、开机启动"><a href="#一、开机启动" class="headerlink" title="一、开机启动"></a>一、开机启动</h1><p>对于那些支持 Systemd 的软件，安装的时候，会自动在 <code>/usr/lib/systemd/system</code> 目录添加一个配置文件。</p>
+<p>如果你想让该软件开机启动，就执行下面的命令（以 <code>httpd.service</code> 为例）。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl <span class="builtin-name">enable</span> httpd</span><br></pre></td></tr></table></figure>
+<p>上面的命令相当于在 <code>/etc/systemd/system</code> 目录添加一个符号链接，指向<code>/usr/lib/systemd/system</code> 里面的 <code>httpd.service</code> 文件。</p>
+<p>这是因为开机时，Systemd只执行 <code>/etc/systemd/system</code> 目录里面的配置文件。这也意味着，如果把修改后的配置文件放在该目录，就可以达到覆盖原始配置的效果。</p>
+<h1 id="二、启动服务"><a href="#二、启动服务" class="headerlink" title="二、启动服务"></a>二、启动服务</h1><p>设置开机启动以后，软件并不会立即启动，必须等到下一次开机。如果想现在就运行该软件，那么要执行 <code>systemctl start</code> 命令。</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl <span class="literal">start</span> httpd</span><br></pre></td></tr></table></figure>
+<p>执行上面的命令以后，有可能启动失败，因此要用 <code>systemctl status</code> 命令查看一下该服务的状态。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl status httpd</span><br><span class="line"></span><br><span class="line">httpd.service - The Apache HTTP Server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled)</span><br><span class="line">   Active: active (running) since 金 <span class="number">2014</span><span class="number">-12</span><span class="number">-05</span> <span class="number">12</span>:<span class="number">18</span>:<span class="number">22</span> JST; <span class="number">7</span>min ago</span><br><span class="line"> Main PID: <span class="number">4349</span> (httpd)</span><br><span class="line">   Status: <span class="string">"Total requests: 1; Current requests/sec: 0; Current traffic:   0 B/sec"</span></span><br><span class="line">   CGroup: /system.slice/httpd.service</span><br><span class="line">           ├─<span class="number">4349</span> /usr/sbin/httpd -DFOREGROUND</span><br><span class="line">           ├─<span class="number">4350</span> /usr/sbin/httpd -DFOREGROUND</span><br><span class="line">           ├─<span class="number">4351</span> /usr/sbin/httpd -DFOREGROUND</span><br><span class="line">           ├─<span class="number">4352</span> /usr/sbin/httpd -DFOREGROUND</span><br><span class="line">           ├─<span class="number">4353</span> /usr/sbin/httpd -DFOREGROUND</span><br><span class="line">           └─<span class="number">4354</span> /usr/sbin/httpd -DFOREGROUND</span><br><span class="line"></span><br><span class="line"><span class="number">12</span>月 <span class="number">05</span> <span class="number">12</span>:<span class="number">18</span>:<span class="number">22</span> localhost.localdomain systemd[<span class="number">1</span>]: Starting The Apache HTTP Server...</span><br><span class="line"><span class="number">12</span>月 <span class="number">05</span> <span class="number">12</span>:<span class="number">18</span>:<span class="number">22</span> localhost.localdomain systemd[<span class="number">1</span>]: Started The Apache HTTP Server.</span><br><span class="line"><span class="number">12</span>月 <span class="number">05</span> <span class="number">12</span>:<span class="number">22</span>:<span class="number">40</span> localhost.localdomain systemd[<span class="number">1</span>]: Started The Apache HTTP Server.</span><br></pre></td></tr></table></figure>
+<p>上面的输出结果含义如下。</p>
+<blockquote>
+<ul>
+<li><code>Loaded行</code>：配置文件的位置，是否设为开机启动</li>
+<li><code>Active行</code>：表示正在运行</li>
+<li><code>Main PID行</code>：主进程ID</li>
+<li><code>Status行</code>：由应用本身（这里是 httpd ）提供的软件当前状态</li>
+<li><code>Status行</code>：由应用本身（这里是 httpd ）提供的软件当前状态</li>
+<li><code>日志块</code>：应用的日志</li>
+</ul>
+</blockquote>
+<h1 id="三、停止服务"><a href="#三、停止服务" class="headerlink" title="三、停止服务"></a>三、停止服务</h1><p>终止正在运行的服务，需要执行 <code>systemctl stop</code> 命令。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">stop</span> httpd.service</span><br></pre></td></tr></table></figure>
+<p>有时候，该命令可能没有响应，服务停不下来。这时候就不得不”杀进程”了，向正在运行的进程发出 <code>kill</code> 信号。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo systemctl <span class="built_in">kill</span> httpd.service</span></span><br></pre></td></tr></table></figure>
+<p>此外，重启服务要执行 <code>systemctl restart</code> 命令。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>sudo systemctl restart httpd.service</span><br></pre></td></tr></table></figure>
+<h1 id="四、读懂配置文件"><a href="#四、读懂配置文件" class="headerlink" title="四、读懂配置文件"></a>四、读懂配置文件</h1><p>一个服务怎么启动，完全由它的配置文件决定。下面就来看，配置文件有些什么内容。</p>
+<p>前面说过，配置文件主要放在 <code>/usr/lib/systemd/system</code> 目录，也可能在<code>/etc/systemd/system</code> 目录。找到配置文件以后，使用文本编辑器打开即可。</p>
+<p><code>systemctl cat</code>命令可以用来查看配置文件，下面以<code>sshd.service</code>文件为例，它的作用是启动一个 <code>SSH</code> 服务器，供其他用户以 <code>SSH</code> 方式登录。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl cat sshd.service</span><br><span class="line"></span><br><span class="line">[Unit]</span><br><span class="line"><span class="attribute">Description</span>=OpenSSH<span class="built_in"> server </span>daemon</span><br><span class="line"><span class="attribute">Documentation</span>=man:sshd(8) man:sshd_config(5)</span><br><span class="line"><span class="attribute">After</span>=network.target sshd-keygen.service</span><br><span class="line"><span class="attribute">Wants</span>=sshd-keygen.service</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line"><span class="attribute">EnvironmentFile</span>=/etc/sysconfig/sshd</span><br><span class="line"><span class="attribute">ExecStart</span>=/usr/sbin/sshd -D <span class="variable">$OPTIONS</span></span><br><span class="line"><span class="attribute">ExecReload</span>=/bin/kill -HUP <span class="variable">$MAINPID</span></span><br><span class="line"><span class="attribute">Type</span>=simple</span><br><span class="line"><span class="attribute">KillMode</span>=process</span><br><span class="line"><span class="attribute">Restart</span>=on-failure</span><br><span class="line"><span class="attribute">RestartSec</span>=42s</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line"><span class="attribute">WantedBy</span>=multi-user.target</span><br></pre></td></tr></table></figure>
+<p>可以看到，配置文件分成几个区块，每个区块包含若干条键值对。</p>
+<p>下面依次解释每个区块的内容。</p>
+<h1 id="五、-Unit-区块：启动顺序与依赖关系。"><a href="#五、-Unit-区块：启动顺序与依赖关系。" class="headerlink" title="五、[Unit] 区块：启动顺序与依赖关系。"></a>五、<code>[Unit]</code> 区块：启动顺序与依赖关系。</h1><p><code>Unit</code> 区块的 :</p>
+<ul>
+<li><code>Description</code> 字段给出当前服务的简单描述，</li>
+<li><code>Documentation</code> 字段给出文档位置。</li>
+</ul>
+<p>接下来的设置是<strong>启动顺序</strong>和<strong>依赖关系</strong>，这个比较重要。</p>
+<blockquote>
+<ul>
+<li><code>After</code>字段：表示如果 <code>network.target</code> 或 <code>sshd-keygen.service</code> 需要启动，那么 <code>sshd.service</code> 应该在它们之后启动。</li>
+</ul>
+</blockquote>
+<p>相应地，还有一个</p>
+<blockquote>
+<ul>
+<li><code>Before</code>字段，定义<code>sshd.service</code>应该在哪些服务之前启动。</li>
+</ul>
+</blockquote>
+<p><strong>注意</strong>: <code>After</code>和<code>Before</code>字段只涉及启动顺序，不涉及依赖关系。</p>
+<p>举例来说，某 Web 应用需要 <code>postgresql</code> 数据库储存数据。在配置文件中，它只定义要在 <code>postgresql</code> 之后启动，而没有定义依赖 <code>postgresql</code> 。上线后，由于某种原因，<code>postgresql</code> 需要重新启动，在停止服务期间，该 Web 应用就会无法建立数据库连接。</p>
+<p><strong>设置依赖关系</strong>，需要使用<code>Wants</code>字段和<code>Requires</code>字段。</p>
+<blockquote>
+<ul>
+<li><code>Wants</code>字段：表示<code>sshd.service</code>与<code>sshd-keygen.service</code>之间存在”弱依赖”关系，即如果<code>&quot;sshd-keygen.service&quot;</code>启动失败或停止运行，不影响<code>sshd.service</code>继续执行。</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li><code>Requires</code>字段则表示”强依赖”关系，即如果该服务启动失败或异常退出，那么<code>sshd.service</code>也必须退出。</li>
+</ul>
+</blockquote>
+<p><strong>注意</strong>，<code>Wants</code>字段与<code>Requires</code>字段只涉及依赖关系，与启动顺序无关，默认情况下是同时启动的。</p>
+<h1 id="六、-Service-区块：启动行为"><a href="#六、-Service-区块：启动行为" class="headerlink" title="六、[Service] 区块：启动行为"></a>六、<code>[Service]</code> 区块：启动行为</h1><p><code>Service</code> 区块定义如何启动当前服务。</p>
+<h2 id="启动命令"><a href="#启动命令" class="headerlink" title="启动命令"></a>启动命令</h2><p>许多软件都有自己的环境参数文件，该文件可以用<code>EnvironmentFile</code>字段读取。</p>
+<blockquote>
+<ul>
+<li><code>EnvironmentFile</code> 字段：指定当前服务的环境参数文件。该文件内部的<code>key=value键</code>值对，可以用<code>$key</code>的形式，在当前配置文件中获取。</li>
+</ul>
+</blockquote>
+<p>上面的例子中，sshd 的环境参数文件是 <code>/etc/sysconfig/sshd</code>。</p>
+<p>配置文件里面最重要的字段是 <code>ExecStart</code>。</p>
+<blockquote>
+<ul>
+<li><code>ExecStart</code>字段：定义启动进程时执行的命令。</li>
+</ul>
+</blockquote>
+<p>上面的例子中，启动 <code>sshd</code> ，执行的命令是 <code>/usr/sbin/sshd -D $OPTIONS</code> ，其中的变量 <code>$OPTIONS</code> 就来自 <code>EnvironmentFile</code> 字段指定的环境参数文件。</p>
+<p>与之作用相似的，还有如下这些字段。</p>
+<blockquote>
+<ul>
+<li><code>ExecReload字段</code>：重启服务时执行的命令</li>
+<li><code>ExecStop字段</code>：停止服务时执行的命令</li>
+<li><code>ExecStartPre字段</code>：启动服务之前执行的命令</li>
+<li><code>ExecStartPost字段</code>：启动服务之后执行的命令</li>
+<li><code>ExecStopPost字段</code>：停止服务之后执行的命令</li>
+</ul>
+</blockquote>
+<p>请看下面的例子。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">ExecStart</span>=/bin/echo execstart1</span><br><span class="line"><span class="attr">ExecStart</span>=</span><br><span class="line"><span class="attr">ExecStart</span>=/bin/echo execstart2</span><br><span class="line"><span class="attr">ExecStartPost</span>=/bin/echo post1</span><br><span class="line"><span class="attr">ExecStartPost</span>=/bin/echo post2</span><br></pre></td></tr></table></figure>
+<p>上面这个配置文件，第二行 <code>ExecStart</code> 设为空值，等于取消了第一行的设置，运行结果如下。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">execstart2</span><br><span class="line">post1</span><br><span class="line">post2</span><br></pre></td></tr></table></figure>
+<p>所有的启动设置之前，都可以加上一个连词号（<code>-</code>），表示 <strong>“抑制错误”</strong>，即发生错误的时候，不影响其他命令的执行。比如，<code>EnvironmentFile=-/etc/sysconfig/sshd</code>（注意等号后面的那个连词号），就表示即使 <code>/etc/sysconfig/sshd</code> 文件不存在，也不会抛出错误。</p>
+<h2 id="启动类型"><a href="#启动类型" class="headerlink" title="启动类型"></a>启动类型</h2><p><code>Type</code> 字段定义启动类型。它可以设置的值如下。</p>
+<blockquote>
+<ul>
+<li><code>simple（默认值）</code>：ExecStart字段启动的进程为主进程</li>
+<li><code>forking</code>：ExecStart字段将以fork()方式启动，此时父进程将会退出，子进程将成为主进程</li>
+<li><code>oneshot</code>：类似于simple，但只执行一次，Systemd 会等它执行完，才启动其他服务</li>
+<li><code>dbus</code>：类似于simple，但会等待 D-Bus 信号后启动</li>
+<li><code>notify</code>：类似于simple，启动结束后会发出通知信号，然后 Systemd 再启动其他服务</li>
+<li><code>idle</code>：类似于simple，但是要等到其他任务都执行完，才会启动该服务。一种使用场合是为让该服务的输出，不与其他服务的输出相混合</li>
+</ul>
+</blockquote>
+<p>下面是一个 <code>oneshot</code> 的例子，笔记本电脑启动时，要把触摸板关掉，配置文件可以这样写。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="attr">Description</span>=Switch-<span class="literal">off</span> Touchpad</span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">Type</span>=<span class="literal">on</span>eshot</span><br><span class="line"><span class="attr">ExecStart</span>=/usr/bin/touchpad-<span class="literal">off</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span>=multi-user.target</span><br></pre></td></tr></table></figure>
+<p>上面的配置文件，启动类型设为 <code>oneshot</code>，就表明这个服务只要运行一次就够了，不需要长期运行。</p>
+<p>如果关闭以后，将来某个时候还想打开，配置文件修改如下。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="attr">Description</span>=Switch-<span class="literal">off</span> Touchpad</span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">Type</span>=<span class="literal">on</span>eshot</span><br><span class="line"><span class="attr">ExecStart</span>=/usr/bin/touchpad-<span class="literal">off</span> start</span><br><span class="line"><span class="attr">ExecStop</span>=/usr/bin/touchpad-<span class="literal">off</span> stop</span><br><span class="line"><span class="attr">RemainAfterExit</span>=<span class="literal">yes</span></span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span>=multi-user.target</span><br></pre></td></tr></table></figure>
+<p>上面配置文件中，<code>RemainAfterExit</code>字段设为 <code>yes</code>，表示进程退出以后，服务仍然保持执行。这样的话，一旦使用 <code>systemctl stop</code> 命令停止服务，<code>ExecStop</code> 指定的命令就会执行，从而重新开启触摸板。</p>
+<h2 id="重启行为"><a href="#重启行为" class="headerlink" title="重启行为"></a>重启行为</h2><p><code>Service</code> 区块有一些字段，定义了重启行为。</p>
+<blockquote>
+<ul>
+<li><code>KillMode</code> 字段：定义 Systemd 如何停止 sshd 服务。</li>
+</ul>
+</blockquote>
+<p>上面这个例子中，将 <code>KillMode</code> 设为<code>process</code>，表示只停止主进程，不停止任何sshd 子进程，即子进程打开的 SSH session 仍然保持连接。这个设置不太常见，但对 sshd 很重要，否则你停止服务的时候，会连自己打开的 SSH session 一起杀掉。</p>
+<p><code>KillMode</code> 字段可以设置的值如下。</p>
+<blockquote>
+<ul>
+<li><code>control-group（默认值）</code>：当前控制组里面的所有子进程，都会被杀掉</li>
+<li><code>process</code>：只杀主进程</li>
+<li><code>mixed</code>：主进程将收到 SIGTERM 信号，子进程收到 SIGKILL 信号</li>
+<li><code>none</code>：没有进程会被杀掉，只是执行服务的 stop 命令。</li>
+</ul>
+</blockquote>
+<p>接下来是<code>Restart</code>字段。</p>
+<blockquote>
+<ul>
+<li><code>Restart</code>字段：定义了 sshd 退出后，Systemd 的重启方式。</li>
+</ul>
+</blockquote>
+<p>上面的例子中，<code>Restart</code>设为<code>on-failure</code>，表示任何意外的失败，就将重启sshd。如果 sshd 正常停止（比如执行<code>systemctl stop</code>命令），它就不会重启。</p>
+<p><code>Restart</code> 字段可以设置的值如下。</p>
+<blockquote>
+<ul>
+<li><code>no（默认值）</code>：退出后不会重启</li>
+<li><code>on-success</code>：只有正常退出时（退出状态码为0），才会重启</li>
+<li><code>on-failure</code>：非正常退出时（退出状态码非0），包括被信号终止和超时，才会重启</li>
+<li><code>on-abnormal</code>：只有被信号终止和超时，才会重启</li>
+<li><code>on-abort</code>：只有在收到没有捕捉到的信号终止时，才会重启</li>
+<li><code>on-watchdog</code>：超时退出，才会重启</li>
+<li><code>always</code>：不管是什么退出原因，总是重启</li>
+</ul>
+</blockquote>
+<p>对于守护进程，推荐设为 <code>on-failure</code>。对于那些允许发生错误退出的服务，可以设为 <code>on-abnormal</code>。</p>
+<p>最后是<code>RestartSec</code>字段。</p>
+<blockquote>
+<ul>
+<li><code>RestartSec</code>字段：表示 Systemd 重启服务之前，需要等待的秒数。上面的例子设为等待42秒。</li>
+</ul>
+</blockquote>
+<h1 id="七、-Install-区块"><a href="#七、-Install-区块" class="headerlink" title="七、[Install] 区块"></a>七、<code>[Install]</code> 区块</h1><p><code>Install</code>区块，定义如何安装这个配置文件，即怎样做到开机启动。</p>
+<blockquote>
+<ul>
+<li><code>WantedBy</code>字段：表示该服务所在的 Target。</li>
+</ul>
+</blockquote>
+<p><code>Target</code>的含义是服务组，表示一组服务。<code>WantedBy=multi-user.target</code>指的是，sshd 所在的 Target 是<code>multi-user.target</code>。</p>
+<p>这个设置非常重要，因为执行<code>systemctl enable sshd.service</code>命令时，<code>sshd.service</code>的一个符号链接，就会放在<code>/etc/systemd/system</code>目录下面的<code>multi-user.target.wants</code>子目录之中。</p>
+<p>Systemd 有默认的启动 <code>Target</code>。</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="string">systemctl </span><span class="built_in">get-default</span></span><br><span class="line"><span class="built_in"></span></span><br><span class="line"><span class="built_in">multi-user.target</span></span><br></pre></td></tr></table></figure>
+<p>上面的结果表示，默认的启动 Target 是 <code>multi-user.target</code>。在这个组里的所有服务，都将开机启动。这就是为什么 <code>systemctl enable</code> 命令能设置开机启动的原因。</p>
+<p>使用 Target 的时候，<code>systemctl list-dependencies</code> 命令和 <code>systemctl isolate</code> 命令也很有用。</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看 multi-user.target 包含的所有服务</span></span><br><span class="line">$ <span class="string">systemctl </span><span class="built_in">list-dependencies</span> <span class="string">multi-user.</span><span class="string">target</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#</span> 切换到另一个 <span class="string">target</span></span><br><span class="line"><span class="string">#</span> <span class="string">shutdown.</span><span class="string">target </span>就是关机状态</span><br><span class="line">$ <span class="string">sudo </span><span class="string">systemctl </span><span class="string">isolate </span><span class="string">shutdown.</span><span class="string">target</span></span><br></pre></td></tr></table></figure>
+<p>一般来说，常用的 Target 有两个：</p>
+<ul>
+<li>一个是<code>multi-user.target</code>，表示多用户命令行状态；</li>
+<li>另一个是<code>graphical.target</code>，表示图形用户状态，它依赖于<code>multi-user.target</code>。</li>
+</ul>
+<p>官方文档有一张非常清晰的 <u><a href="https://www.freedesktop.org/software/systemd/man/bootup.html#System%20Manager%20Bootup" target="_blank" rel="noopener">Target 依赖关系图</a></u> 。</p>
+<h1 id="八、Target-的配置文件"><a href="#八、Target-的配置文件" class="headerlink" title="八、Target 的配置文件"></a>八、<code>Target</code> 的配置文件</h1><p><code>Target</code> 也有自己的配置文件。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl cat multi-user.target</span><br><span class="line"></span><br><span class="line">[Unit]</span><br><span class="line"><span class="attribute">Description</span>=Multi-User System</span><br><span class="line"><span class="attribute">Documentation</span>=man:systemd.special(7)</span><br><span class="line"><span class="attribute">Requires</span>=basic.target</span><br><span class="line"><span class="attribute">Conflicts</span>=rescue.service rescue.target</span><br><span class="line"><span class="attribute">After</span>=basic.target rescue.service rescue.target</span><br><span class="line"><span class="attribute">AllowIsolate</span>=<span class="literal">yes</span></span><br></pre></td></tr></table></figure>
+<p>注意，Target 配置文件里面没有启动命令。</p>
+<p>上面输出结果中，主要字段含义如下。</p>
+<blockquote>
+<ul>
+<li><code>Requires</code>字段：要求<code>basic.target</code>一起运行。</li>
+<li><code>Conflicts</code>字段：冲突字段。如果<code>rescue.service</code>或<code>rescue.target</code>正在运行，<code>multi-user.target</code>就不能运行，反之亦然。</li>
+<li><code>After</code>：表示<code>multi-user.target</code>在<code>basic.target</code> 、 <code>rescue.service</code>、 <code>rescue.target</code>之后启动，如果它们有启动的话</li>
+<li><code>AllowIsolate</code>：允许使用<code>systemctl isolate</code>命令切换到<code>multi-user.target</code>。</li>
+</ul>
+</blockquote>
+<h1 id="九、修改配置文件后重启"><a href="#九、修改配置文件后重启" class="headerlink" title="九、修改配置文件后重启"></a>九、修改配置文件后重启</h1><p>修改配置文件以后，需要重新加载配置文件，然后重新启动相关服务。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重新加载配置文件</span></span><br><span class="line"><span class="variable">$ </span>sudo systemctl daemon-reload</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启相关服务</span></span><br><span class="line"><span class="variable">$ </span>sudo systemctl restart foobar</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/02/07/Systemed-Tutorial-Actual-Combat/" target="_blank" title="Systemd 入门教程:「实战篇」">http://blog.caoxl.com/2018/02/07/Systemed-Tutorial-Actual-Combat/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Systemd/">Systemd</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/07/Linux-Boot-Process/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Linux 的启动流程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/07/Systemed-Tutorial-Commands/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Systemd 入门教程:「命令篇」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、开机启动"><span class="nav-number">1.</span> <span class="nav-text">一、开机启动</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、启动服务"><span class="nav-number">2.</span> <span class="nav-text">二、启动服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、停止服务"><span class="nav-number">3.</span> <span class="nav-text">三、停止服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、读懂配置文件"><span class="nav-number">4.</span> <span class="nav-text">四、读懂配置文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五、-Unit-区块：启动顺序与依赖关系。"><span class="nav-number">5.</span> <span class="nav-text">五、[Unit] 区块：启动顺序与依赖关系。</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#六、-Service-区块：启动行为"><span class="nav-number">6.</span> <span class="nav-text">六、[Service] 区块：启动行为</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#启动命令"><span class="nav-number">6.1.</span> <span class="nav-text">启动命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动类型"><span class="nav-number">6.2.</span> <span class="nav-text">启动类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重启行为"><span class="nav-number">6.3.</span> <span class="nav-text">重启行为</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#七、-Install-区块"><span class="nav-number">7.</span> <span class="nav-text">七、[Install] 区块</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#八、Target-的配置文件"><span class="nav-number">8.</span> <span class="nav-text">八、Target 的配置文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#九、修改配置文件后重启"><span class="nav-number">9.</span> <span class="nav-text">九、修改配置文件后重启</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

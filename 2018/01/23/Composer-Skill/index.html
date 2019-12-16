@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>composer 小技巧 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Composer">
+  
+  
+  
+  
+  <meta name="description" content="Composer 是 PHP 的一个依赖管理工具。它允许你申明项目所依赖的代码库，它会在你的项目中为你安装他们。  配合 Composer中文文档 使用">
+<meta name="keywords" content="Composer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Composer 小技巧">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/23/Composer-Skill/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Composer 是 PHP 的一个依赖管理工具。它允许你申明项目所依赖的代码库，它会在你的项目中为你安装他们。  配合 Composer中文文档 使用">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:28:24.449Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Composer 小技巧">
+<meta name="twitter:description" content="Composer 是 PHP 的一个依赖管理工具。它允许你申明项目所依赖的代码库，它会在你的项目中为你安装他们。  配合 Composer中文文档 使用">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Composer-Skill" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Composer 小技巧
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/23/Composer-Skill/" class="article-date">
+	  <time datetime="2018-01-23T08:52:13.000Z" itemprop="datePublished">2018-01-23</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/开发工具/">开发工具</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>Composer 是 PHP 的一个依赖管理工具。它允许你申明项目所依赖的代码库，它会在你的项目中为你安装他们。</p>
+<blockquote>
+<p>配合 <a href="https://www.kancloud.cn/thinkphp/composer/35668" target="_blank" rel="noopener">Composer中文文档</a> 使用</p>
+</blockquote>
+</blockquote>
+<a id="more"></a>
+<p>记录一些 Composer 使用小技巧</p>
+<h1 id="仅更新单个库"><a href="#仅更新单个库" class="headerlink" title="仅更新单个库"></a>仅更新单个库</h1><p>只想更新某个特定的库，不想更新它的所有依赖，很简单：</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer update foo/<span class="built_in">bar</span></span><br></pre></td></tr></table></figure>
+<p>此外，这个技巧还可以用来解决“警告信息问题”。你一定见过这样的警告信息：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Warning</span>: The <span class="keyword">lock</span> file <span class="keyword">is</span> <span class="keyword">not</span> up <span class="keyword">to</span> <span class="type">date</span> <span class="keyword">with</span> the latest changes <span class="keyword">in</span> composer.json, </span><br><span class="line">you may be getting outdated dependencies, run <span class="keyword">update</span> <span class="keyword">to</span> <span class="keyword">update</span> them.</span><br></pre></td></tr></table></figure>
+<p>那么我们该怎么办呢？<code>update</code>命令可以更新<code>lock</code>文件，但是如果仅仅增加了一些描述，应该是不打算更新任何库。这种情况下，只需<code>update nothing</code>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ composer <span class="keyword">update</span> <span class="keyword">nothing</span></span><br><span class="line"></span><br><span class="line">Loading composer repositories <span class="keyword">with</span> <span class="keyword">package</span> information</span><br><span class="line">Updating dependencies</span><br><span class="line"><span class="keyword">Nothing</span> <span class="keyword">to</span> <span class="keyword">install</span> <span class="keyword">or</span> <span class="keyword">update</span></span><br><span class="line">Writing <span class="keyword">lock</span> <span class="keyword">file</span></span><br><span class="line">Generating autoload files</span><br></pre></td></tr></table></figure>
+<p>这样一来，Composer不会更新库，但是会更新<code>composer.lock</code>。注意<code>nothing</code>并不是<code>update</code>命令的关键字。只是没有<code>nothing</code> 这个包导致的结果。如果你输入<code>foobar</code>，结果也一样<br>如果你用的<code>Composer</code>版本足够新，那么你可以直接使用<code>--lock</code>选项：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer <span class="keyword">update</span> <span class="comment">--lock</span></span><br></pre></td></tr></table></figure>
+<h1 id="不编辑composer-json的情况下安装库"><a href="#不编辑composer-json的情况下安装库" class="headerlink" title="不编辑composer.json的情况下安装库"></a>不编辑composer.json的情况下安装库</h1><p>你可能会觉得每安装一个库都需要修改<code>composer.json</code>太麻烦，那么你可以直接使用<code>require</code>命令</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">composer</span> <span class="meta">require</span> <span class="string">"foo/bar:1.0.0"</span></span><br></pre></td></tr></table></figure>
+<p>这个方法也可以用来快速地新开一个项目。<code>init</code>命令有<code>--require</code>选项，可以自动编写<code>composer.json</code>：（注意我们使用-n，这样就不用回答问题）</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>composer init --<span class="keyword">require</span>=foo/<span class="symbol">bar:</span><span class="number">1.0</span>.0 -n</span><br><span class="line"></span><br><span class="line"><span class="variable">$ </span>cat composer.json</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"require"</span>: &#123;</span><br><span class="line">        <span class="string">"foo/bar"</span>: <span class="string">"1.0.0"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="派生很容易"><a href="#派生很容易" class="headerlink" title="派生很容易"></a>派生很容易</h1><p>初始化的时候，你试过create-project命令么？</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">composer </span><span class="built_in">create-project</span> <span class="string">doctrine/</span><span class="string">orm </span><span class="string">path </span>2.2.0</span><br></pre></td></tr></table></figure>
+<p>这会自动克隆仓库，并检出指定的版本。克隆库的时候用这个命令很方便，不需要搜寻原始的URI了</p>
+<h1 id="考虑缓存，dist包优先"><a href="#考虑缓存，dist包优先" class="headerlink" title="考虑缓存，dist包优先"></a>考虑缓存，dist包优先</h1><p>最近一年以来的Composer会自动存档你下载的<code>dist</code>包。默认设置下，dist包用于加了tag的版本，例如 <code>&quot;symfony/symfony&quot;: &quot;v2.1.4&quot;</code>，或者是通配符或版本区间，<code>&quot;2.1.*&quot;或&quot;&gt;=2.2,&lt;2.3-dev&quot;</code>（如果你使用<code>stable</code>作为你的<code>minimum-stability</code>）。</p>
+<p><code>dist</code>包也可以用于诸如 <code>dev-master</code> 之类的分支，Github允许你下载某个git引用的压缩包。为了强制使用压缩包，而不是克隆源代码，你可以使用<code>install</code>和<code>updat</code>e的<code>--prefer-dist</code>选项。</p>
+<p>下面是一个例子（我使用了–profile选项来显示执行时间）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$ composer init <span class="comment">--require="twig/twig:1.*" -n --profile</span></span><br><span class="line">Memory usage: 3.94MB (peak: 4.08MB), time: 0s</span><br><span class="line"></span><br><span class="line">$ composer <span class="keyword">install</span> <span class="comment">--profile</span></span><br><span class="line">Loading composer repositories <span class="keyword">with</span> <span class="keyword">package</span> information</span><br><span class="line">Installing dependencies</span><br><span class="line">  - Installing twig/twig (v1<span class="number">.12</span><span class="number">.2</span>)</span><br><span class="line">    Downloading: <span class="number">100</span>%</span><br><span class="line"></span><br><span class="line">Writing <span class="keyword">lock</span> <span class="keyword">file</span></span><br><span class="line">Generating autoload files</span><br><span class="line"><span class="keyword">Memory</span> <span class="keyword">usage</span>: <span class="number">10.13</span>MB (peak: <span class="number">12.65</span>MB), <span class="built_in">time</span>: <span class="number">4.71</span>s</span><br><span class="line"></span><br><span class="line">$ rm -rf vendor</span><br><span class="line"></span><br><span class="line">$ composer <span class="keyword">install</span> <span class="comment">--profile</span></span><br><span class="line">Loading composer repositories <span class="keyword">with</span> <span class="keyword">package</span> information</span><br><span class="line">Installing dependencies <span class="keyword">from</span> <span class="keyword">lock</span> <span class="keyword">file</span></span><br><span class="line">  - Installing twig/twig (v1<span class="number">.12</span><span class="number">.2</span>)</span><br><span class="line">    Loading <span class="keyword">from</span> <span class="keyword">cache</span></span><br><span class="line"></span><br><span class="line">Generating autoload files</span><br><span class="line"><span class="keyword">Memory</span> <span class="keyword">usage</span>: <span class="number">4.96</span>MB (peak: <span class="number">5.57</span>MB), <span class="built_in">time</span>: <span class="number">0.45</span>s</span><br></pre></td></tr></table></figure>
+<p>这里，<code>twig/twig:1.12.2</code> 的压缩包被保存在 <code>~/.composer/cache/files/twig/twig/1.12.2.0-v1.12.2.zip</code>。重新安装包时直接使用。</p>
+<h1 id="若要修改，源代码优先"><a href="#若要修改，源代码优先" class="headerlink" title="若要修改，源代码优先"></a>若要修改，源代码优先</h1><p>当你需要修改库的时候，克隆源代码就比下载包方便了。你可以使用<code>--prefer-source</code>来强制选择克隆源代码。</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer <span class="keyword">update</span> symfony/yaml <span class="comment">--prefer-source</span></span><br></pre></td></tr></table></figure>
+<p>接下来你可以修改文件：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">composer status -v</span><br><span class="line"></span><br><span class="line">You have changes <span class="keyword">in</span> the following <span class="string">dependencies:</span></span><br><span class="line"><span class="regexp">/path/</span>to<span class="regexp">/app/</span>vendor<span class="regexp">/symfony/</span>yaml<span class="regexp">/Symfony/</span>Component/<span class="string">Yaml:</span></span><br><span class="line">    M Dumper.php</span><br></pre></td></tr></table></figure>
+<p>当你试图更新一个修改过的库的时候，Composer会提醒你，询问是否放弃修改：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ composer update</span><br><span class="line"></span><br><span class="line">Loading composer repositories with package information</span><br><span class="line">Updating dependencies</span><br><span class="line">  - Updating symfony/symfony v2<span class="number">.2</span><span class="number">.0</span> (v2<span class="number">.2</span><span class="number">.0</span>- =&gt; v2<span class="number">.2</span><span class="number">.0</span>)</span><br><span class="line">    The package has modified files:</span><br><span class="line">    M Dumper.php</span><br><span class="line">    Discard changes [y,n,v,s,?]?</span><br></pre></td></tr></table></figure>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><h2 id="为生产环境作准备"><a href="#为生产环境作准备" class="headerlink" title="为生产环境作准备"></a>为生产环境作准备</h2><p>最后提醒一下，在部署代码到生产环境的时候，别忘了优化一下自动加载：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer <span class="built_in">dump</span>-autoload <span class="comment">--optimize</span></span><br></pre></td></tr></table></figure>
+<p>安装包的时候可以同样使用 <code>--optimize-autoloader</code> 。不加这一选项，你可能会发现<strong>20%到25%的性能损失</strong></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://www.kancloud.cn/thinkphp/composer/35668" target="_blank" rel="noopener">Composer中文文档</a></li>
+<li><a href="http://composer.json.jolicode.com/" target="_blank" rel="noopener">Composer Cheat Sheet for developers</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/23/Composer-Skill/" target="_blank" title="Composer 小技巧">http://blog.caoxl.com/2018/01/23/Composer-Skill/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Composer/">Composer</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/23/PHP-Common-Code-Notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          「代码复用」PHP常用代码
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/23/Access-YLH-API-In-Web-APP/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">接入云联惠 API「开发日志」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#仅更新单个库"><span class="nav-number">1.</span> <span class="nav-text">仅更新单个库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#不编辑composer-json的情况下安装库"><span class="nav-number">2.</span> <span class="nav-text">不编辑composer.json的情况下安装库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#派生很容易"><span class="nav-number">3.</span> <span class="nav-text">派生很容易</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#考虑缓存，dist包优先"><span class="nav-number">4.</span> <span class="nav-text">考虑缓存，dist包优先</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#若要修改，源代码优先"><span class="nav-number">5.</span> <span class="nav-text">若要修改，源代码优先</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他"><span class="nav-number">6.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为生产环境作准备"><span class="nav-number">6.1.</span> <span class="nav-text">为生产环境作准备</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mysql「性能优化」 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MySQL优化">
+  
+  
+  
+  
+  <meta name="description" content="数据库优化与检查是一项比较艰难的任务，必须借助于一些工具，而且往往问题比较隐蔽，多是在部署在生产环境一段时间之后，因为数据库的性能瓶颈，导致一系列问题的产生。">
+<meta name="keywords" content="MySQL,优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL「性能优化」">
+<meta property="og:url" content="http://blog.caoxl.com/2018/02/01/MySQL-Performance-Optimization/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="数据库优化与检查是一项比较艰难的任务，必须借助于一些工具，而且往往问题比较隐蔽，多是在部署在生产环境一段时间之后，因为数据库的性能瓶颈，导致一系列问题的产生。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:29:05.169Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL「性能优化」">
+<meta name="twitter:description" content="数据库优化与检查是一项比较艰难的任务，必须借助于一些工具，而且往往问题比较隐蔽，多是在部署在生产环境一段时间之后，因为数据库的性能瓶颈，导致一系列问题的产生。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MySQL-Performance-Optimization" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MySQL「性能优化」
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/02/01/MySQL-Performance-Optimization/" class="article-date">
+	  <time datetime="2018-02-01T07:17:44.000Z" itemprop="datePublished">2018-02-01</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>数据库优化与检查是一项比较艰难的任务，必须借助于一些工具，而且往往问题比较隐蔽，多是在部署在生产环境一段时间之后，因为数据库的性能瓶颈，导致一系列问题的产生。</p>
+<a id="more"></a>
+<h1 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h1><ul>
+<li>查看mysql是否开启慢查询日志</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'slow_query_log'</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> slow_query_log=<span class="keyword">on</span>; //开启慢查日志</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置没有索引的记录到慢查询日志</li>
+</ul>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> log_queries_not_using_indexes=<span class="keyword">on</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看超过多长时间的sql进行记录到慢查询日志</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'long_query_time'</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> long_query_time=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<h1 id="慢查日志分析工具"><a href="#慢查日志分析工具" class="headerlink" title="慢查日志分析工具"></a>慢查日志分析工具</h1><h2 id="mysqldumpslow"><a href="#mysqldumpslow" class="headerlink" title="mysqldumpslow"></a>mysqldumpslow</h2><p>使用<code>mysqldumpslow -h</code>来查看帮助信息<br>使用<code>mysqldumpslow -t 3 /home/mysql/data/mysql-slow.log | more</code>来对日志进行分析。</p>
+<h2 id="pt-query-digest"><a href="#pt-query-digest" class="headerlink" title="pt-query-digest"></a>pt-query-digest</h2><p>输出到文件：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">pt-query-digest</span> <span class="selector-tag">show</span><span class="selector-class">.log</span> &gt; <span class="selector-tag">slow_log</span><span class="selector-class">.repor</span></span><br></pre></td></tr></table></figure>
+<h1 id="如何通过慢查日志发现有问题的SQL？"><a href="#如何通过慢查日志发现有问题的SQL？" class="headerlink" title="如何通过慢查日志发现有问题的SQL？"></a>如何通过慢查日志发现有问题的SQL？</h1><h2 id="查询次数多且每次查询占用时间长的SQL"><a href="#查询次数多且每次查询占用时间长的SQL" class="headerlink" title="查询次数多且每次查询占用时间长的SQL"></a>查询次数多且每次查询占用时间长的SQL</h2><p>通常为<code>pt-query-digest</code>分析的前几个查询</p>
+<h2 id="IO大的SQL，数据库的主要瓶颈就在于IO"><a href="#IO大的SQL，数据库的主要瓶颈就在于IO" class="headerlink" title="IO大的SQL，数据库的主要瓶颈就在于IO"></a>IO大的SQL，数据库的主要瓶颈就在于IO</h2><p>注意pt-query-digest分析中的 <code>Rows examine</code> 项。<strong>扫描行数多，占用io大</strong></p>
+<h2 id="未命中索引的sql"><a href="#未命中索引的sql" class="headerlink" title="未命中索引的sql"></a>未命中索引的sql</h2><p>注意<code>pt-query-digest</code>分析中<strong>Rows examine（扫描行数）</strong>和<strong>Rows send（发送行数）</strong>的对比<br><strong>如果这个比值比较大，说明索引命中率不高</strong></p>
+<h1 id="怎么优化有问题的sql"><a href="#怎么优化有问题的sql" class="headerlink" title="怎么优化有问题的sql"></a>怎么优化有问题的sql</h1><h2 id="使用explain查询SQL的执行计划"><a href="#使用explain查询SQL的执行计划" class="headerlink" title="使用explain查询SQL的执行计划"></a>使用explain查询SQL的执行计划</h2><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>table</code>：表名；</li>
+<li><code>type</code>：连接的类型，<code>const</code>、<code>eq_reg</code>、<code>ref</code>、<code>range</code>、<code>index</code>和<code>ALL</code>；<ul>
+<li>const：主键、索引;</li>
+<li>eq_reg：主键、索引的范围查找;</li>
+<li>ref：连接的查找（join）;</li>
+<li>range：索引的范围查找;</li>
+<li>index：索引的扫描;</li>
+<li>All：表扫描</li>
+</ul>
+</li>
+<li><code>possible_keys</code>：可能用到的索引；</li>
+<li><code>key</code>：实际使用的索引；</li>
+<li><code>key_len</code>：索引的长度，越短越好；因为mysql每次的读取都是以页为单位，一页中的索引越大，查询的效率就越高</li>
+<li><code>ref</code>：索引的哪一列被使用了，常数较好；</li>
+<li><code>rows</code>：mysql认为必须检查的用来返回请求数据的行数；</li>
+<li><code>extra</code>：using filesort、using temporary（常出现在使用order by时）时需要优化，因为都是用了外部文件或者临时表的存储</li>
+</ul>
+<h2 id="选择合适的索引列"><a href="#选择合适的索引列" class="headerlink" title="选择合适的索引列"></a>选择合适的索引列</h2><ul>
+<li><p>在<code>where</code>，<code>group by</code>，<code>order by</code>，<code>on</code>从句中出现的列</p>
+</li>
+<li><p>索引字段越小越好(因为数据库的存储单位是页，一页中能存下的数据越多越好 )<br>索引字段越小越好，是因为数据库的存储是以页为单位，一页数据存储越大，获取的数据也越多，对我们io的效率也更好</p>
+</li>
+<li><p>离散度大得列放在联合索引前面</p>
+</li>
+</ul>
+<p>计算离散度:</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(<span class="keyword">distinct</span> customer_id), <span class="built_in">count</span>(<span class="keyword">distinct</span> staff_id) <span class="keyword">from</span> payment;</span><br></pre></td></tr></table></figure>
+<p>查找字段的唯一值（不同数的个数）来确定count（distinct customer_id）离散度的大小来确定索引建立在哪一个列上.</p>
+<p>离散度，我的理解就是唯一性了，比如主键，绝对是离散度最大的，而一些用来标识状态标识的列，基本只有几个可选项，离散度就很小</p>
+<p><strong>index(col1,col2)</strong> 在建立联合索引时，离散度高的列放到前面</p>
+<h2 id="冗余索引检查"><a href="#冗余索引检查" class="headerlink" title="冗余索引检查"></a>冗余索引检查</h2><p>索引存在的目的是为了加快查询的效率，不过不是索引越多越好，建立索引要适当才好。</p>
+<p>过多的索引会增加数据库判断使用什么索引来查询的开销，所以，有时候也会出现以去掉重复或者无效的索引为优化手段的优化方式。</p>
+<p>冗余索引是指多个索引的前缀列相同，或是在联合索引中包含了主键的索引，下面这个例子中key(name, id)就是一个冗余索引</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">test</span>(<span class="keyword">id</span> <span class="built_in">int</span> <span class="keyword">not</span> <span class="literal">null</span> primay <span class="keyword">key</span>,<span class="keyword">name</span> <span class="built_in">varchar</span>(<span class="number">10</span>) <span class="keyword">not</span> <span class="literal">null</span>,title <span class="built_in">varchar</span>(<span class="number">50</span>) <span class="keyword">not</span> <span class="literal">null</span>, <span class="keyword">key</span>(<span class="keyword">name</span>,<span class="keyword">id</span>))<span class="keyword">engine</span>=<span class="keyword">innodb</span>;</span><br></pre></td></tr></table></figure>
+<p>主键索引本来就是唯一索引</p>
+<h3 id="索引检查语句"><a href="#索引检查语句" class="headerlink" title="索引检查语句"></a>索引检查语句</h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">use information_schema;</span><br><span class="line"><span class="keyword">SELECT</span> a.TABLE_SCHEMA <span class="keyword">AS</span> <span class="string">'db'</span></span><br><span class="line">    ,a.<span class="built_in">TABLE_NAME</span> <span class="keyword">AS</span> <span class="string">'table'</span></span><br><span class="line">    ,a.INDEX_NAME <span class="keyword">AS</span> <span class="string">'index1'</span></span><br><span class="line">    ,b.INDEX_NAME <span class="keyword">AS</span> <span class="string">'index2'</span></span><br><span class="line">    ,a.<span class="built_in">COLUMN_NAME</span> <span class="keyword">AS</span> <span class="string">'re_col'</span></span><br><span class="line"><span class="keyword">FROM</span> <span class="keyword">STATISTICS</span> a</span><br><span class="line">    <span class="keyword">JOIN</span> <span class="keyword">STATISTICS</span> b <span class="keyword">ON</span> a.TABLE_SCHEMA = b.TABLE_SCHEMA</span><br><span class="line"><span class="keyword">AND</span> a.<span class="built_in">TABLE_NAME</span> = b.<span class="built_in">TABLE_NAME</span></span><br><span class="line">    <span class="keyword">AND</span> a.SEQ_IN_INDEX = b.SEQ_IN_INDEX</span><br><span class="line">    <span class="keyword">AND</span> a.<span class="built_in">COLUMN_NAME</span> = b.<span class="built_in">COLUMN_NAME</span></span><br><span class="line"><span class="keyword">WHERE</span> a.SEQ_IN_INDEX = <span class="number">1</span> <span class="keyword">AND</span> a.INDEX_NAME &lt;&gt; b.INDEX_NAME</span><br></pre></td></tr></table></figure>
+<h3 id="索引检查工具-pt-duplicate-key-checker"><a href="#索引检查工具-pt-duplicate-key-checker" class="headerlink" title="索引检查工具 pt-duplicate-key-checker"></a>索引检查工具 <code>pt-duplicate-key-checker</code></h3><p>查询冗余索引工具 <code>pt-duplicate-key-checker -uroot -p &#39;123456&#39; -h 127.0.0.1</code></p>
+<h2 id="字段类型优化"><a href="#字段类型优化" class="headerlink" title="字段类型优化"></a>字段类型优化</h2><ul>
+<li><p>可以使用int类型存储时间类型：</p>
+<ul>
+<li>int类型转时间类型函数：<code>from_unixtime()</code></li>
+<li>时间类型转int类型：<code>unix_timestemp()</code></li>
+</ul>
+</li>
+<li><p>可以使用bigint存储ip地址</p>
+<ul>
+<li>bigint类型转ip函数：<code>inet_aton()</code></li>
+<li>ip转bigint类型：<code>inet_ntoa()</code></li>
+</ul>
+</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://jinfang.life/posts/a8073527/" target="_blank" rel="noopener">Mysql性能优化笔记</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/02/01/MySQL-Performance-Optimization/" target="_blank" title="MySQL「性能优化」">http://blog.caoxl.com/2018/02/01/MySQL-Performance-Optimization/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/01/Be-Precautional-When-People-Call-You-Niubier/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Programmer VS Coder 「Who You Want To Be」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/01/Sublime-Text-Notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Sublime Text</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#常用参数"><span class="nav-number">1.</span> <span class="nav-text">常用参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#慢查日志分析工具"><span class="nav-number">2.</span> <span class="nav-text">慢查日志分析工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mysqldumpslow"><span class="nav-number">2.1.</span> <span class="nav-text">mysqldumpslow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-query-digest"><span class="nav-number">2.2.</span> <span class="nav-text">pt-query-digest</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何通过慢查日志发现有问题的SQL？"><span class="nav-number">3.</span> <span class="nav-text">如何通过慢查日志发现有问题的SQL？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查询次数多且每次查询占用时间长的SQL"><span class="nav-number">3.1.</span> <span class="nav-text">查询次数多且每次查询占用时间长的SQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO大的SQL，数据库的主要瓶颈就在于IO"><span class="nav-number">3.2.</span> <span class="nav-text">IO大的SQL，数据库的主要瓶颈就在于IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#未命中索引的sql"><span class="nav-number">3.3.</span> <span class="nav-text">未命中索引的sql</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#怎么优化有问题的sql"><span class="nav-number">4.</span> <span class="nav-text">怎么优化有问题的sql</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用explain查询SQL的执行计划"><span class="nav-number">4.1.</span> <span class="nav-text">使用explain查询SQL的执行计划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选择合适的索引列"><span class="nav-number">4.2.</span> <span class="nav-text">选择合适的索引列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#冗余索引检查"><span class="nav-number">4.3.</span> <span class="nav-text">冗余索引检查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#索引检查语句"><span class="nav-number">4.3.1.</span> <span class="nav-text">索引检查语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引检查工具-pt-duplicate-key-checker"><span class="nav-number">4.3.2.</span> <span class="nav-text">索引检查工具 pt-duplicate-key-checker</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字段类型优化"><span class="nav-number">4.4.</span> <span class="nav-text">字段类型优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

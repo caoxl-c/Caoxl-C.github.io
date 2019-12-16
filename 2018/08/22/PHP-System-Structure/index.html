@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php 系统结构 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHP系统结构">
+  
+  
+  
+  
+  <meta name="description" content="php从下到上是一个4层体系:">
+<meta name="keywords" content="PHP,系统结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP 系统结构">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/22/PHP-System-Structure/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="php从下到上是一个4层体系:">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP 系统结构">
+<meta name="twitter:description" content="php从下到上是一个4层体系:">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-System-Structure" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP 系统结构
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/22/PHP-System-Structure/" class="article-date">
+	  <time datetime="2018-08-22T03:46:19.000Z" itemprop="datePublished">2018-08-22</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>php从下到上是一个4层体系:</p>
+</blockquote>
+<a id="more"></a>
+<ul>
+<li><strong>Zend引擎</strong></li>
+</ul>
+<p>​ Zend整体用纯c实现,是php的内核部分,它将php代码翻译(词法、语法解 析等一系列编译过程)为可执行opcode的处理并实现相应的处理方法、实 现了基本的数据结构(如hashtable、oo)、内存分配及管理、提供了相应 的api方法供外部调用,是一切的核心,所有的外围功能均围绕zend实现。</p>
+<ul>
+<li><strong>Extensions</strong></li>
+</ul>
+<p>围绕着zend引擎,extensions通过组件式的方式提供各种基础服务,我们常 见的各种内置函数(如array系列)、标准库等都是通过extension来实现, 用户也可以根据需要实现自己的extension以达到功能扩展、性能优化等目 的(如贴吧正在使用的php中间层、富文本解析就是extension的典型应 用)。</p>
+<ul>
+<li><strong>Sapi</strong></li>
+</ul>
+<p>Sapi全称是Server Application Programming Interface,也就是服务端应用编 程接口,sapi通过一系列钩子函数,使得php可以和外围交互数据,这是 php非常优雅和成功的一个设计,通过sapi成功的将php本身和上层应用解 耦隔离,php可以不再考虑如何针对不同应用进行兼容,而应用本身也可以 针对自己的特点实现不同的处理方式。</p>
+<ul>
+<li><strong>上层应用</strong></li>
+</ul>
+<p>这就是我们平时编写的php程序,通过不同的sapi方式得到各种各样的应用 模式,如通过webserver实现web应用、在命令行下以脚本方式运行等等。</p>
+<h1 id="构架思想"><a href="#构架思想" class="headerlink" title="构架思想"></a>构架思想</h1><ul>
+<li>引擎(Zend)+组件(ext)的模式降低内部耦合，中间层(sapi)隔绝web server和php。</li>
+<li>如果php是一辆车,那么车的框架就是php本身，Zend是车的引擎(发动机) ，Ext下面的各种组件就是车的轮子 Sapi可以看做是公路,车可以跑在不同类型的公路上。而一次php程序的执行就是汽车跑在公路上。 因此,我们需要：<strong>性能优异的引擎+合适的车轮+正确的跑道</strong>。</li>
+</ul>
+<h1 id="Apache和php的关系"><a href="#Apache和php的关系" class="headerlink" title="Apache和php的关系"></a>Apache和php的关系</h1><p>Apache对于php的解析,就是通过众多Module中的php Module来完成的。</p>
+<p>把php最终集成到Apache系统中,还需要对Apache进行一些必要的设置。</p>
+<p>这里,我们就以php的mod_php5 SAPI运行模式为例进行讲解,至于SAPI这个概念后面我们还会详细讲解。</p>
+<p>假定我们安装的版本是Apache2 和 Php5,那么需要编辑Apache的主配置文 件http.conf,在其中加入下面的几行内容:</p>
+<ul>
+<li>Unix/Linux环境下:</li>
+</ul>
+<p><code>LoadModule php5_module modules/mod_php5.so</code><br><code>AddType application/x-httpd-php .php</code></p>
+<p>注:其中modules/mod_php5.so 是X系统环境下mod_php5.so文件的安装位置。</p>
+<ul>
+<li>Windows环境下:</li>
+</ul>
+<p><code>LoadModule php5_module d:/php/php5apache2.dll</code><br><code>AddType application/x-httpd-php .php</code></p>
+<p>注:其中d:/php/php5apache2.dll 是在Windows环境下php5apache2.dll文件 的安装位置</p>
+<p>这两项配置就是告诉Apache Server，以后收到的Url用户请求,凡是以php 作为后缀,就需要调用php5_module模块(mod_php5.so/ php5apache2.dll) 进行处理。</p>
+<h2 id="Apache请求处理循环详解"><a href="#Apache请求处理循环详解" class="headerlink" title="Apache请求处理循环详解"></a>Apache请求处理循环详解</h2><p>Apache 请求处理循环的11个阶段都做了哪些事情呢?</p>
+<h3 id="1、Post-Read-Request阶段"><a href="#1、Post-Read-Request阶段" class="headerlink" title="1、Post-Read-Request阶段"></a>1、Post-Read-Request阶段</h3><p>在正常请求处理流程中,这是模块可以插入钩子的第一个阶段。对于那些 想很早进入处理请求的模块来说,这个阶段可以被利用。</p>
+<h3 id="2、URI-Translation阶段"><a href="#2、URI-Translation阶段" class="headerlink" title="2、URI Translation阶段"></a>2、URI Translation阶段</h3><p>将请求的URL映射到本地文件系统。模块可以在这阶段插入钩子,执行自己的映射逻辑。 mod_alias就是利用这个阶段工作的。</p>
+<h3 id="3、Header-Parsing阶段"><a href="#3、Header-Parsing阶段" class="headerlink" title="3、Header Parsing阶段"></a>3、Header Parsing阶段</h3><p>检查请求的头部。由 于模块可以在请求处理流程的任何一个点上执行检查请求头部的任务,因 此这个钩子很少被使用。mod_setenvif就是利用这个阶段工作的。</p>
+<h3 id="4、Access-Control阶段"><a href="#4、Access-Control阶段" class="headerlink" title="4、Access Control阶段"></a>4、Access Control阶段</h3><p>根据配置文件检查是否 允许访问请求的资源。Apache的标准逻辑实现了允许和拒绝指令。 mod_authz_host就是利用这个阶段工作的。</p>
+<h3 id="5、Authentication阶段"><a href="#5、Authentication阶段" class="headerlink" title="5、Authentication阶段"></a>5、Authentication阶段</h3><p>按照配置文件设定的策 略对用户进行认证,并设定用户名区域。模块可以在这阶段插入钩子,实 现一个认证方法。</p>
+<h3 id="6、Authorization阶段"><a href="#6、Authorization阶段" class="headerlink" title="6、Authorization阶段"></a>6、Authorization阶段</h3><p>根据配置文件检查是否 允许认证过的用户执行请求的操作。模块可以在这阶段插入钩子,实现一 个用户权限管理的方法。</p>
+<h3 id="7、MIME-Type-Checking阶段"><a href="#7、MIME-Type-Checking阶段" class="headerlink" title="7、MIME Type Checking阶段"></a>7、MIME Type Checking阶段</h3><p>根据请求资源的 MIME类型的相关规则,判定将要使用的内容处理函数。标准模块 mod_negotiation和mod_mime实现了这个钩子。</p>
+<h3 id="8、FixUp阶段"><a href="#8、FixUp阶段" class="headerlink" title="8、FixUp阶段"></a>8、FixUp阶段</h3><p>这是一个通用的阶段,允许模块在内容生成器之前,运行任 何必要的处理流程。和Post_Read_Request类似,这是一个能够捕获任何信 息的钩子,也是最常使用的钩子。</p>
+<h3 id="9、Response阶段"><a href="#9、Response阶段" class="headerlink" title="9、Response阶段"></a>9、Response阶段</h3><p>生成返回客户端的内容,负 责给客户端发送一个恰当的回复。这个阶段是整个处理流程的核心部分。</p>
+<h3 id="10、Logging阶段"><a href="#10、Logging阶段" class="headerlink" title="10、Logging阶段"></a>10、Logging阶段</h3><p>在回复已经发送给客户端之 后记录事务。模块可能修改或者替换Apache的标准日志记录。</p>
+<h3 id="11、CleanUp阶段"><a href="#11、CleanUp阶段" class="headerlink" title="11、CleanUp阶段"></a>11、CleanUp阶段</h3><p>清理本次请求事务处理完成 之后遗留的环境,比如文件、目录的处理或者Socket的关闭等等,这是 Apache一次请求处理的最后一个阶段。</p>
+<h1 id="LAMP-架构"><a href="#LAMP-架构" class="headerlink" title="LAMP 架构"></a>LAMP 架构</h1><ul>
+<li><code>Liunx</code>: 属于操作系统的底层</li>
+<li><code>apache</code>服务器: 属于次服务器,沟通linux和PHP</li>
+<li><code>php</code>: 属于服务端编程语言,通过php_module 模块 和apache关联</li>
+<li><code>mysql</code>和其他web服务: 属于应用服务,通过PHP的Extensions外 挂模 块和mysql关联</li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/22/PHP-System-Structure/" target="_blank" title="PHP 系统结构">http://blog.caoxl.com/2018/08/22/PHP-System-Structure/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/系统结构/">系统结构</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/22/Computer-Jargon/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          计算机专业术语及其英文表达
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/22/Linux-find-cmd-install-package/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Linux查找命令或组件对应安装包的方法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#构架思想"><span class="nav-number">1.</span> <span class="nav-text">构架思想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Apache和php的关系"><span class="nav-number">2.</span> <span class="nav-text">Apache和php的关系</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache请求处理循环详解"><span class="nav-number">2.1.</span> <span class="nav-text">Apache请求处理循环详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、Post-Read-Request阶段"><span class="nav-number">2.1.1.</span> <span class="nav-text">1、Post-Read-Request阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、URI-Translation阶段"><span class="nav-number">2.1.2.</span> <span class="nav-text">2、URI Translation阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、Header-Parsing阶段"><span class="nav-number">2.1.3.</span> <span class="nav-text">3、Header Parsing阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、Access-Control阶段"><span class="nav-number">2.1.4.</span> <span class="nav-text">4、Access Control阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5、Authentication阶段"><span class="nav-number">2.1.5.</span> <span class="nav-text">5、Authentication阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6、Authorization阶段"><span class="nav-number">2.1.6.</span> <span class="nav-text">6、Authorization阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7、MIME-Type-Checking阶段"><span class="nav-number">2.1.7.</span> <span class="nav-text">7、MIME Type Checking阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8、FixUp阶段"><span class="nav-number">2.1.8.</span> <span class="nav-text">8、FixUp阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9、Response阶段"><span class="nav-number">2.1.9.</span> <span class="nav-text">9、Response阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10、Logging阶段"><span class="nav-number">2.1.10.</span> <span class="nav-text">10、Logging阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11、CleanUp阶段"><span class="nav-number">2.1.11.</span> <span class="nav-text">11、CleanUp阶段</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LAMP-架构"><span class="nav-number">3.</span> <span class="nav-text">LAMP 架构</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>linux scp 跨机远程拷贝 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Linuxscp">
+  
+  
+  
+  
+  <meta name="description" content="scp是secure copy的简写，用于在Linux下进行远程拷贝文件的命令，和它类似的命令有cp，不过cp只是在本机进行拷贝不能跨服务器，而且scp传输是加密的。当你服务器硬盘变为只读 read only system时，用scp可以帮你把文件移出来。">
+<meta name="keywords" content="Linux,scp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux scp 跨机远程拷贝">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/23/Linux-Tool-scp/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="scp是secure copy的简写，用于在Linux下进行远程拷贝文件的命令，和它类似的命令有cp，不过cp只是在本机进行拷贝不能跨服务器，而且scp传输是加密的。当你服务器硬盘变为只读 read only system时，用scp可以帮你把文件移出来。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:50:22.115Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux scp 跨机远程拷贝">
+<meta name="twitter:description" content="scp是secure copy的简写，用于在Linux下进行远程拷贝文件的命令，和它类似的命令有cp，不过cp只是在本机进行拷贝不能跨服务器，而且scp传输是加密的。当你服务器硬盘变为只读 read only system时，用scp可以帮你把文件移出来。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Linux-Tool-scp" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Linux scp 跨机远程拷贝
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/23/Linux-Tool-scp/" class="article-date">
+	  <time datetime="2018-08-23T03:10:09.000Z" itemprop="datePublished">2018-08-23</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>scp是<code>secure copy</code>的简写，用于在Linux下进行远程拷贝文件的命令，和它类似的命令有cp，不过cp只是在本机进行拷贝不能跨服务器，而且scp传输是加密的。当你服务器硬盘变为只读 <code>read only</code> system时，用scp可以帮你把文件移出来。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h1><blockquote>
+<p>类似的工具有<code>rsync</code>；<code>scp</code>消耗资源少，不会提高多少系统负荷，在这一点上，<code>rsync</code>就远远不及它了。<code>rsync</code>比<code>scp</code>会快一点，但当小文件多的情况下，<code>rsync</code>会导致硬盘I/O非常高，而scp基本不影响系统正常使用。</p>
+</blockquote>
+<h1 id="命令格式"><a href="#命令格式" class="headerlink" title="命令格式"></a>命令格式</h1><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">scp</span> <span class="selector-attr">[参数]</span> <span class="selector-attr">[原路径]</span> <span class="selector-attr">[目标路径]</span></span><br></pre></td></tr></table></figure>
+<h1 id="命令参数"><a href="#命令参数" class="headerlink" title="命令参数"></a>命令参数</h1><ul>
+<li><code>-1</code>: 强制scp命令使用协议ssh1</li>
+<li><code>-2</code>: 强制scp命令使用协议ssh2</li>
+<li><code>-4</code>: 强制scp命令只使用IPv4寻址</li>
+<li><code>-6</code>: 强制scp命令只使用IPv6寻址</li>
+<li><code>-B</code>: 使用批处理模式 (传输过程中不询问传输口令或短语)</li>
+<li><code>-C</code>: 允许压缩 (将-C标志传递给ssh, 从而打开压缩功能)</li>
+<li><code>-p</code>: 留源文件的修改时间, 访问时间和访问权限</li>
+<li><code>-q</code>: 不显示传输进度条</li>
+<li><code>-r</code>: 递归复制整个目录</li>
+<li><code>-v</code>: 详细方式显示输出。scp和ssh(1)会显示出整个过程的调试信息。这些信息用于调试连接，验证和配置问题。</li>
+<li><code>-c</code>: cipher 以cipher将数据传输进行加密，这个选项将直接传递给ssh。</li>
+<li><code>-F</code>: ssh_config 指定一个替代的ssh配置文件，此参数直接传递给ssh。</li>
+<li><code>-i</code>: identity_file 从指定文件中读取传输时使用的密钥文件，此参数直接传递给ssh。</li>
+<li><code>-l</code>: limit 限定用户所能使用的带宽，以Kbit/s为单位。</li>
+<li><code>-o</code>: ssh_option 如果习惯于使用ssh_config(5)中的参数传递方式，</li>
+<li><code>-P</code>: port 注意是大写的P, port是指定数据传输用到的端口号</li>
+<li><code>-S</code>: program 指定加密传输时所使用的程序。此程序必须能够理解ssh(1)的选项。</li>
+</ul>
+<h1 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h1><ul>
+<li>复制文件:</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">scp local_file remote_username<span class="meta">@remote</span><span class="string">_ip:</span>remote_folder</span><br><span class="line">scp local_file remote_username<span class="meta">@remote</span><span class="string">_ip:</span>remote_file</span><br><span class="line">scp local_file <span class="string">remote_ip:</span>remote_folder</span><br><span class="line">scp local_file <span class="string">remote_ip:</span>remote_file</span><br></pre></td></tr></table></figure>
+<p>指定了用户名，命令执行后需要输入用户密码；如果不指定用户名，命令执行后需要输入用户名和密码；</p>
+<ul>
+<li>复制目录:</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp -r local_folder remote_username<span class="meta">@remote</span><span class="string">_ip:</span>remote_folder</span><br><span class="line">scp -r local_folder <span class="string">remote_ip:</span>remote_folder</span><br></pre></td></tr></table></figure>
+<p>第1个指定了用户名，命令执行后需要输入用户密码； 第2个没有指定用户名，命令执行后需要输入用户名和密码；</p>
+<blockquote>
+<p>从远程复制到本地的scp命令与上面的命令一样，只要将从本地复制到远程的命令后面2个参数互换顺序就行了。</p>
+<blockquote>
+<p>可以在一个服务器上操作另外两个服务器, 如果你闲的蛋疼的话。</p>
+</blockquote>
+</blockquote>
+<h1 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h1><h2 id="实例1：从远程复制文件到本地目录"><a href="#实例1：从远程复制文件到本地目录" class="headerlink" title="实例1：从远程复制文件到本地目录"></a>实例1：从远程复制文件到本地目录</h2><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">scp root<span class="variable">@47</span>.<span class="number">91.221</span>.<span class="number">85</span><span class="symbol">:/root/test/test</span>.php /root/test/</span><br><span class="line"></span><br><span class="line">[root<span class="variable">@sciclean</span> test]<span class="comment"># scp root@47.91.221.85:/root/test/test.php /root/test/</span></span><br><span class="line">The authenticity of host <span class="string">'47.91.221.85 (47.91.221.85)'</span> can<span class="string">'t be established.</span></span><br><span class="line"><span class="string">ECDSA key fingerprint is SHA256:rGsD3scTCMNo6ZSoMepg0RMPz4n3CLHEZyZTyyJbgz4.</span></span><br><span class="line"><span class="string">ECDSA key fingerprint is MD5:ea:0d:b5:e0:5d:49:4a:5a:a0:85:e2:91:60:c7:0f:3d.</span></span><br><span class="line"><span class="string">Are you sure you want to continue connecting (yes/no)? yes</span></span><br><span class="line"><span class="string">Warning: Permanently added '</span><span class="number">47.91</span>.<span class="number">221.85</span><span class="string">' (ECDSA) to the list of known hosts.</span></span><br><span class="line"><span class="string">root@47.91.221.85'</span>s <span class="symbol">password:</span> </span><br><span class="line">test.php                                            <span class="number">100</span>%   <span class="number">18</span>     0.<span class="number">5</span>KB/s   00<span class="symbol">:</span>00</span><br></pre></td></tr></table></figure>
+<p>说明： 从<code>47.91.221.85</code>机器上的<code>/root/test/</code>的目录中下载 <code>test.php</code> 文件到本地<code>/root/test</code> 目录中</p>
+<h2 id="实例2：从远程复制目录到本地"><a href="#实例2：从远程复制目录到本地" class="headerlink" title="实例2：从远程复制目录到本地"></a>实例2：从远程复制目录到本地</h2><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r root<span class="variable">@47</span>.<span class="number">91.221</span>.<span class="number">85</span><span class="symbol">:/root/test/</span> /root/test/</span><br></pre></td></tr></table></figure>
+<p>说明： 从<code>47.91.221.85</code>机器上的<code>/root/</code>中下载<code>test</code>目录到本地的<code>/root/test/</code>目录来。</p>
+<h2 id="实例3：上传本地文件到远程机器指定目录"><a href="#实例3：上传本地文件到远程机器指定目录" class="headerlink" title="实例3：上传本地文件到远程机器指定目录"></a>实例3：上传本地文件到远程机器指定目录</h2><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp /root/test/demo.tar root<span class="variable">@47</span>.<span class="number">91.221</span>.<span class="number">85</span><span class="symbol">:/root/test/</span></span><br></pre></td></tr></table></figure>
+<p>说明： 复制本地<code>/root/test/</code>目录下的文件<code>demo.tar</code> 到远程机器<code>47.91.221.85</code>的<code>/root/test/</code>目录</p>
+<h2 id="实例4：上传本地目录到远程机器指定目录"><a href="#实例4：上传本地目录到远程机器指定目录" class="headerlink" title="实例4：上传本地目录到远程机器指定目录"></a>实例4：上传本地目录到远程机器指定目录</h2><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r /root/test root<span class="variable">@47</span>.<span class="number">91.221</span>.<span class="number">85</span><span class="symbol">:/root/test</span></span><br></pre></td></tr></table></figure>
+<p>说明： 上传本地目录 <code>/root/test</code> 到远程机器<code>47.91.221.85</code>上<code>/root/test</code>的目录中</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/scp.html" target="_blank" rel="noopener">scp 跨机远程拷贝 </a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/23/Linux-Tool-scp/" target="_blank" title="Linux scp 跨机远程拷贝">http://blog.caoxl.com/2018/08/23/Linux-Tool-scp/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scp/">scp</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/23/SEO-Introduction/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          SEO 3分钟入门
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/23/About-PJAX/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">关于 PJAX</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#注解"><span class="nav-number">1.</span> <span class="nav-text">注解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命令格式"><span class="nav-number">2.</span> <span class="nav-text">命令格式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命令参数"><span class="nav-number">3.</span> <span class="nav-text">命令参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用说明"><span class="nav-number">4.</span> <span class="nav-text">使用说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用示例"><span class="nav-number">5.</span> <span class="nav-text">使用示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实例1：从远程复制文件到本地目录"><span class="nav-number">5.1.</span> <span class="nav-text">实例1：从远程复制文件到本地目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例2：从远程复制目录到本地"><span class="nav-number">5.2.</span> <span class="nav-text">实例2：从远程复制目录到本地</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例3：上传本地文件到远程机器指定目录"><span class="nav-number">5.3.</span> <span class="nav-text">实例3：上传本地文件到远程机器指定目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例4：上传本地目录到远程机器指定目录"><span class="nav-number">5.4.</span> <span class="nav-text">实例4：上传本地目录到远程机器指定目录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

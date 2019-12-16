@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>关于 pjax | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="前端PJAX">
+  
+  
+  
+  
+  <meta name="description" content="使用 AJAX 和 window.history.pushState 无刷新改变页面内容和地址栏 URL。">
+<meta name="keywords" content="前端,PJAX">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于 PJAX">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/23/About-PJAX/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="使用 AJAX 和 window.history.pushState 无刷新改变页面内容和地址栏 URL。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:53:36.711Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于 PJAX">
+<meta name="twitter:description" content="使用 AJAX 和 window.history.pushState 无刷新改变页面内容和地址栏 URL。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-About-PJAX" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      关于 PJAX
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/23/About-PJAX/" class="article-date">
+	  <time datetime="2018-08-23T01:53:42.000Z" itemprop="datePublished">2018-08-23</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>使用 <code>AJAX</code> 和 <code>window.history.pushState</code> 无刷新改变页面内容和地址栏 URL。</p>
+</blockquote>
+<a id="more"></a>
+<p> 在访问现在很火的 Google plus 时，细心的用户也许会发现页面之间的点击是通过 AJAX 异步请求的，同时页面的URL发生了了改变。并且能够很好的支持浏览器的前进和后退。不禁让人想问，是什么有这么强大的功能呢？</p>
+<p> HTML5 里引用了新的API，就是 <code>history.pushState</code> 和 <code>history.replaceState</code>，就是通过这个接口做到无刷新改变页面 URL 的。</p>
+<h1 id="与传统的AJAX的区别"><a href="#与传统的AJAX的区别" class="headerlink" title="与传统的AJAX的区别"></a>与传统的AJAX的区别</h1><p>传统的 AJAX 有如下的问题：</p>
+<ul>
+<li><ol>
+<li>虽然 AJAX 可以无刷新改变页面内容，但无法改变页面URL。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>其次为了更好的可访问性，内容发生改变后，改变 URL 的 <code>hash</code>。但是 <code>hash</code> 的方式不能很好的处理浏览器的前进、后退等问题 有的浏览器引入了 <code>onhashchange</code> 的接口，不支持的浏览器只能定时去判断 hash 是否改变。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>再有， AJAX 的使用对搜索引擎很不友好，往往蜘蛛爬到的区域是空的。</li>
+</ol>
+</li>
+</ul>
+<p>为了解决传统 AJAX 带来的问题，HTML5里引入了新的API，即：<code>history.pushState</code>, <code>history.replaceState</code>。</p>
+<p>可以通过 <code>pushState</code> 和 <code>replaceState</code> 接口操作浏览器历史，并且改变当前页面的URL。</p>
+<ul>
+<li><code>pushState</code> 是将指定的 URL 添加到浏览器历史里;</li>
+<li><code>replaceState</code> 是将指定的 URL 替换当前的 URL。</li>
+</ul>
+<h1 id="如何调用"><a href="#如何调用" class="headerlink" title="如何调用"></a>如何调用</h1><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var <span class="keyword">state</span> = &#123;</span><br><span class="line">	title: title,</span><br><span class="line">	url: options.url,</span><br><span class="line">	otherkey: othervalue</span><br><span class="line">&#125; ;</span><br><span class="line">window.history.pushState(<span class="keyword">state</span>, document.title, url);</span><br></pre></td></tr></table></figure>
+<p>state 对象除了要 title 和 url 之外，也可以添加其他的数据，比如：还想将一些发送 AJAX 的配置给保存起来。</p>
+<p><code>replaceState</code> 和 <code>pushState</code> 是相似的，不需要多做解释。</p>
+<h1 id="如何响应浏览器的前进、后退操作"><a href="#如何响应浏览器的前进、后退操作" class="headerlink" title="如何响应浏览器的前进、后退操作?"></a>如何响应浏览器的前进、后退操作?</h1><p>window 对象上提供了 <code>onpopstate</code> 事件，上面传递的 state 对象会成为 event 的子对象，这样就可以拿到存储的 title 和 URL 了。</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">window.addEventListener('popstate', function(e)&#123;</span><br><span class="line">if (history.<span class="keyword">state</span>)&#123;</span><br><span class="line">	var <span class="keyword">state</span> = e.<span class="keyword">state</span>;</span><br><span class="line">	// do something(<span class="keyword">state</span>.url, <span class="keyword">state</span>.title);</span><br><span class="line">&#125;</span><br><span class="line">&#125;, false) ;</span><br></pre></td></tr></table></figure>
+<p>这样就可以结合 <code>AJAX</code> 和 <code>pushState</code> 完美的进行无刷新浏览了。</p>
+<h1 id="一些限制"><a href="#一些限制" class="headerlink" title="一些限制"></a>一些限制</h1><ul>
+<li><ol>
+<li>无法跨域，这个是必然的。引用曾经在网上看到的一句经典的话：<blockquote>
+<p>如果javascript可以跨域的话，那他就可以逆天了…</p>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>state 对象虽然可以存储很多自定义的属性，但值不能是个对象</li>
+</ol>
+</li>
+</ul>
+<h1 id="对应后端的一些处理"><a href="#对应后端的一些处理" class="headerlink" title="对应后端的一些处理"></a>对应后端的一些处理</h1><p>这种模式下除了当前使用 AJAX 可以无刷新浏览外，还要保证直接请求改变的URL后也可以正常浏览，所以后端要对这些处理下。</p>
+<ul>
+<li><ol>
+<li>对结合 <code>pushState</code> 的 AJAX 可以发送一个特殊的头，如：<code>setRequestHeader(‘PJAX’, ‘true’)</code>。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>后端获取到有 <code>PJAX=true</code> 的 header 时，将页面中通用的部分都不输出。</li>
+</ol>
+</li>
+</ul>
+<p>比如：PHP 可以通过下面的判断:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">is_pjax</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> array_key_exists(<span class="string">'HTTP_X_PJAX'</span>, $_SERVER) &amp;&amp; $_SERVER[<span class="string">'HTTP_X_PJAX'</span>] === <span class="string">'true'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然接口上只有 <code>pushState</code>、<code>replaceState</code>、<code>onpopstate</code>，但在使用的时候还是要做很多处理的。</p>
+<h1 id="快捷使用PJAX"><a href="#快捷使用PJAX" class="headerlink" title="快捷使用PJAX"></a>快捷使用PJAX</h1><ul>
+<li>引入PJAX</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">'https://cdnjs.cloudflare.com/ajax/libs/jquery.pjax/2.0.1/jquery.pjax.min.js'</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>调用PJAX</li>
+</ul>
+<figure class="highlight scilab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$(document).pjax(<span class="string">'a[href^="</span>http:<span class="comment">//blog.caoxl.com"]:not(a[target="_blank"], a[no-pjax])', &#123;</span></span><br><span class="line">       container: <span class="string">'#page'</span>, <span class="comment">// 需要刷新的标签</span></span><br><span class="line">       fragment: <span class="string">'#page'</span>,  <span class="comment">// 容器 ???</span></span><br><span class="line">       timeout: <span class="number">8000</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/23/About-PJAX/" target="_blank" title="关于 PJAX">http://blog.caoxl.com/2018/08/23/About-PJAX/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PJAX/">PJAX</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/前端/">前端</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/23/Linux-Tool-scp/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Linux scp 跨机远程拷贝
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/22/Computer-Jargon/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">计算机专业术语及其英文表达</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#与传统的AJAX的区别"><span class="nav-number">1.</span> <span class="nav-text">与传统的AJAX的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何调用"><span class="nav-number">2.</span> <span class="nav-text">如何调用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何响应浏览器的前进、后退操作"><span class="nav-number">3.</span> <span class="nav-text">如何响应浏览器的前进、后退操作?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一些限制"><span class="nav-number">4.</span> <span class="nav-text">一些限制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对应后端的一些处理"><span class="nav-number">5.</span> <span class="nav-text">对应后端的一些处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#快捷使用PJAX"><span class="nav-number">6.</span> <span class="nav-text">快捷使用PJAX</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

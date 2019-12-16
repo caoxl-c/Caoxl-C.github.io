@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>workerman 使用日志 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Workerman">
+  
+  
+  
+  
+  <meta name="description" content="Workerman 是什么? Workerman，高性能socket服务框架Workerman - Github">
+<meta name="keywords" content="Workerman">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Workerman 使用日志">
+<meta property="og:url" content="http://blog.caoxl.com/2019/09/09/Workerman-Learn-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Workerman 是什么? Workerman，高性能socket服务框架Workerman - Github">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-10T07:12:46.678Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Workerman 使用日志">
+<meta name="twitter:description" content="Workerman 是什么? Workerman，高性能socket服务框架Workerman - Github">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Workerman-Learn-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Workerman 使用日志
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/09/09/Workerman-Learn-Notes/" class="article-date">
+	  <time datetime="2019-09-09T01:50:31.000Z" itemprop="datePublished">2019-09-09</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h2 id="Workerman-是什么"><a href="#Workerman-是什么" class="headerlink" title="Workerman 是什么?"></a>Workerman 是什么?</h2><blockquote>
+<p><strong>Workerman，高性能socket服务框架</strong><br><a href="https://github.com/walkor/workerman/" target="_blank" rel="noopener">Workerman - Github</a></p>
+</blockquote>
+<a id="more"></a>
+<h2 id="下载-安装"><a href="#下载-安装" class="headerlink" title="下载/安装"></a>下载/安装</h2><p>WorkerMan实际上就是一个PHP代码包，如果你的PHP环境已经装好，只需要把WorkerMan源代码或者demo下载下来即可运行。</p>
+<ul>
+<li>Composer 安装</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer require workerman/workerman</span><br></pre></td></tr></table></figure>
+<h3 id="启动停止"><a href="#启动停止" class="headerlink" title="启动停止"></a>启动停止</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 启动</span></span><br><span class="line">// 以debug(调试)方式启动</span><br><span class="line">php start.php start</span><br><span class="line">// 以daemon(守护进程)方式启动</span><br><span class="line">php start.php start-d</span><br><span class="line"></span><br><span class="line"><span class="section"># 停止</span></span><br><span class="line">php start.php stop</span><br><span class="line"></span><br><span class="line"><span class="section"># 重启</span></span><br><span class="line">php start.php restart</span><br><span class="line"></span><br><span class="line"><span class="section"># 平滑重启</span></span><br><span class="line">php start.php reload</span><br><span class="line"></span><br><span class="line"><span class="section"># 查看状态</span></span><br><span class="line">php start.php status</span><br><span class="line"></span><br><span class="line"><span class="section"># 查看连接状态</span></span><br><span class="line">php start.php connections</span><br></pre></td></tr></table></figure>
+<h2 id="简单的开发示例"><a href="#简单的开发示例" class="headerlink" title="简单的开发示例"></a>简单的开发示例</h2><h3 id="实例一、使用HTTP协议对外提供Web服务"><a href="#实例一、使用HTTP协议对外提供Web服务" class="headerlink" title="实例一、使用HTTP协议对外提供Web服务"></a>实例一、使用HTTP协议对外提供Web服务</h3><ul>
+<li><code>Test/http_server.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建HTTP服务, 监听2345端口</span></span><br><span class="line">$http_worker = <span class="keyword">new</span> Worker(<span class="string">"http://0.0.0.0:2345"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 进程数</span></span><br><span class="line">$http_worker-&gt;count = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 收到数据时触发</span></span><br><span class="line">$http_worker-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $data)</span> </span>&#123;</span><br><span class="line">    var_dump($_GET, $_POST, $_COOKIE, $_SESSION, $_SERVER, $_FILES);</span><br><span class="line">    $connection-&gt;send(<span class="string">"Hello Workerman\n"</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行Worker</span></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<p><strong>命令行运行</strong> (windows用户用 cmd命令行，下同)</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ php http_server.php</span><br><span class="line">----------------------- WORKERMAN -----------------------------</span><br><span class="line">Workerman version:3.5.22          PHP version:7.2.1</span><br><span class="line">------------------------ WORKERS -------------------------------</span><br><span class="line">worker               listen                              processes status</span><br><span class="line">none                 http://0.0.0.0:2345                 4         [ok]</span><br></pre></td></tr></table></figure>
+<p><strong>测试</strong></p>
+<p>在浏览器中访问url <code>http://127.0.0.1:2345</code></p>
+<blockquote>
+<p>浏览器返回: Hello Workerman<br>命令行: 打印数据$_GET等数据</p>
+</blockquote>
+<h3 id="实例二、使用WebSocket协议对外提供服务"><a href="#实例二、使用WebSocket协议对外提供服务" class="headerlink" title="实例二、使用WebSocket协议对外提供服务"></a>实例二、使用WebSocket协议对外提供服务</h3><ul>
+<li><code>Test\websocket_server.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建Websocket服务</span></span><br><span class="line">$ws_worker = <span class="keyword">new</span> Worker(<span class="string">"websocket://0.0.0.0:2000"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 进程数(windows下只有单进程)</span></span><br><span class="line">$ws_worker-&gt;count = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 有新连接时触发</span></span><br><span class="line">$ws_worker-&gt;onConnect = <span class="function"><span class="keyword">function</span> <span class="params">($connection)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"New Connection\n"</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 收到数据时触发</span></span><br><span class="line">$ws_worker-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $data)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 向客户端发送消息</span></span><br><span class="line">    $connection-&gt;send(<span class="string">'Hello'</span> . $data);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$ws_worker-&gt;onClose = <span class="function"><span class="keyword">function</span> <span class="params">($connection)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Connection Closed\n"</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行Worker</span></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<p><strong>命令行运行</strong></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ php websocket_server.php</span><br><span class="line">----------------------- WORKERMAN -----------------------------</span><br><span class="line">Workerman version:3.5.22          PHP version:7.2.1</span><br><span class="line">------------------------ WORKERS -------------------------------</span><br><span class="line">worker               listen                              processes status</span><br><span class="line">none                 websocket://0.0.0.0:2000            4         [ok]</span><br></pre></td></tr></table></figure>
+<p><strong>测试</strong></p>
+<p>打开chrome浏览器，按F12打开调试控制台，在Console一栏输入(或者把下面代码放入到html页面用js运行)</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 假设服务端ip为127.0.0.1</span><br><span class="line">ws = new WebSocket("ws://127.0.0.1:2000");</span><br><span class="line">ws.onopen = function() &#123;</span><br><span class="line"><span class="code">    alert("连接成功");</span></span><br><span class="line"><span class="code">    ws.send('WEBSOCKET');</span></span><br><span class="line"><span class="code">    alert("给服务端发送一个字符串：WEBSOCKET");</span></span><br><span class="line">&#125;;</span><br><span class="line">ws.onmessage = function(e) &#123;</span><br><span class="line"><span class="code">    alert("收到服务端的消息：" + e.data);</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="实例三、直接使用TCP传输数据"><a href="#实例三、直接使用TCP传输数据" class="headerlink" title="实例三、直接使用TCP传输数据"></a>实例三、直接使用TCP传输数据</h3><ul>
+<li><code>Test\tcp_server.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建TCP服务</span></span><br><span class="line">$tcp_worker = <span class="keyword">new</span> Worker(<span class="string">"tcp://0.0.0.0:1234"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 进程数</span></span><br><span class="line">$tcp_worker-&gt;count = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 有新连接时触发</span></span><br><span class="line">$tcp_worker-&gt;onConnect = <span class="function"><span class="keyword">function</span> <span class="params">($connection)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"New TCP Connection\n"</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 收到数据时触发</span></span><br><span class="line">$tcp_worker-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $data)</span> </span>&#123;</span><br><span class="line">    $connection-&gt;send(<span class="string">"hello tcp $data"</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 关闭连接时触发</span></span><br><span class="line">$tcp_worker-&gt;onClose = <span class="function"><span class="keyword">function</span> <span class="params">($connection)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Connection Closed\n"</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行Worker</span></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<p><strong>命令行运行</strong></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ php tcp_server.php</span><br><span class="line">----------------------- WORKERMAN -----------------------------</span><br><span class="line">Workerman version:3.5.22          PHP version:7.2.1</span><br><span class="line">------------------------ WORKERS -------------------------------</span><br><span class="line">worker               listen                              processes status</span><br><span class="line">none                 tcp://0.0.0.0:1234                  4         [ok]</span><br></pre></td></tr></table></figure>
+<p><strong>测试: 命令行运行</strong></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">telnet 127.0.0.1 1234</span><br></pre></td></tr></table></figure>
+<h2 id="开发须知"><a href="#开发须知" class="headerlink" title="开发须知"></a>开发须知</h2><h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">Workerman                          # Workerman 内核代码</span><br><span class="line">    ├── Connection                 # Socket连接相关</span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">AsyncTcpConnection</span>.</span></span>php <span class="comment">// 异步TCP连接类</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">AsyncUdpConnection</span>.</span></span>php <span class="comment">// 异步UDP连接类</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">ConnectionInterface</span>.</span></span>php<span class="comment">// Socket连接接口</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">TcpConnection</span>.</span></span>php      <span class="comment">// TCP连接类</span></span><br><span class="line">    │   └── <span class="module-access"><span class="module"><span class="identifier">UdpConnection</span>.</span></span>php      <span class="comment">// UDP连接类</span></span><br><span class="line">    ├── Events                     # 网络事件库</span><br><span class="line">    │   ├── React                  ## 循环相关</span><br><span class="line">    │   │   ├── <span class="module-access"><span class="module"><span class="identifier">Base</span>.</span></span>php           <span class="comment">// mime类型</span></span><br><span class="line">    │   │   ├── <span class="module-access"><span class="module"><span class="identifier">ExtEventLoop</span>.</span></span>php   <span class="comment">// 外部事件循环</span></span><br><span class="line">    │   │   ├── <span class="module-access"><span class="module"><span class="identifier">ExtLibEventLoop</span>.</span></span>php  <span class="comment">// 外部库事件循环</span></span><br><span class="line">    │   │   └── <span class="module-access"><span class="module"><span class="identifier">StreamSelectLoop</span>.</span></span>php <span class="comment">// 流选择循环</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">Ev</span>.</span></span>php                 <span class="comment">// Libev网络事件库</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">Event</span>.</span></span>php              <span class="comment">// Livevent事件循环</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">EventInterface</span>.</span></span>php     <span class="comment">// 网络事件库接口</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">Libevent</span>.</span></span>php           <span class="comment">// Libevent网络事件库 </span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">Select</span>.</span></span>php             <span class="comment">// Select网络事件库</span></span><br><span class="line">    │   └── <span class="module-access"><span class="module"><span class="identifier">Swoole</span>.</span></span>php             <span class="comment">// Swoole网络事件库</span></span><br><span class="line">    ├── Lib                        # 常用的类库</span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">Constants</span>.</span></span>php          <span class="comment">// 常量定义</span></span><br><span class="line">    │   └── <span class="module-access"><span class="module"><span class="identifier">Timer</span>.</span></span>php              <span class="comment">// 定时器</span></span><br><span class="line">    ├── Protocols                  # 协议相关 </span><br><span class="line">    │   ├── Http                   ## Http协议相关</span><br><span class="line">    │   │   └── mime.types         <span class="comment">// mime类型</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">Frame</span>.</span></span>php              <span class="comment">// Frame协议实现</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">Http</span>.</span></span>php               <span class="comment">// Http协议实现</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">ProtocolInterface</span>.</span></span>php  <span class="comment">// 协议接口类</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">Text</span>.</span></span>php               <span class="comment">// Text协议实现</span></span><br><span class="line">    │   ├── <span class="module-access"><span class="module"><span class="identifier">Websocket</span>.</span></span>php          <span class="comment">// Websocket协议实现</span></span><br><span class="line">    │   └── <span class="module-access"><span class="module"><span class="identifier">Ws</span>.</span></span>php                 <span class="comment">// 客户端的Websocket协议实现</span></span><br><span class="line">    ├── <span class="module-access"><span class="module"><span class="identifier">Autoloader</span>.</span></span>php             <span class="comment">// 自动加载类</span></span><br><span class="line">    ├── <span class="module-access"><span class="module"><span class="identifier">WebServer</span>.</span></span>php              <span class="comment">// WebServer</span></span><br><span class="line">    └── <span class="module-access"><span class="module"><span class="identifier">Worker</span>.</span></span>php                 <span class="comment">// Worker</span></span><br></pre></td></tr></table></figure>
+<h2 id="通讯协议"><a href="#通讯协议" class="headerlink" title="通讯协议"></a>通讯协议</h2><h3 id="WorkerMan已经支持的协议"><a href="#WorkerMan已经支持的协议" class="headerlink" title="WorkerMan已经支持的协议"></a>WorkerMan已经支持的协议</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// websocket://0.0.0.0:2345 表明用websocket协议监听2345端口</span></span><br><span class="line">$websocket_worker = <span class="keyword">new</span> Worker(<span class="string">'websocket://0.0.0.0:2345'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// text协议</span></span><br><span class="line">$text_worker = <span class="keyword">new</span> Worker(<span class="string">'text://0.0.0.0:2346'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// frame协议</span></span><br><span class="line">$frame_worker = <span class="keyword">new</span> Worker(<span class="string">'frame://0.0.0.0:2347'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// tcp Worker，直接基于socket传输，不使用任何应用层协议</span></span><br><span class="line">$tcp_worker = <span class="keyword">new</span> Worker(<span class="string">'tcp://0.0.0.0:2348'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// udp Worker，不使用任何应用层协议</span></span><br><span class="line">$udp_worker = <span class="keyword">new</span> Worker(<span class="string">'udp://0.0.0.0:2349'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// unix domain Worker，不使用任何应用层协议</span></span><br><span class="line">$unix_worker = <span class="keyword">new</span> Worker(<span class="string">'unix:///tmp/wm.sock'</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="基础使用"><a href="#基础使用" class="headerlink" title="基础使用"></a>基础使用</h2><h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="心跳检测"><a href="#心跳检测" class="headerlink" title="心跳检测"></a>心跳检测</h3><p><strong>注意</strong>：长连接应用必须加心跳，否则连接可能由于长时间未通讯被路由节点强行断开。</p>
+<ul>
+<li>心跳作用主要有两个:<ul>
+<li><ol>
+<li>客户端定时给服务端发送点数据，防止连接由于长时间没有通讯而被某些节点的防火墙关闭导致连接断开的情况。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>服务端可以通过心跳来判断客户端是否在线，如果客户端在规定时间内没有发来任何数据，就认为客户端下线。这样可以检测到客户端由于极端情况(断电、断网等)下线的事件。</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Lib</span>\<span class="title">Timer</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 心跳间隔59秒</span></span><br><span class="line">define(<span class="string">'HEARTBEAT_TIME'</span>, <span class="number">59</span>);</span><br><span class="line"></span><br><span class="line">$text_worker = <span class="keyword">new</span> Worker(<span class="string">"text://0.0.0.0:2345"</span>);</span><br><span class="line"></span><br><span class="line">$text_worker-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $msg)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 给connection临时设置一个 lastMsgTime 属性，用来记录上次收到消息的时间</span></span><br><span class="line">    $connection-&gt;lastMsgTime = time();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$text_worker-&gt;onWorkerStart = <span class="function"><span class="keyword">function</span> <span class="params">($worker)</span> </span>&#123;</span><br><span class="line">    Timer::add(<span class="number">1</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> <span class="title">use</span> <span class="params">($worker)</span> </span>&#123;</span><br><span class="line">        $time_now = time();</span><br><span class="line">        <span class="keyword">foreach</span> ($worker-&gt;connections <span class="keyword">as</span> $connection) &#123;</span><br><span class="line">            <span class="comment">// 有可能该connection还没收到过消息，则 lastMsgTime 设置为当前时间</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">empty</span>($connection-&gt;lastMsgTime)) &#123;</span><br><span class="line">                $connection-&gt;lastMsgTime = $time_now;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 上次通讯时间间隔大于心跳间隔，则认为客户端已经下线，关闭连接</span></span><br><span class="line">            <span class="keyword">if</span> ($time_now - $connection-&gt;lastMsgTime &gt; HEARTBEAT_TIME) &#123;</span><br><span class="line">                $connection-&gt;close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<p>以上配置为如果客户端超过59秒没有发送任何数据给服务端，则服务端认为客户端已经掉线，服务端关闭连接并触发onClose。</p>
+<h3 id="客户端连接失败原因"><a href="#客户端连接失败原因" class="headerlink" title="客户端连接失败原因"></a>客户端连接失败原因</h3><p>连接失败客户端一般会有两种报错，<code>connection refuse</code> 和 <code>connection timeout</code></p>
+<ul>
+<li><code>Connection refuse (连接拒绝)</code></li>
+<li><code>Connection timeout (连接超时)</code></li>
+</ul>
+<h3 id="是否支持多线程"><a href="#是否支持多线程" class="headerlink" title="是否支持多线程 ?"></a>是否支持多线程 ?</h3><p>Workerman有一个依赖<code>pthreads扩展</code>的<code>MT多线程版本</code>，但是由于<code>pthreads扩展</code>还不够稳定，所以这个Workerman多线程版本已经不再维护。</p>
+<p><strong>目前Workerman及其周边产品都是基于<code>多进程单线程</code>的。</strong></p>
+<h3 id="支持哪些协议"><a href="#支持哪些协议" class="headerlink" title="支持哪些协议"></a>支持哪些协议</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// http协议</span><br><span class="line">$worker1 = new Worker('http://0.0.0.0:1221');</span><br><span class="line"></span><br><span class="line">// websocket协议</span><br><span class="line">$worker2 = new Worker('websocket://0.0.0.0:1222');</span><br><span class="line"></span><br><span class="line">// text文本协议（telnet协议）</span><br><span class="line">$worker3 = new Worker('text://0.0.0.0:1223');</span><br><span class="line"></span><br><span class="line">// frame文本协议（可用于二进制数传输）</span><br><span class="line">$worker3 = new Worker('frame://0.0.0.0:1223');</span><br><span class="line"></span><br><span class="line">// 直接基于tcp传输</span><br><span class="line">$worker4 = new Worker('tcp://0.0.0.0:1224');</span><br><span class="line"></span><br><span class="line">// 直接基于udp传输</span><br><span class="line">$worker5 = new Worker('udp://0.0.0.0:1225');</span><br></pre></td></tr></table></figure>
+<h3 id="对象和资源的持久化"><a href="#对象和资源的持久化" class="headerlink" title="对象和资源的持久化"></a>对象和资源的持久化</h3><p>在传统的Web开发中，PHP创建的对象、数据、资源等会在请求完毕后全部释放，导致很难做到持久化。而在WorkerMan中可以轻松做到这些。</p>
+<p>在WorkerMan中如果想在内存中永久保存某些数据资源，可以将资源放到全局变量中或者类的静态成员中</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="php"><span class="meta">&lt;?php</span></span></span></span><br><span class="line"></span><br><span class="line"><span class="xml">require_once '../vendor/autoload.php';</span></span><br><span class="line"></span><br><span class="line"><span class="xml">use Workerman\Worker;</span></span><br><span class="line"></span><br><span class="line"><span class="xml">$worker = new Worker("http://0.0.0.0:5678");</span></span><br><span class="line"></span><br><span class="line"><span class="xml">// 全局变量，保存当前进程的客户端连接数</span></span><br><span class="line"><span class="xml">$connection_count = 0;</span></span><br><span class="line"></span><br><span class="line"><span class="xml">// 进程数</span></span><br><span class="line"><span class="xml">$worker-&gt;</span>count = 4;</span><br><span class="line"></span><br><span class="line">$worker-&gt;onConnect = function ($connection) &#123;</span><br><span class="line"><span class="code">    // 有新的客户端连接时，连接数+1</span></span><br><span class="line"><span class="code">    global $connection_count;</span></span><br><span class="line"><span class="code">    ++$connection_count;</span></span><br><span class="line"></span><br><span class="line"><span class="code">    echo "现在客户端连接数为: $connection_count\n";</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$worker-&gt;onClose = function ($connection) &#123;</span><br><span class="line"><span class="code">    // 客户端关闭时，连接数-1</span></span><br><span class="line"><span class="code">    global $connection_count;</span></span><br><span class="line"><span class="code">    $connection_count--;</span></span><br><span class="line"></span><br><span class="line"><span class="code">    echo "现在客户端连接数为: $connection_count\n";</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<h3 id="支出多少并发"><a href="#支出多少并发" class="headerlink" title="支出多少并发"></a>支出多少并发</h3><p><strong>并发</strong>概念太模糊，这里以两种可以量化的指标<strong>并发连接数</strong>和<strong>并发请求数</strong>来说明。</p>
+<ul>
+<li><strong>并发连接数</strong></li>
+</ul>
+<p>是指服务器当前时刻一共维持了多少TCP连接，而这些连接上是否有数据通讯并不关注，例如一台消息推送服务器上可能维持了百万的设备连接，由于连接上很少有数据通讯，所以这台服务器上负载可能几乎为0，只要内存足够，还可以继续接受连接。</p>
+<blockquote>
+<p><strong>并发连接数</strong>受限于服务器内存，一般24G内存workerman服务器可以支持大概<strong>120W</strong>并发连接。</p>
+</blockquote>
+<ul>
+<li><strong>并发请求数</strong></li>
+</ul>
+<p>一般用QPS（服务器每秒处理多少请求）来衡量，而当前时刻服务器上有多少个tcp连接并不十分关注。例如一台服务器只有10个客户端连接，每个客户端连接上每秒有1W个请求，那么要求服务端需要至少能支撑10*1W=10W每秒的吞吐量（QPS）。假设10W吞吐量每秒是这台服务器的极限，如果每个客户端每秒发送1个请求给服务端，那么这台服务器能够支撑10W个客户端。</p>
+<blockquote>
+<p><strong>并发请求数</strong>受限于服务器cpu处理能力，一台24核workerman服务器可以达到<strong>45W</strong>每秒的吞吐量(QPS)，实际值根据业务复杂度以及代码质量有所变化。</p>
+</blockquote>
+<h3 id="更改代码后不生效"><a href="#更改代码后不生效" class="headerlink" title="更改代码后不生效"></a>更改代码后不生效</h3><p>Workerman是常驻内存运行的，常驻内存可以避免重复读取磁盘、重复解释编译PHP，以便达到最高性能。所以更改业务代码后需要<strong>手动reload</strong>或者<strong>restart</strong>才能生效。</p>
+<p>同时workerman提供一个监控文件更新的服务，该服务检测到有文件更新后会自动运行reload，从新载入PHP文件。开发者将其放入到项目中随着项目启动即可。</p>
+<blockquote>
+<p>注意：windows系统不支持reload，无法使用监控服务</p>
+</blockquote>
+<p><strong>文件监控服务下载地址</strong></p>
+<ul>
+<li><ol>
+<li>无依赖版本：<a href="https://github.com/walkor/workerman-filemonitor" target="_blank" rel="noopener">https://github.com/walkor/workerman-filemonitor</a></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>依赖inotify版本:<a href="https://github.com/walkor/workerman-filemonitor-inotify" target="_blank" rel="noopener">https://github.com/walkor/workerman-filemonitor-inotify</a></li>
+</ol>
+</li>
+</ul>
+<h3 id="向某个特定客户端发送数据"><a href="#向某个特定客户端发送数据" class="headerlink" title="向某个特定客户端发送数据"></a>向某个特定客户端发送数据</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="php"><span class="meta">&lt;?php</span></span></span></span><br><span class="line"></span><br><span class="line"><span class="xml">require_once '../vendor/autoload.php';</span></span><br><span class="line"></span><br><span class="line"><span class="xml">use Workerman\Worker;</span></span><br><span class="line"></span><br><span class="line"><span class="xml">// 创建Websocket服务</span></span><br><span class="line"><span class="xml">$worker = new Worker("websocket://0.0.0.0:2000");</span></span><br><span class="line"></span><br><span class="line"><span class="xml">// 进程数</span></span><br><span class="line"><span class="xml">$worker-&gt;</span>count = 1;</span><br><span class="line"></span><br><span class="line">// 新增加一个属性，用来保存uid到connection的映射(uid是用户id或者客户端唯一标识)</span><br><span class="line">$worker-&gt;uidConnections = array();</span><br><span class="line"></span><br><span class="line">$worker-&gt;onMessage = function ($connection, $data) &#123;</span><br><span class="line"><span class="code">    global $worker;</span></span><br><span class="line"></span><br><span class="line"><span class="code">    // 判断当前客户端是否已经验证,即是否设置了uid</span></span><br><span class="line"><span class="code">    if (!isset($connection-&gt;uid)) &#123;</span></span><br><span class="line"><span class="code">        // 没验证的话把第一个包当做uid（这里为了方便演示，没做真正的验证）</span></span><br><span class="line"><span class="code">        $connection-&gt;uid = $data;</span></span><br><span class="line"><span class="code">        $worker-&gt;uidConnections[$connection-&gt;uid] = $connection;</span></span><br><span class="line"></span><br><span class="line"><span class="code">        return $connection-&gt;send("Login Success, your uid is $connection-&gt;uid");</span></span><br><span class="line"><span class="code">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="code">    list($recv_uid, $msg) = explode(':', $data);</span></span><br><span class="line"></span><br><span class="line"><span class="code">    // 全局广播</span></span><br><span class="line"><span class="code">    if ($recv_uid == 'all') &#123;</span></span><br><span class="line"><span class="code">        broadcast($msg);</span></span><br><span class="line"><span class="code">    &#125; else &#123;</span></span><br><span class="line"><span class="code">        sendMsgByUid($recv_uid, $msg);</span></span><br><span class="line"><span class="code">    &#125;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">$worker-&gt;onClose = function ($connection) &#123;</span><br><span class="line"><span class="code">    global $worker;</span></span><br><span class="line"><span class="code">    if (isset($connection-&gt;uid)) &#123;</span></span><br><span class="line"><span class="code">        // 连接断开时删除映射</span></span><br><span class="line"><span class="code">        unset($worker-&gt;uidConnections[$connection-&gt;uid]);</span></span><br><span class="line"><span class="code">    &#125;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// 向所有验证的用户推送数据</span><br><span class="line">function broadcast($msg) &#123;</span><br><span class="line"><span class="code">    global $worker;</span></span><br><span class="line"><span class="code">    foreach ($worker-&gt;uidConnections as $connection) &#123;</span></span><br><span class="line"><span class="code">        $connection-&gt;send($msg);</span></span><br><span class="line"><span class="code">    &#125;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 针对uid推送数据</span><br><span class="line">function sendMsgByUid($uid, $msg) &#123;</span><br><span class="line"><span class="code">    global $worker;</span></span><br><span class="line"><span class="code">    if (isset($worker-&gt;uidConnections[$uid])) &#123;</span></span><br><span class="line"><span class="code">        $connection = $worker-&gt;uidConnections[$uid];</span></span><br><span class="line"><span class="code">        $connection-&gt;send($msg);</span></span><br><span class="line"><span class="code">    &#125;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<p><strong>前端调用</strong></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var ws = new WebSocket('ws://127.0.0.1:2000');</span><br><span class="line">ws.onopen = function()&#123;</span><br><span class="line"><span class="code">    var uid = 'uid1';</span></span><br><span class="line"><span class="code">    ws.send(uid);</span></span><br><span class="line">&#125;;</span><br><span class="line">ws.onmessage = function(e)&#123;</span><br><span class="line"><span class="code">    alert(e.data);</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="如何主动推送消息"><a href="#如何主动推送消息" class="headerlink" title="如何主动推送消息"></a>如何主动推送消息</h3><ul>
+<li><ol>
+<li>可以用定时器定时推送数据</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="php"><span class="meta">&lt;?php</span></span></span></span><br><span class="line"></span><br><span class="line"><span class="xml">require_once '../vendor/autoload.php';</span></span><br><span class="line"></span><br><span class="line"><span class="xml">use Workerman\Worker;</span></span><br><span class="line"><span class="xml">use Workerman\Lib\Timer;</span></span><br><span class="line"></span><br><span class="line"><span class="xml">$worker = new Worker("websocket://0.0.0.0:2000");</span></span><br><span class="line"></span><br><span class="line"><span class="xml">$worker-&gt;</span>onWorkerStart = function ($worker) &#123;</span><br><span class="line"><span class="code">    // 进程启动后定时推送数据给客户端</span></span><br><span class="line"><span class="code">    Timer::add(1, function () use ($worker) &#123;</span></span><br><span class="line"><span class="code">        foreach ($worker-&gt;connections as $connection) &#123;</span></span><br><span class="line"><span class="code">            $connection-&gt;send("Hello Man");</span></span><br><span class="line"><span class="code">        &#125;</span></span><br><span class="line"><span class="code">    &#125;);</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<h3 id="如何实现异步任务"><a href="#如何实现异步任务" class="headerlink" title="如何实现异步任务"></a>如何实现异步任务</h3><ul>
+<li>任务进程服务端</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line">$task_worker = <span class="keyword">new</span> Worker(<span class="string">"text://0.0.0.0:12345"</span>);</span><br><span class="line"></span><br><span class="line">$task_worker-&gt;count = <span class="number">100</span>;</span><br><span class="line">$task_worker-&gt;name = <span class="string">'TaskWorker'</span>;</span><br><span class="line">$task_worker-&gt;reusePort = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">$task_worker-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $task_data)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 假设发来的是json数据</span></span><br><span class="line">    $task_data = json_decode($task_data, <span class="keyword">true</span>);</span><br><span class="line">    $connection-&gt;send(json_encode($task_data));</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在Wokerman中调用</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Connection</span>\<span class="title">AsyncTcpConnection</span>;</span><br><span class="line"></span><br><span class="line">$worker = <span class="keyword">new</span> Worker(<span class="string">"websocket://0.0.0.0:8080"</span>);</span><br><span class="line"></span><br><span class="line">$worker-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($ws_connection, $msg)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 与远程task服务建立异步连接，ip为远程task服务的ip，如果是本机就是127.0.0.1，如果是集群就是lvs的ip</span></span><br><span class="line">    $task_connection = <span class="keyword">new</span> AsyncTcpConnection(<span class="string">'Text://127.0.0.1:12345'</span>);</span><br><span class="line">    <span class="comment">// 任务及参数数据</span></span><br><span class="line">    $task_data = <span class="keyword">array</span>(</span><br><span class="line">        <span class="string">'function'</span> =&gt; <span class="string">'send_mail'</span>,</span><br><span class="line">        <span class="string">'args'</span> =&gt; <span class="keyword">array</span>(<span class="string">'from'</span>=&gt;<span class="string">'xxx'</span>, <span class="string">'to'</span>=&gt;<span class="string">'xxx'</span>, <span class="string">'contents'</span>=&gt;<span class="string">'xxx'</span>),</span><br><span class="line">    );</span><br><span class="line">    <span class="comment">// 发送数据</span></span><br><span class="line">    $task_connection-&gt;send(json_encode($task_data));</span><br><span class="line">    <span class="comment">// 异步获取结果</span></span><br><span class="line">    $task_connection-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($task_connection, $task_result)</span> <span class="title">use</span> <span class="params">($ws_connection)</span> </span>&#123;</span><br><span class="line">        var_dump($task_result);</span><br><span class="line">        $task_connection-&gt;close();</span><br><span class="line">        <span class="comment">// 通知对应的websocket客户端任务完成</span></span><br><span class="line">        $ws_connection-&gt;send(<span class="string">'task_complete'</span>);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行异步连接</span></span><br><span class="line">    $task_connection-&gt;connect();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在浏览器中访问</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var ws = new WebSocket('ws://127.0.0.1:8080');</span><br><span class="line">ws.onopen = function()&#123;</span><br><span class="line"><span class="code">    ws.send();</span></span><br><span class="line">&#125;;</span><br><span class="line">ws.onmessage = function(e)&#123;</span><br><span class="line"><span class="code">    alert(e.data);</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="监听IPv6"><a href="#监听IPv6" class="headerlink" title="监听IPv6"></a>监听IPv6</h3><ul>
+<li>问：如何让客户端即能通过ipv4地址访问，也能通过ipv6地址访问?</li>
+<li>答：在初始化容器的时候监听地址写[::]即可。</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$worker = new Worker('http://[::]:8080');</span><br><span class="line">$gateway = new Gateway('websocket://[::]:8081');</span><br></pre></td></tr></table></figure>
+<h3 id="PHP几种回调写法"><a href="#PHP几种回调写法" class="headerlink" title="PHP几种回调写法"></a>PHP几种回调写法</h3><ul>
+<li><ol>
+<li>匿名函数回调</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line">$http_worker = <span class="keyword">new</span> Worker(<span class="string">"http://0.0.0.0:2345"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 匿名函数回调</span></span><br><span class="line">$http_worker-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $data)</span> </span>&#123;</span><br><span class="line">    $connection-&gt;send(<span class="string">"Hello World"</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="2">
+<li>普通函数回调</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line">$http_worker = <span class="keyword">new</span> Worker(<span class="string">"http://0.0.0.0:2345"</span>);</span><br><span class="line"></span><br><span class="line">$http_worker-&gt;onMessage = <span class="string">'on_message'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 普通函数回调</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">on_message</span><span class="params">($connection, $data)</span> </span>&#123;</span><br><span class="line">    $connection-&gt;send(<span class="string">"Hello World"</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="3">
+<li>类方法作为回调</li>
+</ol>
+</li>
+</ul>
+<p><code>WorkerClass.php</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WorkerClass</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onWorkerStart</span><span class="params">($worker)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onConnect</span><span class="params">($connect)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onMessage</span><span class="params">($connection, $message)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onClose</span><span class="params">($connection)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onWorkerStop</span><span class="params">($connection)</span></span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>启动脚本 <code>start.php</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"><span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/WorkerClass.php'</span>;</span><br><span class="line"></span><br><span class="line">$worker = <span class="keyword">new</span> Worker(<span class="string">"websocket://0.0.0.0:1234"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建对象</span></span><br><span class="line">$object = <span class="keyword">new</span> WorkerClass();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用类的方法</span></span><br><span class="line">$worker-&gt;onWorkerStart = <span class="keyword">array</span>($object, <span class="string">'onWorkerStart'</span>);</span><br><span class="line">$worker-&gt;onConnect     = <span class="keyword">array</span>($object, <span class="string">'onConnect'</span>);</span><br><span class="line">$worker-&gt;onMessage     = <span class="keyword">array</span>($object, <span class="string">'onMessage'</span>);</span><br><span class="line">$worker-&gt;onClose       = <span class="keyword">array</span>($object, <span class="string">'onClose'</span>);</span><br><span class="line">$worker-&gt;onWorkerStop  = <span class="keyword">array</span>($object, <span class="string">'onWorkerStop'</span>);</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<p>注意： 以上的代码结构不允许在构造函数里初始化资源(MySQL连接、Redis连接、Memcache连接等)，因为$my_object = new MyClass();运行在主进程。以MySQL为例，在主进程初始化的MySQL连接等资源会被子进程继承，每个子进程都可以操作这个数据库连接，但是这些连接在MySQL服务端对应的是同一个连接，会发生不可预期的错误，例如mysql gone away 错误。</p>
+<p>以上代码结构如果需要在类的构造函数里初始化资源，可以采用以下写法。 </p>
+<p><code>WorkerClass.php</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WorkerClass</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $db = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">// 假设数据库连接类是MyDbClass</span></span><br><span class="line">        $db = <span class="keyword">new</span> MyDbClass();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onWorkerStart</span><span class="params">($worker)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onConnect</span><span class="params">($connect)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onMessage</span><span class="params">($connection, $message)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onClose</span><span class="params">($connection)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onWorkerStop</span><span class="params">($connection)</span></span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>启动脚本 <code>start.php</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line">$worker = <span class="keyword">new</span> Worker(<span class="string">"websocket://0.0.0.0:1234"</span>);</span><br><span class="line"></span><br><span class="line">$worker-&gt;onWorkerStart = <span class="function"><span class="keyword">function</span> <span class="params">($worker)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/WorkerClass.php'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建对象</span></span><br><span class="line">    $object = <span class="keyword">new</span> WorkerClass();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用类的方法</span></span><br><span class="line">    $worker-&gt;onWorkerStart = <span class="keyword">array</span>($object, <span class="string">'onWorkerStart'</span>);</span><br><span class="line">    $worker-&gt;onConnect     = <span class="keyword">array</span>($object, <span class="string">'onConnect'</span>);</span><br><span class="line">    $worker-&gt;onMessage     = <span class="keyword">array</span>($object, <span class="string">'onMessage'</span>);</span><br><span class="line">    $worker-&gt;onClose       = <span class="keyword">array</span>($object, <span class="string">'onClose'</span>);</span><br><span class="line">    $worker-&gt;onWorkerStop  = <span class="keyword">array</span>($object, <span class="string">'onWorkerStop'</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="4">
+<li>类的静态方法作为回调</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WorkerClass</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">onWorkerStart</span><span class="params">($worker)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">onConnect</span><span class="params">($connect)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">onMessage</span><span class="params">($connection, $message)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">onClose</span><span class="params">($connection)</span></span>&#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">onWorkerStop</span><span class="params">($connection)</span></span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="接收一定请求后重启"><a href="#接收一定请求后重启" class="headerlink" title="接收一定请求后重启"></a>接收一定请求后重启</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line">$worker = <span class="keyword">new</span> Worker(<span class="string">"websocket://0.0.0.0:8080"</span>);</span><br><span class="line"></span><br><span class="line">$worker-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $data)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> $request_count;</span><br><span class="line">    <span class="keyword">if</span> (++$request_count &gt; <span class="number">10000</span>) &#123;</span><br><span class="line">        <span class="comment">// 请求数达到10000后退出当前进程，主进程会自动重启一个新的进程</span></span><br><span class="line">        Worker::stopAll();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="Chrome-请求两次问题"><a href="#Chrome-请求两次问题" class="headerlink" title="Chrome 请求两次问题"></a>Chrome 请求两次问题</h3><p>上面操作, 计数客户端连接操作,一次chrome请求有两个连接</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ php <span class="keyword">global</span>.php</span><br><span class="line">----------------------- WORKERMAN -----------------------------</span><br><span class="line">Workerman version:<span class="number">3.5</span><span class="number">.22</span>          PHP version:<span class="number">7.2</span><span class="number">.1</span></span><br><span class="line">------------------------ WORKERS -------------------------------</span><br><span class="line">worker               listen                              processes status</span><br><span class="line">none                 http:<span class="comment">//0.0.0.0:5678                 4         [ok]</span></span><br><span class="line">现在客户端连接数为: <span class="number">1</span></span><br><span class="line">现在客户端连接数为: <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>在Swoole里面找到了答案: <a href="https://wiki.swoole.com/wiki/page/478.html" target="_blank" rel="noopener">Chrome 请求两次问题</a></p>
+<blockquote>
+<p>使用Chrome浏览器访问服务器，会产生额外的一次请求，/favicon.ico，可以在代码中响应404错误。</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$http-&gt;on(<span class="string">'request'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($request, $response)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ($request-&gt;server[<span class="string">'path_info'</span>] == <span class="string">'/favicon.ico'</span> || $request-&gt;server[<span class="string">'request_uri'</span>] == <span class="string">'/favicon.ico'</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> $response-&gt;end();</span><br><span class="line">    &#125;</span><br><span class="line">    var_dump($request-&gt;get, $request-&gt;post);</span><br><span class="line">    $response-&gt;header(<span class="string">"Content-Type"</span>, <span class="string">"text/html; charset=utf-8"</span>);</span><br><span class="line">    $response-&gt;end(<span class="string">"&lt;h1&gt;Hello Swoole. #"</span>.rand(<span class="number">1000</span>, <span class="number">9999</span>).<span class="string">"&lt;/h1&gt;"</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="相关协议"><a href="#相关协议" class="headerlink" title="相关协议"></a>相关协议</h2><h3 id="Websocket-协议"><a href="#Websocket-协议" class="headerlink" title="Websocket 协议"></a>Websocket 协议</h3><p>目前Workerman的WebSocke协议版本为13</p>
+<p>WebSocket protocol 是HTML5一种新的协议。它实现了浏览器与服务器全双工通信</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line">$websocket = <span class="keyword">new</span> Worker(<span class="string">"websocket://0.0.0.0:8181"</span>);</span><br><span class="line"></span><br><span class="line">$websocket-&gt;onConnect = <span class="function"><span class="keyword">function</span> <span class="params">($connection)</span> </span>&#123;</span><br><span class="line">    $connection-&gt;onWebSocketConnect = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $http_header)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ($_SERVER[<span class="string">'HTTP_ORIGIN'</span>] != <span class="string">'127.0.0.1'</span>) &#123;</span><br><span class="line">            $connection-&gt;close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="WS-协议"><a href="#WS-协议" class="headerlink" title="WS 协议"></a>WS 协议</h3><p>目前Workerman的ws协议版本为13</p>
+<p>workerman可以作为客户端通过ws协议发起websocket连接，连到远程websocket服务器，实现双向通讯。</p>
+<p><strong>注意</strong>：ws协议只能通过AsyncTcpConnection作为客户端使用，不能作为websocket服务端监听协议。也就是说以下写法是错误的。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$worker = new Worker('ws://0.0.0.0:8080');</span><br></pre></td></tr></table></figure>
+<ul>
+<li>ws作为websocket客户端协议示例：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Connection</span>\<span class="title">AsyncTcpConnection</span>;</span><br><span class="line"></span><br><span class="line">$worker = <span class="keyword">new</span> Worker();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 进程启动时</span></span><br><span class="line">$worker-&gt;onWorkerStart = <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 以websocket协议连接远程websocket服务器</span></span><br><span class="line">    $ws_connection = <span class="keyword">new</span> AsyncTcpConnection(<span class="string">"ws:echo.websocket.org:80"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 连上后发送Hello字符串</span></span><br><span class="line">    $ws_connection-&gt;onConnect = <span class="function"><span class="keyword">function</span> <span class="params">($connection)</span> </span>&#123;</span><br><span class="line">        $connection-&gt;send(<span class="string">'Hello'</span>);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 远程websocket服务器发来消息时</span></span><br><span class="line">    $ws_connection-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"recv: $data\n"</span>;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 连接上发生错误时，一般是连接远程websocket服务器失败错误</span></span><br><span class="line">    $ws_connection-&gt;onError = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $code, $msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"error: $msg\n"</span>;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 当连接远程websocket服务器的连接断开时</span></span><br><span class="line">    $ws_connection-&gt;onClose = <span class="function"><span class="keyword">function</span> <span class="params">($connection)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"connection closed\n"</span>;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置好以上各种回调后，执行连接操作</span></span><br><span class="line">    $ws_connection-&gt;connect();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<h3 id="Text-协议"><a href="#Text-协议" class="headerlink" title="Text 协议"></a>Text 协议</h3><p>Workerman定义了一种叫做text的文本协议，协议格式为 <code>数据包+换行符</code>，即在每个数据包末尾加上一个换行符表示包的结束。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Worker</span>;</span><br><span class="line"></span><br><span class="line">$text_worker = <span class="keyword">new</span> Worker(<span class="string">"text://0.0.0.0:5678"</span>);</span><br><span class="line"></span><br><span class="line">$text_worker-&gt;onMessage = <span class="function"><span class="keyword">function</span> <span class="params">($connection, $data)</span> </span>&#123;</span><br><span class="line">    var_dump($data);</span><br><span class="line">    $connection-&gt;send(<span class="string">"hello world"</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Worker::runAll();</span><br></pre></td></tr></table></figure>
+<h3 id="Frame-协议"><a href="#Frame-协议" class="headerlink" title="Frame 协议"></a>Frame 协议</h3><p>workerman定义了一种叫做frame的协议，协议格式为 <code>总包长+包体</code>，其中包长为4字节网络字节序的整数，包体可以是普通文本或者二进制数据。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Workerman</span>\<span class="title">Connection</span>\<span class="title">TcpConnection</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Frame</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">input</span><span class="params">($buffer, TcpConnection $connection)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (strlen($buffer) &lt; <span class="number">4</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        $unpack_data = unpack(<span class="string">'Ntotal_length'</span>, $buffer);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $unpack_data[<span class="string">'total_length'</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">decode</span><span class="params">($buffer)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> substr($buffer, <span class="number">4</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">encode</span><span class="params">($buffer)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $total_length = <span class="number">4</span> + strlen($buffer);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> pack(<span class="string">'N'</span>, $total_length) . $buffer;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://doc.workerman.net/" target="_blank" rel="noopener">Workerman 中文文档</a></li>
+<li><a href="https://github.com/walkor/workerman/" target="_blank" rel="noopener">Workerman Github</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/09/09/Workerman-Learn-Notes/" target="_blank" title="Workerman 使用日志">http://blog.caoxl.com/2019/09/09/Workerman-Learn-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Workerman/">Workerman</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/09/12/Laravel-Phrase-Filter/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          基于Laravel 敏感词过滤
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/09/06/MongoDB-Command-Learning/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">MongoDB 命令</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Workerman-是什么"><span class="nav-number">1.</span> <span class="nav-text">Workerman 是什么?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下载-安装"><span class="nav-number">2.</span> <span class="nav-text">下载/安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动停止"><span class="nav-number">2.1.</span> <span class="nav-text">启动停止</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单的开发示例"><span class="nav-number">3.</span> <span class="nav-text">简单的开发示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实例一、使用HTTP协议对外提供Web服务"><span class="nav-number">3.1.</span> <span class="nav-text">实例一、使用HTTP协议对外提供Web服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例二、使用WebSocket协议对外提供服务"><span class="nav-number">3.2.</span> <span class="nav-text">实例二、使用WebSocket协议对外提供服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例三、直接使用TCP传输数据"><span class="nav-number">3.3.</span> <span class="nav-text">实例三、直接使用TCP传输数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发须知"><span class="nav-number">4.</span> <span class="nav-text">开发须知</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#目录结构"><span class="nav-number">4.1.</span> <span class="nav-text">目录结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通讯协议"><span class="nav-number">5.</span> <span class="nav-text">通讯协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#WorkerMan已经支持的协议"><span class="nav-number">5.1.</span> <span class="nav-text">WorkerMan已经支持的协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础使用"><span class="nav-number">6.</span> <span class="nav-text">基础使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见问题"><span class="nav-number">7.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#心跳检测"><span class="nav-number">7.1.</span> <span class="nav-text">心跳检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端连接失败原因"><span class="nav-number">7.2.</span> <span class="nav-text">客户端连接失败原因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#是否支持多线程"><span class="nav-number">7.3.</span> <span class="nav-text">是否支持多线程 ?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#支持哪些协议"><span class="nav-number">7.4.</span> <span class="nav-text">支持哪些协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象和资源的持久化"><span class="nav-number">7.5.</span> <span class="nav-text">对象和资源的持久化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#支出多少并发"><span class="nav-number">7.6.</span> <span class="nav-text">支出多少并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更改代码后不生效"><span class="nav-number">7.7.</span> <span class="nav-text">更改代码后不生效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#向某个特定客户端发送数据"><span class="nav-number">7.8.</span> <span class="nav-text">向某个特定客户端发送数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何主动推送消息"><span class="nav-number">7.9.</span> <span class="nav-text">如何主动推送消息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何实现异步任务"><span class="nav-number">7.10.</span> <span class="nav-text">如何实现异步任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#监听IPv6"><span class="nav-number">7.11.</span> <span class="nav-text">监听IPv6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP几种回调写法"><span class="nav-number">7.12.</span> <span class="nav-text">PHP几种回调写法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收一定请求后重启"><span class="nav-number">7.13.</span> <span class="nav-text">接收一定请求后重启</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Chrome-请求两次问题"><span class="nav-number">7.14.</span> <span class="nav-text">Chrome 请求两次问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关协议"><span class="nav-number">8.</span> <span class="nav-text">相关协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Websocket-协议"><span class="nav-number">8.1.</span> <span class="nav-text">Websocket 协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WS-协议"><span class="nav-number">8.2.</span> <span class="nav-text">WS 协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Text-协议"><span class="nav-number">8.3.</span> <span class="nav-text">Text 协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Frame-协议"><span class="nav-number">8.4.</span> <span class="nav-text">Frame 协议</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number"></span> <span class="nav-text">参考</span></a>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

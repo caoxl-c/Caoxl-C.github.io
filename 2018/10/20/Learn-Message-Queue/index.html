@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>消息队列深入解析 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="消息队列">
+  
+  
+  
+  
+  <meta name="description" content="“消息队列”(Message queue)是在消息的传输过程中保存消息的容器">
+<meta name="keywords" content="消息队列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="消息队列深入解析">
+<meta property="og:url" content="http://blog.caoxl.com/2018/10/20/Learn-Message-Queue/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="“消息队列”(Message queue)是在消息的传输过程中保存消息的容器">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:33:08.089Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="消息队列深入解析">
+<meta name="twitter:description" content="“消息队列”(Message queue)是在消息的传输过程中保存消息的容器">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Learn-Message-Queue" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      消息队列深入解析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/10/20/Learn-Message-Queue/" class="article-date">
+	  <time datetime="2018-10-20T09:00:05.000Z" itemprop="datePublished">2018-10-20</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><strong>“消息队列”</strong>(Message queue)是在消息的传输过程中保存消息的容器</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="消息队列深入解析"><a href="#消息队列深入解析" class="headerlink" title="消息队列深入解析"></a>消息队列深入解析</h1><h1 id="消息队列和消息"><a href="#消息队列和消息" class="headerlink" title="消息队列和消息"></a>消息队列和消息</h1><blockquote>
+<p><strong>“消息队列”</strong>(Message queue)是在消息的传输过程中保存消息的容器<br><strong>“消息”</strong> 是在两台计算机间传送的数据单位。消息可以非常简单，例如只包含文本字符串；也可以更复杂，可能包含嵌入对象。</p>
+</blockquote>
+<h1 id="常见的消息队列有那些"><a href="#常见的消息队列有那些" class="headerlink" title="常见的消息队列有那些?"></a>常见的消息队列有那些?</h1><p>当前使用较多的消息队列有<strong>RabbitMQ</strong>、<strong>ActiveMQ</strong>、<strong>RocketMQ</strong>、<strong>Kafka</strong>等等，<br>redis数据库也可以实现消息队列，不过不推荐，redis本身设计就不是用来做消息队列的。</p>
+<h1 id="使用消息队列的场景和好处"><a href="#使用消息队列的场景和好处" class="headerlink" title="使用消息队列的场景和好处"></a>使用消息队列的场景和好处</h1><h2 id="通过异步处理提高系统性能"><a href="#通过异步处理提高系统性能" class="headerlink" title="通过异步处理提高系统性能"></a>通过异步处理提高系统性能</h2><blockquote>
+<p>在不使用消息队列服务器的时候，用户的请求数据直接写入数据库，在高并发的情况下数据库压力剧增，使得响应速度变慢。<br>但是在使用消息队列之后，用户的请求数据发送给消息队列之后立即 返回，再由消息队列的消费者进程从消息队列中获取数据，异步写入数据库。<br>由于消息队列服务器处理速度快于数据库（消息队列也比数据库有更好的伸缩性），因此响应速度得到大幅改善。</p>
+</blockquote>
+<p>通过以上分析我们可以得出<strong>消息队列具有很好的削峰作用的功能——即通过异步处理，<br>将短时间高并发产生的事务消息存储在消息队列中，从而削平高峰期的并发事务。</strong></p>
+<p>因为用户请求数据写入消息队列之后就立即返回给用户了，但是请求数据在后续的业务校验、写数据库等操作中可能失败。<br>因此使用消息队列进行异步处理之后，需要适当修改业务流程进行配合，<br>比如用户在提交订单之后，订单数据写入消息队列，不能立即返回用户订单提交成功，<br>需要在消息队列的订单消费者进程真正处理完该订单之后，甚至出库后，再通过电子邮件或短信通知用户订单成功，<br>以免交易纠纷。这就类似我们平时手机订火车票和电影票。</p>
+<h2 id="降低系统耦合性"><a href="#降低系统耦合性" class="headerlink" title="降低系统耦合性"></a>降低系统耦合性</h2><p>我们知道模块分布式部署以后聚合方式通常有两种：1.<strong>分布式消息队列</strong>和2.<strong>分布式服务</strong>。</p>
+<ul>
+<li>分布式服务：</li>
+</ul>
+<p>目前使用比较多的用来构建<strong>SOA（Service Oriented Architecture面向服务体系结构）的分布式服务框架</strong>是阿里巴巴开源的Dubbo.<br><a href="https://juejin.im/post/5acadeb1f265da2375072f9c" target="_blank" rel="noopener">《高性能优秀的服务框架-dubbo介绍》</a></p>
+<ul>
+<li>分布式消息队列：</li>
+</ul>
+<p>我们知道如果模块之间不存在直接调用，那么新增模块或者修改模块就对其他模块影响较小，这样系统的可扩展性无疑更好一些。</p>
+<p>我们最常见的<strong>事件驱动架构</strong>类似生产者消费者模式，在大型网站中通常用利用消息队列实现事件驱动结构。</p>
+<h1 id="常见的消息队列介绍"><a href="#常见的消息队列介绍" class="headerlink" title="常见的消息队列介绍"></a>常见的消息队列介绍</h1><h2 id="ActiveMQ"><a href="#ActiveMQ" class="headerlink" title="ActiveMQ"></a>ActiveMQ</h2><blockquote>
+<p>官网：activemq.apache.org/</p>
+</blockquote>
+<h3 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h3><ol>
+<li>支持来自Java，C，C ++，C＃，Ruby，Perl，Python，PHP的各种跨语言客户端和协议</li>
+<li>完全支持JMS客户端和Message Broker中的企业集成模式</li>
+<li>支持许多高级功能，如消息组，虚拟目标，通配符和复合目标</li>
+<li>完全支持JMS 1.1和J2EE 1.4，支持瞬态，持久，事务和XA消息</li>
+<li>Spring支持，以便ActiveMQ可以轻松嵌入到Spring应用程序中，并使用Spring的XML配置机制进行配置</li>
+<li>专为高性能集群，客户端 - 服务器，基于对等的通信而设计</li>
+<li>CXF和Axis支持，以便ActiveMQ可以轻松地放入这些Web服务堆栈中以提供可靠的消息传递</li>
+<li>可以用作内存JMS提供程序，非常适合单元测试JMS</li>
+<li>支持可插拔传输协议，例如in-VM，TCP，SSL，NIO，UDP，多播，JGroups和JXTA传输</li>
+<li>使用JDBC和高性能日志支持非常快速的持久性</li>
+</ol>
+<h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><blockquote>
+<p>官网：<a href="http://www.rabbitmq.com/" target="_blank" rel="noopener">www.rabbitmq.com/</a></p>
+</blockquote>
+<h3 id="特点：-1"><a href="#特点：-1" class="headerlink" title="特点："></a>特点：</h3><ol>
+<li>异步消息传递：支持多种消息协议，消息队列，传送确认，灵活的路由到队列，多种交换类型；</li>
+<li>支持几乎所有最受欢迎的编程语言：Java，C，C ++，C＃，Ruby，Perl，Python，PHP等等；</li>
+<li>可以部署为高可用性和吞吐量的集群; 跨多个可用区域和区域进行联合；</li>
+<li>可插入的身份验证，授权，支持TLS和LDAP。</li>
+<li>提供了一个易用的用户界面，使得用户可以监控和管理消息 Broker 的许多方面；</li>
+<li>提供了许多插件，来从多方面进行扩展，也可以编写自己的插件。</li>
+</ol>
+<h2 id="Kafka"><a href="#Kafka" class="headerlink" title="Kafka"></a>Kafka</h2><blockquote>
+<p>官网：kafka.apache.org/</p>
+</blockquote>
+<h3 id="特点：-2"><a href="#特点：-2" class="headerlink" title="特点："></a>特点：</h3><ol>
+<li>同时为发布和订阅提供高吞吐量。据了解，Kafka每秒可以生产约25万消息（50 MB），每秒处理55万消息（110 MB）。</li>
+<li>可进行持久化操作。将消息持久化到磁盘，因此可用于批量消费，例如ETL，以及实时应用程序。通过将数据持久化到硬盘以及replication防止数据丢失。</li>
+<li>分布式系统，易于向外扩展。所有的producer、broker和consumer都会有多个，均为分布式的。无需停机即可扩展机器。</li>
+<li>消息被处理的状态是在consumer端维护，而不是由server端维护。当失败时能自动平衡。</li>
+<li>支持online和offline的场景。</li>
+</ol>
+<h2 id="RocketMQ"><a href="#RocketMQ" class="headerlink" title="RocketMQ"></a>RocketMQ</h2><blockquote>
+<p>官网：rocketmq.apache.org/</p>
+</blockquote>
+<h3 id="特点：-3"><a href="#特点：-3" class="headerlink" title="特点："></a>特点：</h3><ol>
+<li>支持发布/订阅（Pub/Sub）和点对点（P2P）消息模型</li>
+<li>在一个队列中可靠的先进先出（FIFO）和严格的顺序传递</li>
+<li>支持拉（pull）和推（push）两种消息模式</li>
+<li>单一队列百万消息的堆积能力</li>
+<li>支持多种消息协议，如 JMS、MQTT 等</li>
+<li>分布式高可用的部署架构,满足至少一次消息传递语义</li>
+<li>提供 docker 镜像用于隔离测试和云集群部署</li>
+<li>提供配置、指标和监控等功能丰富的 Dashboard</li>
+</ol>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/10/20/Learn-Message-Queue/" target="_blank" title="消息队列深入解析">http://blog.caoxl.com/2018/10/20/Learn-Message-Queue/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/消息队列/">消息队列</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/10/20/Postman-Notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Postman Post请求参数的区别？
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/10/20/Process-Line-CoProcess-Diff/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">进程、线程、协程的区别</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#消息队列深入解析"><span class="nav-number">1.</span> <span class="nav-text">消息队列深入解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#消息队列和消息"><span class="nav-number">2.</span> <span class="nav-text">消息队列和消息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见的消息队列有那些"><span class="nav-number">3.</span> <span class="nav-text">常见的消息队列有那些?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用消息队列的场景和好处"><span class="nav-number">4.</span> <span class="nav-text">使用消息队列的场景和好处</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通过异步处理提高系统性能"><span class="nav-number">4.1.</span> <span class="nav-text">通过异步处理提高系统性能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#降低系统耦合性"><span class="nav-number">4.2.</span> <span class="nav-text">降低系统耦合性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见的消息队列介绍"><span class="nav-number">5.</span> <span class="nav-text">常见的消息队列介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ActiveMQ"><span class="nav-number">5.1.</span> <span class="nav-text">ActiveMQ</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#特点："><span class="nav-number">5.1.1.</span> <span class="nav-text">特点：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RabbitMQ"><span class="nav-number">5.2.</span> <span class="nav-text">RabbitMQ</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#特点：-1"><span class="nav-number">5.2.1.</span> <span class="nav-text">特点：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka"><span class="nav-number">5.3.</span> <span class="nav-text">Kafka</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#特点：-2"><span class="nav-number">5.3.1.</span> <span class="nav-text">特点：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RocketMQ"><span class="nav-number">5.4.</span> <span class="nav-text">RocketMQ</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#特点：-3"><span class="nav-number">5.4.1.</span> <span class="nav-text">特点：</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

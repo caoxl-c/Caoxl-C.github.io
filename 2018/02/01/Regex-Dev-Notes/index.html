@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>正则表达式 「学习笔记」 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Regex">
+  
+  
+  
+  
+  <meta name="description" content="正则表达式 是字符串搜索与匹配的神器。">
+<meta name="keywords" content="Regex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="正则表达式 「学习笔记」">
+<meta property="og:url" content="http://blog.caoxl.com/2018/02/01/Regex-Dev-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="正则表达式 是字符串搜索与匹配的神器。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T07:06:53.522Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="正则表达式 「学习笔记」">
+<meta name="twitter:description" content="正则表达式 是字符串搜索与匹配的神器。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Regex-Dev-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      正则表达式 「学习笔记」
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/02/01/Regex-Dev-Notes/" class="article-date">
+	  <time datetime="2018-02-01T09:57:07.000Z" itemprop="datePublished">2018-02-01</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>正则表达式 是字符串搜索与匹配的神器。</p>
+<a id="more"></a>
+<p>正则表达式最初起源并不是计算机科学家的成果，而是自动控制理论和形式语言的研究者开始提出并使用的。</p>
+<p>最早将正则表达式引入计算机领域的是 肯·汤普逊，即 UNIX 的联合创始人。随着 UNIX 的流行和 <code>Linux</code> 的诞生，正则表达式被广泛应用到各种类 UNIX 系统和工具中。熟悉 Linux 命令的人都知道 <code>Linux</code> 有个查找字符串的神器指令：<code>grep</code>。</p>
+<p>如今，正则表达式已经无孔不入了，无论是程序员还是用户，都经常接触正则表达式，比如手机输入法，比如 Windows 里面的<code>文件搜索</code>，比如 Linux 的 <code>ls</code>，网站的登录和注册等等。</p>
+<p>在用户注册验证的常见 <code>3</code> 种实现思路中，都用到了正则表达式，这也就是说各种编程语言都支持正则表达式。</p>
+<p>前面写过 Ajax 登录验证时使用到了正则表达式，但是只是简单是使用了几句正则表达式，使用到的 PHP 正则函数就一个 <code>preg_match()</code>，而非系统的理论学习。现在将学习 正则表达式的基本语法 比较全面地总结一下。</p>
+<blockquote>
+<p>不过,能不用正则的情况,尽量不用正则</p>
+</blockquote>
+<h1 id="界定符"><a href="#界定符" class="headerlink" title="界定符"></a>界定符</h1><p>表示一个正则表达式的开始和结束，通常有 3 种界定符：<code>/.../</code> 、 <code>#...#</code> 、<code>{...}</code> 。</p>
+<p>一般使用最多的是 <code>/.../</code>，比如：<code>/[0-9a-zA-Z]/</code>。</p>
+<h1 id="原子"><a href="#原子" class="headerlink" title="原子"></a>原子</h1><p>原子分为<code>可见原子</code>和<code>不可见原子</code>。</p>
+<h2 id="可见原子"><a href="#可见原子" class="headerlink" title="可见原子"></a>可见原子</h2><p>指的是 <code>Unicode</code> 编码表中用键盘输出后 <strong>肉眼可见</strong> 的字符。主要有：</p>
+<ul>
+<li>标点符号： <code>&quot;</code> 、 <code>_</code> 、<code>?</code> 等。</li>
+<li>英文字母和数字。</li>
+<li>汉字、英语和其他语言文字。</li>
+</ul>
+<p>这些可见原子在进行正则匹配的时候不能直接使用实际的语言词汇，而是要转换成 <code>Unicode</code> 编码。</p>
+<ul>
+<li>数理化公式符号。等其他可见字符。</li>
+</ul>
+<h2 id="不可见原子"><a href="#不可见原子" class="headerlink" title="不可见原子"></a>不可见原子</h2><p>指的是 Unicode 编码表中用键盘输出后 <strong>肉眼不可见</strong> 的字符。主要有：</p>
+<ul>
+<li>换行符 <code>\n</code></li>
+<li>回车符 <code>\r</code></li>
+<li>制表符 <code>\t</code></li>
+<li>空格。等其他不可见符号。</li>
+</ul>
+<h2 id="原子的集合"><a href="#原子的集合" class="headerlink" title="原子的集合"></a>原子的集合</h2><ul>
+<li><code>.</code>：匹配除换行符之外的任意字符。</li>
+<li><code>\d</code>：匹配任意一个十进制数字，即 <code>[0-9]</code>。</li>
+<li><code>\D</code>：匹配任意一个非十进制数字，即 <code>[^0-9]</code>。</li>
+<li><code>\s</code>：匹配一个不可见原子，即 <code>[\f\n\r\t\v]</code>。</li>
+<li><code>\S</code>：匹配一个可见原子，即 <code>[^\f\n\r\t\v]</code>。</li>
+<li><code>\w</code>：匹配任意一个数字、字母或下划线，即 <code>[0-9a-zA-Z]</code> 。</li>
+<li><code>\W</code>：匹配任意一个非数字、字母或下划线，即 <code>[0-9a-zA-Z]</code> 。</li>
+</ul>
+<h1 id="元字符"><a href="#元字符" class="headerlink" title="元字符"></a>元字符</h1><p>元字符指定了原子的筛选方式。主要有：</p>
+<ul>
+<li><code>|</code>：匹配两个或者多个分支选择。</li>
+<li><code>[]</code>：匹配方括号中的任意一个原子。</li>
+<li><code>[^]</code>：匹配除方括号中的原子之外的任意字符。</li>
+</ul>
+<h1 id="量词"><a href="#量词" class="headerlink" title="量词"></a>量词</h1><ul>
+<li><code>{n}</code>：表示其前面的原子恰好出现 <code>n</code> 次。</li>
+<li><code>{n,}</code>：表示其前面的原子最少出现 <code>n</code> 次</li>
+<li><code>{n, m}</code>：表示其前面的原子最少出现 <code>n</code> 次最出 <code>m</code> 次。</li>
+<li><code>*</code>: 匹配 0 次、1 次 或者多次其之前的原 子 ， 即 <code>{ 0, }</code> 。</li>
+<li><code>+</code>：匹配 1 次或者多次其之前的原子，即 <code>{ 1, }</code> 。</li>
+<li><code>?</code>：匹配 0 次或者 1 次其之前的原子，即 <code>{ 0, 1 }</code></li>
+</ul>
+<h1 id="边界控制"><a href="#边界控制" class="headerlink" title="边界控制"></a>边界控制</h1><ul>
+<li><code>^</code>：匹配字符串开始的位置。</li>
+<li><code>$</code>: 匹配字符串结束的位置。</li>
+<li><code>()</code>：匹配其中的整体为一个原子。</li>
+</ul>
+<h1 id="模式单元"><a href="#模式单元" class="headerlink" title="模式单元"></a>模式单元</h1><h2 id="总模式"><a href="#总模式" class="headerlink" title="总模式"></a>总模式</h2><p>每个 <code>pattern</code> 可以看作是一个总模式。</p>
+<h2 id="子模式"><a href="#子模式" class="headerlink" title="子模式"></a>子模式</h2><p><code>pattern</code> 的每个模式单元 (<code>...</code>) 称为子模式，包含在总模式中。</p>
+<h2 id="常见修正模式"><a href="#常见修正模式" class="headerlink" title="常见修正模式"></a>常见修正模式</h2><ul>
+<li><code>U</code>：懒惰匹配，即是：只匹配最近的一个字符串，不重复匹配。</li>
+<li><code>i</code>：忽略英文字母大小写。</li>
+<li><code>x</code>：忽略空白。</li>
+<li><code>s</code>：让元字符 . 匹配包括换行符在内所有字符，即将字符串视为单行，换行符作为普通字符。</li>
+<li><code>e</code>：e 配合函数 <code>preg_replace()</code> 使用, 可以把匹配来的字符串当作正则表达式执行</li>
+<li><code>D</code>：如果使用 <code>$</code> 限制结尾字符,则不允许结尾有换行。</li>
+<li><code>A</code>：强制从目标字符串开头匹配。</li>
+<li><code>m</code>：将字符串视为多行,不管是那行都能匹配。</li>
+<li><code>g</code>：表示全局匹配。</li>
+</ul>
+<h1 id="贪婪匹配"><a href="#贪婪匹配" class="headerlink" title="贪婪匹配"></a>贪婪匹配</h1><p>匹配结果存在歧义时取其长。</p>
+<h1 id="懒惰匹配"><a href="#懒惰匹配" class="headerlink" title="懒惰匹配"></a>懒惰匹配</h1><p>匹配结果存在歧义时取其短。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://www.regexpal.com/" target="_blank" rel="noopener">Regex Tester</a></li>
+<li><a href="http://tool.chinaz.com/Tools/URLEncode.aspx" target="_blank" rel="noopener">站长之家编码转换</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/02/01/Regex-Dev-Notes/" target="_blank" title="正则表达式 「学习笔记」">http://blog.caoxl.com/2018/02/01/Regex-Dev-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Regex/">Regex</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/02/Aliyun-Sms-Dev-Log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          云通信 「开发日志」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/01/Linux-Catalog/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Linux 系统中的目录</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#界定符"><span class="nav-number">1.</span> <span class="nav-text">界定符</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原子"><span class="nav-number">2.</span> <span class="nav-text">原子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#可见原子"><span class="nav-number">2.1.</span> <span class="nav-text">可见原子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不可见原子"><span class="nav-number">2.2.</span> <span class="nav-text">不可见原子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原子的集合"><span class="nav-number">2.3.</span> <span class="nav-text">原子的集合</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#元字符"><span class="nav-number">3.</span> <span class="nav-text">元字符</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#量词"><span class="nav-number">4.</span> <span class="nav-text">量词</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#边界控制"><span class="nav-number">5.</span> <span class="nav-text">边界控制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模式单元"><span class="nav-number">6.</span> <span class="nav-text">模式单元</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#总模式"><span class="nav-number">6.1.</span> <span class="nav-text">总模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子模式"><span class="nav-number">6.2.</span> <span class="nav-text">子模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见修正模式"><span class="nav-number">6.3.</span> <span class="nav-text">常见修正模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#贪婪匹配"><span class="nav-number">7.</span> <span class="nav-text">贪婪匹配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#懒惰匹配"><span class="nav-number">8.</span> <span class="nav-text">懒惰匹配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

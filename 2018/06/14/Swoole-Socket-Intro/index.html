@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>swoole 体验篇 (socket服务器) | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Swoole">
+  
+  
+  
+  
+  <meta name="description" content="做的一个项目要用到 Socket 长链接，Google 了一番最终使用的是 Swoole，这里简单介绍一下。">
+<meta name="keywords" content="Swoole">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swoole 体验篇 (Socket服务器)">
+<meta property="og:url" content="http://blog.caoxl.com/2018/06/14/Swoole-Socket-Intro/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="做的一个项目要用到 Socket 长链接，Google 了一番最终使用的是 Swoole，这里简单介绍一下。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:40:03.796Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Swoole 体验篇 (Socket服务器)">
+<meta name="twitter:description" content="做的一个项目要用到 Socket 长链接，Google 了一番最终使用的是 Swoole，这里简单介绍一下。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Swoole-Socket-Intro" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Swoole 体验篇 (Socket服务器)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/06/14/Swoole-Socket-Intro/" class="article-date">
+	  <time datetime="2018-06-14T06:55:57.000Z" itemprop="datePublished">2018-06-14</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>做的一个项目要用到 Socket 长链接，Google 了一番最终使用的是 <a href="https://wiki.swoole.com/" target="_blank" rel="noopener">Swoole</a>，这里简单介绍一下。</p>
+<a id="more"></a>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>这里的需求是这样的，iOS 应用处于打开状态时，服务器能根据业务最新状态决定是否发送给该应用一些数据，<br>即：服务器在满足某些条件时，主动给客户端发送消息。</p>
+<blockquote>
+<p>一般情况下指的只给在线用户推送消息.</p>
+</blockquote>
+<h2 id="短连接"><a href="#短连接" class="headerlink" title="短连接"></a>短连接</h2><p>在这种场景下，<code>App</code> 可以使用 <code>http</code> 接口主动轮询服务器（<strong>短连接</strong>），<br>然后根据服务器的返回状态做一些相应操作，但是这种做法有如下不足：</p>
+<ul>
+<li>低效</li>
+</ul>
+<p>假设很长时间都没有事件发生，即服务器很长时间都没有返回新的数据，但是 <code>App</code> 却总在向服务器发<br>相同的 <code>http</code> 请求（打开一个新的连接），那么这段无事发生的期间就是在做无用功。</p>
+<ul>
+<li>浪费客户端和服务器双方资源</li>
+</ul>
+<p>客户端发请求需要占用客户端资源，服务器响应需要占用服务器资源。</p>
+<h2 id="长连接"><a href="#长连接" class="headerlink" title="长连接"></a>长连接</h2><p>当然目前更高效的做法就是使用<strong>长连接</strong>。（<code>TCP</code>，非 <code>HTTP</code> ）</p>
+<p>在每次客户端发出请求后，服务器检查上次返回的数据与此次请求时的数据之间是否有更新，<br>如果有更新则返回新数据并结束此次连接，否则服务器保持此次连接，直到有新数据时再返回相应</p>
+<p>长链接比短链接高效的地方在于：减少了打开新连接个数和无用响应数。在保持长连接期间，<br><code>C/S</code> 交互都使用的是同一个连接，这极大减少了资源浪费。</p>
+<h2 id="为什么选择-Swoole"><a href="#为什么选择-Swoole" class="headerlink" title="为什么选择 Swoole ?"></a>为什么选择 <code>Swoole</code> ?</h2><p>处于对 <code>Swoole</code> 在圈内的名声和口碑的信心，我这里选择了 <code>Swoole</code> 来实现这个需求。</p>
+<p><strong><code>Swoole</code> 本质是一个标准的 <code>PHP</code> 扩展，但是又与普通的 <code>PHP</code> 扩展又有很大的区别：</strong></p>
+<blockquote>
+<p>普通的扩展只是提供一个库函数。而<code>swoole</code>扩展在运行后会接管<code>PHP</code>的控制权，<br>进入事件循环。当IO事件发生后，<code>swoole</code>会自动回调指定的<code>PHP</code>函数。</p>
+</blockquote>
+<p><code>Swoole</code> 可以扮演的角色有很多：服务器、客户端、事件 API、异步 IO 接口、进程管理、内存区管理、高性能内存表等，<br>而这里，我只需要一个 <code>Socket</code> 服务器。</p>
+<h1 id="安装配置"><a href="#安装配置" class="headerlink" title="安装配置"></a>安装配置</h1><blockquote>
+<p><strong>请下载<code>releases</code>版本的<code>swoole</code>，直接从<code>github</code>主干上拉取最新代码可能会编译不过。</strong></p>
+</blockquote>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.下载（https://github.com/swoole/swoole-src/releases）</span></span><br><span class="line"><span class="attr">wget</span> <span class="string">https://github.com/swoole/swoole-src/archive/1.8.10-stable.zip</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.编译安装</span></span><br><span class="line"><span class="attr">cd</span> <span class="string">swoole-src-swoole-1.8.10-stable/</span></span><br><span class="line"><span class="attr">phpize</span></span><br><span class="line"><span class="attr">./configure</span></span><br><span class="line"><span class="attr">sudo</span> <span class="string">make</span></span><br><span class="line"><span class="attr">sudo</span> <span class="string">make install</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Or：`pecl install swoole`</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 配置 php.ini</span></span><br><span class="line"><span class="attr">extension</span>=<span class="string">swoole.so</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 检查</span></span><br><span class="line"><span class="attr">php</span> <span class="string">-m | grep swoole</span></span><br></pre></td></tr></table></figure>
+<p>说明：<code>swoole_server</code> 绝大部分功能只能用于 <code>php-cli</code> 环境，否则会抛出致命错误。</p>
+<h1 id="使用示例：服务器主动发送消息"><a href="#使用示例：服务器主动发送消息" class="headerlink" title="使用示例：服务器主动发送消息"></a>使用示例：服务器主动发送消息</h1><p>这里只提供服务端的代码和返回的通信接口格式。<br>客户端和服务器通信只需要按照事先规定好的数据格式进行通信就行了。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">Server</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">private</span> $db_conf = [</span></span><br><span class="line"><span class="php">        <span class="string">'host'</span> =&gt; <span class="string">'127.0.0.1'</span>,</span></span><br><span class="line"><span class="php">        <span class="string">'port'</span> =&gt; <span class="string">'3306'</span>,</span></span><br><span class="line"><span class="php">        <span class="string">'name'</span> =&gt; <span class="string">'root'</span>,</span></span><br><span class="line"><span class="php">        <span class="string">'pwd'</span>  =&gt; <span class="string">'123456'</span>,</span></span><br><span class="line"><span class="php">        <span class="string">'db'</span>   =&gt; <span class="string">'proj'</span></span></span><br><span class="line"><span class="php">    ];</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">private</span> $secret = <span class="string">'10be8c337984d3a3c470f7cf5239c298'</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">private</span> $mysql  = <span class="keyword">null</span>,</span></span><br><span class="line"><span class="php">    <span class="keyword">private</span> $serv;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;serv = <span class="keyword">new</span> swoole_server(<span class="string">"0.0.0.0"</span>, <span class="number">9501</span>);</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;serv-&gt;set(<span class="keyword">array</span>(</span></span><br><span class="line"><span class="php">            <span class="string">'worker_num'</span> =&gt; <span class="number">8</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'daemonize'</span>  =&gt; <span class="keyword">false</span>,</span></span><br><span class="line"><span class="php">        ));</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;serv &amp;&amp; !<span class="keyword">$this</span>-&gt;mysql)</span></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;mysqli_reconnect();</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;mysql &amp;&amp; <span class="keyword">$this</span>-&gt;mysql-&gt;set_charset(<span class="string">'utf8'</span>)) &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;serv-&gt;on(<span class="string">'Start'</span>, <span class="keyword">array</span>(<span class="keyword">$this</span>, <span class="string">'onStart'</span>));</span></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;serv-&gt;on(<span class="string">'Connect'</span>, <span class="keyword">array</span>(<span class="keyword">$this</span>, <span class="string">'onConnect'</span>));</span></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;serv-&gt;on(<span class="string">'Receive'</span>, <span class="keyword">array</span>(<span class="keyword">$this</span>, <span class="string">'onReceive'</span>));</span></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;serv-&gt;on(<span class="string">'Close'</span>, <span class="keyword">array</span>(<span class="keyword">$this</span>, <span class="string">'onClose'</span>));</span></span><br><span class="line"></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;serv-&gt;start();</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">mysqli_reconnect</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;mysql = <span class="keyword">new</span> mysqli(</span></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;db_conf[<span class="string">'host'</span>],</span></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;db_conf[<span class="string">'name'</span>],</span></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;db_conf[<span class="string">'pwd'</span>],</span></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;db_conf[<span class="string">'db'</span>],</span></span><br><span class="line"><span class="php">            <span class="keyword">$this</span>-&gt;db_conf[<span class="string">'port'</span>]</span></span><br><span class="line"><span class="php">        );</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;mysql;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onStart</span><span class="params">( $serv )</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// echo "Swoole socket Server Started. \n";</span></span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onConnect</span><span class="params">( $serv, $fd, $from_id)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// $serv-&gt;send( $fd, "Hello &#123;$fd&#125;!");</span></span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onReceive</span><span class="params">( swoole_server, $serv, $fd, $from_id, $data)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// echo "Get Message From Client &#123;$fd&#125;:&#123;$data&#125;\n";</span></span></span><br><span class="line"></span><br><span class="line"><span class="php">        $response = [</span></span><br><span class="line"><span class="php">            <span class="string">'nq_id'</span>   =&gt; <span class="string">'empty'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'nq_data'</span> =&gt; <span class="string">'empty'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'nq_ref'</span>  =&gt; <span class="string">'empty'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'nq_type'</span> =&gt; <span class="string">'empty'</span>,</span></span><br><span class="line"><span class="php">        ];</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">if</span> ($data) &#123;</span></span><br><span class="line"><span class="php">            $arr = json_decode($data, <span class="keyword">true</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">            <span class="keyword">if</span> ($arr &amp;&amp; is_array($arr)</span></span><br><span class="line"><span class="php">                    &amp;&amp; (<span class="keyword">isset</span>($arr[<span class="string">'secret'</span>])</span></span><br><span class="line"><span class="php">                    &amp;&amp; ($arr[<span class="string">'secret'</span>] == <span class="keyword">$this</span>-&gt;secret))</span></span><br><span class="line"><span class="php">                    &amp;&amp; in_array($arr[<span class="string">'option'</span>], [<span class="string">'nothing'</span>, <span class="string">'query'</span>, <span class="string">'return'</span>])</span></span><br><span class="line"><span class="php">                    &amp;&amp; <span class="keyword">isset</span>($arr[<span class="string">'uid'</span>]) &amp;&amp; is_numeric($arr[<span class="string">'uid'</span>])) &#123;</span></span><br><span class="line"><span class="php">                <span class="keyword">if</span> ($arr[<span class="string">'option'</span>] == <span class="string">'query'</span>) &#123;</span></span><br><span class="line"><span class="php">                    <span class="comment">// 查询user_id 为 $arr['uid']的所有消息记录</span></span></span><br><span class="line"><span class="php">                    $sql = <span class="string">'select * from bm_notice_queues where nq_uid ='</span></span></span><br><span class="line"><span class="php">                        .$arr[<span class="string">'uid'</span>]</span></span><br><span class="line"><span class="php">                        .<span class="string">'limit 1'</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">                    <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;mysql-&gt;errno == <span class="number">2006</span>) &#123;</span></span><br><span class="line"><span class="php">                        <span class="keyword">while</span>(!<span class="keyword">$this</span>-&gt;mysqli_reconnect()) &#123;</span></span><br><span class="line"><span class="php">                            <span class="keyword">$this</span>-&gt;mysqli_reconnect();</span></span><br><span class="line"><span class="php">                        &#125;</span></span><br><span class="line"><span class="php">                    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">                    $res = <span class="keyword">$this</span>-&gt;mysql-&gt;query($sql);</span></span><br><span class="line"></span><br><span class="line"><span class="php">                    <span class="keyword">if</span> ($res &amp;&amp; is_object($res) &amp;&amp; $res-&gt;num_rows) &#123;</span></span><br><span class="line"><span class="php">                        <span class="keyword">if</span> ($row = $res-&gt;fetch_assoc()) &#123;</span></span><br><span class="line"><span class="php">                            $response[<span class="string">'nq_id'</span>]    = $row[<span class="string">'nq_id'</span>];</span></span><br><span class="line"><span class="php">                            $response[<span class="string">'nq_data'</span>]  = $row[<span class="string">'nq_data'</span>];</span></span><br><span class="line"><span class="php">                            $response[<span class="string">'nq_ref'</span>]   = $row[<span class="string">'nq_ref'</span>];</span></span><br><span class="line"><span class="php">                            $response[<span class="string">'nq_type'</span>]  = $row[<span class="string">'nq_type'</span>];</span></span><br><span class="line"><span class="php">                        &#125;</span></span><br><span class="line"><span class="php">                    &#125;</span></span><br><span class="line"><span class="php">                &#125; <span class="keyword">elseif</span> ($arr[<span class="string">'option'</span>] == <span class="string">'return'</span>) &#123;</span></span><br><span class="line"><span class="php">                    <span class="keyword">if</span> (($arr[<span class="string">'status'</span>] == <span class="string">'success'</span>)</span></span><br><span class="line"><span class="php">                        &amp;&amp; is_numeric($arr[<span class="string">'return'</span>])</span></span><br><span class="line"><span class="php">                        &amp;&amp; $arr[<span class="string">'return'</span>] &gt; <span class="number">0</span>) &#123;</span></span><br><span class="line"><span class="php">                        <span class="comment">// 删除 id 为 $arr['return']的消息记录</span></span></span><br><span class="line"><span class="php">                        $sql = <span class="string">'delete from bm_notice_queues where nq_id = '</span>.$arr[<span class="string">'return'</span>];</span></span><br><span class="line"></span><br><span class="line"><span class="php">                        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;mysql-&gt;errno == <span class="number">2006</span>) &#123;</span></span><br><span class="line"><span class="php">                            <span class="keyword">while</span>(!<span class="keyword">$this</span>-&gt;mysqli_reconnect()) &#123;</span></span><br><span class="line"><span class="php">                                <span class="keyword">$this</span>-&gt;mysqli_reconnect();</span></span><br><span class="line"><span class="php">                            &#125;</span></span><br><span class="line"><span class="php">                        &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">                        <span class="keyword">$this</span>-&gt;mysql-&gt;query($sql);</span></span><br><span class="line"><span class="php">                    &#125;</span></span><br><span class="line"><span class="php">                &#125;</span></span><br><span class="line"><span class="php">            &#125;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $serv-&gt;send($fd, json_encode($response));</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">onClose</span><span class="params">( $serv, $fd, $from_id)</span> </span>&#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// echo "Client &#123;$fd&#125; close connection\n";</span></span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment"># 启动服务器</span></span></span><br><span class="line"><span class="php">$server = <span class="keyword">new</span> Server();</span></span><br></pre></td></tr></table></figure>
+<h1 id="可能用到的指令"><a href="#可能用到的指令" class="headerlink" title="可能用到的指令"></a>可能用到的指令</h1><ul>
+<li>定位到<code>php.ini</code>的绝对路径：</li>
+</ul>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php -i <span class="string">| grep php.ini</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看端口号是否被 监听</li>
+</ul>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -<span class="keyword">an</span> | <span class="keyword">grep</span> <span class="symbol">&lt;PORT&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://blog.cjli.info/2016/07/16/Swoole-Socket-Intro/" target="_blank" rel="noopener">转载自: Swoole 开发：体验篇（Socket 服务器）</a></li>
+<li><a href="http://www.cleey.com/blog/single/id/802.html" target="_blank" rel="noopener">mac 安装 swoole扩展</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/06/14/Swoole-Socket-Intro/" target="_blank" title="Swoole 体验篇 (Socket服务器)">http://blog.caoxl.com/2018/06/14/Swoole-Socket-Intro/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoole/">Swoole</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/06/15/Swoole-quick-quide/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Swoole 快速起步
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/14/Git-Server-Deploy/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Git 服务器 搭建/自动部署/远程连接</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用场景"><span class="nav-number">1.1.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#短连接"><span class="nav-number">1.2.</span> <span class="nav-text">短连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#长连接"><span class="nav-number">1.3.</span> <span class="nav-text">长连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么选择-Swoole"><span class="nav-number">1.4.</span> <span class="nav-text">为什么选择 Swoole ?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装配置"><span class="nav-number">2.</span> <span class="nav-text">安装配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用示例：服务器主动发送消息"><span class="nav-number">3.</span> <span class="nav-text">使用示例：服务器主动发送消息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#可能用到的指令"><span class="nav-number">4.</span> <span class="nav-text">可能用到的指令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mysql 大表优化 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MySQL">
+  
+  
+  
+  
+  <meta name="description" content="当MySQL单表记录数过大时，增删改查性能都会急剧下降，可以参考以下步骤来优化：">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 大表优化">
+<meta property="og:url" content="http://blog.caoxl.com/2018/06/13/MySQL-large-table-opt/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="当MySQL单表记录数过大时，增删改查性能都会急剧下降，可以参考以下步骤来优化：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.caoxl.com/images/mysql_ver_1.png">
+<meta property="og:image" content="http://www.caoxl.com/images/mysql_ver_2.png">
+<meta property="og:image" content="http://www.caoxl.com/images/mysql_level.png">
+<meta property="og:image" content="http://www.caoxl.com/images/mysql_client.png">
+<meta property="og:image" content="http://www.caoxl.com/images/mysql_proxy.png">
+<meta property="og:updated_time" content="2019-08-22T06:28:44.245Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL 大表优化">
+<meta name="twitter:description" content="当MySQL单表记录数过大时，增删改查性能都会急剧下降，可以参考以下步骤来优化：">
+<meta name="twitter:image" content="http://www.caoxl.com/images/mysql_ver_1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MySQL-large-table-opt" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MySQL 大表优化
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/06/13/MySQL-large-table-opt/" class="article-date">
+	  <time datetime="2018-06-13T05:33:27.000Z" itemprop="datePublished">2018-06-13</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>当<code>MySQL</code>单表记录数过大时，增删改查性能都会急剧下降，可以参考以下步骤来优化：</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="单表优化"><a href="#单表优化" class="headerlink" title="单表优化"></a>单表优化</h1><p>除非单表数据未来会一直不断上涨，否则不要一开始就考虑拆分，拆分会带来逻辑、部署、运维的各种复杂度，<br>一般以整型值为主的表在<strong>千万级以下</strong>，字符串为主的表在<strong>五百万以下</strong>是没有太大问题的。<br>而事实上很多时候<code>MySQL</code>单表的性能依然有不少优化空间，甚至能正常支撑<strong>千万级以上</strong>的数据量</p>
+<h2 id="字段"><a href="#字段" class="headerlink" title="字段"></a>字段</h2><ul>
+<li>尽量使用<code>TINYINT</code>、<code>SMALLINT</code>、<code>MEDIUM_INT</code>作为整数类型而非<code>INT</code>，如果非负则加上<code>UNSIGNED</code></li>
+<li><code>VARCHAR</code>的长度只分配真正需要的空间</li>
+<li>使用枚举或整数代替字符串类型 (推荐使用<code>TINYINT</code>替代枚举)</li>
+<li>尽量使用<code>TIMESTAMP</code>而非<code>DATETIME</code>，(时间推荐<code>INT</code>)</li>
+<li>单表不要有太多字段，建议在<code>20</code>以内</li>
+<li>避免使用<code>NULL</code>字段，很难查询优化且占用额外索引空间</li>
+<li>用整型来存<code>IP</code></li>
+</ul>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
+<li>索引并不是越多越好，要根据查询有针对性的创建，考虑在<code>WHERE</code>和<code>ORDER BY</code>命令上涉及的列建立索引，<br>可根据<code>EXPLAIN</code>来查看是否用了索引还是全表扫描</li>
+<li>应尽量避免在<code>WHERE</code>子句中对字段进行<code>NULL</code>值判断，否则将导致引擎放弃使用索引而进行全表扫描</li>
+<li>值分布很稀少的字段不适合建索引，例如”性别”这种只有两三个值的字段</li>
+<li>字符字段只建前缀索引</li>
+<li>字符字段最好不要做主键</li>
+<li>不用外键，由程序保证约束</li>
+<li>尽量不用<code>UNIQUE</code>，由程序保证约束</li>
+<li>使用多列索引时主意顺序和查询条件保持一致，同时删除不必要的单列索引</li>
+</ul>
+<h2 id="查询SQL"><a href="#查询SQL" class="headerlink" title="查询SQL"></a>查询<code>SQL</code></h2><ul>
+<li>可通过开启慢查询日志来找出较慢的<code>SQL</code></li>
+<li>不做列运算：<code>SELECT id WHERE age + 1 = 10</code>，任何对列的操作都将导致表扫描，<br>它包括数据库教程函数、计算表达式等等，查询时要尽可能将操作移至等号右边</li>
+<li><code>sql</code>语句尽可能简单：一条<code>sql</code>只能在一个<code>cpu</code>运算；大语句拆小语句，减少锁时间；一条大<code>sql</code>可以堵死整个库</li>
+<li>不用 <code>SELECT *</code></li>
+<li><code>OR</code>改写成<code>IN</code>：<code>OR</code>的效率是<code>n</code>级别，<code>IN</code>的效率是<code>log(n)</code>级别，<code>in</code>的个数建议控制在<code>200</code>以内</li>
+<li>不用函数和触发器，在应用程序实现</li>
+<li>避免<code>%xxx</code>式查询</li>
+<li>少用<code>JOIN</code></li>
+<li>使用同类型进行比较，比如用<code>&#39;123&#39;</code>和<code>&#39;123&#39;</code>比，<code>123</code>和<code>123</code>比</li>
+<li>尽量避免在<code>WHERE</code>子句中使用<code>!=</code>或<code>&lt;&gt;</code>操作符，否则将引擎放弃使用索引而进行全表扫描</li>
+<li>对于连续数值，使用<code>BETWEEN</code>不用<code>IN</code>：<code>SELECT id FROM t WHERE num BETWEEN 1 AND 5</code></li>
+<li>列表数据不要拿全表，要使用<code>LIMIT</code>来分页，每页数量也不要太大</li>
+</ul>
+<h2 id="引擎"><a href="#引擎" class="headerlink" title="引擎"></a>引擎</h2><p>目前广泛使用的是<code>MyISAM</code>和<code>InnoDB</code>两种引擎：</p>
+<h3 id="MyISAM"><a href="#MyISAM" class="headerlink" title="MyISAM"></a><code>MyISAM</code></h3><p><code>MyISAM</code>引擎是<code>MySQL 5.1</code>及之前版本的默认引擎，它的特点是：</p>
+<ul>
+<li>不支持行锁，读取时对需要读到的所有表加锁，写入时则对表加排它锁</li>
+<li>不支持事务</li>
+<li>不支持外键</li>
+<li>不支持崩溃后的安全恢复</li>
+<li>在表有读取查询的同时，支持往表中插入新纪录</li>
+<li>支持<code>BLOB</code>和<code>TEXT</code>的前500个字符索引，支持全文索引</li>
+<li>支持延迟更新索引，极大提升写入性能</li>
+<li>对于不会进行修改的表，支持压缩表，极大减少磁盘空间占用</li>
+</ul>
+<h3 id="InonoDB"><a href="#InonoDB" class="headerlink" title="InonoDB"></a><code>InonoDB</code></h3><p><code>InnoDB</code>在<code>MySQL 5.5</code>后成为默认索引，它的特点是：</p>
+<ul>
+<li>支持行锁，采用<code>MVCC</code>来支持高并发</li>
+<li>支持事务</li>
+<li>支持外键</li>
+<li>支持崩溃后的安全恢复</li>
+<li>不支持全文索引 (5.6以上支持)</li>
+</ul>
+<h2 id="系统调优参数"><a href="#系统调优参数" class="headerlink" title="系统调优参数"></a>系统调优参数</h2><p>可以使用下面几个工具来做基准测试：</p>
+<ul>
+<li><a href="https://github.com/akopytov/sysbench" target="_blank" rel="noopener">sysbench:</a>一个模块化，跨平台以及多线程的性能测试工具</li>
+<li><a href="https://github.com/tmcallaghan/iibench-mysql" target="_blank" rel="noopener">iibench-mysql:</a>基于 Java 的 MySQL/Percona/MariaDB 索引进行插入性能测试工具</li>
+<li><a href="https://github.com/Percona-Lab/tpcc-mysql" target="_blank" rel="noopener">tpcc-mysql:</a>Percona开发的TPC-C测试工具</li>
+</ul>
+<p>具体的调优参数内容较多，具体可参考<a href="https://dev.mysql.com/doc/refman/5.7/en/optimization.html" target="_blank" rel="noopener">官方文档</a>，这里介绍一些比较重要的参数：</p>
+<ul>
+<li><code>back_log</code>:</li>
+</ul>
+<p><code>back_log</code>值指出在MySQL暂时停止回答新请求之前的短时间内多少个请求可以被存在堆栈中。<br>也就是说，如果MySql的连接数据达到<code>max_connections</code>时，新来的请求将会被存在堆栈中，<br>以等待某一连接释放资源，该堆栈的数量即<code>back_log</code>，如果等待连接的数量超过<code>back_log</code>，将不被授予连接资源。可以从默认的<code>50</code>升至<code>500</code></p>
+<ul>
+<li><code>wait_timeout</code>:</li>
+</ul>
+<p>数据库连接闲置时间，闲置连接会占用内存资源。可以从默认的8小时减到半小时</p>
+<ul>
+<li><code>max_user_connection</code>:</li>
+</ul>
+<p>最大连接数，默认为0无上限，最好设一个合理上限</p>
+<ul>
+<li><code>thread_concurrency</code>: </li>
+</ul>
+<p>并发线程数，设为CPU核数的两倍</p>
+<ul>
+<li><code>skip_name_resolve</code>: </li>
+</ul>
+<p>禁止对外部连接进行<code>DNS</code>解析，消除<code>DNS</code>解析时间，但需要所有远程主机用<code>IP</code>访问</p>
+<ul>
+<li><code>key_buffer_size</code>:</li>
+</ul>
+<p>索引块的缓存大小，增加会提升索引处理速度，对<code>MyISAM</code>表性能影响最大。对于内存<code>4G</code>左右，可设为<code>256M</code>或<code>384M</code>，</p>
+<blockquote>
+<p>通过查询<code>show status like &#39;key_read%&#39;</code>，保证<code>key_reads</code> / <code>key_read_requests</code>在<code>0.1%</code>以下最好</p>
+</blockquote>
+<ul>
+<li><code>innodb_buffer_pool_size</code>: </li>
+</ul>
+<p>缓存数据块和索引块，对InnoDB表性能影响最大。<br>通过查询<code>show status like &#39;Innodb_buffer_pool_read%&#39;</code>，<br>保证 <code>(Innodb_buffer_pool_read_requests – Innodb_buffer_pool_reads)</code> / <code>Innodb_buffer_pool_read_requests</code> 越高越好</p>
+<ul>
+<li><code>innodb_additional_mem_pool_size</code>: </li>
+</ul>
+<p>InnoDB存储引擎用来存放数据字典信息以及一些内部数据结构的内存空间大小，当数据库对象非常多的时候，<br>适当调整该参数的大小以确保所有数据都能存放在内存中提高访问效率，<br>当过小的时候，<code>MySQL</code>会记录<code>Warning</code>信息到数据库的错误日志中，这时就需要该调整这个参数大小</p>
+<ul>
+<li><code>innodb_log_buffer_size</code>: </li>
+</ul>
+<p><code>InnoDB</code>存储引擎的事务日志所使用的缓冲区，一般来说不建议超过<code>32MB</code></p>
+<ul>
+<li><code>query_cache_size</code>: </li>
+</ul>
+<p>缓存<code>MySQL</code>中的<code>ResultSet</code>，也就是一条<code>SQL</code>语句执行的结果集，所以仅仅只能针对<code>select</code>语句。<br>当某个表的数据有任何任何变化，都会导致所有引用了该表的<code>select</code>语句在<code>Query Cache</code>中的缓存数据失效。<br>所以，当我们的数据变化非常频繁的情况下，使用<code>Query Cache</code>可能会得不偿失。<br>根据命中率<code>(Qcache_hits/(Qcache_hits+Qcache_inserts)*100))</code>进行调整，<br>一般不建议太大，<strong>256MB</strong>可能已经差不多了，大型的配置型静态数据可适当调大.</p>
+<blockquote>
+<p>可以通过命令<code>show status like &#39;Qcache_%&#39;</code>查看目前系统<code>Query catch</code>使用大小</p>
+</blockquote>
+<ul>
+<li><code>read_buffer_size</code>: </li>
+</ul>
+<p><code>MySql</code>读入缓冲区大小。对表进行顺序扫描的请求将分配一个读入缓冲区，MySql会为它分配一段内存缓冲区。<br>如果对表的顺序扫描请求非常频繁，可以通过增加该变量值以及内存缓冲区大小提高其性能</p>
+<ul>
+<li><code>sort_buffer_size</code>: </li>
+</ul>
+<p>MySql执行排序使用的缓冲大小。如果想要增加<code>ORDER BY</code>的速度，<br>首先看是否可以让MySQL使用索引而不是额外的排序阶段。如果不能，可以尝试增加<code>sort_buffer_size</code>变量的大小</p>
+<ul>
+<li><code>read_rnd_buffer_size</code>:</li>
+</ul>
+<p><code>MySql</code>的随机读缓冲区大小。当按任意顺序读取行时(例如，按照排序顺序)，将分配一个随机读缓存区。<br>进行排序查询时，<code>MySql</code>会首先扫描一遍该缓冲，以避免磁盘搜索，提高查询速度，如果需要排序大量数据，可适当调高该值。<br>但<code>MySql</code>会为每个客户连接发放该缓冲空间，所以应尽量适当设置该值，以避免内存开销过大。</p>
+<ul>
+<li><code>record_buffer</code>:</li>
+</ul>
+<p>每个进行一个顺序扫描的线程为其扫描的每张表分配这个大小的一个缓冲区。如果你做很多顺序扫描，可能想要增加该值</p>
+<ul>
+<li><code>thread_cache_size</code>: </li>
+</ul>
+<p>保存当前没有与连接关联但是准备为后面新的连接服务的线程，可以快速响应连接的线程请求而无需创建新的</p>
+<ul>
+<li><code>table_cache</code>: </li>
+</ul>
+<p>类似于<code>thread_cache_size</code>，但用来缓存表文件，对<code>InnoDB</code>效果不大，主要用于<code>MyISAM</code></p>
+<h2 id="升级硬件"><a href="#升级硬件" class="headerlink" title="升级硬件"></a>升级硬件</h2><p><code>Scale up</code>，这个不多说了，根据<code>MySQL</code>是<code>CPU</code>密集型还是<code>I/O</code>密集型，<br>通过提升<code>CPU</code>和内存、使用<code>SSD</code>，都能显著提升<code>MySQL</code>性能</p>
+<blockquote>
+<p>花钱总是比不花钱来的简单~~~</p>
+</blockquote>
+<h1 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h1><p>也是目前常用的优化，从库读主库写，一般不要采用双主或多主引入很多复杂性，<br>尽量采用文中的其他方案来提高性能。同时目前很多拆分的解决方案同时也兼顾考虑了读写分离</p>
+<h1 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h1><p>缓存可以发生在这些层次：</p>
+<ul>
+<li><code>MySQL内部</code>：在<a href="https://dev.mysql.com/doc/refman/5.7/en/optimization.html" target="_blank" rel="noopener">系统调优参数</a>介绍了相关设置</li>
+<li><code>数据访问层</code>：比如<code>MyBatis</code>针对<code>SQL</code>语句做缓存，而<code>Hibernate</code>可以精确到单个记录，这里缓存的对象主要是持久化对象<code>Persistence Object</code></li>
+<li><code>应用服务层</code>：这里可以通过编程手段对缓存做到更精准的控制和更多的实现策略，这里缓存的对象是数据传输对象<code>Data Transfer Object</code></li>
+<li><code>Web层</code>：针对web页面做缓存</li>
+<li><code>浏览器客户端</code>：用户端的缓存</li>
+</ul>
+<p>可以根据实际情况在一个层次或多个层次结合加入缓存。这里重点介绍下服务层的缓存实现，目前主要有两种方式：</p>
+<ul>
+<li>直写式（<code>Write Through</code>）：</li>
+</ul>
+<p>在数据写入数据库后，同时更新缓存，维持数据库与缓存的一致性。<br>这也是当前大多数应用缓存框架如<code>Spring Cache</code>的工作方式。这种实现非常简单，同步好，但效率一般。</p>
+<ul>
+<li>回写式（<code>Write Back</code>）：</li>
+</ul>
+<p>当有数据要写入数据库时，只会更新缓存，然后异步批量的将缓存数据同步到数据库上。<br>这种实现比较复杂，需要较多的应用逻辑，同时可能会产生数据库与缓存的不同步，但效率非常高。</p>
+<h1 id="表分区"><a href="#表分区" class="headerlink" title="表分区"></a>表分区</h1><p>MySQL在5.1版引入的分区是一种简单的水平拆分，用户需要在建表的时候加上分区参数，对应用是透明的无需修改代码</p>
+<p>对用户来说，分区表是一个独立的逻辑表，但是底层由多个物理子表组成，<br>实现分区的代码实际上是通过对一组底层表的对象封装，<br>但对SQL层来说是一个完全封装底层的黑盒子。<br>MySQL实现分区的方式也意味着索引也是按照分区的子表定义，没有全局索引</p>
+<p>用户的SQL语句是需要针对分区表做优化，SQL条件中要带上分区条件的列，从而使查询定位到少量的分区上，<br>否则就会扫描全部分区，可以通过<code>EXPLAIN PARTITIONS</code>来查看某条SQL语句会落在那些分区上，<br>从而进行SQL优化，如下图5条记录落在两个分区上：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain partitions select count<span class="params">(1)</span> from user_partition where id in <span class="params">(1,2,3,4,5)</span>;</span><br><span class="line">+<span class="params">----</span>+<span class="params">-------------</span>+<span class="params">----------------</span>+<span class="params">------------</span>+<span class="params">-------</span>+<span class="params">---------------</span>+<span class="params">---------</span>+<span class="params">---------</span>+<span class="params">------</span>+<span class="params">------</span>+<span class="params">--------------------------</span>+</span><br><span class="line">| id | select_type | table          | partitions | type  | possible_keys | key     | key_len | ref  | rows | Extra                    |</span><br><span class="line">+<span class="params">----</span>+<span class="params">-------------</span>+<span class="params">----------------</span>+<span class="params">------------</span>+<span class="params">-------</span>+<span class="params">---------------</span>+<span class="params">---------</span>+<span class="params">---------</span>+<span class="params">------</span>+<span class="params">------</span>+<span class="params">--------------------------</span>+</span><br><span class="line">|  1 | SIMPLE      | user_partition | p1,p4      | range | PRIMARY       | PRIMARY | 8       | NULL |    5 | Using where; Using index |</span><br><span class="line">+<span class="params">----</span>+<span class="params">-------------</span>+<span class="params">----------------</span>+<span class="params">------------</span>+<span class="params">-------</span>+<span class="params">---------------</span>+<span class="params">---------</span>+<span class="params">---------</span>+<span class="params">------</span>+<span class="params">------</span>+<span class="params">--------------------------</span>+</span><br><span class="line">1 row in <span class="keyword">set</span> <span class="params">(0.00 sec)</span></span><br></pre></td></tr></table></figure>
+<h2 id="分区的好处是："><a href="#分区的好处是：" class="headerlink" title="分区的好处是："></a>分区的好处是：</h2><ul>
+<li>可以让单表存储更多的数据</li>
+<li>分区表的数据更容易维护，可以通过清楚整个分区批量删除大量数据，也可以增加新的分区来支持新插入的数据。<br>另外，还可以对一个独立分区进行优化、检查、修复等操作</li>
+<li>部分查询能够从查询条件确定只落在少数分区上，速度会很快</li>
+<li>分区表的数据还可以分布在不同的物理设备上，从而高效利用多个硬件设备</li>
+<li>可以使用分区表赖避免某些特殊瓶颈，例如<code>InnoDB</code>单个索引的互斥访问、<code>ext3</code>文件系统的<code>inode</code>锁竞争</li>
+<li>可以备份和恢复单个分区</li>
+</ul>
+<h2 id="分区的限制和缺点："><a href="#分区的限制和缺点：" class="headerlink" title="分区的限制和缺点："></a>分区的限制和缺点：</h2><ul>
+<li>一个表最多只能有<code>1024</code>个分区</li>
+<li>如果分区字段中有主键或者唯一索引的列，那么所有主键列和唯一索引列都必须包含进来</li>
+<li>分区表无法使用外键约束</li>
+<li><code>NULL</code>值会使分区过滤无效</li>
+<li>所有分区必须使用相同的存储引擎</li>
+</ul>
+<h2 id="分区的类型："><a href="#分区的类型：" class="headerlink" title="分区的类型："></a>分区的类型：</h2><ul>
+<li><code>RANGE分区</code>：基于属于一个给定连续区间的列值，把多行分配给分区</li>
+<li><code>LIST分区</code>：类似于按<code>RANGE</code>分区，区别在于<code>LIST</code>分区是基于列值匹配一个离散值集合中的某个值来进行选择</li>
+<li><code>HASH分区</code>：基于用户定义的表达式的返回值来进行选择的分区，该表达式使用将要插入到表中的这些行的列值进行计算。<br>这个函数可以包含<code>MySQL</code>中有效的、产生非负整数值的任何表达式</li>
+<li><code>KEY分区</code>：类似于按<code>HASH</code>分区，区别在于<code>KEY</code>分区只支持计算一列或多列，且<code>MySQL</code>服务器提供其自身的哈希函数。必须有一列或多列包含整数值</li>
+</ul>
+<h2 id="分区适合的场景有："><a href="#分区适合的场景有：" class="headerlink" title="分区适合的场景有："></a>分区适合的场景有：</h2><p>最适合的场景数据的时间序列性比较强，则可以按时间来分区，如下所示：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> members (</span><br><span class="line">    firstname <span class="built_in">VARCHAR</span>(<span class="number">25</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    lastname <span class="built_in">VARCHAR</span>(<span class="number">25</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    username <span class="built_in">VARCHAR</span>(<span class="number">16</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    email <span class="built_in">VARCHAR</span>(<span class="number">35</span>),</span><br><span class="line">    joined <span class="built_in">DATE</span> <span class="keyword">NOT</span> <span class="literal">NULL</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">RANGE</span>( <span class="keyword">YEAR</span>(joined) ) (</span><br><span class="line">    <span class="keyword">PARTITION</span> p0 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">1960</span>),</span><br><span class="line">    <span class="keyword">PARTITION</span> p1 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">1970</span>),</span><br><span class="line">    <span class="keyword">PARTITION</span> p2 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">1980</span>),</span><br><span class="line">    <span class="keyword">PARTITION</span> p3 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">1990</span>),</span><br><span class="line">    <span class="keyword">PARTITION</span> p4 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> MAXVALUE</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>查询时加上时间范围条件效率会非常高，同时对于不需要的历史数据能很容的批量删除。</p>
+<blockquote>
+<p>如果数据有明显的热点，而且除了这部分数据，其他数据很少被访问到，那么可以将热点数据单独放在一个分区，<br>让这个分区的数据能够有机会都缓存在内存中，查询时只访问一个很小的分区表，能够有效使用索引和缓存</p>
+</blockquote>
+<p>另外MySQL有一种早期的简单的分区实现 - <code>合并表（merge table）</code>，<br>限制较多且缺乏优化，<strong>不建议使用</strong>，应该用新的分区机制来替代</p>
+<h1 id="垂直分表"><a href="#垂直分表" class="headerlink" title="垂直分表"></a>垂直分表</h1><blockquote>
+<p>垂直分库是根据数据库里面的数据表的相关性进行拆分，比如：一个数据库里面既存在用户数据，又存在订单数据，<br>那么垂直拆分可以把用户数据放到用户库、把订单数据放到订单库。垂直分表是对数据表进行垂直拆分的一种方式，常见的是把一个多字段的大表按常用字段和非常用字段进行拆分，<br>每个表里面的数据记录数一般情况下是相同的，只是字段不一样，使用主键关联</p>
+</blockquote>
+<p>比如原始的用户表是：</p>
+<p><img src="http://www.caoxl.com/images/mysql_ver_1.png" alt></p>
+<p>垂直拆分后是：</p>
+<p><img src="http://www.caoxl.com/images/mysql_ver_2.png" alt></p>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点:"></a>优点:</h2><ul>
+<li>可以使得行数据变小，一个数据块(<code>Block</code>)就能存放更多的数据，在查询时就会减少<code>I/O</code>次数(每次查询时读取的<code>Block</code>就少)</li>
+<li>可以达到最大化利用<code>Cache</code>的目的，具体在垂直拆分的时候可以将不常变的字段放一起，将经常改变的放一起</li>
+<li>数据维护简单</li>
+</ul>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点:"></a>缺点:</h2><ul>
+<li>主键出现冗余，需要管理冗余列</li>
+<li>会引起表连接<code>JOIN</code>操作（增加<code>CPU</code>开销）可以通过在业务服务器上进行<code>join</code>来减少数据库压力</li>
+<li>依然存在单表数据量过大的问题（需要水平拆分）</li>
+<li>事务处理复杂</li>
+</ul>
+<h1 id="水平分表"><a href="#水平分表" class="headerlink" title="水平分表"></a>水平分表</h1><blockquote>
+<p>水平拆分是通过某种策略将数据分片来存储，分库内分表和分库两部分，每片数据会分散到不同的MySQL表或库，<br>达到分布式的效果，能够支持非常大的数据量。前面的表分区本质上也是一种特殊的库内分表</p>
+<p>库内分表，仅仅是单纯的解决了单一表数据过大的问题，由于没有把表的数据分布到不同的机器上，因此对于减轻MySQL服务器的压力来说，<br>并没有太大的作用，大家还是竞争同一个物理机上的IO、CPU、网络，这个就要通过分库来解决</p>
+</blockquote>
+<p>前面垂直拆分的用户表如果进行水平拆分，结果是：</p>
+<p><img src="http://www.caoxl.com/images/mysql_level.png" alt></p>
+<p>实际情况中往往会是垂直拆分和水平拆分的结合，即将<code>Users_A_M</code>和<code>Users_N_Z</code>再拆成<code>Users</code>和<code>UserExtras</code>，这样一共四张表</p>
+<h2 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h2><ul>
+<li>不存在单库大数据和高并发的性能瓶颈</li>
+<li>应用端改造较少</li>
+<li>提高了系统的稳定性和负载能力</li>
+</ul>
+<h2 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li>分片事务一致性难以解决</li>
+<li>跨节点<code>Join</code>性能差，逻辑复杂</li>
+<li>数据多次扩展难度跟维护量极大</li>
+</ul>
+<h2 id="分片原则"><a href="#分片原则" class="headerlink" title="分片原则"></a>分片原则</h2><ul>
+<li>能不分就不分，参考单表优化</li>
+<li>分片数量尽量少，分片尽量均匀分布在多个数据结点上，因为一个查询SQL跨分片越多，则总体性能越差，<br>虽然要好于所有数据在一个分片的结果，只在必要的时候进行扩容，增加分片数量</li>
+<li>分片规则需要慎重选择做好提前规划，分片规则的选择，需要考虑数据的增长模式，数据的访问模式，分片关联性问题，以及分片扩容问题，<br>最近的分片策略为<code>范围分片</code>，<code>枚举分片</code>，<code>一致性Hash分片</code>，这几种分片都有利于扩容</li>
+<li>尽量不要在一个事务中的<code>SQL</code>跨越多个分片，分布式事务一直是个不好处理的问题</li>
+<li>查询条件尽量优化，尽量避免<code>Select *</code> 的方式，大量数据结果集下，会消耗大量带宽和<code>CPU</code>资源，<br>查询尽量避免返回大量结果集，并且尽量为频繁使用的查询语句建立索引。</li>
+<li>通过数据冗余和表分区赖降低跨库<code>Join</code>的可能</li>
+</ul>
+<blockquote>
+<p>这里特别强调一下分片规则的选择问题，如果某个表的数据有明显的时间特征，比如订单、交易记录等，则他们通常比较合适用时间范围分片，<br>因为具有时效性的数据，我们往往关注其近期的数据，查询条件中往往带有时间字段进行过滤，<br>比较好的方案是，当前活跃的数据，采用跨度比较短的时间段进行分片，而历史性的数据，则采用比较长的跨度存储。</p>
+<p>总体上来说，分片的选择是取决于最频繁的查询SQL的条件，因为不带任何Where语句的查询SQL，会遍历所有的分片，性能相对最差，<br>因此这种SQL越多，对系统的影响越大，所以我们要尽量避免这种SQL的产生。</p>
+</blockquote>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>由于水平拆分牵涉的逻辑比较复杂，当前也有了不少比较成熟的解决方案。这些方案分为两大类：<strong>客户端架构</strong>和<strong>代理架构</strong>。</p>
+<h3 id="客户端架构"><a href="#客户端架构" class="headerlink" title="客户端架构"></a>客户端架构</h3><p>通过修改数据访问层，如<code>JDBC</code>、<code>Data Source</code>、<code>MyBatis</code>，<br>通过配置来管理多个数据源，直连数据库，并在模块内完成数据的分片整合，一般以<code>Jar</code>包的方式呈现</p>
+<p><img src="http://www.caoxl.com/images/mysql_client.png" alt="客户端架构的例子"></p>
+<p>可以看到分片的实现是和应用服务器在一起的，通过修改<code>Spring JDBC</code>层来实现</p>
+<h4 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h4><ul>
+<li>应用直连数据库，降低外围系统依赖所带来的宕机风险</li>
+<li>集成成本低，无需额外运维的组件</li>
+</ul>
+<h4 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>限于只能在数据库访问层上做文章，扩展性一般，对于比较复杂的系统可能会力不从心</li>
+<li>将分片逻辑的压力放在应用服务器上，造成额外风险</li>
+</ul>
+<h3 id="代理架构"><a href="#代理架构" class="headerlink" title="代理架构"></a>代理架构</h3><p>通过独立的中间件来统一管理所有数据源和数据分片整合，后端数据库集群对前端应用程序透明，需要独立部署和运维代理组件</p>
+<p><img src="http://www.caoxl.com/images/mysql_proxy.png" alt="代理架构例子"></p>
+<p>代理组件为了分流和防止单点，一般以集群形式存在，同时可能需要<code>Zookeeper</code>之类的服务组件来管理</p>
+<h4 id="优点-3"><a href="#优点-3" class="headerlink" title="优点"></a>优点</h4><ul>
+<li>能够处理非常复杂的需求，不受数据库访问层原来实现的限制，扩展性强</li>
+<li>对于应用服务器透明且没有增加任何额外负载</li>
+</ul>
+<h4 id="缺点-3"><a href="#缺点-3" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>需部署和运维独立的代理中间件，成本高</li>
+<li>应用需经过代理来连接数据库，网络上多了一跳，性能有损失且有额外风险</li>
+</ul>
+<h1 id="NoSQL"><a href="#NoSQL" class="headerlink" title="NoSQL"></a><code>NoSQL</code></h1><p>在<code>MySQL上</code>做<code>Sharding</code>是一种戴着镣铐的跳舞，事实上很多大表本身对<code>MySQL</code>这种<code>RDBMS</code>的需求并不大，<br>并不要求<code>ACID</code>，可以考虑将这些表迁移到<code>NoSQL</code>，彻底解决水平扩展问题，例如：</p>
+<ul>
+<li>日志类、监控类、统计类数据</li>
+<li>非结构化或弱结构化数据</li>
+<li>对事务要求不强，且无太多关联操作的数据</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://segmentfault.com/a/1190000006158186#articleHeader5" target="_blank" rel="noopener">MySQL大表优化方案</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/06/13/MySQL-large-table-opt/" target="_blank" title="MySQL 大表优化">http://blog.caoxl.com/2018/06/13/MySQL-large-table-opt/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/06/13/Heart-Rate-PRO/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          心跳检测
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/13/High-Conc-Large-Flow/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">高并发和大流量解决方案</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#单表优化"><span class="nav-number">1.</span> <span class="nav-text">单表优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字段"><span class="nav-number">1.1.</span> <span class="nav-text">字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引"><span class="nav-number">1.2.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询SQL"><span class="nav-number">1.3.</span> <span class="nav-text">查询SQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引擎"><span class="nav-number">1.4.</span> <span class="nav-text">引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MyISAM"><span class="nav-number">1.4.1.</span> <span class="nav-text">MyISAM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InonoDB"><span class="nav-number">1.4.2.</span> <span class="nav-text">InonoDB</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统调优参数"><span class="nav-number">1.5.</span> <span class="nav-text">系统调优参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#升级硬件"><span class="nav-number">1.6.</span> <span class="nav-text">升级硬件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#读写分离"><span class="nav-number">2.</span> <span class="nav-text">读写分离</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#缓存"><span class="nav-number">3.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#表分区"><span class="nav-number">4.</span> <span class="nav-text">表分区</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分区的好处是："><span class="nav-number">4.1.</span> <span class="nav-text">分区的好处是：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分区的限制和缺点："><span class="nav-number">4.2.</span> <span class="nav-text">分区的限制和缺点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分区的类型："><span class="nav-number">4.3.</span> <span class="nav-text">分区的类型：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分区适合的场景有："><span class="nav-number">4.4.</span> <span class="nav-text">分区适合的场景有：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#垂直分表"><span class="nav-number">5.</span> <span class="nav-text">垂直分表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优点"><span class="nav-number">5.1.</span> <span class="nav-text">优点:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">5.2.</span> <span class="nav-text">缺点:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#水平分表"><span class="nav-number">6.</span> <span class="nav-text">水平分表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优点-1"><span class="nav-number">6.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点-1"><span class="nav-number">6.2.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分片原则"><span class="nav-number">6.3.</span> <span class="nav-text">分片原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">6.4.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端架构"><span class="nav-number">6.4.1.</span> <span class="nav-text">客户端架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#优点-2"><span class="nav-number">6.4.1.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缺点-2"><span class="nav-number">6.4.1.2.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代理架构"><span class="nav-number">6.4.2.</span> <span class="nav-text">代理架构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#优点-3"><span class="nav-number">6.4.2.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缺点-3"><span class="nav-number">6.4.2.2.</span> <span class="nav-text">缺点</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NoSQL"><span class="nav-number">7.</span> <span class="nav-text">NoSQL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

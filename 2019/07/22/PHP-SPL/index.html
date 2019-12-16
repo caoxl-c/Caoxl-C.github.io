@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php标准库(spl) | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHPSPL">
+  
+  
+  
+  
+  <meta name="description" content="SPL是用于解决典型问题(standard problems)的一组接口与类的集合。https://www.php.net/manual/zh/book.spl.php">
+<meta name="keywords" content="PHP,SPL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP标准库(SPL)">
+<meta property="og:url" content="http://blog.caoxl.com/2019/07/22/PHP-SPL/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="SPL是用于解决典型问题(standard problems)的一组接口与类的集合。https://www.php.net/manual/zh/book.spl.php">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-23T02:39:29.561Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP标准库(SPL)">
+<meta name="twitter:description" content="SPL是用于解决典型问题(standard problems)的一组接口与类的集合。https://www.php.net/manual/zh/book.spl.php">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-SPL" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP标准库(SPL)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/07/22/PHP-SPL/" class="article-date">
+	  <time datetime="2019-07-22T10:20:40.000Z" itemprop="datePublished">2019-07-22</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>SPL是用于解决典型问题(standard problems)的一组接口与类的集合。<br><a href="https://www.php.net/manual/zh/book.spl.php" target="_blank" rel="noopener">https://www.php.net/manual/zh/book.spl.php</a></p>
+</blockquote>
+<a id="more"></a>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><h3 id="SplDoublyLinkedList"><a href="#SplDoublyLinkedList" class="headerlink" title="SplDoublyLinkedList"></a>SplDoublyLinkedList</h3><blockquote>
+<p>SplDoublyLinkedList类提供双向链表的主要功能。</p>
+</blockquote>
+<h3 id="SplStack"><a href="#SplStack" class="headerlink" title="SplStack"></a>SplStack</h3><blockquote>
+<p>SplStack类通过使用一个双向链表来提供栈的主要功能</p>
+</blockquote>
+<h3 id="SplQueue"><a href="#SplQueue" class="headerlink" title="SplQueue"></a>SplQueue</h3><blockquote>
+<p>SplQueue类通过使用一个双向链表来提供队列的主要功能</p>
+</blockquote>
+<h3 id="SplHeap"><a href="#SplHeap" class="headerlink" title="SplHeap"></a>SplHeap</h3><blockquote>
+<p>SplHeap类提供堆的主要功能。</p>
+</blockquote>
+<h3 id="SplMaxHeap"><a href="#SplMaxHeap" class="headerlink" title="SplMaxHeap"></a>SplMaxHeap</h3><blockquote>
+<p>SplMaxHeap类提供堆的主要功能，保持最大值。</p>
+</blockquote>
+<h3 id="SplMinHeap"><a href="#SplMinHeap" class="headerlink" title="SplMinHeap"></a>SplMinHeap</h3><blockquote>
+<p>SplMinHeap类提供堆的主要功能，保持最小值。</p>
+</blockquote>
+<h3 id="SplPriorityQueue"><a href="#SplPriorityQueue" class="headerlink" title="SplPriorityQueue"></a>SplPriorityQueue</h3><blockquote>
+<p>SplPriorityQueue类提供了使用最大堆实现的优先级队列的主要功能。</p>
+</blockquote>
+<h3 id="SplFixedArray"><a href="#SplFixedArray" class="headerlink" title="SplFixedArray"></a>SplFixedArray</h3><blockquote>
+<p>SplFixedArray类提供了数组的主要功能。SplFixedArray和普通PHP数组之间的主要区别在于SplFixedArray具有固定长度，并且仅允许范围内的整数作为索引。优点是它允许更快的阵列实现。</p>
+</blockquote>
+<h3 id="SplObjectStorage"><a href="#SplObjectStorage" class="headerlink" title="SplObjectStorage"></a>SplObjectStorage</h3><blockquote>
+<p>SplObjectStorage类提供从对象到数据的映射，或者通过忽略数据来提供对象集。在涉及唯一标识对象的需要的许多情况下，这种双重目的可能是有用的。</p>
+</blockquote>
+<h2 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h2><h3 id="AppendIterator"><a href="#AppendIterator" class="headerlink" title="AppendIterator"></a>AppendIterator</h3><blockquote>
+<p>这个迭代器能陆续遍历几个迭代器</p>
+</blockquote>
+<h3 id="ArrayIterator"><a href="#ArrayIterator" class="headerlink" title="ArrayIterator"></a>ArrayIterator</h3><blockquote>
+<p>这个迭代器允许在遍历数组和对象时删除和更新值与键。</p>
+</blockquote>
+<h3 id="CachingIterator"><a href="#CachingIterator" class="headerlink" title="CachingIterator"></a>CachingIterator</h3><blockquote>
+<p>此对象支持对另一个迭代器的缓存迭代。</p>
+</blockquote>
+<h3 id="CallbackFilterIterator"><a href="#CallbackFilterIterator" class="headerlink" title="CallbackFilterIterator"></a>CallbackFilterIterator</h3><h3 id="DirectoryIterator"><a href="#DirectoryIterator" class="headerlink" title="DirectoryIterator"></a>DirectoryIterator</h3><blockquote>
+<p>DirectoryIterator类提供了一个用于查看文件系统目录内容的简单界面。</p>
+</blockquote>
+<h3 id="EmptyIterator"><a href="#EmptyIterator" class="headerlink" title="EmptyIterator"></a>EmptyIterator</h3><blockquote>
+<p>空迭代器的EmptyIterator类。</p>
+</blockquote>
+<h3 id="FilesystemIterator"><a href="#FilesystemIterator" class="headerlink" title="FilesystemIterator"></a>FilesystemIterator</h3><blockquote>
+<p>Filesystem迭代器</p>
+</blockquote>
+<h3 id="FilterIterator"><a href="#FilterIterator" class="headerlink" title="FilterIterator"></a>FilterIterator</h3><blockquote>
+<p>这个抽象类的遍历并过滤出不想要的值.这个类应该被实现了迭代过滤器的类继承 FilterIterator::accept()方法必须被子类实现.</p>
+</blockquote>
+<h3 id="GlobIterator"><a href="#GlobIterator" class="headerlink" title="GlobIterator"></a>GlobIterator</h3><blockquote>
+<p>遍历一个文件系统行为类似于 glob().</p>
+</blockquote>
+<h3 id="InfiniteIterator"><a href="#InfiniteIterator" class="headerlink" title="InfiniteIterator"></a>InfiniteIterator</h3><blockquote>
+<p>所述InfiniteIterator允许一个无限迭代的迭代器，而无需在达到其端手动倒带迭代器。</p>
+</blockquote>
+<h3 id="IteratorIterator"><a href="#IteratorIterator" class="headerlink" title="IteratorIterator"></a>IteratorIterator</h3><blockquote>
+<p>这个迭代器包装器允许将任何可遍历的东西转换为 迭代器。重要的是要理解大多数没有实现迭代器的类都有理由，因为它们很可能不允许完整的迭代器功能集。如果是这样，应提供技术以防止误用，否则会出现异常或致命错误。</p>
+</blockquote>
+<h3 id="LimitIterator"><a href="#LimitIterator" class="headerlink" title="LimitIterator"></a>LimitIterator</h3><blockquote>
+<p>LimitIterator类允许遍历一个 Iterator 的限定子集的元素.</p>
+</blockquote>
+<h3 id="MultipleIterator"><a href="#MultipleIterator" class="headerlink" title="MultipleIterator"></a>MultipleIterator</h3><blockquote>
+<p>迭代遍历所有连接迭代器的迭代器</p>
+</blockquote>
+<h3 id="NoRewindIterator"><a href="#NoRewindIterator" class="headerlink" title="NoRewindIterator"></a>NoRewindIterator</h3><blockquote>
+<p>这个迭代器忽略了倒带操作。这允许在多个部分foreach循环中处理迭代器。</p>
+</blockquote>
+<h3 id="ParentIterator"><a href="#ParentIterator" class="headerlink" title="ParentIterator"></a>ParentIterator</h3><blockquote>
+<p>此扩展的FilterIterator允许使用RecursiveIteratorIterator进行递归迭代，该迭代仅显示具有子项的元素。</p>
+</blockquote>
+<h3 id="RecursiveArrayIterator"><a href="#RecursiveArrayIterator" class="headerlink" title="RecursiveArrayIterator"></a>RecursiveArrayIterator</h3><blockquote>
+<p>这个迭代器允许在以与ArrayIterator相同的方式迭代Arrays和Objects时取消设置和修改值和键。另外，可以迭代当前的迭代器条目。</p>
+</blockquote>
+<h3 id="RecursiveCachingIterator"><a href="#RecursiveCachingIterator" class="headerlink" title="RecursiveCachingIterator"></a>RecursiveCachingIterator</h3><h3 id="RecursiveCallbackFilterIterator"><a href="#RecursiveCallbackFilterIterator" class="headerlink" title="RecursiveCallbackFilterIterator"></a>RecursiveCallbackFilterIterator</h3><h3 id="RecursiveDirectoryIterator"><a href="#RecursiveDirectoryIterator" class="headerlink" title="RecursiveDirectoryIterator"></a>RecursiveDirectoryIterator</h3><blockquote>
+<p>该RecursiveDirectoryIterator提供一个接口，在文件系统的目录遍历递归。</p>
+</blockquote>
+<h3 id="RecursiveFilterIterator"><a href="#RecursiveFilterIterator" class="headerlink" title="RecursiveFilterIterator"></a>RecursiveFilterIterator</h3><blockquote>
+<p>此抽象迭代器过滤掉RecursiveIterator的不需要的值。应该扩展此类以实现自定义筛选器。该RecursiveFilterIterator::accept（）方法必须在子类实现。</p>
+</blockquote>
+<h3 id="RecursiveIteratorIterator"><a href="#RecursiveIteratorIterator" class="headerlink" title="RecursiveIteratorIterator"></a>RecursiveIteratorIterator</h3><blockquote>
+<p>可用于迭代递归迭代器。</p>
+</blockquote>
+<h3 id="RecursiveRegexIterator"><a href="#RecursiveRegexIterator" class="headerlink" title="RecursiveRegexIterator"></a>RecursiveRegexIterator</h3><blockquote>
+<p>这个递归迭代器可以通过正则表达式过滤另一个递归迭代器。</p>
+</blockquote>
+<h3 id="RecursiveTreeIterator"><a href="#RecursiveTreeIterator" class="headerlink" title="RecursiveTreeIterator"></a>RecursiveTreeIterator</h3><blockquote>
+<p>允许迭代RecursiveIterator以生成ASCII图形树。</p>
+</blockquote>
+<h3 id="RegexIterator"><a href="#RegexIterator" class="headerlink" title="RegexIterator"></a>RegexIterator</h3><blockquote>
+<p>此迭代器可用于基于正则表达式过滤另一个迭代器。</p>
+</blockquote>
+<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h3 id="Countable"><a href="#Countable" class="headerlink" title="Countable"></a>Countable</h3><blockquote>
+<p>类实现 Countable 可被用于 count() 函数.</p>
+</blockquote>
+<h3 id="OuterIterator"><a href="#OuterIterator" class="headerlink" title="OuterIterator"></a>OuterIterator</h3><blockquote>
+<p>实现OuterIterator的类可用于迭代迭代器。</p>
+</blockquote>
+<h3 id="RecursiveIterator"><a href="#RecursiveIterator" class="headerlink" title="RecursiveIterator"></a>RecursiveIterator</h3><blockquote>
+<p>实现RecursiveIterator的类可用于递归迭代迭代器。</p>
+</blockquote>
+<h3 id="SeekableIterator"><a href="#SeekableIterator" class="headerlink" title="SeekableIterator"></a>SeekableIterator</h3><blockquote>
+<p>可读的迭代器。</p>
+</blockquote>
+<h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><h3 id="BadFunctionCallException"><a href="#BadFunctionCallException" class="headerlink" title="BadFunctionCallException"></a>BadFunctionCallException</h3><blockquote>
+<p>如果回调引用未定义的函数或者缺少某些参数，则抛出异常。</p>
+</blockquote>
+<h3 id="BadMethodCallException"><a href="#BadMethodCallException" class="headerlink" title="BadMethodCallException"></a>BadMethodCallException</h3><blockquote>
+<p>当一个回调方法是一个未定义的方法或缺失一些参数时会抛出该异常。</p>
+</blockquote>
+<h3 id="DomainException"><a href="#DomainException" class="headerlink" title="DomainException"></a>DomainException</h3><blockquote>
+<p>如果值不符合定义的有效数据域，则抛出异常。</p>
+</blockquote>
+<h3 id="InvalidArgumentException"><a href="#InvalidArgumentException" class="headerlink" title="InvalidArgumentException"></a>InvalidArgumentException</h3><blockquote>
+<p>如果参数不是预期类型，则抛出异常。</p>
+</blockquote>
+<h3 id="LengthException"><a href="#LengthException" class="headerlink" title="LengthException"></a>LengthException</h3><blockquote>
+<p>如果长度无效，则抛出异常。</p>
+</blockquote>
+<h3 id="LogicException"><a href="#LogicException" class="headerlink" title="LogicException"></a>LogicException</h3><blockquote>
+<p>表示程序逻辑错误的异常。这种异常应直接导致代码中的修复。</p>
+</blockquote>
+<h3 id="OutOfBoundException"><a href="#OutOfBoundException" class="headerlink" title="OutOfBoundException"></a>OutOfBoundException</h3><blockquote>
+<p>如果值不是有效键，则抛出异常。这表示在编译时无法检测到的错误。</p>
+</blockquote>
+<h3 id="OutOfRangeException"><a href="#OutOfRangeException" class="headerlink" title="OutOfRangeException"></a>OutOfRangeException</h3><blockquote>
+<p>请求非法索引时抛出异常。这表示应该在编译时检测到的错误。</p>
+</blockquote>
+<h3 id="OverflowException"><a href="#OverflowException" class="headerlink" title="OverflowException"></a>OverflowException</h3><blockquote>
+<p>将元素添加到完整容器时抛出异常。</p>
+</blockquote>
+<h3 id="RangeException"><a href="#RangeException" class="headerlink" title="RangeException"></a>RangeException</h3><blockquote>
+<p>抛出异常以指示程序执行期间的范围错误。通常这意味着除了/溢出之外还有一个算术错误。这是DomainException的运行时版本 。</p>
+</blockquote>
+<h3 id="RuntimeException"><a href="#RuntimeException" class="headerlink" title="RuntimeException"></a>RuntimeException</h3><blockquote>
+<p>如果发生只能在运行时发现的错误，则抛出异常。</p>
+</blockquote>
+<h3 id="UnderflowException"><a href="#UnderflowException" class="headerlink" title="UnderflowException"></a>UnderflowException</h3><blockquote>
+<p>在空容器上执行无效操作（例如删除元素）时抛出异常。</p>
+</blockquote>
+<h3 id="UnexpectedValueException"><a href="#UnexpectedValueException" class="headerlink" title="UnexpectedValueException"></a>UnexpectedValueException</h3><blockquote>
+<p>如果值与一组值不匹配，则抛出异常。通常，当函数调用另一个函数并且期望返回值是某个类型或值（不包括算术或缓冲区相关的错误）时，会发生这种情况。</p>
+</blockquote>
+<h2 id="SPL函数"><a href="#SPL函数" class="headerlink" title="SPL函数"></a>SPL函数</h2><h3 id="class-implements"><a href="#class-implements" class="headerlink" title="class_implements"></a>class_implements</h3><blockquote>
+<p>class_implements — 返回指定的类实现的所有接口。</p>
+</blockquote>
+<h3 id="class-parents"><a href="#class-parents" class="headerlink" title="class_parents"></a>class_parents</h3><blockquote>
+<p>class_parents — 返回指定类的父类。</p>
+</blockquote>
+<h3 id="class-uses"><a href="#class-uses" class="headerlink" title="class_uses"></a>class_uses</h3><blockquote>
+<p>class_uses - 返回给定类使用的特征</p>
+</blockquote>
+<h3 id="iterator-apply"><a href="#iterator-apply" class="headerlink" title="iterator_apply"></a>iterator_apply</h3><blockquote>
+<p>iterator_apply — 为迭代器中每个元素调用一个用户自定义函数</p>
+</blockquote>
+<h3 id="iterator-count"><a href="#iterator-count" class="headerlink" title="iterator_count"></a>iterator_count</h3><blockquote>
+<p>iterator_count — 计算迭代器中元素的个数</p>
+</blockquote>
+<h3 id="iterator-to-array"><a href="#iterator-to-array" class="headerlink" title="iterator_to_array"></a>iterator_to_array</h3><blockquote>
+<p>iterator_to_array — 将迭代器中的元素拷贝到数组</p>
+</blockquote>
+<h3 id="spl-autoload-call"><a href="#spl-autoload-call" class="headerlink" title="spl_autoload_call"></a>spl_autoload_call</h3><blockquote>
+<p>spl_autoload_call — 尝试调用所有已注册的__autoload()函数来装载请求类</p>
+</blockquote>
+<h3 id="spl-autoload-extensions"><a href="#spl-autoload-extensions" class="headerlink" title="spl_autoload_extensions"></a>spl_autoload_extensions</h3><blockquote>
+<p>spl_autoload_extensions — 注册并返回spl_autoload函数使用的默认文件扩展名。</p>
+</blockquote>
+<h3 id="spl-autoload-functions"><a href="#spl-autoload-functions" class="headerlink" title="spl_autoload_functions"></a>spl_autoload_functions</h3><blockquote>
+<p>spl_autoload_functions — 返回所有已注册的__autoload()函数。</p>
+</blockquote>
+<h3 id="spl-autoload-register"><a href="#spl-autoload-register" class="headerlink" title="spl_autoload_register"></a>spl_autoload_register</h3><blockquote>
+<p>spl_autoload_register — 注册给定的函数作为 __autoload 的实现</p>
+</blockquote>
+<h3 id="spl-autoload-unregister"><a href="#spl-autoload-unregister" class="headerlink" title="spl_autoload_unregister"></a>spl_autoload_unregister</h3><blockquote>
+<p>spl_autoload_unregister — 注销已注册的__autoload()函数</p>
+</blockquote>
+<h3 id="spl-autoload"><a href="#spl-autoload" class="headerlink" title="spl_autoload"></a>spl_autoload</h3><blockquote>
+<p>spl_autoload — __autoload()函数的默认实现</p>
+</blockquote>
+<h3 id="spl-classes"><a href="#spl-classes" class="headerlink" title="spl_classes"></a>spl_classes</h3><blockquote>
+<p>spl_classes — 返回所有可用的SPL类</p>
+</blockquote>
+<h3 id="spl-object-hash"><a href="#spl-object-hash" class="headerlink" title="spl_object_hash"></a>spl_object_hash</h3><blockquote>
+<p>spl_object_hash — 返回指定对象的hash id</p>
+</blockquote>
+<h3 id="spl-object-id"><a href="#spl-object-id" class="headerlink" title="spl_object_id"></a>spl_object_id</h3><blockquote>
+<p>此函数返回对象的唯一标识符。对象id在对象的生命周期中是唯一的。一旦对象被销毁，其id可以重用于其他对象。此行为类似于 spl_object_hash（）。</p>
+</blockquote>
+<h2 id="文件处理"><a href="#文件处理" class="headerlink" title="文件处理"></a>文件处理</h2><h3 id="SplFileInfo"><a href="#SplFileInfo" class="headerlink" title="SplFileInfo"></a>SplFileInfo</h3><blockquote>
+<p>SplFileInfo类为单个文件的信息提供高级面向对象的接口。</p>
+</blockquote>
+<h3 id="SplFileObject"><a href="#SplFileObject" class="headerlink" title="SplFileObject"></a>SplFileObject</h3><blockquote>
+<p>SplFileObject类为文件提供了一个面向对象接口.</p>
+</blockquote>
+<h3 id="SplTempFileObject"><a href="#SplTempFileObject" class="headerlink" title="SplTempFileObject"></a>SplTempFileObject</h3><blockquote>
+<p>SplTempFileObject类为临时文件提供面向对象的接口。</p>
+</blockquote>
+<h2 id="各种类及接口"><a href="#各种类及接口" class="headerlink" title="各种类及接口"></a>各种类及接口</h2><h3 id="ArrayObject"><a href="#ArrayObject" class="headerlink" title="ArrayObject"></a>ArrayObject</h3><blockquote>
+<p>该类允许对象作为数组工作。</p>
+</blockquote>
+<h3 id="SplObserver"><a href="#SplObserver" class="headerlink" title="SplObserver"></a>SplObserver</h3><blockquote>
+<p>该SplObserver接口用于一起 SplSubject实现Observer设计模式。</p>
+</blockquote>
+<h3 id="SplSubject"><a href="#SplSubject" class="headerlink" title="SplSubject"></a>SplSubject</h3><blockquote>
+<p>该SplSubject接口用于一起 SplObserver实现Observer设计模式。</p>
+</blockquote>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/07/22/PHP-SPL/" target="_blank" title="PHP标准库(SPL)">http://blog.caoxl.com/2019/07/22/PHP-SPL/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SPL/">SPL</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/07/29/Interview-Questions-Notes-II/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          PHP面试/笔试题杂记 II
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/07/22/Be-PHP-Senior-Programmer/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Be-PHP-Senior-Programmer</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构"><span class="nav-number">1.</span> <span class="nav-text">数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SplDoublyLinkedList"><span class="nav-number">1.1.</span> <span class="nav-text">SplDoublyLinkedList</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplStack"><span class="nav-number">1.2.</span> <span class="nav-text">SplStack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplQueue"><span class="nav-number">1.3.</span> <span class="nav-text">SplQueue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplHeap"><span class="nav-number">1.4.</span> <span class="nav-text">SplHeap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplMaxHeap"><span class="nav-number">1.5.</span> <span class="nav-text">SplMaxHeap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplMinHeap"><span class="nav-number">1.6.</span> <span class="nav-text">SplMinHeap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplPriorityQueue"><span class="nav-number">1.7.</span> <span class="nav-text">SplPriorityQueue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplFixedArray"><span class="nav-number">1.8.</span> <span class="nav-text">SplFixedArray</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplObjectStorage"><span class="nav-number">1.9.</span> <span class="nav-text">SplObjectStorage</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代器"><span class="nav-number">2.</span> <span class="nav-text">迭代器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AppendIterator"><span class="nav-number">2.1.</span> <span class="nav-text">AppendIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ArrayIterator"><span class="nav-number">2.2.</span> <span class="nav-text">ArrayIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CachingIterator"><span class="nav-number">2.3.</span> <span class="nav-text">CachingIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CallbackFilterIterator"><span class="nav-number">2.4.</span> <span class="nav-text">CallbackFilterIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DirectoryIterator"><span class="nav-number">2.5.</span> <span class="nav-text">DirectoryIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EmptyIterator"><span class="nav-number">2.6.</span> <span class="nav-text">EmptyIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FilesystemIterator"><span class="nav-number">2.7.</span> <span class="nav-text">FilesystemIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FilterIterator"><span class="nav-number">2.8.</span> <span class="nav-text">FilterIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GlobIterator"><span class="nav-number">2.9.</span> <span class="nav-text">GlobIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InfiniteIterator"><span class="nav-number">2.10.</span> <span class="nav-text">InfiniteIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IteratorIterator"><span class="nav-number">2.11.</span> <span class="nav-text">IteratorIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LimitIterator"><span class="nav-number">2.12.</span> <span class="nav-text">LimitIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MultipleIterator"><span class="nav-number">2.13.</span> <span class="nav-text">MultipleIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NoRewindIterator"><span class="nav-number">2.14.</span> <span class="nav-text">NoRewindIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ParentIterator"><span class="nav-number">2.15.</span> <span class="nav-text">ParentIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RecursiveArrayIterator"><span class="nav-number">2.16.</span> <span class="nav-text">RecursiveArrayIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RecursiveCachingIterator"><span class="nav-number">2.17.</span> <span class="nav-text">RecursiveCachingIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RecursiveCallbackFilterIterator"><span class="nav-number">2.18.</span> <span class="nav-text">RecursiveCallbackFilterIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RecursiveDirectoryIterator"><span class="nav-number">2.19.</span> <span class="nav-text">RecursiveDirectoryIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RecursiveFilterIterator"><span class="nav-number">2.20.</span> <span class="nav-text">RecursiveFilterIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RecursiveIteratorIterator"><span class="nav-number">2.21.</span> <span class="nav-text">RecursiveIteratorIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RecursiveRegexIterator"><span class="nav-number">2.22.</span> <span class="nav-text">RecursiveRegexIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RecursiveTreeIterator"><span class="nav-number">2.23.</span> <span class="nav-text">RecursiveTreeIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RegexIterator"><span class="nav-number">2.24.</span> <span class="nav-text">RegexIterator</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口"><span class="nav-number">3.</span> <span class="nav-text">接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Countable"><span class="nav-number">3.1.</span> <span class="nav-text">Countable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OuterIterator"><span class="nav-number">3.2.</span> <span class="nav-text">OuterIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RecursiveIterator"><span class="nav-number">3.3.</span> <span class="nav-text">RecursiveIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SeekableIterator"><span class="nav-number">3.4.</span> <span class="nav-text">SeekableIterator</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常"><span class="nav-number">4.</span> <span class="nav-text">异常</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BadFunctionCallException"><span class="nav-number">4.1.</span> <span class="nav-text">BadFunctionCallException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BadMethodCallException"><span class="nav-number">4.2.</span> <span class="nav-text">BadMethodCallException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DomainException"><span class="nav-number">4.3.</span> <span class="nav-text">DomainException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InvalidArgumentException"><span class="nav-number">4.4.</span> <span class="nav-text">InvalidArgumentException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LengthException"><span class="nav-number">4.5.</span> <span class="nav-text">LengthException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LogicException"><span class="nav-number">4.6.</span> <span class="nav-text">LogicException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OutOfBoundException"><span class="nav-number">4.7.</span> <span class="nav-text">OutOfBoundException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OutOfRangeException"><span class="nav-number">4.8.</span> <span class="nav-text">OutOfRangeException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OverflowException"><span class="nav-number">4.9.</span> <span class="nav-text">OverflowException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RangeException"><span class="nav-number">4.10.</span> <span class="nav-text">RangeException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RuntimeException"><span class="nav-number">4.11.</span> <span class="nav-text">RuntimeException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UnderflowException"><span class="nav-number">4.12.</span> <span class="nav-text">UnderflowException</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UnexpectedValueException"><span class="nav-number">4.13.</span> <span class="nav-text">UnexpectedValueException</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SPL函数"><span class="nav-number">5.</span> <span class="nav-text">SPL函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#class-implements"><span class="nav-number">5.1.</span> <span class="nav-text">class_implements</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#class-parents"><span class="nav-number">5.2.</span> <span class="nav-text">class_parents</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#class-uses"><span class="nav-number">5.3.</span> <span class="nav-text">class_uses</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iterator-apply"><span class="nav-number">5.4.</span> <span class="nav-text">iterator_apply</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iterator-count"><span class="nav-number">5.5.</span> <span class="nav-text">iterator_count</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iterator-to-array"><span class="nav-number">5.6.</span> <span class="nav-text">iterator_to_array</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spl-autoload-call"><span class="nav-number">5.7.</span> <span class="nav-text">spl_autoload_call</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spl-autoload-extensions"><span class="nav-number">5.8.</span> <span class="nav-text">spl_autoload_extensions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spl-autoload-functions"><span class="nav-number">5.9.</span> <span class="nav-text">spl_autoload_functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spl-autoload-register"><span class="nav-number">5.10.</span> <span class="nav-text">spl_autoload_register</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spl-autoload-unregister"><span class="nav-number">5.11.</span> <span class="nav-text">spl_autoload_unregister</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spl-autoload"><span class="nav-number">5.12.</span> <span class="nav-text">spl_autoload</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spl-classes"><span class="nav-number">5.13.</span> <span class="nav-text">spl_classes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spl-object-hash"><span class="nav-number">5.14.</span> <span class="nav-text">spl_object_hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spl-object-id"><span class="nav-number">5.15.</span> <span class="nav-text">spl_object_id</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文件处理"><span class="nav-number">6.</span> <span class="nav-text">文件处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SplFileInfo"><span class="nav-number">6.1.</span> <span class="nav-text">SplFileInfo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplFileObject"><span class="nav-number">6.2.</span> <span class="nav-text">SplFileObject</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplTempFileObject"><span class="nav-number">6.3.</span> <span class="nav-text">SplTempFileObject</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#各种类及接口"><span class="nav-number">7.</span> <span class="nav-text">各种类及接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ArrayObject"><span class="nav-number">7.1.</span> <span class="nav-text">ArrayObject</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplObserver"><span class="nav-number">7.2.</span> <span class="nav-text">SplObserver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplSubject"><span class="nav-number">7.3.</span> <span class="nav-text">SplSubject</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

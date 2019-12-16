@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mongodb 可视化管理工具 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MongoDBNoSQL">
+  
+  
+  
+  
+  <meta name="description" content="MongoDB Compass是MongoDB官网提供的一个集创建数据库、管理集合和文档、运行临时查询、评估和优化查询、性能图表、构建地理查询等功能为一体的MongoDB可视化管理工具。">
+<meta name="keywords" content="MongoDB,NoSQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB 可视化管理工具">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/16/MongoDB-Compass-DBA-must-know/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="MongoDB Compass是MongoDB官网提供的一个集创建数据库、管理集合和文档、运行临时查询、评估和优化查询、性能图表、构建地理查询等功能为一体的MongoDB可视化管理工具。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://caoxl.com/images/mongo/mongo_connection.png">
+<meta property="og:image" content="http://caoxl.com/images/mongo/mongo_create_database.png">
+<meta property="og:image" content="http://caoxl.com/images/mongo/mongo_insert_doc.png">
+<meta property="og:image" content="http://caoxl.com/images/mongo/mongo_view_list.png">
+<meta property="og:image" content="http://caoxl.com/images/mongo/mongo_view_table.png">
+<meta property="og:image" content="http://caoxl.com/images/mongo/mongo_find.png">
+<meta property="og:image" content="http://caoxl.com/images/mongo/mongo_aggregations.png">
+<meta property="og:image" content="http://caoxl.com/images/mongo/mongo_explain_plan.png">
+<meta property="og:image" content="http://caoxl.com/images/mongo/mongo_indexes.png">
+<meta property="og:updated_time" content="2019-09-06T02:49:01.907Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB 可视化管理工具">
+<meta name="twitter:description" content="MongoDB Compass是MongoDB官网提供的一个集创建数据库、管理集合和文档、运行临时查询、评估和优化查询、性能图表、构建地理查询等功能为一体的MongoDB可视化管理工具。">
+<meta name="twitter:image" content="http://caoxl.com/images/mongo/mongo_connection.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MongoDB-Compass-DBA-must-know" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MongoDB 可视化管理工具
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/16/MongoDB-Compass-DBA-must-know/" class="article-date">
+	  <time datetime="2018-08-16T07:17:15.000Z" itemprop="datePublished">2018-08-16</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><code>MongoDB Compass</code>是<code>MongoDB</code>官网提供的一个集创建数据库、管理集合和文档、运行临时查询、评估和优化查询、性能图表、构建地理查询等功能为一体的<code>MongoDB</code>可视化管理工具。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="MongoDB-Compass-的安装"><a href="#MongoDB-Compass-的安装" class="headerlink" title="MongoDB Compass 的安装"></a><code>MongoDB Compass</code> 的安装</h1><h2 id="MongoDB-下载"><a href="#MongoDB-下载" class="headerlink" title="MongoDB 下载"></a><code>MongoDB</code> 下载</h2><blockquote>
+<p><a href="http://www.mongodb.com/download-center#community" target="_blank" rel="noopener">MongoDB Download Center</a></p>
+</blockquote>
+<p>具体步骤详见: <a href="http://www.runoob.com/mongodb/mongodb-window-install.html" target="_blank" rel="noopener">Windows 平台安装 MongoDB</a></p>
+<p>这里就不多做赘述了~</p>
+<h1 id="MongoDB-Compass-的使用"><a href="#MongoDB-Compass-的使用" class="headerlink" title="MongoDB Compass 的使用"></a><code>MongoDB Compass</code> 的使用</h1><h2 id="1、创建MongoDB数据库连接"><a href="#1、创建MongoDB数据库连接" class="headerlink" title="1、创建MongoDB数据库连接"></a>1、创建MongoDB数据库连接</h2><p><img src="http://caoxl.com/images/mongo/mongo_connection.png" alt="创建MongoDB数据库连接"></p>
+<p>分别输入相应的<code>Hostname</code>和<code>Port</code>，如果没有用户认证，<code>Authentication</code>就默认为空。添加完后，点击<code>CONNECT</code>即可连接。</p>
+<h2 id="2、创建数据库"><a href="#2、创建数据库" class="headerlink" title="2、创建数据库"></a>2、创建数据库</h2><p>连接<code>MongDB</code>数据库后，可以点击<code>create database</code>创建一个数据库。我这里创建了<code>mongo_test</code>数据库的同时也创建<code>mongo_test</code>集合。</p>
+<p><img src="http://caoxl.com/images/mongo/mongo_create_database.png" alt="创建MongoDB数据库连接"></p>
+<h2 id="3、集合管理"><a href="#3、集合管理" class="headerlink" title="3、集合管理"></a>3、集合管理</h2><h3 id="插入文档"><a href="#插入文档" class="headerlink" title="插入文档"></a>插入文档</h3><p>在<code>mongo_test</code>集合的<code>Documents</code>页签下，点击<code>INSERT DOCUMENT</code>插入文档。</p>
+<p><img src="http://caoxl.com/images/mongo/mongo_insert_doc.png" alt="插入文档"></p>
+<p>文档查看有两种方式一个是list（列表）方式，一个是table（表格）方式。</p>
+<p><img src="http://caoxl.com/images/mongo/mongo_view_list.png" alt="list（列表）方式"><br><img src="http://caoxl.com/images/mongo/mongo_view_table.png" alt="table（表格）方式"></p>
+<h3 id="执行文档查询"><a href="#执行文档查询" class="headerlink" title="执行文档查询"></a>执行文档查询</h3><p>在<code>FILTER</code>行输入查询条件后，点击<code>FIND</code>，即可执行查询。</p>
+<p><img src="http://caoxl.com/images/mongo/mongo_find.png" alt="执行文档查询"></p>
+<h2 id="4、集合"><a href="#4、集合" class="headerlink" title="4、集合"></a>4、集合</h2><p><img src="http://caoxl.com/images/mongo/mongo_aggregations.png" alt="集合"></p>
+<h2 id="5、解释执行计划"><a href="#5、解释执行计划" class="headerlink" title="5、解释执行计划"></a>5、解释执行计划</h2><p>在<code>Explain Plan</code>页签中，可以在<code>FILTER中</code>输入相关的查询语句后，点击<code>EXPLAIN</code>查看该语句解释执行计划。这个解释执行计划跟关系型数据库的<code>SQL</code>执行计划，有点类似。</p>
+<p><img src="http://caoxl.com/images/mongo/mongo_explain_plan.png" alt="解释执行计划"></p>
+<h2 id="6、索引"><a href="#6、索引" class="headerlink" title="6、索引"></a>6、索引</h2><p>在<code>Indexes</code>页签可以为集合创建索引及查看该集合下的索引详细信息。</p>
+<p><img src="http://caoxl.com/images/mongo/mongo_indexes.png" alt="索引"></p>
+<h1 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h1><ul>
+<li><a href="http://blog.caoxl.com/2018/01/22/MongoDB-Intro/">MongoDB 简介</a></li>
+<li><a href="http://www.runoob.com/mongodb/nosql.html" target="_blank" rel="noopener">RUNOOB.com MongoDB</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/16/MongoDB-Compass-DBA-must-know/" target="_blank" title="MongoDB 可视化管理工具">http://blog.caoxl.com/2018/08/16/MongoDB-Compass-DBA-must-know/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NoSQL/">NoSQL</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/17/PHP-async-notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          PHP异步的几个玩法
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/16/Laravel-test-MongoDB/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">基于Laravel MongoDB的部分实践</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB-Compass-的安装"><span class="nav-number">1.</span> <span class="nav-text">MongoDB Compass 的安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MongoDB-下载"><span class="nav-number">1.1.</span> <span class="nav-text">MongoDB 下载</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB-Compass-的使用"><span class="nav-number">2.</span> <span class="nav-text">MongoDB Compass 的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、创建MongoDB数据库连接"><span class="nav-number">2.1.</span> <span class="nav-text">1、创建MongoDB数据库连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、创建数据库"><span class="nav-number">2.2.</span> <span class="nav-text">2、创建数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、集合管理"><span class="nav-number">2.3.</span> <span class="nav-text">3、集合管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#插入文档"><span class="nav-number">2.3.1.</span> <span class="nav-text">插入文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#执行文档查询"><span class="nav-number">2.3.2.</span> <span class="nav-text">执行文档查询</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、集合"><span class="nav-number">2.4.</span> <span class="nav-text">4、集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5、解释执行计划"><span class="nav-number">2.5.</span> <span class="nav-text">5、解释执行计划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6、索引"><span class="nav-number">2.6.</span> <span class="nav-text">6、索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#附录"><span class="nav-number">3.</span> <span class="nav-text">附录</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

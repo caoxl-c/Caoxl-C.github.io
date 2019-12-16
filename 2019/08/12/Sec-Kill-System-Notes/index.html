@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>秒杀系统 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHP锁Cache秒杀">
+  
+  
+  
+  
+  <meta name="description" content="在实际工作中，并没有真的做过秒杀系统，所以假想了一个简单的秒杀系统来 “解解馋”以下写的是一些关键点以及部分代码, 具体的表设计,表结构根据自己需要来定.">
+<meta name="keywords" content="PHP,锁,Cache,秒杀">
+<meta property="og:type" content="article">
+<meta property="og:title" content="秒杀系统">
+<meta property="og:url" content="http://blog.caoxl.com/2019/08/12/Sec-Kill-System-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="在实际工作中，并没有真的做过秒杀系统，所以假想了一个简单的秒杀系统来 “解解馋”以下写的是一些关键点以及部分代码, 具体的表设计,表结构根据自己需要来定.">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://caoxl.com/imgs/seckill.png">
+<meta property="og:updated_time" content="2019-08-12T07:26:46.208Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="秒杀系统">
+<meta name="twitter:description" content="在实际工作中，并没有真的做过秒杀系统，所以假想了一个简单的秒杀系统来 “解解馋”以下写的是一些关键点以及部分代码, 具体的表设计,表结构根据自己需要来定.">
+<meta name="twitter:image" content="http://caoxl.com/imgs/seckill.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Sec-Kill-System-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      秒杀系统
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/08/12/Sec-Kill-System-Notes/" class="article-date">
+	  <time datetime="2019-08-12T03:37:52.000Z" itemprop="datePublished">2019-08-12</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>在实际工作中，并没有真的做过秒杀系统，所以假想了一个简单的秒杀系统来 “解解馋”<br>以下写的是一些关键点以及部分代码, 具体的表设计,表结构根据自己需要来定.</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>秒杀时大量的流量涌入，秒杀开始前频繁刷新查询，如果大量的流量瞬间冲击到数据库的话，非常容易造成数据库的崩溃。所以秒杀的主要工作就是对流量进行层层筛选最后让尽可能<strong>少且平缓</strong>的流量进入到数据库。</p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>在后台将一个<u><a href="https://sellercentral.amazon.com/gp/help/external/G8831?language=zh_CN" target="_blank" rel="noopener">变体</a></u>添加到秒杀促销，并设置秒杀的库存 / 秒杀折扣率 / 开始时间和结束时间等，我们能够得到类似这样的数据。</p>
+<blockquote>
+<p><strong>变体</strong>: 变体（又称父/子关系）是彼此关联的一组商品<br>变体 (<code>variant</code>) 即 <code>sku (Stock Keeping Unit 最小存货单位)</code>, 下文将统称为变体.</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// promotion_variant (促销和变体表「sku」的一个中间表)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">'id'</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">'variant_id'</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">'promotion_id'</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">'promotion_type'</span>: <span class="string">'snap_up'</span>,</span><br><span class="line">    <span class="string">'discount_rate'</span>: <span class="number">0.5</span>,</span><br><span class="line">    <span class="string">'stock'</span>: <span class="number">100</span>, <span class="comment">// 秒杀库存</span></span><br><span class="line">    <span class="string">'sold'</span>: <span class="number">0</span>, <span class="comment">// 秒杀销量</span></span><br><span class="line">    <span class="string">'quantity_limit'</span>: <span class="number">1</span>, <span class="comment">// 限购</span></span><br><span class="line">    <span class="string">'enabled'</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">'product_id'</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">'rest'</span>: &#123;</span><br><span class="line">        variant_name: <span class="string">'xxx'</span>, <span class="comment">// 秒杀期间变体名称</span></span><br><span class="line">        image: <span class="string">'xxx'</span>, <span class="comment">// 秒杀期间变体图片</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>tab_promotions</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Schema::create(<span class="string">'tab_promotions'</span>, <span class="function"><span class="keyword">function</span> <span class="params">(Blueprint $table)</span> </span>&#123;</span><br><span class="line">    $table-&gt;increments(<span class="string">'id'</span>);</span><br><span class="line">    $table-&gt;string(<span class="string">'code'</span>);</span><br><span class="line"></span><br><span class="line">    $table-&gt;string(<span class="string">'name'</span>)-&gt;nullable();</span><br><span class="line">    $table-&gt;string(<span class="string">'description'</span>)-&gt;nullable();</span><br><span class="line">    $table-&gt;string(<span class="string">'cover'</span>)-&gt;nullable()-&gt;comment(<span class="string">'促销封面'</span>);</span><br><span class="line">    $table-&gt;string(<span class="string">'asset_url'</span>)-&gt;nullable()-&gt;comment(<span class="string">'促销详情链接'</span>)</span><br><span class="line"></span><br><span class="line">    $table-&gt;integer(<span class="string">'position'</span>)-&gt;default(<span class="number">0</span>)-&gt;comment(<span class="string">'权重'</span>);</span><br><span class="line">    $table-&gt;string(<span class="string">'type'</span>)-&gt;comment(<span class="string">'优惠卷/满减促销/品牌促销/秒杀/拼团/通用.'</span>);</span><br><span class="line"></span><br><span class="line">    $table-&gt;json(<span class="string">'config'</span>)-&gt;nullable()-&gt;comment(<span class="string">'配置'</span>);</span><br><span class="line"></span><br><span class="line">    $table-&gt;timestamp(<span class="string">'began_at'</span>)-&gt;nullable()-&gt;comment(<span class="string">'促销开始时间'</span>);</span><br><span class="line">    $table-&gt;timestamp(<span class="string">'ended_at'</span>)-&gt;nullable()-&gt;comment(<span class="string">'促销结束时间'</span>);</span><br><span class="line">    $table-&gt;timestamps();</span><br><span class="line">    $table-&gt;softDeletes();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>tab_promotion_variants</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Schema::create(<span class="string">'tab_promotion_variants'</span>, <span class="function"><span class="keyword">function</span> <span class="params">(Blueprint $table)</span> </span>&#123;</span><br><span class="line">    $table-&gt;increments(<span class="string">'id'</span>);</span><br><span class="line"></span><br><span class="line">    $table-&gt;unsignedInteger(<span class="string">'variant_id'</span>)-&gt;index();</span><br><span class="line">    $table-&gt;unsignedInteger(<span class="string">'promotion_id'</span>)-&gt;index();</span><br><span class="line"></span><br><span class="line">    $table-&gt;decimal(<span class="string">'discount_rate'</span>)-&gt;nullable()-&gt;comment(<span class="string">'折扣率, 值为0.3表示打7折'</span>);</span><br><span class="line">    $table-&gt;unsignedInteger(<span class="string">'stock'</span>)-&gt;nullable()-&gt;comment(<span class="string">'促销库存'</span>);</span><br><span class="line">    $table-&gt;unsignedInteger(<span class="string">'sold'</span>)-&gt;default(<span class="number">0</span>)-&gt;comment(<span class="string">'销售数量'</span>);</span><br><span class="line">    $table-&gt;unsignedInteger(<span class="string">'quantity_limit'</span>)-&gt;nullable()-&gt;comment(<span class="string">'购买数量限制'</span>);</span><br><span class="line">    $table-&gt;boolean(<span class="string">'enabled'</span>)-&gt;default(<span class="number">1</span>)-&gt;comment(<span class="string">'启用'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 冗余</span></span><br><span class="line">    $table-&gt;unsignedInteger(<span class="string">'product_id'</span>);</span><br><span class="line">    $table-&gt;string(<span class="string">'promotion_type'</span>)-&gt;comment(<span class="string">'冗余promotion表type'</span>);</span><br><span class="line">    $table-&gt;json(<span class="string">'rest'</span>)-&gt;nullable()-&gt;comment(<span class="string">'冗余'</span>);</span><br><span class="line"></span><br><span class="line">    $table-&gt;timestamps();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>首先便是在秒杀促销创建成功后将促销的信息进行缓存</p>
+<ul>
+<li><code>PromotionVariantObserver</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Observers</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">Cache</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PromotionVariantObserver</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">saved</span><span class="params">(PromotionVariant $promotionVariant)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ($promotionVariant-&gt;promotion_type === PromotionType::SNAP_UP) &#123;</span><br><span class="line">            $seconds = $promotionVariant-&gt;ended_at-&gt;getTimestamp() - time();</span><br><span class="line"></span><br><span class="line">            Cache::put(</span><br><span class="line">                <span class="string">"promotion_variants:$promotionVariant-&gt;id"</span>,</span><br><span class="line">                $promotionVariant,</span><br><span class="line">                $seconds</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="下单"><a href="#下单" class="headerlink" title="下单"></a>下单</h2><p>下单通常分为两步</p>
+<ul>
+<li>第一步是 <code>「结账 (checkout)」</code> 生成一个结账订单, 用户可以为结账订单选择地址、优惠券、支付方式等</li>
+<li>第二步是 <code>「确认 (confirm)」</code> , 此时订单变成确认状态, 对库存进行锁定, 且用户可以进行支付.通常如果在规定时间内没有支付,则取消该订单, 并解锁库存.</li>
+</ul>
+<p>所以在第一步时就会对用户进行过滤和排队处理，防止后续的选择地址、优惠卷等操作对数据库进行冲击。</p>
+<ul>
+<li><code>CheckoutController</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Api</span>\<span class="title">Controller</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Api</span>\<span class="title">Controller</span> <span class="title">as</span> <span class="title">BaseController</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Jobs</span>\<span class="title">CheckoutOrderJob</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Collective</span>\<span class="title">Annotations</span>\<span class="title">Routing</span>\<span class="title">Annotations</span>\<span class="title">Annotations</span>\<span class="title">Controller</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Contracts</span>\<span class="title">Cache</span>\<span class="title">LockTimeoutException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\&#123;<span class="title">Auth</span>, <span class="title">Request</span>, <span class="title">Cache</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Class CheckoutController</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@package</span> App\Api\Controller</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Controller</span>(prefix="/api/checkout")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CheckoutController</span> <span class="keyword">extends</span> <span class="title">BaseController</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">snapUpCheckout</span><span class="params">(Request $request)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 商品ID</span></span><br><span class="line">        $variantId = $request-&gt;input(<span class="string">'variant_id'</span>);</span><br><span class="line">        <span class="comment">// 商品购买数量</span></span><br><span class="line">        $quantity  = $request-&gt;input(<span class="string">'quantity'</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 加锁防止超卖</span></span><br><span class="line">        $lock = Cache::lock(<span class="string">'snap_up:'</span> . $variantId);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 未获取锁的消费者将阻塞在这里</span></span><br><span class="line">            $lock-&gt;block(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 商品库存量</span></span><br><span class="line">            $promotionVariant = Cache::get(<span class="string">'promotion_variants'</span> . $variantId);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ($promotionVariant-&gt;quantity &lt; $quantity) &#123;</span><br><span class="line">                $lock-&gt;release();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> StockException(<span class="string">'库存不足'</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 减少库存</span></span><br><span class="line">            $promotionVariant-&gt;quantity -= $quantity;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 缓存时间</span></span><br><span class="line">            $seconds = $promotionVariant-&gt;ended_at-&gt;getTimestamp() - time();</span><br><span class="line"></span><br><span class="line">            Cache::put(</span><br><span class="line">                <span class="string">"promotion_variants:$promotionVariant-&gt;id"</span>,</span><br><span class="line">                $promotionVariant,</span><br><span class="line">                $seconds</span><br><span class="line">            );</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (LockTimeoutException $e) &#123;</span><br><span class="line">            <span class="keyword">return</span> response(<span class="string">'库存不足'</span>);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            optional($lock)-&gt;release();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 派发任务</span></span><br><span class="line">        CheckoutOrderJob::dispatch([</span><br><span class="line">            <span class="string">'user_id'</span> =&gt; Auth::id(),</span><br><span class="line">            <span class="string">'variant_id'</span> =&gt; $variantId,</span><br><span class="line">            <span class="string">'quantity'</span> =&gt; $quantity</span><br><span class="line">        ]);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> response(<span class="string">'结账订单创建中'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以看到在秒杀结账 <code>api</code> 中，并没有涉及到数据库的操作。并且通过 <code>dispatch</code> 将创建订单的任务分发到队列，用户按照进入队列的先后顺序进行对应时间的排队等待。</p>
+</blockquote>
+<p>现在的问题是，订单创建成功后如何通知客户端呢？</p>
+<h2 id="客户端通知"><a href="#客户端通知" class="headerlink" title="客户端通知"></a>客户端通知</h2><p>这里的方案无非就是轮询或者 <code>websocket</code>, 这里选择对服务器性能消耗较小的 <code>websocket</code> ，且使用 <code>laravel</code> 提供的 <code>laravel-echo (laravel-echo-server)</code>。 当用户秒杀成功后，前端和后端建立 <code>websocket</code> 链接，后端结账订单创建成功后通知前端可以进行下一步操作。</p>
+<h3 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h3><blockquote>
+<p>后端接下来要做的就是在 <code>「CheckoutOrder」</code> Job 中的订单创建成功后，向 <code>websocket</code> 对应的频道中发送一个 <code>「OrderChecked」</code> 事件，来表明结账订单已经创建完成，用户可以进行下一步操作。</p>
+</blockquote>
+<ul>
+<li><code>Job/CheckoutOrderJob</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan make:job CheckoutOrderJob</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Jobs</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Events</span>\<span class="title">OrderCheckedEvent</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Bus</span>\<span class="title">Queueable</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Queue</span>\<span class="title">SerializesModels</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Queue</span>\<span class="title">InteractsWithQueue</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Contracts</span>\<span class="title">Queue</span>\<span class="title">ShouldQueue</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Foundation</span>\<span class="title">Bus</span>\<span class="title">Dispatchable</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CheckoutOrderJob</span> <span class="keyword">implements</span> <span class="title">ShouldQueue</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">use</span> <span class="title">Dispatchable</span>, <span class="title">InteractsWithQueue</span>, <span class="title">Queueable</span>, <span class="title">SerializesModels</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> $data;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Create a new job instance.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($data)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;data = $data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Execute the job.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 创建结账订单</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通知客户端</span></span><br><span class="line">        event(<span class="keyword">new</span> OrderCheckedEvent(<span class="keyword">$this</span>-&gt;data-&gt;user_id));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>Event/OrderCheckedEvent</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan make:event OrderCheckedEvent</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Events</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Broadcasting</span>\<span class="title">Channel</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Queue</span>\<span class="title">SerializesModels</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Broadcasting</span>\<span class="title">PrivateChannel</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Broadcasting</span>\<span class="title">PresenceChannel</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Foundation</span>\<span class="title">Events</span>\<span class="title">Dispatchable</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Broadcasting</span>\<span class="title">InteractsWithSockets</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Contracts</span>\<span class="title">Broadcasting</span>\<span class="title">ShouldBroadcast</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OrderCheckedEvent</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">use</span> <span class="title">Dispatchable</span>, <span class="title">InteractsWithSockets</span>, <span class="title">SerializesModels</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> $user_id;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * OrderCheckedEvent constructor.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> $user_id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($user_id)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;user_id = $user_id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取事件应广播的频道。</span></span><br><span class="line"><span class="comment">     * App.User.&#123;id&#125; 是 Laravel初始化时, 默认的私有频道, 直接使用即可</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> \Illuminate\Broadcasting\Channel|array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">broadcastOn</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> PrivateChannel(<span class="string">'App.User.'</span> . <span class="keyword">$this</span>-&gt;user_id);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>假设当前抢购的用户 <code>id</code> 是 <code>1</code>，总结一下上面的代码就是向 <code>websocket</code> 的私有频道<code>「App.User.1」</code> 推送一个 <code>「OrderChecked」</code> 事件。</p>
+</blockquote>
+<h3 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h3><p>下面的代码是使用 <code>vue-cli</code> 工具初始化的默认项目。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">// views/products/show.vue</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    import Echo from &apos;laravel-echo&apos;</span><br><span class="line">    import io from &apos;socket.io-client&apos;</span><br><span class="line">    window.io = io</span><br><span class="line"></span><br><span class="line">    export default &#123;</span><br><span class="line">        name: &apos;App&apos;,</span><br><span class="line">        methods: &#123;</span><br><span class="line">            async snapUpCheckout () &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    this.toCheckout()</span><br><span class="line">                &#125; catch (error) &#123;</span><br><span class="line">                    // 秒杀失败</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            toCheckout () &#123;</span><br><span class="line">                // 建立websock连接</span><br><span class="line">                const echo = new Echo(&#123;</span><br><span class="line">                    broadcaster: &apos;socket.io&apos;,</span><br><span class="line">                    host: &apos;http://laravel8.test:6001&apos;,</span><br><span class="line">                    auth: &#123;</span><br><span class="line">                        headers: &#123;</span><br><span class="line">                            Authorization: &apos;Bearer &apos; + this.store.auth.token</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line"></span><br><span class="line">                // 监听私有频道 App.User.&#123;id&#125; 的OrderCheckedEvent事件</span><br><span class="line">                echo.private(&apos;App.User.&apos; + this.store.user.id).listen(&apos;OrderCheckedEvent&apos;, (e) =&gt; &#123;</span><br><span class="line">                    // rediect to checkout page</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p><code>laravel-echo</code> 使用时需要注意的一点，由于使用了私有频道，所以 <code>laravel-echo</code> 默认会向服务端 <code>api /broadcasting/auth</code> 发送一条 <code>post</code> 请求进行身份验证。 但是由于采用了前后端分离而不是 <code>blade</code> 模板，所以我们并不能方便的获取 <code>csrf token</code> 和 <code>session</code> 来进行一些必要的认证。</p>
+<p>因此需要稍微修改一下 <code>broadcast</code> 和 <code>laravel-echo-server</code> 的配置</p>
+<ul>
+<li><code>Providers/BroadcastServiceProvider</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Providers</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">ServiceProvider</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">Broadcast</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BroadcastServiceProvider</span> <span class="keyword">extends</span> <span class="title">ServiceProvider</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Bootstrap any application services.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">boot</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 将认证路由改为 /api/broadcasting/auth 从而避免csrf验证</span></span><br><span class="line">        <span class="comment">// 添加中间件 auth:api (jwt 使用 api.auth) 进行身份验证, 避免访问session, 并使Auth::user()生效</span></span><br><span class="line">        Broadcast::routes([</span><br><span class="line">            <span class="string">'prefix'</span> =&gt; <span class="string">'api'</span>,</span><br><span class="line">            <span class="string">'middleware'</span> =&gt; [<span class="string">'auth:api'</span>]</span><br><span class="line">        ]);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">require</span> base_path(<span class="string">'routes/channels.php'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>laravel-echo-server.json</code></li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 认证路由添加 api 前缀，与上面的修改对应</span></span><br><span class="line">"authEndpoint": "/api/broadcasting/auth"</span><br></pre></td></tr></table></figure>
+<h3 id="库存解锁"><a href="#库存解锁" class="headerlink" title="库存解锁"></a>库存解锁</h3><p>在已经为该订单锁定” 库存 “的情况下，用户如果断开 websocket 连接或者长时间离开时需要将库存解锁，防止库存无意义占用。</p>
+<blockquote>
+<p>这里的库存指的是<strong>缓存库存</strong>，而非数据库库存。这是因为此时订单即使创建成功也是结账状态（未选择地址，支付方式等），在个人中心也是不可见的。只有当用户确认订单后，才会将数据库库存锁定。</p>
+</blockquote>
+<blockquote>
+<p>所以此处的理想实现是，用户断开 <code>websocket</code> 连接后，将该订单锁定的库存归还。且结账订单创建后再创建一个延时队列对长时间未操作的订单进行库存归还。</p>
+</blockquote>
+<blockquote>
+<p>但但但是，<code>laravel-echo</code> 是一个广播系统，并没有提供客户端断开连接事件的回调，有些方法可以实现 <code>laravel</code> 监听的客户端事件，比如在 <code>laravel-echo-server</code> 添加 <code>hook</code> 通知 <code>laravel</code>，但是需要修改 <code>laravel-echo-server</code> 的实现，这里就不细说了，重点还是提供秒杀思路。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><img src="http://caoxl.com/imgs/seckill.png" alt="seckill"></p>
+<blockquote>
+<p>上图为秒杀系统的逻辑总结。<br>从图中可以看出，整个流程中，只有在 <code>queue</code> 中才会和 mysql 交互，通过 <code>queue</code> 的限流从而最大限度的适应了 <code>mysql</code> 的承受能力。在 <code>mysql</code> 性能足够的情况下，通过大量的 <code>queue</code> 同时消费订单，用户是完全感知不到排队的过程的。</p>
+</blockquote>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://learnku.com/docs/laravel/5.8/cache/3915" target="_blank" rel="noopener">Laravel-原子锁</a></li>
+<li><a href="https://learnku.com/articles/21461" target="_blank" rel="noopener">E-commerce 中订单系统的设计</a></li>
+<li><a href="https://learnku.com/articles/21623#d802a5" target="_blank" rel="noopener">E-commerce 中促销系统的设计</a></li>
+<li><a href="https://learnku.com/articles/28245#72fa7c" target="_blank" rel="noopener">秒杀系统的设计</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/08/12/Sec-Kill-System-Notes/" target="_blank" title="秒杀系统">http://blog.caoxl.com/2019/08/12/Sec-Kill-System-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cache/">Cache</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/秒杀/">秒杀</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/锁/">锁</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/08/12/Redis-Use-Notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Redis 实战
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/08/07/Message-Queue-RabbitMQ/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">消息队列之 RabbitMQ</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">1.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-number">2.</span> <span class="nav-text">开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下单"><span class="nav-number">3.</span> <span class="nav-text">下单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端通知"><span class="nav-number">4.</span> <span class="nav-text">客户端通知</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#后端"><span class="nav-number">4.1.</span> <span class="nav-text">后端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前端"><span class="nav-number">4.2.</span> <span class="nav-text">前端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#库存解锁"><span class="nav-number">4.3.</span> <span class="nav-text">库存解锁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

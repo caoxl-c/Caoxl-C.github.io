@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mysql 索引、锁、事务 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MySQL锁索引事务">
+  
+  
+  
+  
+  <meta name="description" content="原文地址: MySql 三大知识点——索引、锁、事务！">
+<meta name="keywords" content="MySQL,锁,索引,事务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 索引、锁、事务">
+<meta property="og:url" content="http://blog.caoxl.com/2019/03/25/MySQL-Index-Lock-Transaction/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="原文地址: MySql 三大知识点——索引、锁、事务！">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/3/22/169a3edc8e4fc0fb?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/3/22/169a3ee0b60252b9?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/3/22/169a3ee2e60052bd?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/3/22/169a3ee8ad06a091?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/3/22/169a3eeb66c218b8?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:updated_time" content="2019-08-22T06:26:41.743Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL 索引、锁、事务">
+<meta name="twitter:description" content="原文地址: MySql 三大知识点——索引、锁、事务！">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2019/3/22/169a3edc8e4fc0fb?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MySQL-Index-Lock-Transaction" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MySQL 索引、锁、事务
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/03/25/MySQL-Index-Lock-Transaction/" class="article-date">
+	  <time datetime="2019-03-25T03:43:31.000Z" itemprop="datePublished">2019-03-25</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>原文地址: <a href="https://juejin.im/post/5c94716df265da60f30d4aac" target="_blank" rel="noopener">MySql 三大知识点——索引、锁、事务！</a></p>
+</blockquote>
+<a id="more"></a>
+<h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><blockquote>
+<p>索引，类似书籍的目录，可以根据目录的某个页码立即找到对应的内容。</p>
+</blockquote>
+<ul>
+<li>索引的优点: 1. 天生排序。2. 快速查找。</li>
+<li>索引的缺点: 1. 占用空间。2. 降低更新表的速度。</li>
+</ul>
+<p><strong>注意点：小表使用全表扫描更快，中大表才使用索引。超级大表索引基本无效。</strong></p>
+<h2 id="索引种类"><a href="#索引种类" class="headerlink" title="索引种类"></a>索引种类</h2><ul>
+<li><p><code>从实现上说</code>:</p>
+<ul>
+<li><ol>
+<li>聚焦索引</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>辅助索引(也叫二级索引或者非聚集索引)</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p><code>从功能上说</code>:</p>
+<ul>
+<li><ol>
+<li>普通索引</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>唯一索引</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>主键索引</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>复合索引</li>
+</ol>
+</li>
+<li><ol start="5">
+<li>外键索引</li>
+</ol>
+</li>
+<li><ol start="6">
+<li>全文索引</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<p>详细说说 6 种索引：</p>
+<ol>
+<li>普通索引: 最基本的索引, 没有任何约束.</li>
+<li>唯一索引: 与普通索引类似, 但具有唯一约束</li>
+<li>主键索引: 特殊的唯一索引, 不允许有空值</li>
+<li>复合索引: 将多个列组合在一起创建索引, 可以覆盖多个列</li>
+<li>外键索引: 只有InnoDB类型的表才可以使用外键索引，保证数据的一致性、完整性和实现级联操作。</li>
+<li>全文索引: MySQL 自带的全文索引只能用于 <code>InnoDB</code>、<code>MyISAM</code> ，并且只能对英文进行全文检索，一般使用全文索引引擎（<code>ES</code>，<code>Solr</code>）</li>
+</ol>
+<blockquote>
+<p>注意：主键就是唯一索引，但是唯一索引不一定是主键，唯一索引可以为空，但是空值只能有一个，主键不能为空。</p>
+</blockquote>
+<p>另外，InnoDB 通过主键聚簇数据，如果没有定义主键且没有定义聚集索引， MySql 会选择一个唯一的非空索引代替，如果没有这样的索引，会隐式定义个 6 字节的主键作为聚簇索引，用户不能查看或访问。</p>
+<p><strong>简单点说：</strong></p>
+<ol>
+<li>设置主键时，会自动生成一个唯一索引，如果之前没有聚集索引，那么主键就是聚集索引。</li>
+<li>没有设置主键时，会选择一个不为空的唯一索引作为聚集索引，如果还没有，那就生成一个隐式的 6 字节的索引。</li>
+</ol>
+<p>MySql 将数据按照页来存储，默认一页为 16kb，当你在查询时，不会只加载某一条数据，而是将这个数据所在的页都加载到 pageCache 中，这个其实和 OS 的就近访问原理类似。</p>
+<p>MySql 的索引使用 <strong>B+ 树</strong>结构。在说 B+ 树之前，先说说 B 树，B 树是一个多路平衡查找树，相较于普通的二叉树，不会发生极度不平衡的状况，同时也是多路的。</p>
+<p>B 树的特点是：他会将数据也保存在非页子节点。</p>
+<p>看图可知</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/3/22/169a3edc8e4fc0fb?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="B Tree"> </p>
+<p>而这个特点会导致非页子节点不能存储大量的索引。</p>
+<p>而 <strong>B+ Tree</strong> 就是针对这个对 <strong>B tree</strong> 做了优化。如下图所示：</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/3/22/169a3ee0b60252b9?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="B+Tree"></p>
+<p>我们看到，B+ Tree 将所有的 data 数据都保存到了叶子节点中，非叶子节点只保存索引和指针。</p>
+<p>我们假设一个非页子节点是 16kb，每个索引，即主键是 bigint，即 8b，指针为 8b。那么每页能存储大约 1000 个索引（16kb/ 8b + 8b）.</p>
+<p>而一颗 3 层的 B+树能够存储多少索引呢？如下图：</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/3/22/169a3ee2e60052bd?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="索引数量"></p>
+<p>大约能够存储 10 亿个索引。通常 B+ 树的高度在 2-4 层，由于 MySql 在运行时，根节点是常驻内存的，因此每次查找只需要大约 2 -3 次 IO。可以说，B+ 树的设计，就是根据机械磁盘的特性来进行设计的。</p>
+<p>知道了索引的设计，我们能够知道另外一些信息：</p>
+<ol>
+<li>MySQL 的主键不能太大,如果使用 UUID 这种，将会浪费 B+ 树的非叶子节点。</li>
+<li>MySQL 的主键最好是自增的，如果使用 UUID 这种，每次插入都会调整 B+树，从而导致页分裂，严重影响性能。</li>
+</ol>
+<p>那么，如果项目中使用了分库分表，我们通常都会需要一个主键进行 <code>sharding(分片)</code>，那怎么办呢？在实现上，我们可以<strong>保留自增主键，而逻辑主键用来作为唯一索引</strong>即可。</p>
+<h1 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h1><blockquote>
+<p>关于 MySQL 的锁，各种概念就会喷涌而出，事实上，锁有好几种维度，我们来解释一下。</p>
+</blockquote>
+<h2 id="类型纬度"><a href="#类型纬度" class="headerlink" title="类型纬度"></a>类型纬度</h2><ul>
+<li>共享锁(读锁 / S锁)</li>
+<li>排它锁(写锁 / X锁)<br>类型细分:<ul>
+<li>意向共享锁</li>
+<li>意向排他(互斥)锁</li>
+</ul>
+</li>
+<li>悲观锁(使用锁, 即 for update)</li>
+<li>乐观锁(使用版本号字段，类似 CAS 机制，即用户自己控制。缺点：并发很高的时候，多了很多无用的重试)</li>
+</ul>
+<h2 id="锁的粒度-粒度纬度"><a href="#锁的粒度-粒度纬度" class="headerlink" title="锁的粒度 (粒度纬度)"></a>锁的粒度 (粒度纬度)</h2><ul>
+<li>表锁</li>
+<li>页锁 (MySQL BerkeleyDB引擎)</li>
+<li>行锁 (InnoDB)</li>
+</ul>
+<h2 id="锁的算法-算法纬度"><a href="#锁的算法-算法纬度" class="headerlink" title="锁的算法 (算法纬度)"></a>锁的算法 (算法纬度)</h2><ul>
+<li><code>Record Lock</code> (单行记录)</li>
+<li><code>Gap Lock</code>(间隙锁, 锁定一个范围,但不包含锁定记录)</li>
+<li><code>Next-Key Lock</code>(Record Lock + Gap Lock，锁定一个范围，并且锁定记录本身， MySql 防止幻读，就是使用此锁实现)</li>
+</ul>
+<blockquote>
+<p><strong>幻读</strong>：在同一个事务内，前后两次查询 同一范围 的时候，后一次查询看到了前一次查询没有看到的行<br>幻读专指 新插入的行</p>
+</blockquote>
+<h2 id="默认的读操作，上锁吗？"><a href="#默认的读操作，上锁吗？" class="headerlink" title="默认的读操作，上锁吗？"></a>默认的读操作，上锁吗？</h2><blockquote>
+<p>默认是 MVCC 机制（“一致性非锁定读”）保证 RR 级别的隔离正确性，是不上锁的。</p>
+</blockquote>
+<p>可以选择手动上锁：<code>select xxxx for update</code> (排他锁); <code>select xxxx lock in share mode</code>(共享锁)，称之为<strong>“一致性锁定读”</strong>。</p>
+<p>使用锁之后，就能在 <code>RR</code> 级别下，避免幻读。当然，默认的 <code>MVCC</code> 读，也能避免幻读。</p>
+<p>既然 RR 能够防止幻读，那么，<code>SERIALIZABLE</code> 有啥用呢？</p>
+<p>防止丢失更新。例如下图：</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/3/22/169a3ee8ad06a091?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="SERIALIZABLE "></p>
+<p>这个时候，我们必须使用 <code>SERIALIZABLE</code> 级别进行串行读取。</p>
+<p>最后，行锁的实现原理就是<strong>锁住聚集索引</strong>，如果你查询的时候，没有正确地击中索引，MySql 优化器将会抛弃行锁，使用表锁。</p>
+<h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><p>事务是数据库永恒不变的话题， <strong>ACID：原子性，一致性，隔离性，持久性</strong>。</p>
+<p>四个特性，最重要的就是一致性。而<strong>一致性</strong>由<code>原子性</code>，<code>隔离性</code>，<code>持久性</code>来保证。</p>
+<ul>
+<li><strong>原子性</strong>: 由 <code>Undo log</code> 保证。<code>Undo Log</code> 会保存每次变更之前的记录，从而在发生错误时进行回滚。</li>
+<li><strong>隔离性</strong>: 由 <code>MVCC</code> 和 <code>Lock</code> 保证。这个后面说。</li>
+<li><strong>持久性</strong>: 由 <code>Redo Log</code> 保证。每次真正修改数据之前，都会将记录写到 <code>Redo Log</code> 中，只有 Redo Log 写入成功，才会真正的写入到 <code>B+ 树</code>中，如果提交之前断电，就可以通过 <code>Redo Log</code> 恢复记录。</li>
+</ul>
+<p>然后再说隔离性。</p>
+<ul>
+<li>隔离级别:<ul>
+<li><ol>
+<li>未提交读(RU)</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>已提交读(RC)</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>可重复读(RR)</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>串行化(serializable)</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<p>每个级别都会解决不同的问题，通常是3 个问题：<strong>脏读</strong>，<strong>不可重复读</strong>，<strong>幻读</strong>。一张经典的图：</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/3/22/169a3eeb66c218b8?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="脏读-不可重复读-幻读"></p>
+<p>这里有个注意点，关于幻读，在数据库规范里，RR 级别会导致幻读，但是，由于 Mysql 的优化，MySql 的 RR 级别不会导致幻读：在使用默认的 select 时，MySql 使用 MVCC 机制保证不会幻读；你也可以使用锁，在使用锁时，例如 for update（X 锁），lock in share mode（S 锁），MySql 会使用 Next-Key Lock 来保证不会发生幻读。前者称为快照读，后者称为当前读。</p>
+<p>远离剖析:</p>
+<ul>
+<li><code>RU</code> 发生脏读的原因：<code>RU</code> 原理是对每个更新语句的行记录进行加锁，而不是对整个事务进行加锁，所以会发生脏读。而 <code>RC</code> 和 <code>RR</code> 会对整个事务加锁。</li>
+<li><code>RC</code> 不能重复读的原因：RC 每次执行 SQL 语句都会生成一个新的 Read View，每次读到的都是不同的。而 <code>RR</code> 的事务从始至终都是使用同一个 Read View</li>
+<li><code>RR</code> 不会发生幻读的原因： 上面说过了。</li>
+</ul>
+<p>那 <code>RR</code> 和 <code>Serializble</code> 有什么区别呢？答：<strong>丢失更新</strong>。本文关于锁的部分已经提到。</p>
+<blockquote>
+<p>MVCC 介绍：全称多版本并发控制。<br>innoDB 每个聚集索引都有 4 个隐藏字段，分别是:<br>主键（<code>RowID</code>），最近更改的事务 ID（<code>MVCC</code> 核心），<code>Undo Log</code> 的指针（隔离核心），索引删除标记（当删除时，不会立即删除，而是打标记，然后异步删除）；</p>
+<p>本质上，<code>MVCC</code> 就是用 <code>Undo Log</code> 链表实现。</p>
+</blockquote>
+<p><strong>MVCC 的实现方式</strong>：事务以排它锁的方式修改原始数据，把修改前的数据存放于 Undo Log，通过回滚指针与数据关联，如果修改成功，什么都不做，如果修改失败，则恢复 Undo Log 中的数据。</p>
+<p>多说一句，通常我们认为 MVCC 是类似乐观锁的方式，即使用版本号，而实际上，innoDB 不是这么实现的。当然，这不影响我们使用 MySql。  </p>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/03/25/MySQL-Index-Lock-Transaction/" target="_blank" title="MySQL 索引、锁、事务">http://blog.caoxl.com/2019/03/25/MySQL-Index-Lock-Transaction/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/事务/">事务</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/索引/">索引</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/锁/">锁</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/03/26/MySQL-Dirty-NoRepeatable-Phantom-Read/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          MySQL 脏读、不可重复读、幻读
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/20/PHP-Simple-JWT/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">JWT 简单封装</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#索引"><span class="nav-number">1.</span> <span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#索引种类"><span class="nav-number">1.1.</span> <span class="nav-text">索引种类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#锁"><span class="nav-number">2.</span> <span class="nav-text">锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#类型纬度"><span class="nav-number">2.1.</span> <span class="nav-text">类型纬度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#锁的粒度-粒度纬度"><span class="nav-number">2.2.</span> <span class="nav-text">锁的粒度 (粒度纬度)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#锁的算法-算法纬度"><span class="nav-number">2.3.</span> <span class="nav-text">锁的算法 (算法纬度)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#默认的读操作，上锁吗？"><span class="nav-number">2.4.</span> <span class="nav-text">默认的读操作，上锁吗？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事务"><span class="nav-number">3.</span> <span class="nav-text">事务</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

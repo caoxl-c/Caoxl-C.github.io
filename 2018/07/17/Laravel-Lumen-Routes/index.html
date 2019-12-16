@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>laravel/lumen/dingo 的路由 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LaravelFrameworkLumenDingo">
+  
+  
+  
+  
+  <meta name="description" content="Laravel/Lumen/Dingo 的路由区别">
+<meta name="keywords" content="Laravel,Framework,Lumen,Dingo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel&#x2F;Lumen&#x2F;Dingo 的路由">
+<meta property="og:url" content="http://blog.caoxl.com/2018/07/17/Laravel-Lumen-Routes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Laravel/Lumen/Dingo 的路由区别">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:54:35.804Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel&#x2F;Lumen&#x2F;Dingo 的路由">
+<meta name="twitter:description" content="Laravel/Lumen/Dingo 的路由区别">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Laravel-Lumen-Routes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Laravel/Lumen/Dingo 的路由
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/07/17/Laravel-Lumen-Routes/" class="article-date">
+	  <time datetime="2018-07-17T01:17:12.000Z" itemprop="datePublished">2018-07-17</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>Laravel/Lumen/Dingo 的路由区别</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Laravel"><a href="#Laravel" class="headerlink" title="Laravel"></a>Laravel</h1><h2 id="基础路由"><a href="#基础路由" class="headerlink" title="基础路由"></a>基础路由</h2><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Route::get(<span class="variable">$uri</span>, <span class="variable">$callback</span>);</span><br><span class="line">Route::post(<span class="variable">$uri</span>, <span class="variable">$callback</span>);</span><br><span class="line">Route::put(<span class="variable">$uri</span>, <span class="variable">$callback</span>);</span><br><span class="line">Route::patch(<span class="variable">$uri</span>, <span class="variable">$callback</span>);</span><br><span class="line">Route::delete(<span class="variable">$uri</span>, <span class="variable">$callback</span>);</span><br><span class="line">Route::options(<span class="variable">$uri</span>, <span class="variable">$callback</span>);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>有的时候你可能需要注册一个可响应多个 <code>HTTP</code> 请求的路由，这时你可以使用 <code>match</code> 方法，也可以使用 <code>any</code> 方法注册一个实现响应所有 HTTP 请求的路由：</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Route::match([<span class="string">'get'</span>, <span class="string">'post'</span>], <span class="string">'/'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// </span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">Route::any(<span class="string">'foo'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="路由组"><a href="#路由组" class="headerlink" title="路由组"></a>路由组</h2><h3 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Route::middleware([<span class="string">'first'</span>, <span class="string">'second'</span>])-&gt;group(<span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 使用 first 和 second 中间件</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="命名空间"><a href="#命名空间" class="headerlink" title="命名空间"></a>命名空间</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Route::namespace(<span class="string">'Admin'</span>)-&gt;group(<span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 在 "App\Http\Controllers\Admin" 命名空间下的控制器</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="路由前缀"><a href="#路由前缀" class="headerlink" title="路由前缀"></a>路由前缀</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Route::prefix(<span class="string">'admin'</span>)-&gt;group(<span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="string">'users'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 匹配包含 "/admin/users" 的 URL</span></span><br><span class="line">    &#125;;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="路由组-group"><a href="#路由组-group" class="headerlink" title="路由组-group"></a>路由组-<code>group</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Route::group([</span><br><span class="line">    <span class="string">'namespace'</span>  =&gt; <span class="string">'Admin'</span>,</span><br><span class="line">    <span class="string">'prefix'</span>     =&gt; <span class="string">'admin'</span>,</span><br><span class="line">    <span class="string">'middleware'</span> =&gt; <span class="string">'auth'</span>,</span><br><span class="line">    <span class="string">'domain'</span>     =&gt; <span class="string">'blog.domain.com'</span></span><br><span class="line">], <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    Route::get(<span class="string">'test'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h1 id="Lumen"><a href="#Lumen" class="headerlink" title="Lumen"></a>Lumen</h1><h2 id="bootstrap-app-php"><a href="#bootstrap-app-php" class="headerlink" title="bootstrap/app.php"></a><code>bootstrap/app.php</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$app-&gt;group([<span class="string">'namespace'</span> =&gt; <span class="string">'App\Http\Controllers'</span>], <span class="function"><span class="keyword">function</span> <span class="params">($app)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">require_once</span> <span class="keyword">__DIR__</span>.<span class="string">'/../routes/web.php'</span>;</span><br><span class="line">    <span class="keyword">require_once</span> <span class="keyword">__DIR__</span>.<span class="string">'/../routes/api.php'</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> $app;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>上面括号中使用的是<code>$app</code> 所以在路由文件中也使用<code>$app</code></p>
+</blockquote>
+<ul>
+<li><code>route.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$app-&gt;group([</span><br><span class="line">    <span class="string">'namespace'</span>  =&gt; <span class="string">'Test'</span>,</span><br><span class="line">    <span class="string">'prefix'</span>     =&gt; <span class="string">'test'</span>,</span><br><span class="line">    <span class="string">'middleware'</span> =&gt; <span class="string">'auth'</span>,</span><br><span class="line">    <span class="string">'domain'</span>     =&gt; <span class="string">'test.domain.com'</span></span><br><span class="line">], <span class="function"><span class="keyword">function</span> <span class="params">($app)</span> </span>&#123;</span><br><span class="line">    $app-&gt;get(<span class="string">'/'</span>, <span class="string">'Index@index'</span>);</span><br><span class="line">    $app-&gt;post(<span class="string">'login'</span>, <span class="string">'AuthController@login'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$app-&gt;get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> <span class="title">use</span> <span class="params">($app)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> response()-&gt;json([</span><br><span class="line">        <span class="string">'err'</span> =&gt; <span class="string">'403,</span></span><br><span class="line"><span class="string">        '</span>msg<span class="string">' =&gt; '</span>Forbidden<span class="string">',</span></span><br><span class="line"><span class="string">    ], 403);</span></span><br><span class="line"><span class="string">&#125;);</span></span><br></pre></td></tr></table></figure>
+<h1 id="Dingo"><a href="#Dingo" class="headerlink" title="Dingo"></a>Dingo</h1><h2 id="原生"><a href="#原生" class="headerlink" title="原生"></a>原生</h2><ul>
+<li><code>route.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$api = app(<span class="string">'Dingo\Api\Routing\Router'</span>);</span><br><span class="line"></span><br><span class="line">$api-&gt;version(<span class="string">'v1'</span>, [</span><br><span class="line">    <span class="string">'namespace'</span> =&gt; <span class="string">'App\Api\V1'</span>,</span><br><span class="line">], <span class="function"><span class="keyword">function</span> <span class="params">($router)</span> </span>&#123;</span><br><span class="line">    $router-&gt;group([</span><br><span class="line">        <span class="string">'prefix'</span>     =&gt; <span class="string">'test'</span>,</span><br><span class="line">        <span class="string">'middleware'</span> =&gt; [</span><br><span class="line">            <span class="string">'api.auth'</span>,</span><br><span class="line">        ],</span><br><span class="line">    ], <span class="function"><span class="keyword">function</span> <span class="params">($router)</span> </span>&#123;</span><br><span class="line">        $router-&gt;get(<span class="string">'/'</span>, <span class="string">'Test@index'</span>);</span><br><span class="line">        $router-&gt;post(<span class="string">'wechat'</span>, <span class="string">'Passport@login'</span>)-&gt;name(<span class="string">'wechat.login'</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="封装后"><a href="#封装后" class="headerlink" title="封装后"></a>封装后</h2><ul>
+<li><code>functions.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (! function_exists(<span class="string">'fe'</span>)) &#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">fe</span><span class="params">(string $name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> function_exists($name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;    </span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (! fe(<span class="string">'dingo'</span>)) &#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">dingo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> app(<span class="string">'Dingo\Api\Routing\Router'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>route.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">dingo()-&gt;version(<span class="string">'v1'</span>, [</span><br><span class="line">    <span class="string">'namespace'</span> =&gt; <span class="string">'App\Api\V1'</span>,</span><br><span class="line">], <span class="function"><span class="keyword">function</span> <span class="params">($router)</span> </span>&#123;</span><br><span class="line">    $router-&gt;group([</span><br><span class="line">        <span class="string">'prefix'</span>     =&gt; <span class="string">'test'</span>,</span><br><span class="line">        <span class="string">'middleware'</span> =&gt; [</span><br><span class="line">            <span class="string">'api.auth'</span>,</span><br><span class="line">        ],</span><br><span class="line">    ], <span class="function"><span class="keyword">function</span> <span class="params">($router)</span> </span>&#123;</span><br><span class="line">        $router-&gt;get(<span class="string">'/'</span>, <span class="string">'Test@index'</span>);</span><br><span class="line">        $router-&gt;post(<span class="string">'wechat'</span>, <span class="string">'Passport@login'</span>)-&gt;name(<span class="string">'wechat.login'</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/07/17/Laravel-Lumen-Routes/" target="_blank" title="Laravel/Lumen/Dingo 的路由">http://blog.caoxl.com/2018/07/17/Laravel-Lumen-Routes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Dingo/">Dingo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/">Framework</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lumen/">Lumen</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/19/How-To-Make-ShadowSocksR/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          在服务器上搭建 「ShadowSocksR」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/16/Laravel-Redis-ShopCar/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">基于Laravel, 使用Redis做购物车</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Laravel"><span class="nav-number">1.</span> <span class="nav-text">Laravel</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础路由"><span class="nav-number">1.1.</span> <span class="nav-text">基础路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由组"><span class="nav-number">1.2.</span> <span class="nav-text">路由组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#中间件"><span class="nav-number">1.2.1.</span> <span class="nav-text">中间件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命名空间"><span class="nav-number">1.2.2.</span> <span class="nav-text">命名空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由前缀"><span class="nav-number">1.2.3.</span> <span class="nav-text">路由前缀</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由组-group"><span class="nav-number">1.3.</span> <span class="nav-text">路由组-group</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Lumen"><span class="nav-number">2.</span> <span class="nav-text">Lumen</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#bootstrap-app-php"><span class="nav-number">2.1.</span> <span class="nav-text">bootstrap/app.php</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dingo"><span class="nav-number">3.</span> <span class="nav-text">Dingo</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#原生"><span class="nav-number">3.1.</span> <span class="nav-text">原生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#封装后"><span class="nav-number">3.2.</span> <span class="nav-text">封装后</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

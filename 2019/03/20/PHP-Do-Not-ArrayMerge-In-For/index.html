@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>不要在循环体中使用 array_merge() | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHParray_merge">
+  
+  
+  
+  
+  <meta name="description" content="标题是不要在循环体中使用 array_merge()，其实这只是本篇文章的结论之一   下面我们一起研究一下 php 语言中数组的合并（这里先不考虑递归合并）   原文链接 &amp;amp;&amp;amp; 掘金看到的链接">
+<meta name="keywords" content="PHP,array_merge">
+<meta property="og:type" content="article">
+<meta property="og:title" content="不要在循环体中使用 array_merge()">
+<meta property="og:url" content="http://blog.caoxl.com/2019/03/20/PHP-Do-Not-ArrayMerge-In-For/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="标题是不要在循环体中使用 array_merge()，其实这只是本篇文章的结论之一   下面我们一起研究一下 php 语言中数组的合并（这里先不考虑递归合并）   原文链接 &amp;amp;&amp;amp; 掘金看到的链接">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-20T07:21:10.031Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="不要在循环体中使用 array_merge()">
+<meta name="twitter:description" content="标题是不要在循环体中使用 array_merge()，其实这只是本篇文章的结论之一   下面我们一起研究一下 php 语言中数组的合并（这里先不考虑递归合并）   原文链接 &amp;amp;&amp;amp; 掘金看到的链接">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-Do-Not-ArrayMerge-In-For" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      不要在循环体中使用 array_merge()
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/03/20/PHP-Do-Not-ArrayMerge-In-For/" class="article-date">
+	  <time datetime="2019-03-20T06:54:40.000Z" itemprop="datePublished">2019-03-20</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>标题是不要在循环体中使用 <code>array_merge()</code>，其实这只是本篇文章的结论之一</p>
+</blockquote>
+<blockquote>
+<p>下面我们一起研究一下 php 语言中数组的合并（这里先不考虑递归合并）</p>
+</blockquote>
+<blockquote>
+<p><a href="https://blog.yiranzai.cn/posts/26853/" target="_blank" rel="noopener">原文链接</a> &amp;&amp; <a href="https://juejin.im/post/5c80b7265188250b0e4517a3" target="_blank" rel="noopener">掘金看到的链接</a></p>
+</blockquote>
+<a id="more"></a>
+<h1 id="四种合并数组的方式对比"><a href="#四种合并数组的方式对比" class="headerlink" title="四种合并数组的方式对比"></a>四种合并数组的方式对比</h1><h2 id="创建一个类"><a href="#创建一个类" class="headerlink" title="创建一个类"></a>创建一个类</h2><blockquote>
+<p><code>ArrayMerge()</code></p>
+<ul>
+<li><code>eachOne()</code> 循环体使用 <code>array_merge()</code> 合并</li>
+<li><code>eachTwo()</code> 循环体结束后使用 <code>array_merge()</code> 合并</li>
+<li><code>eachThree()</code> 循环体嵌套实现数组合并</li>
+<li><code>eachFour()</code> 循环体使用 运算符 + 拼接合并</li>
+<li><code>getNiceFileSize()</code> 将内存占用转化成人类可读的方式</li>
+</ul>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ArrayMerge</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $times</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">eachOne</span><span class="params">(int $times)</span>: <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $a = [];</span><br><span class="line">        $b = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; $times; $i++) &#123;</span><br><span class="line">            $a = array_merge($a, $b);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $a;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $times</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">eachTwo</span><span class="params">(int $times)</span>: <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $a = [[]];</span><br><span class="line">        $b = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; $times; $i++) &#123;</span><br><span class="line">            $a[] = $b;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> array_merge(...$a);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $times</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">eachThree</span><span class="params">(int $times)</span>: <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $a = [];</span><br><span class="line">        $b = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; $times; $i++) &#123;</span><br><span class="line">            <span class="keyword">foreach</span> ($b <span class="keyword">as</span> $item) &#123;</span><br><span class="line">                $a[] = $item;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $a;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $times</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">eachFour</span><span class="params">(int $times)</span>: <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $a = [];</span><br><span class="line">        $b = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; $times; $i++) &#123;</span><br><span class="line">            $a = $b + $a;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $a;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 转化内存信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $bytes</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> bool $binaryPrefix</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> null|string</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">getNiceFileSize</span><span class="params">(int $bytes, $binaryPrefix = true)</span>: ?<span class="title">string</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ($binaryPrefix) &#123;</span><br><span class="line">            $unit = <span class="keyword">array</span>(<span class="string">'B'</span>,<span class="string">'KiB'</span>,<span class="string">'MiB'</span>,<span class="string">'GiB'</span>,<span class="string">'TiB'</span>,<span class="string">'PiB'</span>);</span><br><span class="line">            <span class="keyword">if</span> ($bytes === <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">'0 '</span> . $unit[<span class="number">0</span>];</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> @round($bytes / (<span class="number">1024</span> ** ($i = floor(log($bytes, <span class="number">1024</span>)))), <span class="number">2</span>)</span><br><span class="line">                . <span class="string">''</span> . ($unit[(int)$i] ?? <span class="string">'B'</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        $unit = <span class="keyword">array</span>(<span class="string">'B'</span>, <span class="string">'KB'</span>, <span class="string">'MB'</span>, <span class="string">'GB'</span>, <span class="string">'TB'</span>, <span class="string">'PB'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ($bytes === <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">'0 '</span> . $unit[<span class="number">0</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> @round($bytes / (<span class="number">1000</span> ** ($i = floor(log($bytes, <span class="number">1000</span>)))), <span class="number">2</span>)</span><br><span class="line">            . <span class="string">''</span> . ($unit[(int)$i] ?? <span class="string">'B'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><blockquote>
+<p>先分配多点内存<br>输出内存占用，合并后的数组长度，并记录每一步的用时</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">ini_set(<span class="string">'memory_limit'</span>, <span class="string">'4000M'</span>);</span><br><span class="line">$timeOne = microtime(<span class="keyword">true</span>);</span><br><span class="line">$a       = ArrayMerge::eachOne(<span class="number">10000</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'count eachOne Result | '</span> . count($a) . PHP_EOL;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'memory eachOne Result | '</span> . ArrayMerge::getNiceFileSize(memory_get_usage(<span class="keyword">true</span>)) . PHP_EOL;</span><br><span class="line"></span><br><span class="line">$timeTwo = microtime(<span class="keyword">true</span>);</span><br><span class="line">$b       = ArrayMerge::eachTwo(<span class="number">10000</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'count eachTwo Result | '</span> . count($b) . PHP_EOL;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'memory eachTwo Result | '</span> . ArrayMerge::getNiceFileSize(memory_get_usage(<span class="keyword">true</span>)) . PHP_EOL;</span><br><span class="line"></span><br><span class="line">$timeThree = microtime(<span class="keyword">true</span>);</span><br><span class="line">$c         = ArrayMerge::eachThree(<span class="number">10000</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'count eachThree Result | '</span> . count($c) . PHP_EOL;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'memory eachThree Result | '</span> . ArrayMerge::getNiceFileSize(memory_get_usage(<span class="keyword">true</span>)) . PHP_EOL;</span><br><span class="line"></span><br><span class="line">$timeFour = microtime(<span class="keyword">true</span>);</span><br><span class="line">$d        = ArrayMerge::eachFour(<span class="number">10000</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'count eachFour Result | '</span> . count($d) . PHP_EOL;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'memory eachFour Result | '</span> . ArrayMerge::getNiceFileSize(memory_get_usage(<span class="keyword">true</span>)) . PHP_EOL;</span><br><span class="line"></span><br><span class="line">$timeFive = microtime(<span class="keyword">true</span>);</span><br><span class="line"><span class="keyword">echo</span> PHP_EOL;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">'eachOne | '</span> . ($timeTwo - $timeOne) . PHP_EOL;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'eachTwo | '</span> . ($timeThree - $timeTwo) . PHP_EOL;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'eachThree | '</span> . ($timeFour - $timeThree) . PHP_EOL;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'eachFour | '</span> . ($timeFive - $timeFour) . PHP_EOL;</span><br><span class="line"><span class="keyword">echo</span> PHP_EOL</span><br></pre></td></tr></table></figure>
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">count eachOne Result | <span class="number">100000</span></span><br><span class="line">memory eachOne Result | <span class="number">8</span>MiB</span><br><span class="line"></span><br><span class="line">count eachTwo Result | <span class="number">100000</span></span><br><span class="line">memory eachTwo Result | <span class="number">12</span>MiB</span><br><span class="line"></span><br><span class="line">count eachThree Result | <span class="number">100000</span></span><br><span class="line">memory eachThree Result | <span class="number">16</span>MiB</span><br><span class="line"></span><br><span class="line">count eachFour Result | <span class="number">10</span></span><br><span class="line">memory eachFour Result | <span class="number">16</span>MiB</span><br><span class="line"></span><br><span class="line">eachOne | <span class="number">3.4798429012299</span></span><br><span class="line">eachTwo | <span class="number">0.00077700614929199</span></span><br><span class="line">eachThree | <span class="number">0.0030550956726074</span></span><br><span class="line">eachFour | <span class="number">0.00097990036010742</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>循环体使用<code>array_merge()</code>最慢,而且耗费内存</li>
+<li>循环体结束后使用<code>array_merge()</code>最快</li>
+<li>循环体嵌套循比环体结束后使用<code>array_merge()</code>慢三倍</li>
+<li>看似也很快,但是合并的结果有问题</li>
+</ul>
+</blockquote>
+<h1 id="合并数组的坑"><a href="#合并数组的坑" class="headerlink" title="合并数组的坑"></a>合并数组的坑</h1><blockquote>
+<p>我们注意到刚刚的 eachFour 的结果长度只有 10 下面探究为什么会出现这样的结果</p>
+<p>这里拿递归合并一起做下对比</p>
+</blockquote>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ArrayMerge</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span>: <span class="title">void</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $testA = [</span><br><span class="line">            <span class="string">'111'</span> =&gt; <span class="string">'testA1'</span>,</span><br><span class="line">            <span class="string">'abc'</span> =&gt; <span class="string">'testA1'</span>,</span><br><span class="line">            <span class="string">'222'</span> =&gt; <span class="string">'testA2'</span>,</span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        $testB = [</span><br><span class="line">            <span class="string">'111'</span> =&gt; <span class="string">'testB1'</span>,</span><br><span class="line">            <span class="string">'abc'</span> =&gt; <span class="string">'testB1'</span>,</span><br><span class="line">            <span class="string">'222'</span> =&gt; <span class="string">'testB2'</span>,</span><br><span class="line">            <span class="string">'www'</span> =&gt; <span class="string">'testB1'</span>,</span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'array_merge($testA, $testB) | '</span> . PHP_EOL;</span><br><span class="line">        print_r(array_merge($testA, $testB));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'$testA + $testB | '</span> . PHP_EOL;</span><br><span class="line">        print_r($testA + $testB);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'$testB + $testA | '</span> . PHP_EOL;</span><br><span class="line">        print_r($testB + $testA);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'array_merge_recursive($testA, $testB) | '</span> . PHP_EOL;</span><br><span class="line">        print_r(array_merge_recursive($testA, $testB));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$array_merge = <span class="keyword">new</span> ArrayMerge();</span><br><span class="line">$array_merge-&gt;test();</span><br></pre></td></tr></table></figure>
+<h2 id="结果-1"><a href="#结果-1" class="headerlink" title="结果"></a>结果</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">array_merge($testA, $testB) | <span class="comment"># 数字索引强制从0开始了 字符key相同的以后者为准</span></span><br><span class="line"><span class="keyword">Array</span></span><br><span class="line">(</span><br><span class="line">    [<span class="number">0</span>] =&gt; testA1</span><br><span class="line">    [abc] =&gt; testB1</span><br><span class="line">    [<span class="number">1</span>] =&gt; testA2</span><br><span class="line">    [<span class="number">2</span>] =&gt; testB1</span><br><span class="line">    [<span class="number">3</span>] =&gt; testB2</span><br><span class="line">    [www] =&gt; testB1</span><br><span class="line">)</span><br><span class="line">$testA + $testB | <span class="comment"># testA得到保留，testB补充了testA中没有的key，数字索引得到保留</span></span><br><span class="line"><span class="keyword">Array</span></span><br><span class="line">(</span><br><span class="line">    [<span class="number">111</span>] =&gt; testA1</span><br><span class="line">    [abc] =&gt; testA1</span><br><span class="line">    [<span class="number">222</span>] =&gt; testA2</span><br><span class="line">    [www] =&gt; testB1</span><br><span class="line">)</span><br><span class="line">$testB + $testA | <span class="comment"># testB得到保留，testA补充了testB中没有的key，数字索引得到保留</span></span><br><span class="line"><span class="keyword">Array</span></span><br><span class="line">(</span><br><span class="line">    [<span class="number">111</span>] =&gt; testB1</span><br><span class="line">    [abc] =&gt; testB1</span><br><span class="line">    [<span class="number">222</span>] =&gt; testB2</span><br><span class="line">    [www] =&gt; testB1</span><br><span class="line">)</span><br><span class="line">array_merge_recursive($testA, $testB) |  <span class="comment"># 数字索引从0开始连续了，但数组的顺序没有被破坏，相同的字符串 `key` 合并为一个数组</span></span><br><span class="line"><span class="keyword">Array</span></span><br><span class="line">(</span><br><span class="line">    [<span class="number">0</span>] =&gt; testA1</span><br><span class="line">    [abc] =&gt; <span class="keyword">Array</span></span><br><span class="line">        (</span><br><span class="line">            [<span class="number">0</span>] =&gt; testA1</span><br><span class="line">            [<span class="number">1</span>] =&gt; testB1</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    [<span class="number">1</span>] =&gt; testA2</span><br><span class="line">    [<span class="number">2</span>] =&gt; testB1</span><br><span class="line">    [<span class="number">3</span>] =&gt; testB2</span><br><span class="line">    [www] =&gt; testB1</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>看到这里，你一定非常疑惑，没想到 <code>array_merge()</code> 还有这样的坑 我们先来看一看官方的手册</p>
+<blockquote>
+<p>array_merge() 将一个或多个数组的单元合并起来，一个数组中的值附加在前一个数组的后面。返回作为结果的数组。</p>
+<p>如果输入的数组中有相同的字符串键名，则该键名后面的值将覆盖前一个值。然而，如果数组包含数字键名，后面的值将不会覆盖原来的值，而是附加到后面。</p>
+<p>如果只给了一个数组并且该数组是数字索引的，则键名会以连续方式重新索引。</p>
+</blockquote>
+<p>只有相同的字符串键名，后边的值才会覆盖前面的值。（但是手册中没有解释为什么数字键名的索引被重置了） 那么我们来看一下源码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">PHPAPI int php_array_merge(HashTable *dest, HashTable *src)</span><br><span class="line">&#123;</span><br><span class="line">	zval *src_entry;</span><br><span class="line">	zend_string *string_key;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> ((dest-&gt;u.flags &amp; HASH_FLAG_PACKED) &amp;&amp; (src-&gt;u.flags &amp; HASH_FLAG_PACKED)) &#123;</span><br><span class="line">	    <span class="comment">// 自然数组的合并，HASH_FLAG_PACKED表示数组是自然数组（[0,1,2]）   参考http://ju.outofmemory.cn/entry/197064</span></span><br><span class="line">		zend_hash_extend(dest, zend_hash_num_elements(dest) + zend_hash_num_elements(src), <span class="number">1</span>);</span><br><span class="line">		ZEND_HASH_FILL_PACKED(dest) &#123;</span><br><span class="line">			ZEND_HASH_FOREACH_VAL(src, src_entry) &#123;</span><br><span class="line">				<span class="keyword">if</span> (UNEXPECTED(Z_ISREF_P(src_entry)) &amp;&amp;</span><br><span class="line">					UNEXPECTED(Z_REFCOUNT_P(src_entry) == <span class="number">1</span>)) &#123;</span><br><span class="line">					ZVAL_UNREF(src_entry);</span><br><span class="line">				&#125;</span><br><span class="line">				Z_TRY_ADDREF_P(src_entry);</span><br><span class="line">				ZEND_HASH_FILL_ADD(src_entry);</span><br><span class="line">			&#125; ZEND_HASH_FOREACH_END();</span><br><span class="line">		&#125; ZEND_HASH_FILL_END();</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	    <span class="comment">//遍历获取key和vaule</span></span><br><span class="line">		ZEND_HASH_FOREACH_STR_KEY_VAL(src, string_key, src_entry) &#123;</span><br><span class="line">			<span class="keyword">if</span> (UNEXPECTED(Z_ISREF_P(src_entry) &amp;&amp;</span><br><span class="line">				Z_REFCOUNT_P(src_entry) == <span class="number">1</span>)) &#123;</span><br><span class="line">				ZVAL_UNREF(src_entry);</span><br><span class="line">			&#125;</span><br><span class="line">			Z_TRY_ADDREF_P(src_entry);</span><br><span class="line">			<span class="comment">//  参考https://github.com/pangudashu/php7-internal/blob/master/7/var.md</span></span><br><span class="line">			<span class="keyword">if</span> (string_key) &#123;</span><br><span class="line">			    <span class="comment">// 字符串key（zend_string）  插入或者更新元素，会增加key的计数</span></span><br><span class="line">				zend_hash_update(dest, string_key, src_entry);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			    <span class="comment">//插入新元素，使用自动的索引值(破案了，索引被重置的原因在此)</span></span><br><span class="line">				zend_hash_next_index_insert_new(dest, src_entry);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; ZEND_HASH_FOREACH_END();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>综上所述，合并数组的不同方式都存在一定的缺陷，但是通过我们上面的探究，我们了解到</p>
+<ul>
+<li>循环体中使用 <code>array_merge()</code> 合并数组不可取，速度差距达百倍</li>
+<li><code>array_merge()</code> 合并数组要慎用，如果重视 <code>key</code> ，且 <code>key</code> 可能为数字，不能使用 <code>array_merge()</code> 来合并，我们可以采用循环体嵌套的方式（注意内层循环使用 key 进行赋值操作）</li>
+<li>如果重视 <code>key</code> ，且 <code>key</code> 可能为数字，简单合并数组可以使用运算符 + ，但是一定不要在循环体中使用，因为每次运算的的结果都是生成了一个新的数组</li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/03/20/PHP-Do-Not-ArrayMerge-In-For/" target="_blank" title="不要在循环体中使用 array_merge()">http://blog.caoxl.com/2019/03/20/PHP-Do-Not-ArrayMerge-In-For/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/array-merge/">array_merge</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/03/20/PHP-Simple-JWT/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          JWT 简单封装
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/20/PHP-Cache-Notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">PHP 缓存技术</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#四种合并数组的方式对比"><span class="nav-number">1.</span> <span class="nav-text">四种合并数组的方式对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建一个类"><span class="nav-number">1.1.</span> <span class="nav-text">创建一个类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用"><span class="nav-number">1.2.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果"><span class="nav-number">1.3.</span> <span class="nav-text">结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#合并数组的坑"><span class="nav-number">2.</span> <span class="nav-text">合并数组的坑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">2.1.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果-1"><span class="nav-number">2.2.</span> <span class="nav-text">结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">2.3.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

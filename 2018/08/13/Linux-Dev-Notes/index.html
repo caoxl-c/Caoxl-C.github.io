@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>linux 管理总结 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="服务器Linux">
+  
+  
+  
+  
+  <meta name="description" content="总结一下平日在 GNU/Linux，没有特殊说明都是在 CentOS 上经常使用到的命令／工具的使用，但有些命令同样适用于 macOS。  好记性不如烂笔头, 现在应该没有哪个公司是断网开发吧.">
+<meta name="keywords" content="服务器,Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 管理总结">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/13/Linux-Dev-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="总结一下平日在 GNU/Linux，没有特殊说明都是在 CentOS 上经常使用到的命令／工具的使用，但有些命令同样适用于 macOS。  好记性不如烂笔头, 现在应该没有哪个公司是断网开发吧.">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-11-22T09:30:11.073Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux 管理总结">
+<meta name="twitter:description" content="总结一下平日在 GNU/Linux，没有特殊说明都是在 CentOS 上经常使用到的命令／工具的使用，但有些命令同样适用于 macOS。  好记性不如烂笔头, 现在应该没有哪个公司是断网开发吧.">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Linux-Dev-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Linux 管理总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/13/Linux-Dev-Notes/" class="article-date">
+	  <time datetime="2018-08-13T01:29:51.000Z" itemprop="datePublished">2018-08-13</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>总结一下平日在 <code>GNU/Linux</code>，没有特殊说明都是在 <code>CentOS</code> 上经常使用到的命令／工具的使用，但有些命令同样适用于 <code>macOS</code>。</p>
+<blockquote>
+<p>好记性不如烂笔头, 现在应该没有哪个公司是断网开发吧.</p>
+</blockquote>
+</blockquote>
+<a id="more"></a>
+<h1 id="SSH-SCP-SFTP"><a href="#SSH-SCP-SFTP" class="headerlink" title="SSH/SCP/SFTP"></a>SSH/SCP/SFTP</h1><h2 id="SSH管理"><a href="#SSH管理" class="headerlink" title="SSH管理"></a>SSH管理</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 登录远程主机</span></span><br><span class="line">ssh user@domain-name</span><br><span class="line">ssh &lt;domain-alias&gt;    # 在 ~/.ssh<span class="built_in">/config </span>中配置</span><br><span class="line"></span><br><span class="line"><span class="comment">###### 配置 SSH Key 实现免密码远程操作 [参考]</span></span><br><span class="line"><span class="comment"># 本地配置</span></span><br><span class="line">cd ~/.ssh</span><br><span class="line">ssh-keygen -t rsa -C <span class="string">'USER@domain-name'</span> -f id_rsa_xxx</span><br><span class="line"></span><br><span class="line">ssh-copy-id -i ~/.ssh/id_rsa_xxx.pub www.remote-host.com    # will ask <span class="keyword">for</span> password <span class="keyword">if</span> you are the first time <span class="keyword">to</span> <span class="builtin-name">add</span> public key</span><br><span class="line"></span><br><span class="line"><span class="comment"># Or: scp id_rsa_xxx.pub USER@domain-name:/USER/.ssh/authorized_keys</span></span><br><span class="line"><span class="comment"># Or: cat ~/.ssh/id_rsa.pub | ssh user@12.34.56.78 "mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt;  ~/.ssh/authorized_keys"</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vim config</span><br><span class="line"></span><br><span class="line">  Host domain-alias</span><br><span class="line">        HostName domain-name</span><br><span class="line">       <span class="built_in"> User </span>USER</span><br><span class="line">       <span class="built_in"> Port </span>22</span><br><span class="line">        IdentityFile ~/.ssh/id_rsa_xxx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 远程配置</span></span><br><span class="line">cd ~/.ssh</span><br><span class="line">chown -R user:user <span class="built_in">..</span>/.ssh</span><br><span class="line">chmod 0500 <span class="built_in">..</span>/.ssh</span><br><span class="line">chmod 0400 ./*</span><br></pre></td></tr></table></figure>
+<h3 id="ssh-add"><a href="#ssh-add" class="headerlink" title="ssh-add"></a>ssh-add</h3><ul>
+<li>添加记住 <code>passphrase</code></li>
+</ul>
+<p>如果生存公钥对的时候使用了 <code>passphrase</code> 可以使用 <code>ssh-add</code> 记住该公钥对应私钥的密码，避免每次登录都要输入使用秘钥的密码。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh-<span class="builtin-name">add</span> -K /path/<span class="keyword">to</span>/ras_file</span><br><span class="line">ssh-<span class="builtin-name">add</span> -l</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除已记住的 <code>passphrase</code></li>
+</ul>
+<p>反之，从某个代理机器上删除记住过的私钥：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除单个秘钥</span></span><br><span class="line">ssh-add -d /path/to/ras_file</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除所有秘钥</span></span><br><span class="line">add-add -D</span><br><span class="line"></span><br><span class="line">ssh-add -L</span><br></pre></td></tr></table></figure>
+<ul>
+<li>锁定与解锁秘钥</li>
+</ul>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh-<span class="keyword">add</span><span class="bash"> -x    <span class="comment"># 输入两次密码锁定</span></span></span><br><span class="line">ssh-<span class="keyword">add</span><span class="bash"> -X    <span class="comment"># 输入一次密码解锁</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="SCP-上传-下载"><a href="#SCP-上传-下载" class="headerlink" title="SCP 上传/下载"></a>SCP 上传/下载</h2><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 上传文件</span><br><span class="line">scp [-P &#123;port&#125;] filename <span class="keyword">user</span>@<span class="keyword">domain</span>-<span class="type">name</span>:/<span class="type">path</span>/<span class="keyword">to</span>/save</span><br><span class="line"></span><br><span class="line"># 上传目录</span><br><span class="line">scp -r dirname <span class="keyword">user</span>@<span class="keyword">domain</span>-<span class="type">name</span>:/<span class="type">path</span>/<span class="keyword">to</span>/save</span><br><span class="line"></span><br><span class="line"># 下载文件</span><br><span class="line">scp <span class="keyword">user</span>@<span class="keyword">domain</span>-<span class="type">name</span>:/<span class="type">path</span>/<span class="keyword">to</span>/filename /<span class="type">path</span>/<span class="keyword">to</span>/save</span><br><span class="line"></span><br><span class="line"># 下载目录</span><br><span class="line">scp -r <span class="keyword">user</span>@<span class="keyword">domain</span>-<span class="type">name</span>:/<span class="type">path</span>/<span class="keyword">to</span>/dirname /<span class="type">path</span>/<span class="keyword">to</span>/save</span><br></pre></td></tr></table></figure>
+<h2 id="SFTP-上传-下载"><a href="#SFTP-上传-下载" class="headerlink" title="SFTP 上传/下载"></a>SFTP 上传/下载</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 连接远程服务器</span></span><br><span class="line">sftp user@domain-name</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 下载文件／目录</span></span><br><span class="line">get <span class="regexp">/path/</span>to<span class="regexp">/filename /</span>path<span class="regexp">/to/</span>save</span><br><span class="line">get -r <span class="regexp">/path/</span>to<span class="regexp">/dirname /</span>path<span class="regexp">/to/</span>save</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 上传文件／目录</span></span><br><span class="line">put <span class="regexp">/path/</span>to<span class="regexp">/filename /</span>path<span class="regexp">/to/</span>save</span><br><span class="line">put -r <span class="regexp">/path/</span>to<span class="regexp">/dirname /</span>path<span class="regexp">/to/</span>save</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 查询本机当前所在路径</span></span><br><span class="line">lpwd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 查询远程主机当前所在路径</span></span><br><span class="line">pwd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. 改变本地路径</span></span><br><span class="line">lcd <span class="regexp">/path/</span>to</span><br><span class="line"></span><br><span class="line"><span class="comment"># 7. 改变远程路径</span></span><br><span class="line">cd <span class="regexp">/path/</span>to</span><br><span class="line"></span><br><span class="line"><span class="comment"># ... 更多 shell 指令规律类似: </span></span><br><span class="line"><span class="comment"># 操作远程用原生 Shell 指令</span></span><br><span class="line"><span class="comment"># 操作本地用 `l` + 原生 Shell 指令</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 8. 退出 sftp</span></span><br><span class="line"><span class="keyword">exit</span> | quit | bye</span><br></pre></td></tr></table></figure>
+<p><strong>说明:</strong></p>
+<ul>
+<li><code>scp 源 目标</code> ，因此 scp 既可以下载又可以上传，只需要调整下参数顺序，因为文件／目录都是：从 源 到 目标。</li>
+<li>上传下载目录时，最好先压缩成单个文件再按文件的方式进行传输。</li>
+<li>若指定的路径不存在将自动创建。</li>
+<li>上面的 <code>domain-name</code> 都可以用相应的 IP 地址来代替。</li>
+<li>若已经配置过 <code>SSH Key</code>，则在使用上述命令的时候便不再需要每次都输入密码。</li>
+<li>SFTP 中，<code>get</code> 和 <code>put</code> 若不指定目标保存路径，则默认为远程主机／本机当前所在路径。</li>
+</ul>
+<h1 id="rsync"><a href="#rsync" class="headerlink" title="rsync"></a>rsync</h1><h2 id="同步本地和远程代码"><a href="#同步本地和远程代码" class="headerlink" title="同步本地和远程代码"></a>同步本地和远程代码</h2><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 手动同步</span></span><br><span class="line">rsync -avz <span class="params">--progress</span> <span class="params">--delete</span> <span class="params">--no-o</span> <span class="params">--no-g</span> -m <span class="params">--chmod=Du=rwx</span>,Dgo=rx,Fu=rw,Fog=r  <span class="string">/env/vagrant/www/app.dev/</span> root@app.dev:<span class="string">/data/wwwroot/app.dev</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>路径需要修改成你自己的</p>
+</blockquote>
+<h1 id="screen-tmux"><a href="#screen-tmux" class="headerlink" title="screen/tmux"></a>screen/tmux</h1><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># screen</span></span><br><span class="line">screen    # start a new<span class="built_in"> screen </span>session</span><br><span class="line">screen -S &lt;session_id&gt;    # start a new<span class="built_in"> screen </span>session with name</span><br><span class="line">screen -ls</span><br><span class="line">screen -r &lt;session_id&gt;       # recover a<span class="built_in"> screen </span>session detached</span><br><span class="line">screen -D -r &lt;session_id&gt;    # recover a<span class="built_in"> screen </span>session even <span class="keyword">if</span> attached</span><br><span class="line">screen -X -S [session #id you want <span class="keyword">to</span> kill] quit|exit</span><br><span class="line"></span><br><span class="line">Ctrl + A + D =&gt; 退出当前 Session</span><br><span class="line"></span><br><span class="line"><span class="comment"># tmux</span></span><br><span class="line">tmux    # start a new tmux session</span><br><span class="line">tmux ls</span><br><span class="line">tmux new -s &lt;session_id&gt;</span><br><span class="line">tmux at/attach -t &lt;session_id&gt;</span><br><span class="line"><span class="comment">## rename a session</span></span><br><span class="line">ctrl+b =&gt; `:` =&gt; rename-session [-t current-name] [new-name] (第二可选参数不填则重命名当前 attach 的会话)</span><br><span class="line"></span><br><span class="line">Ctrl + B + D =&gt; 退出当前 Session</span><br><span class="line">Ctrl + B + <span class="string">" =&gt; 水平分屏</span></span><br><span class="line"><span class="string">Ctrl + B + % =&gt; 垂直分屏</span></span><br><span class="line"><span class="string">Ctrl + B + 上／下／左／右 =&gt; 分屏间切换</span></span><br></pre></td></tr></table></figure>
+<h1 id="解压缩"><a href="#解压缩" class="headerlink" title="解压缩"></a>解压缩</h1><ul>
+<li><code>.xz</code></li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">xz</span> <span class="selector-tag">-d</span> <span class="selector-tag">xxx</span><span class="selector-class">.tar</span><span class="selector-class">.xz</span>    # <span class="selector-tag">x</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>.tar</code></li>
+</ul>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf  xxx.tar           <span class="meta"># x</span></span><br><span class="line">tar -cf <span class="built_in">all</span>.tar *.jpg       <span class="meta"># -c 表示产生新的包</span></span><br><span class="line">tar -rf <span class="built_in">all</span>.tar *.gif       <span class="meta"># -r 表示增加文件</span></span><br><span class="line">tar -uf <span class="built_in">all</span>.tar logo.gif    <span class="meta"># -u 表示更新文件</span></span><br><span class="line">tar -tf <span class="built_in">all</span>.tar             <span class="meta"># -t 列出文件</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>gzip</code></li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">gzip</span> <span class="string">/path/to/file_or_folder</span></span><br><span class="line"></span><br><span class="line"><span class="attr">gzip</span> <span class="string">-rv /path/to/file_or_folder</span></span><br><span class="line"><span class="attr">gzip</span> <span class="string">-l /path/to/file_or_folder</span></span><br><span class="line"><span class="attr">gzip</span> <span class="string">-dv /path/to/file_or_folder</span></span><br><span class="line"><span class="attr">gzip</span> <span class="string">-dr /path/to/file_or_folder</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Example:</span></span><br><span class="line"><span class="attr">gzip</span> <span class="string">-d 1.sql.gz | mysql -h127.0.0.1 -u root -p db_demo</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>.tar.gz</code></li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-xzvf</span> <span class="selector-tag">xxx</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span>         # <span class="selector-tag">x</span></span><br><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-czf</span> <span class="selector-tag">all</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span> *<span class="selector-class">.jpg</span>    # <span class="selector-tag">tar</span> 调用 <span class="selector-tag">gzip</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>.tar.bz2</code></li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-xjvf</span> <span class="selector-tag">xxx</span><span class="selector-class">.tar</span><span class="selector-class">.bz2</span>        # <span class="selector-tag">x</span></span><br><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-cjf</span> <span class="selector-tag">all</span><span class="selector-class">.tar</span><span class="selector-class">.bz2</span> *<span class="selector-class">.jpg</span>   # <span class="selector-tag">tar</span> 调用 <span class="selector-tag">bzip2</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>.tar.Z</code></li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">tar</span> –<span class="selector-tag">xZvf</span> <span class="selector-tag">xxx</span><span class="selector-class">.tar</span><span class="selector-class">.Z</span>         # <span class="selector-tag">x</span></span><br><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-cZf</span> <span class="selector-tag">all</span><span class="selector-class">.tar</span><span class="selector-class">.Z</span> *<span class="selector-class">.jpg</span>    # <span class="selector-tag">tar</span> 调用 <span class="selector-tag">compress</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>.rar</code></li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">unrar</span> e xxx.rar    <span class="comment"># x</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>.zip</code></li>
+</ul>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">unzip xxx.<span class="built_in">zip</span>                  # x</span><br><span class="line"><span class="built_in">zip</span> -r xxx.<span class="built_in">zip</span> /path/to/xxx    # <span class="built_in">c</span></span><br></pre></td></tr></table></figure>
+<h1 id="定时任务"><a href="#定时任务" class="headerlink" title="定时任务"></a>定时任务</h1><h2 id="atd"><a href="#atd" class="headerlink" title="atd"></a><code>atd</code></h2><figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo 'schedule job' <span class="string">| at now</span></span><br></pre></td></tr></table></figure>
+<h2 id="Cron-Crontab"><a href="#Cron-Crontab" class="headerlink" title="Cron/Crontab"></a><code>Cron</code>/<code>Crontab</code></h2><ul>
+<li>命令格式：<code>分 时 日 月 周</code> 命令，比如：</li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># <span class="number">0</span>～<span class="number">59</span> <span class="number">0</span>～<span class="number">23</span> <span class="number">1</span>～<span class="number">31</span> <span class="number">1</span>～<span class="number">12</span> <span class="number">0</span>～<span class="number">6</span> command</span><br><span class="line">*/<span class="number">1</span> * * * * php /data/wwwroot/<span class="keyword">default</span>/cron.php    # 每分钟执行一次 cron.php</span><br><span class="line"><span class="number">0</span> <span class="number">8</span> * * * /sbin/service/sshd start                # 每天 <span class="number">8</span>:<span class="number">00</span> 开启 ssh 服务</span><br></pre></td></tr></table></figure>
+<p>其中，<code>*</code> 代表取值范围内的数字，<code>/</code> 代表「每」。</p>
+<h3 id="未预装-crond-CentOS-下安装-crond-服务"><a href="#未预装-crond-CentOS-下安装-crond-服务" class="headerlink" title="未预装 crond CentOS 下安装 crond 服务"></a>未预装 <code>crond CentOS</code> 下安装 <code>crond</code> 服务</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CentOS 6</span></span><br><span class="line">yum install vixie-cron</span><br><span class="line"><span class="comment"># yum install crontabs     # install cronie,cronie-anacron,exim the same time</span></span><br><span class="line"></span><br><span class="line">service crond start</span><br><span class="line">chkconfig crond on</span><br><span class="line"></span><br><span class="line"><span class="comment"># CentOS 7</span></span><br><span class="line">yum install cronie</span><br></pre></td></tr></table></figure>
+<p>这里有个不错的在线校准网站：<u><a href="https://crontab.guru/" target="_blank" rel="noopener">https://crontab.guru/</a></u>。</p>
+<ul>
+<li>其他命令</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">crontab -e    # 编辑当前用户的 cron 服务</span><br><span class="line">crontab -l    # 列出当前用户的 cron 服务的详细内容</span><br><span class="line">crontab -r    # 删除某个用户的所有 cron 服务</span><br><span class="line">service crond start|restart|stop    # 开启／重启／停止 crond 服务</span><br></pre></td></tr></table></figure>
+<h1 id="网络工具"><a href="#网络工具" class="headerlink" title="网络工具"></a>网络工具</h1><h2 id="iptables"><a href="#iptables" class="headerlink" title="iptables"></a><code>iptables</code></h2><ul>
+<li>查看 <code>iptables</code> 防火墙配置信息</li>
+</ul>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/etc/i</span>nit.d<span class="regexp">/iptables status</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>放行某个端口</li>
+</ul>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 如：放行 3306 端口</span></span><br><span class="line"><span class="string">/sbin/iptables</span> -I INPUT -p tcp <span class="params">--dport</span> 3306 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<ul>
+<li>保存配置信息</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> # !!! 在修改防火墙规则后需要保存配置才能生效</span><br><span class="line">service iptables save</span><br></pre></td></tr></table></figure>
+<ul>
+<li>打开、重启、关闭 <code>iptables</code> 服务</li>
+</ul>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service iptables restart|<span class="literal">start</span>|<span class="literal">stop</span></span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line">/etc/init.d/iptables restart|<span class="literal">start</span>|<span class="literal">stop</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>取消 <code>iptables</code> 服务自启动</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 相当于永久关闭 iptables</span></span><br><span class="line"><span class="attribute">chkconfig</span> –level <span class="number">35</span> iptables <span class="literal">off</span></span><br></pre></td></tr></table></figure>
+<h2 id="nmap"><a href="#nmap" class="headerlink" title="nmap"></a><code>nmap</code></h2><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">yum</span> <span class="string">install -y nmap</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 手册</span></span><br><span class="line"><span class="attr">info</span> <span class="string">nmap</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看本机当前开放的端口</span></span><br><span class="line"><span class="attr">nmap</span> <span class="string">-sTU -O localhost</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查 本机所在网段有多少台 live 机器</span></span><br><span class="line"><span class="attr">nmap</span> <span class="string">-sP 192.168.32.0/24</span></span><br></pre></td></tr></table></figure>
+<h2 id="netstat"><a href="#netstat" class="headerlink" title="netstat"></a><code>netstat</code></h2><p>从 <code>netstat</code> 里可以看到自己机器正在监听的端口、相关程序以及当前的连接数、连接来自何方等数据，然后有针对性的进行关闭相关服务或者用防火墙来屏蔽、过滤对本机服务的访问。</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">netstat -antp       <span class="meta"># 所有连接、数字显示主机、端口、TCP 连接、监听的程序</span></span><br><span class="line">netstat -anup       <span class="meta"># 所有连接、数字显示主机、端口、UDP 连接、监听的程序</span></span><br><span class="line">netstat -s          <span class="meta"># 统计所有（开机至今的）连接数据，包括 tcp、udp 等</span></span><br><span class="line">netstat -<span class="keyword">st</span>         <span class="meta"># 统计所有 tcp 连接数据</span></span><br><span class="line">netstat -su         <span class="meta"># 统计所有 udp 连接数据</span></span><br></pre></td></tr></table></figure>
+<h2 id="lsof"><a href="#lsof" class="headerlink" title="lsof"></a><code>lsof</code></h2><p>查看哪个程序监听着哪个端口。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsof -i:<span class="number">80</span></span><br></pre></td></tr></table></figure>
+<h2 id="dig"><a href="#dig" class="headerlink" title="dig"></a><code>dig</code></h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@caoxl</span> <span class="string">~]#</span> <span class="string">dig</span> <span class="string">github.com</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询参数和统计</span></span><br><span class="line"><span class="string">;</span> <span class="string">&lt;&lt;&gt;&gt;</span> <span class="string">DiG</span> <span class="number">9.9</span><span class="number">.4</span><span class="string">-RedHat-9.9.4-61.el7</span> <span class="string">&lt;&lt;&gt;&gt;</span> <span class="string">github.com</span></span><br><span class="line"><span class="string">;;</span> <span class="attr">global options:</span> <span class="string">+cmd</span></span><br><span class="line"><span class="string">;;</span> <span class="attr">Got answer:</span></span><br><span class="line"><span class="string">;;</span> <span class="string">-&gt;&gt;HEADER&lt;&lt;-</span> <span class="attr">opcode:</span> <span class="string">QUERY,</span> <span class="attr">status:</span> <span class="string">NOERROR,</span> <span class="attr">id:</span> <span class="number">58065</span></span><br><span class="line"><span class="string">;;</span> <span class="attr">flags:</span> <span class="string">qr</span> <span class="string">rd</span> <span class="string">ra;</span> <span class="attr">QUERY:</span> <span class="number">1</span><span class="string">,</span> <span class="attr">ANSWER:</span> <span class="number">2</span><span class="string">,</span> <span class="attr">AUTHORITY:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">ADDITIONAL:</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询内容 (A 代表 address)</span></span><br><span class="line"><span class="string">;;</span> <span class="attr">QUESTION SECTION:</span></span><br><span class="line"><span class="string">;github.com.</span>			<span class="string">IN</span>	<span class="string">A</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># DNS 服务器的答复 (31 代表缓存时间, 即TTL, 表示31秒内不用查询查询</span></span><br><span class="line"><span class="string">;;</span> <span class="attr">ANSWER SECTION:</span></span><br><span class="line"><span class="string">github.com.</span>		<span class="number">31</span>	<span class="string">IN</span>	<span class="string">A</span>	<span class="number">192.30</span><span class="number">.253</span><span class="number">.112</span></span><br><span class="line"><span class="string">github.com.</span>		<span class="number">31</span>	<span class="string">IN</span>	<span class="string">A</span>	<span class="number">192.30</span><span class="number">.253</span><span class="number">.113</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># DNS 服务器的一些传输信息</span></span><br><span class="line"><span class="string">;;</span> <span class="attr">Query time:</span> <span class="number">0</span> <span class="string">msec</span></span><br><span class="line"><span class="string">;;</span> <span class="attr">SERVER:</span> <span class="number">100.100</span><span class="number">.2</span><span class="number">.136</span><span class="comment">#53(100.100.2.136)</span></span><br><span class="line"><span class="string">;;</span> <span class="attr">WHEN:</span> <span class="string">Mon</span> <span class="string">Aug</span> <span class="number">13</span> <span class="number">10</span><span class="string">:05:46</span> <span class="string">CST</span> <span class="number">2018</span></span><br><span class="line"><span class="string">;;</span> <span class="attr">MSG SIZE  rcvd:</span> <span class="number">60</span></span><br></pre></td></tr></table></figure>
+<p>如果有 <code>AUTHORITY SECTION:</code> 段，则为 dig 域名的 NS 记录（Name Server），即哪些服务器负责管理所查询域名的DNS记录。向任何一台 NS 查询都能查到所查域名的 IP 信息。</p>
+<p>此时，会一同返回 <code>ADDITIONAL SECTION:</code> 段，即为 NS 的 IP。</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 精简查询</span></span><br><span class="line"><span class="keyword">dig </span>+<span class="keyword">short </span>github.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示 DNS 的整个分级查询过程</span></span><br><span class="line"><span class="keyword">dig </span>+trace github.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定 DNS 服务器查询</span></span><br><span class="line"><span class="keyword">dig </span>@<span class="number">8</span>.<span class="number">8</span>.<span class="number">8</span>.<span class="number">8</span> github.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 单独查看每一级域名的 NS 记录</span></span><br><span class="line"><span class="keyword">dig </span>ns com</span><br><span class="line"><span class="keyword">dig </span>ns github.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询 PTR 记录（从 IP 地址查询域名）</span></span><br><span class="line"><span class="keyword">dig </span>-x <span class="number">1</span>.<span class="number">2</span>.<span class="number">3</span>.<span class="number">4</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询指定的记录类型</span></span><br><span class="line"><span class="keyword">dig </span>a github.com</span><br><span class="line"><span class="keyword">dig </span>mx github.com</span><br></pre></td></tr></table></figure>
+<h2 id="host"><a href="#host" class="headerlink" title="host"></a><code>host</code></h2><p>简化版 dig。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[root@caoxl ~]</span># <span class="selector-tag">host</span> <span class="selector-tag">github</span><span class="selector-class">.com</span></span><br><span class="line"><span class="selector-tag">github</span><span class="selector-class">.com</span> <span class="selector-tag">has</span> <span class="selector-tag">address</span> 192<span class="selector-class">.30</span><span class="selector-class">.253</span><span class="selector-class">.113</span></span><br><span class="line"><span class="selector-tag">github</span><span class="selector-class">.com</span> <span class="selector-tag">has</span> <span class="selector-tag">address</span> 192<span class="selector-class">.30</span><span class="selector-class">.253</span><span class="selector-class">.112</span></span><br><span class="line"><span class="selector-tag">github</span><span class="selector-class">.com</span> <span class="selector-tag">mail</span> <span class="selector-tag">is</span> <span class="selector-tag">handled</span> <span class="selector-tag">by</span> 10 <span class="selector-tag">alt4</span><span class="selector-class">.aspmx</span><span class="selector-class">.l</span><span class="selector-class">.google</span><span class="selector-class">.com</span>.</span><br><span class="line"><span class="selector-tag">github</span><span class="selector-class">.com</span> <span class="selector-tag">mail</span> <span class="selector-tag">is</span> <span class="selector-tag">handled</span> <span class="selector-tag">by</span> 1 <span class="selector-tag">aspmx</span><span class="selector-class">.l</span><span class="selector-class">.google</span><span class="selector-class">.com</span>.</span><br><span class="line"><span class="selector-tag">github</span><span class="selector-class">.com</span> <span class="selector-tag">mail</span> <span class="selector-tag">is</span> <span class="selector-tag">handled</span> <span class="selector-tag">by</span> 5 <span class="selector-tag">alt1</span><span class="selector-class">.aspmx</span><span class="selector-class">.l</span><span class="selector-class">.google</span><span class="selector-class">.com</span>.</span><br><span class="line"><span class="selector-tag">github</span><span class="selector-class">.com</span> <span class="selector-tag">mail</span> <span class="selector-tag">is</span> <span class="selector-tag">handled</span> <span class="selector-tag">by</span> 10 <span class="selector-tag">alt3</span><span class="selector-class">.aspmx</span><span class="selector-class">.l</span><span class="selector-class">.google</span><span class="selector-class">.com</span>.</span><br><span class="line"><span class="selector-tag">github</span><span class="selector-class">.com</span> <span class="selector-tag">mail</span> <span class="selector-tag">is</span> <span class="selector-tag">handled</span> <span class="selector-tag">by</span> 5 <span class="selector-tag">alt2</span><span class="selector-class">.aspmx</span><span class="selector-class">.l</span><span class="selector-class">.google</span><span class="selector-class">.com</span>.</span><br><span class="line"></span><br><span class="line"><span class="selector-attr">[root@caoxl ~]</span># <span class="selector-tag">host</span> 192<span class="selector-class">.30</span><span class="selector-class">.253</span><span class="selector-class">.113</span></span><br><span class="line">113<span class="selector-class">.253</span><span class="selector-class">.30</span><span class="selector-class">.192</span><span class="selector-class">.in-addr</span><span class="selector-class">.arpa</span> <span class="selector-tag">domain</span> <span class="selector-tag">name</span> <span class="selector-tag">pointer</span> <span class="selector-tag">lb-192-30-253-113-iad</span><span class="selector-class">.github</span><span class="selector-class">.com</span>.</span><br></pre></td></tr></table></figure>
+<h2 id="nslookup"><a href="#nslookup" class="headerlink" title="nslookup"></a><code>nslookup</code></h2><p>互动式地查询域名记录。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@caoxl</span> <span class="string">~]#</span> <span class="string">nslookup</span></span><br><span class="line"><span class="string">&gt;</span> <span class="string">caoxl.com</span></span><br><span class="line"><span class="attr">Server:</span>		<span class="number">100.100</span><span class="number">.2</span><span class="number">.136</span></span><br><span class="line"><span class="attr">Address:</span>	<span class="number">100.100</span><span class="number">.2</span><span class="number">.136</span><span class="comment">#53</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Non-authoritative answer:</span></span><br><span class="line"><span class="attr">Name:</span>	<span class="string">caoxl.com</span></span><br><span class="line"><span class="attr">Address:</span> <span class="number">47.91</span><span class="number">.221</span><span class="number">.85</span></span><br></pre></td></tr></table></figure>
+<h2 id="whois"><a href="#whois" class="headerlink" title="whois"></a><code>whois</code></h2><p>查看域名的注册情况。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">whois</span> <span class="selector-tag">github</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<h2 id="wget"><a href="#wget" class="headerlink" title="wget"></a><code>wget</code></h2><ul>
+<li>递归下载整站</li>
+</ul>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">wget -r -p -np -k http:<span class="string">//www.example.com</span></span><br><span class="line"></span><br><span class="line">wget \</span><br><span class="line">     <span class="params">--recursive</span> <span class="comment"># download the entire Web site \</span></span><br><span class="line">     <span class="params">--no-clobber</span> <span class="comment"># don't overwrite any existing files (used in case the download is interrupted and resumed) \</span></span><br><span class="line">     <span class="params">--page-requisites</span> <span class="comment"># get all the elements that compose the page (images, CSS and so on) \</span></span><br><span class="line">     <span class="params">--html-extension</span> <span class="comment"># save files with the .html extension \</span></span><br><span class="line">     <span class="params">--convert-links</span> <span class="comment">#convert links so that they work locally, off-line \</span></span><br><span class="line">     <span class="params">--restrict-file-names=windows</span> <span class="comment"># modify filenames so that they will work in Windows as well \</span></span><br><span class="line">     <span class="params">--domains</span> cloud.google.com <span class="comment"># don't follow links outside cloud.google.com \</span></span><br><span class="line">     <span class="params">--no-parent</span> https:<span class="string">//cloud.google.com/apis/design/resources</span> <span class="comment"># don't follow links outside the directory api/design/resources</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 实例：下载在线电子书网站到本地</span></span><br><span class="line">wget <span class="params">--mirror</span> <span class="params">--convert-links</span> <span class="params">--no-parent</span> <span class="params">--no-verbose</span> https:<span class="string">//landing.google.com/sre/book/</span></span><br></pre></td></tr></table></figure>
+<h2 id="curl"><a href="#curl" class="headerlink" title="curl"></a><code>curl</code></h2><ul>
+<li><code>RESTFul</code> 请求</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET <span class="string">http:</span><span class="comment">//www.example.com</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>打印返回请求头</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -I <span class="string">http:</span><span class="comment">//www.example.com</span></span><br><span class="line">curl --head <span class="string">http:</span><span class="comment">//www.example.com</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>自定义头信息</li>
+</ul>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -i</span><br><span class="line">-<span class="ruby">X POST <span class="symbol">http:</span>/<span class="regexp">/www.example.com/api</span><span class="regexp">/with/key</span> \</span></span><br><span class="line"><span class="ruby">-H <span class="string">"Accept: application/json"</span> \</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>POST JSON</code></li>
+</ul>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST http:<span class="regexp">//</span>www.example.com<span class="regexp">/api/</span>with<span class="regexp">/key \</span></span><br><span class="line"><span class="regexp">-H "Accept: application/</span>json<span class="string">" \</span></span><br><span class="line"><span class="string">-d '&#123;"</span>username<span class="string">":"</span>xyz<span class="string">","</span>password<span class="string">":"</span>xyz<span class="string">"&#125;'</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>输出请求详情</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v <span class="string">https:</span><span class="comment">//www.google.com</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>文件内容作为请求 <code>payload</code></li>
+</ul>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -vX POST http:<span class="comment">//example.com \</span></span><br><span class="line">-H <span class="string">'Content-Type: application/json; charset=utf-8'</span></span><br><span class="line">-d @/path/<span class="keyword">to</span>/<span class="keyword">file</span>.json</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>HTTP base authorization</code></li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">curl</span> -u user:passwd http://example.com</span><br><span class="line"></span><br><span class="line"># Or:</span><br><span class="line">curl http://user:passwd<span class="variable">@example</span>.com</span><br></pre></td></tr></table></figure>
+<h1 id="进程管理"><a href="#进程管理" class="headerlink" title="进程管理"></a>进程管理</h1><h2 id="supervisor"><a href="#supervisor" class="headerlink" title="supervisor"></a><code>supervisor</code></h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">yum <span class="builtin-name">info</span> supervisor</span><br><span class="line">yum install -y supervisor</span><br><span class="line"></span><br><span class="line">service supervisord start|stop|restart</span><br><span class="line"></span><br><span class="line">supervisorctl reread</span><br><span class="line">supervisorctl start proj-worker:*</span><br><span class="line"></span><br><span class="line">vim /etc/supervisord.conf</span><br><span class="line"><span class="comment"># 以编辑 Laravel 项目队列后台进程管理为例</span></span><br><span class="line">[program:proj-name]</span><br><span class="line"><span class="attribute">process_name</span>=%(program_name)s_%(process_num)02d</span><br><span class="line"><span class="attribute">command</span>=php /data/wwwroot/www.proj.com/artisan queue:work database <span class="attribute">--queue</span>=phjs-cc-%(process_num)2d <span class="attribute">--memory</span>=256 <span class="attribute">--sleep</span>=2 <span class="attribute">--tries</span>=2 --daemon</span><br><span class="line"><span class="attribute">autostart</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">autorestart</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">user</span>=www</span><br><span class="line"><span class="attribute">numprocs</span>=16</span><br><span class="line"><span class="attribute">redirect_stderr</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">stdout_logfile</span>=/data/wwwroot/www.proj.com/storage/logs/sv-worker.log</span><br></pre></td></tr></table></figure>
+<h3 id="“unix-tmp-supervisor-sock-no-such-file”"><a href="#“unix-tmp-supervisor-sock-no-such-file”" class="headerlink" title="“unix:///tmp/supervisor.sock no such file”"></a><code>“unix:///tmp/supervisor.sock no such file”</code></h3><p>在执行 <code>supervisorctl -c /etc/supervisord.conf</code> 的时候，出现该报错。</p>
+<p>原因是：</p>
+<blockquote>
+<p><code>supervisor</code>默认配置会把<code>socket</code>文件和<code>pid</code>守护进程生成在<code>/tmp/</code>目录下，<code>/tmp/</code>目录是缓存目录，Linux会根据不同情况自动删除其下面的文件。</p>
+</blockquote>
+<p>解决办法：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/supervisord.<span class="keyword">conf</span></span><br><span class="line"></span><br><span class="line">`</span><br><span class="line">[unix_http_server]</span><br><span class="line"><span class="keyword">file</span>=/<span class="keyword">var</span>/<span class="keyword">run</span>/supervisor.sock</span><br><span class="line"></span><br><span class="line">[supervisord]</span><br><span class="line">logfile=/<span class="keyword">var</span>/<span class="keyword">log</span>/supervisor/supervisord.<span class="keyword">log</span></span><br><span class="line"></span><br><span class="line">[supervisorctl]</span><br><span class="line">serverurl=unix:<span class="comment">///var/run/supervisor.sock   # 必须和 `unix_http_server` 一一对应</span></span><br><span class="line">`</span><br><span class="line"></span><br><span class="line">supervisorctl <span class="keyword">update</span></span><br><span class="line"># supervisord -c /etc/supervisord.<span class="keyword">conf</span></span><br></pre></td></tr></table></figure>
+<h2 id="systemd-守护进程"><a href="#systemd-守护进程" class="headerlink" title="systemd 守护进程"></a><code>systemd</code> 守护进程</h2><p>创建一个自定义守护进程服务配置文件：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">vi /<span class="class"><span class="keyword">lib</span>/<span class="title">systemd</span>/<span class="title">system</span>/<span class="title">phpd</span>-<span class="title">test</span>.<span class="title">service</span></span></span><br><span class="line"></span><br><span class="line"><span class="string">`</span></span><br><span class="line"><span class="string">[Unit]</span></span><br><span class="line"><span class="string">Description=PHP Daemon Demo</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[Service]</span></span><br><span class="line"><span class="string">User=phpdemo</span></span><br><span class="line"><span class="string">Group=phpdemo</span></span><br><span class="line"><span class="string">WorkingDirectory=/home/phpdemo</span></span><br><span class="line"><span class="string">Restart=always</span></span><br><span class="line"><span class="string">ExecStart=/usr/bin/php phpd-test.php</span></span><br><span class="line"><span class="string">`</span></span><br><span class="line"></span><br><span class="line">systemctl status phpd-test    <span class="comment"># systemd does not start new services automatically</span></span><br><span class="line">systemctl start mydaemon</span><br></pre></td></tr></table></figure>
+<p>测试：<code>kill phpd-test</code> 相关进程，查看 <code>systemd</code> 是否自动重启。</p>
+<h3 id="相关路径"><a href="#相关路径" class="headerlink" title="相关路径"></a>相关路径</h3><ul>
+<li>services: <code>/lib/systemd/system/*.service</code></li>
+<li>logs: <code>/var/log/syslog</code></li>
+</ul>
+<blockquote>
+<p>日志文件可以通过 journalctl —since “2018-08-13 12:13:31” 来快速获取</p>
+</blockquote>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li><u><a href="http://rustamagasanov.com/blog/2017/02/24/systemd-example-for-a-simple-ruby-daemon-supervision/" target="_blank" rel="noopener">http://rustamagasanov.com/blog/2017/02/24/systemd-example-for-a-simple-ruby-daemon-supervision/</a></u></li>
+<li><u><br><a href="https://serversforhackers.com/c/process-monitoring-with-systemd" target="_blank" rel="noopener">https://serversforhackers.com/c/process-monitoring-with-systemd</a></u></li>
+</ul>
+<h2 id="批量杀死进程"><a href="#批量杀死进程" class="headerlink" title="批量杀死进程"></a>批量杀死进程</h2><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | <span class="keyword">grep</span> php | <span class="keyword">grep</span> -v <span class="keyword">grep</span> | awk <span class="string">'&#123;print $2&#125;'</span> | xargs <span class="keyword">kill</span> -<span class="number">9</span></span><br></pre></td></tr></table></figure>
+<h2 id="后台运行"><a href="#后台运行" class="headerlink" title="后台运行"></a>后台运行</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup ~/shell/server-git-sync &gt; /dev/<span class="literal">null</span> <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br></pre></td></tr></table></figure>
+<h2 id="查看日志文件变动"><a href="#查看日志文件变动" class="headerlink" title="查看日志文件变动"></a>查看日志文件变动</h2><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -<span class="keyword">f</span> /tmp/git-<span class="keyword">sync</span>-client.<span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+<h1 id="文件系统管理"><a href="#文件系统管理" class="headerlink" title="文件系统管理"></a>文件系统管理</h1><h2 id="批量重命名"><a href="#批量重命名" class="headerlink" title="批量重命名"></a>批量重命名</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">i</span>=0; <span class="keyword">for</span> f <span class="keyword">in</span> *.mp4 ; <span class="keyword">do</span> let <span class="attribute">i</span>=i+1; mv <span class="string">"<span class="variable">$f</span>"</span> <span class="variable">$i</span><span class="string">".mp4"</span> ; done</span><br></pre></td></tr></table></figure>
+<h2 id="递归创建文件夹"><a href="#递归创建文件夹" class="headerlink" title="递归创建文件夹"></a>递归创建文件夹</h2><figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml">mkdir -p root/</span><span class="template-variable">&#123;com,net,org&#125;</span><span class="xml">/</span><span class="template-variable">&#123;taobao,tmall&#125;</span><span class="xml">/</span><span class="template-variable">&#123;www,detail&#125;</span></span><br></pre></td></tr></table></figure>
+<h2 id="将文件隐藏到图片"><a href="#将文件隐藏到图片" class="headerlink" title="将文件隐藏到图片"></a>将文件隐藏到图片</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">copy*/b*d:<span class="number">1.</span>jpg*+*d:<span class="number">2.</span>rar*d:<span class="number">3.</span>jpg</span><br></pre></td></tr></table></figure>
+<h1 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h1><h2 id="man"><a href="#man" class="headerlink" title="man"></a><code>man</code></h2><p>查看命令的使用说明。</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">man htop</span></span><br></pre></td></tr></table></figure>
+<h2 id="cheat"><a href="#cheat" class="headerlink" title="cheat"></a><code>cheat</code></h2><p>查看某个常用命令的使用举例。</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">yum</span> <span class="string">install docopt</span></span><br><span class="line"><span class="attr">yum</span> <span class="string">install python-pip</span></span><br><span class="line"><span class="attr">git</span> <span class="string">clone git@github.com:chrisallenlane/cheat.git</span></span><br><span class="line"><span class="attr">cd</span> <span class="string">cheat/</span></span><br><span class="line"><span class="attr">python</span> <span class="string">setup.py install</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Check</span></span><br><span class="line"><span class="attr">cheat</span> <span class="string">-v</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Usage demo</span></span><br><span class="line"><span class="attr">cheat</span> <span class="string">tar</span></span><br><span class="line"><span class="attr">cheat</span> <span class="string">curl</span></span><br></pre></td></tr></table></figure>
+<h2 id="find"><a href="#find" class="headerlink" title="find"></a><code>find</code></h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 找到文件大小小于 10000k 的文件并删除</span></span><br><span class="line"><span class="builtin-name">find</span> . -size -10000k | xargs rm -rf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到文件名中包含字符串的文件</span></span><br><span class="line"><span class="builtin-name">find</span> . -name <span class="string">'*linux*'</span>    # 区分大小写</span><br><span class="line"></span><br><span class="line"><span class="builtin-name">find</span> . -iname <span class="string">'*linux*'</span>    # 不区分大小写</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到后缀为 jpg/JPG 的文件</span></span><br><span class="line"><span class="builtin-name">find</span> . -iname <span class="string">'*.jpg'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 找出目录类型</span></span><br><span class="line"><span class="builtin-name">find</span> . -type d</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找出文件类型</span></span><br><span class="line"><span class="builtin-name">find</span> . -type f</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到八进制权限为 777 的文件</span></span><br><span class="line"><span class="builtin-name">find</span> . -type f -perm 777</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到文件名以 .tmp 结尾的并删除</span></span><br><span class="line"><span class="builtin-name">find</span> . -name <span class="string">'*.txt'</span> -exec rm <span class="string">'&#123;&#125;'</span> \;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除所有空文件夹</span></span><br><span class="line"><span class="builtin-name">find</span> . -type d -empty -exec rmdir &#123;&#125; \;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到所有最后修改时间为 7 天前的文件</span></span><br><span class="line"><span class="builtin-name">find</span> . -type f -mtime +7d -ls</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从制定文件类型中找到查找字符串</span></span><br><span class="line"><span class="builtin-name">find</span> . -name <span class="string">'*.php'</span> | xargs grep -ri <span class="string">'eval'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到文件大于 1M 的并排序</span></span><br><span class="line"><span class="builtin-name">find</span> . -size +1M -type f -print0 | xargs -0 ls -Ssh | sort -z</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到所有名称为 logs 的所有目录 最大深度为 2</span></span><br><span class="line"><span class="builtin-name">find</span> . -maxdepth 2 -name logs -type d</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到所有不在 .git 目录中的文件</span></span><br><span class="line"><span class="builtin-name">find</span> . ! -iwholename <span class="string">'*.git*'</span> -type f</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到当前目录下所有文件并修改其权限</span></span><br><span class="line"><span class="builtin-name">find</span> . -type f -exec chmod 644 &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+<h2 id="du"><a href="#du" class="headerlink" title="du"></a><code>du</code></h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 统计当前目录大写 输出目录深度为 1</span></span><br><span class="line">du . -h <span class="attribute">--max-depth</span>=1</span><br></pre></td></tr></table></figure>
+<h1 id="VIM"><a href="#VIM" class="headerlink" title="VIM"></a>VIM</h1><h2 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h2><ul>
+<li>上翻整页：<code>ctrl + f</code></li>
+<li>上翻半页：<code>ctrl + u</code></li>
+<li>下翻整页：<code>ctrl + b</code></li>
+<li>下翻半页：<code>ctrl + d</code></li>
+<li>左缩进：命令模式下按 V，然后 &lt;&lt; (shift + &lt;)</li>
+<li>右缩进：命令模式下按 V，然后 &gt;&gt;</li>
+</ul>
+<h2 id="常用命令-1"><a href="#常用命令-1" class="headerlink" title="常用命令"></a>常用命令</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示行号</span></span><br><span class="line"><span class="builtin-name">set</span> nu</span><br><span class="line"><span class="comment"># 关闭行号</span></span><br><span class="line"><span class="builtin-name">set</span> nu!</span><br><span class="line"><span class="builtin-name">set</span> nonu</span><br><span class="line"><span class="comment"># 设置缩进</span></span><br><span class="line"><span class="builtin-name">set</span> <span class="attribute">shiftwidth</span>=4</span><br><span class="line"><span class="comment"># 设置Tab宽度</span></span><br><span class="line"><span class="builtin-name">set</span> <span class="attribute">tabstop</span>=4</span><br></pre></td></tr></table></figure>
+<h1 id="用户管理"><a href="#用户管理" class="headerlink" title="用户管理"></a>用户管理</h1><h2 id="查看并剔除用户"><a href="#查看并剔除用户" class="headerlink" title="查看并剔除用户"></a>查看并剔除用户</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"># 查看用户</span><br><span class="line">w</span><br><span class="line">who</span><br><span class="line">whoami</span><br><span class="line">who am i</span><br><span class="line"></span><br><span class="line">[<span class="symbol">root@</span>caoxl ~]# w</span><br><span class="line"> <span class="number">10</span>:<span class="number">48</span>:<span class="number">34</span> up <span class="number">10</span> days,  <span class="number">1</span>:<span class="number">09</span>,  <span class="number">1</span> user,  load average: <span class="number">0.00</span>, <span class="number">0.01</span>, <span class="number">0.05</span></span><br><span class="line">USER     TTY      FROM             <span class="symbol">LOGIN@</span>   IDLE   JCPU   PCPU WHAT</span><br><span class="line">root     pts/<span class="number">0</span>    <span class="number">61.140</span><span class="number">.74</span><span class="number">.36</span>     <span class="number">10</span>:<span class="number">00</span>    <span class="number">2.00</span>s  <span class="number">0.04</span>s  <span class="number">0.00</span>s w</span><br><span class="line">[<span class="symbol">root@</span>caoxl ~]# who</span><br><span class="line">root     pts/<span class="number">0</span>        <span class="number">2018</span><span class="number">-08</span><span class="number">-13</span> <span class="number">10</span>:<span class="number">00</span> (<span class="number">61.140</span><span class="number">.74</span><span class="number">.36</span>)</span><br><span class="line">[<span class="symbol">root@</span>caoxl ~]# whoami</span><br><span class="line">root</span><br><span class="line">[<span class="symbol">root@</span>caoxl ~]# who am i</span><br><span class="line">root     pts/<span class="number">0</span>        <span class="number">2018</span><span class="number">-08</span><span class="number">-13</span> <span class="number">10</span>:<span class="number">00</span> (<span class="number">61.140</span><span class="number">.74</span><span class="number">.36</span>)</span><br><span class="line"></span><br><span class="line"># 剔除指定终端的用户</span><br><span class="line">pkill -kill -t pts/<span class="number">2</span></span><br></pre></td></tr></table></figure>
+<h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><ul>
+<li><code>scp</code><strong>not a regular file?</strong></li>
+</ul>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 带 `-r` 选项</span><br><span class="line">scp -r xxx/</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Linux 启动文件系统检查失败：Inode 2891983, end of extent exceeds allowed value</strong></li>
+</ul>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 1. 查看 /etc/fstab 文件中是否写入了错误的文件系统或者磁盘的分区信息</span></span><br><span class="line"><span class="meta"># 1.1 定位／打印区块设备属性</span></span><br><span class="line">blkid</span><br><span class="line"></span><br><span class="line"><span class="meta"># 1.2 查看系统文件系统的固定信息和 blkid 是否一致</span></span><br><span class="line">vim /etc/fstab</span><br><span class="line"></span><br><span class="line"><span class="meta"># 2. 修复分区</span></span><br><span class="line">e2fsck -C0 -p -f -v /dev/sda1</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>SSH: connection rest by peer</strong></li>
+</ul>
+<blockquote>
+<p><a href="http://stackoverflow.com/questions/1434451/what-does-connection-reset-by-peer-mean" target="_blank" rel="noopener">http://stackoverflow.com/questions/1434451/what-does-connection-reset-by-peer-mean</a></p>
+</blockquote>
+<h1 id="参考-1"><a href="#参考-1" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://blog.cjli.info/2016/04/19/Linux-Management-Summaries/" target="_blank" rel="noopener">Linux 管理个人总结</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys--2" target="_blank" rel="noopener">How To Set Up SSH Keys</a></li>
+<li><a href="https://help.aliyun.com/knowledge_detail/41460.html" target="_blank" rel="noopener">云服务器 ECS Linux 系统 /etc/fstab 错误配置导致系统启动异常</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2016/06/dns.html" target="_blank" rel="noopener">DNS 原理入门</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/linux/l-cn-nohup/" target="_blank" rel="noopener">Linux 技巧：让进程在后台可靠运行的几种方法</a></li>
+<li><a href="https://stuff-things.net/2016/02/11/stupid-ssh-add-tricks/" target="_blank" rel="noopener">Stupid ssh-add Tricks</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/13/Linux-Dev-Notes/" target="_blank" title="Linux 管理总结">http://blog.caoxl.com/2018/08/13/Linux-Dev-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/服务器/">服务器</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/13/Lumen-Cache-Memcache-Redis/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          基于Lumen-几种缓存方法
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/10/Team-Dev-Flow/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">技术 / 团队开发流程</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SSH-SCP-SFTP"><span class="nav-number">1.</span> <span class="nav-text">SSH/SCP/SFTP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSH管理"><span class="nav-number">1.1.</span> <span class="nav-text">SSH管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh-add"><span class="nav-number">1.1.1.</span> <span class="nav-text">ssh-add</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SCP-上传-下载"><span class="nav-number">1.2.</span> <span class="nav-text">SCP 上传/下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SFTP-上传-下载"><span class="nav-number">1.3.</span> <span class="nav-text">SFTP 上传/下载</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#rsync"><span class="nav-number">2.</span> <span class="nav-text">rsync</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#同步本地和远程代码"><span class="nav-number">2.1.</span> <span class="nav-text">同步本地和远程代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#screen-tmux"><span class="nav-number">3.</span> <span class="nav-text">screen/tmux</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解压缩"><span class="nav-number">4.</span> <span class="nav-text">解压缩</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#定时任务"><span class="nav-number">5.</span> <span class="nav-text">定时任务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#atd"><span class="nav-number">5.1.</span> <span class="nav-text">atd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cron-Crontab"><span class="nav-number">5.2.</span> <span class="nav-text">Cron/Crontab</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#未预装-crond-CentOS-下安装-crond-服务"><span class="nav-number">5.2.1.</span> <span class="nav-text">未预装 crond CentOS 下安装 crond 服务</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#网络工具"><span class="nav-number">6.</span> <span class="nav-text">网络工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#iptables"><span class="nav-number">6.1.</span> <span class="nav-text">iptables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nmap"><span class="nav-number">6.2.</span> <span class="nav-text">nmap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#netstat"><span class="nav-number">6.3.</span> <span class="nav-text">netstat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lsof"><span class="nav-number">6.4.</span> <span class="nav-text">lsof</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dig"><span class="nav-number">6.5.</span> <span class="nav-text">dig</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#host"><span class="nav-number">6.6.</span> <span class="nav-text">host</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nslookup"><span class="nav-number">6.7.</span> <span class="nav-text">nslookup</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#whois"><span class="nav-number">6.8.</span> <span class="nav-text">whois</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wget"><span class="nav-number">6.9.</span> <span class="nav-text">wget</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#curl"><span class="nav-number">6.10.</span> <span class="nav-text">curl</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程管理"><span class="nav-number">7.</span> <span class="nav-text">进程管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#supervisor"><span class="nav-number">7.1.</span> <span class="nav-text">supervisor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#“unix-tmp-supervisor-sock-no-such-file”"><span class="nav-number">7.1.1.</span> <span class="nav-text">“unix:///tmp/supervisor.sock no such file”</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#systemd-守护进程"><span class="nav-number">7.2.</span> <span class="nav-text">systemd 守护进程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#相关路径"><span class="nav-number">7.2.1.</span> <span class="nav-text">相关路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">7.2.2.</span> <span class="nav-text">参考</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#批量杀死进程"><span class="nav-number">7.3.</span> <span class="nav-text">批量杀死进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#后台运行"><span class="nav-number">7.4.</span> <span class="nav-text">后台运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看日志文件变动"><span class="nav-number">7.5.</span> <span class="nav-text">查看日志文件变动</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件系统管理"><span class="nav-number">8.</span> <span class="nav-text">文件系统管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#批量重命名"><span class="nav-number">8.1.</span> <span class="nav-text">批量重命名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#递归创建文件夹"><span class="nav-number">8.2.</span> <span class="nav-text">递归创建文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将文件隐藏到图片"><span class="nav-number">8.3.</span> <span class="nav-text">将文件隐藏到图片</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用命令"><span class="nav-number">9.</span> <span class="nav-text">常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#man"><span class="nav-number">9.1.</span> <span class="nav-text">man</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cheat"><span class="nav-number">9.2.</span> <span class="nav-text">cheat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#find"><span class="nav-number">9.3.</span> <span class="nav-text">find</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#du"><span class="nav-number">9.4.</span> <span class="nav-text">du</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#VIM"><span class="nav-number">10.</span> <span class="nav-text">VIM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#快捷键"><span class="nav-number">10.1.</span> <span class="nav-text">快捷键</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用命令-1"><span class="nav-number">10.2.</span> <span class="nav-text">常用命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用户管理"><span class="nav-number">11.</span> <span class="nav-text">用户管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看并剔除用户"><span class="nav-number">11.1.</span> <span class="nav-text">查看并剔除用户</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">12.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考-1"><span class="nav-number">13.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

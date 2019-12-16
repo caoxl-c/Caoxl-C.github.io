@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>接入云联惠 api「开发日志」 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="APIWeb云联惠第三方">
+  
+  
+  
+  
+  <meta name="description" content="云联惠授权登录完全就是模仿微信来的，比较简单，简述如下。">
+<meta name="keywords" content="API,Web,云联惠,第三方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="接入云联惠 API「开发日志」">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/23/Access-YLH-API-In-Web-APP/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="云联惠授权登录完全就是模仿微信来的，比较简单，简述如下。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:46:13.335Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="接入云联惠 API「开发日志」">
+<meta name="twitter:description" content="云联惠授权登录完全就是模仿微信来的，比较简单，简述如下。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Access-YLH-API-In-Web-APP" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      接入云联惠 API「开发日志」
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/23/Access-YLH-API-In-Web-APP/" class="article-date">
+	  <time datetime="2018-01-23T08:21:14.000Z" itemprop="datePublished">2018-01-23</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/第三方应用/">第三方应用</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>云联惠授权登录完全就是模仿微信来的，比较简单，简述如下。</p>
+<a id="more"></a>
+<h1 id="基本过程"><a href="#基本过程" class="headerlink" title="基本过程"></a>基本过程</h1><ul>
+<li><strong>获取 code</strong></li>
+</ul>
+<p>首先，需要引导用户去云联惠提供的 <code>oauth2</code> 登录入口，地址为：</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://opentest.yunlianhui.cn/token/authorize?client_id=CLIENT_ID&amp;redirect_uri=REDIRECT_URI&amp;<span class="keyword">state</span>=STATE&amp;response_type=code&amp;scope=SCOPE</span><br></pre></td></tr></table></figure>
+<p>如果用户在这个入口登录并授权之后，将会跳转到 <code>REDIRECT_URI</code>，并带上 <code>GET</code> 参数 <code>code=XXXX&amp;state=test</code>。</p>
+<p><code>REDIRECT_URI</code> 是我们的应用服务器提供的 <code>URL</code>，因此需要保存这个 <code>code</code> 值，用于下一步操作。</p>
+<ul>
+<li><strong>用 code 换 access_token（令牌）</strong></li>
+</ul>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl --request POST \</span><br><span class="line">-<span class="ruby">-url <span class="symbol">https:</span>/<span class="regexp">/opentest.yunlianhui.cn/token</span><span class="regexp">/authorize/accesstoken</span> \</span></span><br><span class="line"><span class="ruby">--header <span class="string">'cache-control: no-cache'</span> \</span></span><br><span class="line"><span class="ruby">--header <span class="string">'content-type: application/x-www-form-urlencoded'</span> \</span></span><br><span class="line"><span class="ruby">--data <span class="string">'code=CODE&amp;client_id=CLIENT_ID&amp;client_secret=CLIENT_SECRET&amp;grant_type=authorization_code&amp;redirect_uri=REDIRECT_URI</span></span></span><br></pre></td></tr></table></figure>
+<p>注意，这里的 <code>code</code> 失效时间很短，因此需要尽快去换取 <code>access_token</code>。</p>
+<ul>
+<li><strong>用 access_token 获得用户基本信息/账户等信息</strong></li>
+</ul>
+<p>这里能获取到什么数据，首先是根据第一步获取 <code>code</code> 时的 <code>scope</code> 参数指定的。可以用 <code>+</code> 获得多种 <code>scope</code> 的信息，比如：<code>scopte=basic_info+account_info</code>。</p>
+<p>其次，还有实际调用的接口来决定的，比如基本信息调用的是 <code>/api/basic_info</code> 接口，账户信息调用的是 <code>/api/account_info</code> 接口。</p>
+<p><strong>格式如下：</strong></p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">curl </span>-X <span class="string">POST </span>\</span><br><span class="line"><span class="built_in">--url</span> <span class="string">https:</span>//<span class="string">opentest.</span><span class="string">yunlianhui.</span><span class="string">cn/</span><span class="string">api/</span><span class="string">basic_info </span>\</span><br><span class="line"><span class="built_in">--header</span> <span class="string">'cache-control: no-cache'</span> \</span><br><span class="line"><span class="built_in">--header</span> <span class="string">'content-type: application/x-www-form-urlencoded'</span> \</span><br><span class="line"><span class="built_in">--data</span> <span class="string">'client_id=CLIENT_ID&amp;access_token=ACCESS_TOKEN&amp;timestamp=YYYY-MM-DD HH:ii:ss&amp;sign=SIGN_STRING'</span></span><br></pre></td></tr></table></figure>
+<p>或者通过 PHP 使用 cURL：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">function post(string $uri,<span class="built_in"> array </span>$headers = [],<span class="built_in"> array </span>$params = [])</span><br><span class="line">&#123;</span><br><span class="line">  $ch = curl_init();</span><br><span class="line">  curl_setopt_array($ch, [</span><br><span class="line">    CURLOPT_URL =&gt; $uri,</span><br><span class="line">    CURLOPT_HEADER =&gt; $headers,</span><br><span class="line">  ]);</span><br><span class="line">  $res = curl_exec($ch);</span><br><span class="line">  curl_close($ch);</span><br><span class="line">  </span><br><span class="line"> <span class="built_in"> return </span>$res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，这里的 <code>sign</code> 只需要 <code>md5</code> + <code>转大写</code> 就行了。如果成功则返回值如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"member_id"</span>:<span class="string">"FF1"</span>,</span><br><span class="line">  <span class="attr">"mobile"</span>:<span class="string">"15669714243"</span>,</span><br><span class="line">  <span class="attr">"rcm_id"</span>:<span class="string">"DD1"</span>,</span><br><span class="line">  <span class="attr">"email"</span>:<span class="string">"69524839@163.com"</span>,</span><br><span class="line">  <span class="attr">"error_code"</span>:<span class="number">0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><ul>
+<li><strong>如何获得 client_id, appkey？</strong></li>
+</ul>
+<p>设置一个回调地址（redirect_uri），技术人员给你：client_id，client_secret。</p>
+<ul>
+<li><strong>什么时候用 test 什么时候用正式？</strong></li>
+</ul>
+<p>完成开发之后提交审核通过用正式。</p>
+<ul>
+<li><p><strong>完成开发之后提交审核通过用正式。</strong></p>
+<ul>
+<li><code>basic_info：</code> 访问会员的基本信息，时效性为 1 个月。</li>
+<li><code>account_info：</code> 访问会员的账户信息，时效性为 1 个月。</li>
+<li><code>points：</code> 产生积分返还将会扣除会员的库存积分，时效性为 1 个月。</li>
+</ul>
+</li>
+<li><p><strong>签名规则？</strong></p>
+<ul>
+<li>将参数列表按名称的 ASCII 顺序排序</li>
+<li>然后把所有参数按顺序拼接：<code>参数1名参数1值`</code>参数2名参数2值[…参数n名参数n值]`</li>
+<li>在拼接得到的字符串前后再拼接上 <code>client_secret</code></li>
+<li>将上面的结果进行一次 <code>md5</code> 计算，最后全部<code>转为大写</code></li>
+</ul>
+<p>用 PHP 表示就是：</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$params = [</span><br><span class="line">  <span class="string">'p1'</span> =&gt; <span class="string">'v1'</span>,</span><br><span class="line">  <span class="string">'p2'</span> =&gt; <span class="string">'v2'</span>,</span><br><span class="line">  <span class="string">'p3'</span> =&gt; <span class="string">'v3'</span>,</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$client_secret = <span class="string">'secret'</span>;</span><br><span class="line"></span><br><span class="line">ksort($params);</span><br><span class="line"></span><br><span class="line">$strToBeSigned = $client_secret;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($params <span class="keyword">as</span> $pName =&gt; $pVal) &#123;</span><br><span class="line">  $strToBeSigned .= $pName.$pVal;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$strToBeSigned .= $client_secret;</span><br><span class="line"></span><br><span class="line">$sign = strtouppler(md5($strToBeSigned));</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><u><a href="https://zh.wikipedia.org/wiki/MD5" target="_blank" rel="noopener">MD5-wikipedia</a></u></li>
+<li>RFC：<u><a href="https://tools.ietf.org/html/rfc6749" target="_blank" rel="noopener">RFC 6749 - The OAuth 2.0 Authorization Framework</a></u> &amp;&amp; <u><a href="http://colobu.com/2017/04/28/oauth2-rfc6749/" target="_blank" rel="noopener">OAuth2 RFC6749中文翻译</a></u></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/23/Access-YLH-API-In-Web-APP/" target="_blank" title="接入云联惠 API「开发日志」">http://blog.caoxl.com/2018/01/23/Access-YLH-API-In-Web-APP/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/API/">API</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Web/">Web</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/云联惠/">云联惠</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/第三方/">第三方</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/23/Composer-Skill/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Composer 小技巧
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/23/Kuaiqian-Pay-In-JHWM/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">快钱支付 「开发日志」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本过程"><span class="nav-number">1.</span> <span class="nav-text">基本过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">2.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

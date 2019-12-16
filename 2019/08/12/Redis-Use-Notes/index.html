@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>redis 实战 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Redis">
+  
+  
+  
+  
+  <meta name="description" content="Redis的使用场景测试用例">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 实战">
+<meta property="og:url" content="http://blog.caoxl.com/2019/08/12/Redis-Use-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Redis的使用场景测试用例">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-06T01:48:42.772Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis 实战">
+<meta name="twitter:description" content="Redis的使用场景测试用例">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Redis-Use-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Redis 实战
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/08/12/Redis-Use-Notes/" class="article-date">
+	  <time datetime="2019-08-12T09:54:08.000Z" itemprop="datePublished">2019-08-12</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>Redis的使用场景测试用例</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><ul>
+<li><code>RedisController.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Api</span>\<span class="title">Controller</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Api</span>\<span class="title">Controller</span> <span class="title">as</span> <span class="title">BaseController</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Support</span>\<span class="title">RedisTool</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Collective</span>\<span class="title">Annotations</span>\<span class="title">Routing</span>\<span class="title">Annotations</span>\<span class="title">Annotations</span>\&#123;</span><br><span class="line">    <span class="title">Controller</span>, <span class="title">Post</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Class RedisController</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@package</span> App\Api\Controller</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Controller</span>(prefix="/api/redis")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RedisController</span> <span class="keyword">extends</span> <span class="title">BaseController</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> $redis;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;redis = RedisTool::getInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>RedisTool.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Support</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Concerns</span>\<span class="title">Singleton</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">Log</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RedisTool</span> <span class="keyword">extends</span> \<span class="title">Redis</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">use</span> <span class="title">Singleton</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">parent</span>::__construct();</span><br><span class="line"></span><br><span class="line">        $host = config(<span class="string">'database.redis.default.host'</span>);</span><br><span class="line">        $port = config(<span class="string">'database.redis.default.port'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (! <span class="keyword">$this</span>-&gt;connect($host, $port)) &#123;</span><br><span class="line">            Log::error(<span class="string">"redis fail to connect to $host:$port"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>Singleton.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Concerns</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">trait</span> Singleton</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">getInstance</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">static</span> $instance = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (is_null($instance)) &#123;</span><br><span class="line">            $instance = <span class="keyword">new</span> <span class="keyword">static</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="基于-redis-字符串-string-类型的简单缓存"><a href="#基于-redis-字符串-string-类型的简单缓存" class="headerlink" title="基于 redis 字符串 string 类型的简单缓存"></a>基于 redis 字符串 string 类型的简单缓存</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Post</span>("/test_string")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test_string</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;set(<span class="string">'cache_key'</span>, json_encode([</span><br><span class="line">        <span class="string">'data-list'</span> =&gt; <span class="string">'这是个缓存数据'</span></span><br><span class="line">    ]), JSON_UNESCAPED_UNICODE);</span><br><span class="line"></span><br><span class="line">    $res = <span class="keyword">$this</span>-&gt;redis-&gt;get(<span class="string">'cache_key'</span>);</span><br><span class="line">    var_dump($res);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="基于-redis-列表-list-类型的简单队列"><a href="#基于-redis-列表-list-类型的简单队列" class="headerlink" title="基于 redis 列表 list 类型的简单队列"></a>基于 redis 列表 list 类型的简单队列</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 实现队列</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Post</span>("/test_queue")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test_queue</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 进队列</span></span><br><span class="line">    $user_id = mt_rand(<span class="number">100000</span>, <span class="number">999999</span>);</span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;rPush(<span class="string">'queue_name'</span>, json_encode([<span class="string">'user_id'</span> =&gt; $user_id]));</span><br><span class="line">    $user_id = mt_rand(<span class="number">100000</span>, <span class="number">999999</span>);</span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;rPush(<span class="string">'queue_name'</span>, json_encode([<span class="string">'user_id'</span> =&gt; $user_id]));</span><br><span class="line">    $user_id = mt_rand(<span class="number">100000</span>, <span class="number">999999</span>);</span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;rPush(<span class="string">'queue_name'</span>, json_encode([<span class="string">'user_id'</span> =&gt; $user_id]));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"数据进队列成功 \n"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查看队列</span></span><br><span class="line">    $res = <span class="keyword">$this</span>-&gt;redis-&gt;lRange(<span class="string">'queue_name'</span>, <span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"当前队列数据为: \n"</span>;</span><br><span class="line">    print_r($res);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 出队列</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;lPop(<span class="string">'queue_name'</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"数据出队列成功 \n"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查看队列</span></span><br><span class="line">    $res = <span class="keyword">$this</span>-&gt;redis-&gt;lRange(<span class="string">'queue_name'</span>, <span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"当前队列数据为: \n"</span>;</span><br><span class="line">    print_r($res);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="基于-redis-字符串-setnx-的悲观锁"><a href="#基于-redis-字符串-setnx-的悲观锁" class="headerlink" title="基于 redis 字符串 setnx 的悲观锁"></a>基于 redis 字符串 setnx 的悲观锁</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 实现悲观锁机制</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Post</span>("/test_lock_pessimism")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test_lock_pessimism</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $timeout = <span class="number">5000</span>;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        $microtime    = microtime(<span class="keyword">true</span>) * <span class="number">1000</span>;</span><br><span class="line">        $microtimeout = $microtime + $timeout + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 上锁</span></span><br><span class="line">        $isLock = <span class="keyword">$this</span>-&gt;redis-&gt;setnx(<span class="string">'lock.count'</span>, $microtimeout);</span><br><span class="line">        <span class="keyword">if</span> (!$isLock) &#123;</span><br><span class="line">            $getTime = <span class="keyword">$this</span>-&gt;redis-&gt;get(<span class="string">'lock.count'</span>);</span><br><span class="line">            <span class="keyword">if</span> ($getTime &gt; $microtime) &#123;</span><br><span class="line">                <span class="comment">// 睡眠, 降低抢锁频率 缓解redis压力</span></span><br><span class="line">                usleep(<span class="number">5000</span>);</span><br><span class="line">                <span class="comment">// 未超时继续等待</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 超时, 抢锁, 可能有几毫秒级时间差可忽略</span></span><br><span class="line">            $previousTime = <span class="keyword">$this</span>-&gt;redis-&gt;getSet(<span class="string">'lock.count'</span>, $microtimeout);</span><br><span class="line">            <span class="keyword">if</span> ((int)$previousTime &lt; $microtime) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">while</span> (!$isLock);</span><br><span class="line"></span><br><span class="line">    $count = <span class="keyword">$this</span>-&gt;redis-&gt;get(<span class="string">'count'</span>) ?: <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"执行count加1操作~~\n\n"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;set(<span class="string">'count'</span>, $count + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除锁</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;del(<span class="string">'lock.count'</span>);</span><br><span class="line">    <span class="comment">// 打印count值</span></span><br><span class="line">    $count = <span class="keyword">$this</span>-&gt;redis-&gt;get(<span class="string">'count'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"count值为: $count\n"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="基于-redis-事务的乐观锁"><a href="#基于-redis-事务的乐观锁" class="headerlink" title="基于 redis 事务的乐观锁"></a>基于 redis 事务的乐观锁</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 实现悲观锁机制</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Post</span>("/test_lock_optimistic")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test_lock_optimistic</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 监视count值</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;watch(<span class="string">'count'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 开启事务(Redis的事务和MySQL事务概念不一样)</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;multi();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 操作count</span></span><br><span class="line">    $time = time();</span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;set(<span class="string">'count'</span>, $time);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 模拟并发下其他进程进行set count操作 请执行下面操作</span></span><br><span class="line">    <span class="comment">// $this-&gt;redis-&gt;set('count', 'is simulate');</span></span><br><span class="line">    sleep(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 提交事务</span></span><br><span class="line">    $res = <span class="keyword">$this</span>-&gt;redis-&gt;exec();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ($res) &#123;</span><br><span class="line">        <span class="comment">// 成功</span></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'Success: '</span> . $time . <span class="string">"\n"</span>;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 失败</span></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">'Fail: '</span> . $time . <span class="string">"\n"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="基于-redis-的发布订阅"><a href="#基于-redis-的发布订阅" class="headerlink" title="基于 redis 的发布订阅"></a>基于 redis 的发布订阅</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 发布</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Post</span>("/test_publish")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test_publish</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;publish(<span class="string">'msg'</span>, <span class="string">'来自MSG频道的推送'</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"MSG频道消息推送成功 \n"</span>;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;close();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 订阅</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Post</span>("/test_subscribe")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test_subscribe</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ini_set('default_socket_timeout', -1);</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"订阅MSG频道, 等待消息推送...\n"</span>;</span><br><span class="line"></span><br><span class="line">    $callback = <span class="function"><span class="keyword">function</span> <span class="params">($msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> $msg;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">$this</span>-&gt;redis-&gt;subscribe([<span class="string">'msg'</span>], $callback);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/08/12/Redis-Use-Notes/" target="_blank" title="Redis 实战">http://blog.caoxl.com/2019/08/12/Redis-Use-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/">Redis</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/08/14/Redis-Do-Rank-List/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Redis 实现排行榜功能
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/08/12/Sec-Kill-System-Notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">秒杀系统</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备"><span class="nav-number">1.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于-redis-字符串-string-类型的简单缓存"><span class="nav-number">2.</span> <span class="nav-text">基于 redis 字符串 string 类型的简单缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于-redis-列表-list-类型的简单队列"><span class="nav-number">3.</span> <span class="nav-text">基于 redis 列表 list 类型的简单队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于-redis-字符串-setnx-的悲观锁"><span class="nav-number">4.</span> <span class="nav-text">基于 redis 字符串 setnx 的悲观锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于-redis-事务的乐观锁"><span class="nav-number">5.</span> <span class="nav-text">基于 redis 事务的乐观锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于-redis-的发布订阅"><span class="nav-number">6.</span> <span class="nav-text">基于 redis 的发布订阅</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>swoole 再学习 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Swoole">
+  
+  
+  
+  
+  <meta name="description" content="书读百遍其义自见">
+<meta name="keywords" content="Swoole">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swoole 再学习">
+<meta property="og:url" content="http://blog.caoxl.com/2019/10/17/Swoole-Relearning/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="书读百遍其义自见">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-30T03:11:56.480Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Swoole 再学习">
+<meta name="twitter:description" content="书读百遍其义自见">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Swoole-Relearning" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Swoole 再学习
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/10/17/Swoole-Relearning/" class="article-date">
+	  <time datetime="2019-10-17T02:35:16.000Z" itemprop="datePublished">2019-10-17</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>书读百遍其义自见</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="学习Swoole必备基础"><a href="#学习Swoole必备基础" class="headerlink" title="学习Swoole必备基础"></a>学习Swoole必备基础</h2><h3 id="多进程-多线程"><a href="#多进程-多线程" class="headerlink" title="多进程/多线程"></a>多进程/多线程</h3><ul>
+<li>了解Linux操作系统<code>进程</code>和<code>线程</code>的概念</li>
+</ul>
+<blockquote>
+<p><strong>进程</strong>是具有一定独立功能的程序关于某个数据集合上的一次运行活动,进程是系统进行资源分配和调度的一个独立单位。<br><strong>线程</strong>是进程的一个实体,是CPU调度和分派的基本单位,它是比进程更小的能独立运行的基本单位.</p>
+</blockquote>
+<ul>
+<li>了解Linux<code>进程</code>/<code>线程</code>切换调度的基本知识</li>
+</ul>
+<blockquote>
+<p>在引入线程的操作系统中，<strong>线程是调度和分配的基本单位</strong> ，<strong>进程是资源拥有的基本单位</strong> 。<br>把传统进程的两个属性分开，线程便能轻装运行，从而可显著地提高系统的并发程度。<br>在同一进程中，线程的切换不会引起进程的切换；在由一个进程中的线程切换到另一个进程中的线程时，才会引起进程的切换。</p>
+</blockquote>
+<ul>
+<li>了解进程间通信的基本知识，如管道、<code>UnixSocket</code>、消息队列、共享内存</li>
+</ul>
+<h3 id="Socket"><a href="#Socket" class="headerlink" title="Socket"></a>Socket</h3><ul>
+<li>了解<code>SOCKET</code>的基本操作如 <code>accept/connect</code>、<code>send/recv</code>、<code>close</code>、<code>listen</code>、<code>bind</code></li>
+<li>了解<code>SOCKET</code>的接收缓存区、发送缓存区、阻塞/非阻塞、超时等概念</li>
+</ul>
+<h3 id="IO复用"><a href="#IO复用" class="headerlink" title="IO复用"></a>IO复用</h3><ul>
+<li>了解<code>select</code>/<code>poll</code>/<code>epoll</code></li>
+<li>了解基于<code>select</code>/<code>epoll</code>实现的事件循环，<code>Reactor</code>模型</li>
+<li>了解可读事件、可写事件</li>
+</ul>
+<h3 id="TCP-IP网络协议"><a href="#TCP-IP网络协议" class="headerlink" title="TCP/IP网络协议"></a>TCP/IP网络协议</h3><ul>
+<li>了解<code>TCP</code>/<code>IP</code>协议</li>
+<li>了解<code>TCP</code>、<code>UDP</code>传输协议</li>
+</ul>
+<h3 id="调试工具"><a href="#调试工具" class="headerlink" title="调试工具"></a>调试工具</h3><h4 id="使用-gdb-调试-Linux-程序"><a href="#使用-gdb-调试-Linux-程序" class="headerlink" title="使用 gdb 调试 Linux 程序"></a>使用 <code>gdb</code> 调试 <code>Linux</code> 程序</h4><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gdb -p 进程ID</span><br><span class="line">gdb php</span><br><span class="line">gdb php core</span><br></pre></td></tr></table></figure>
+<p><code>gdb</code>有3种使用方式: </p>
+<ul>
+<li>跟踪正在运行的PHP程序，使用 <code>gdb -p 进程ID</code></li>
+<li>使用gdb运行并调试PHP程序，使用 <code>gdb php -&gt; run server.php</code> 进行调试</li>
+<li>PHP程序发生<code>coredump</code>后使用<code>gdb</code>加载<code>core</code>内存镜像进行调试 <code>gdb php core</code></li>
+</ul>
+<h4 id="使用-strace-跟踪进程的系统调用"><a href="#使用-strace-跟踪进程的系统调用" class="headerlink" title="使用 strace 跟踪进程的系统调用"></a>使用 <code>strace</code> 跟踪进程的系统调用</h4><p><code>strace</code>可以跟踪系统调用的执行情况，在程序发生问题后，可以用<code>strace</code>分析和跟踪问题。 使用方法：</p>
+<blockquote>
+<p>strace -o /tmp/strace.log -f -p $PID</p>
+</blockquote>
+<ul>
+<li><code>-f</code>: 表示跟踪多线程和多进程，如果不加-f参数，无法抓取到子进程和子线程的运行情况</li>
+<li><code>-o</code>: 表示将结果输出到一个文件中</li>
+<li><code>-p $PID</code>: 指定跟踪的进程ID，通过<code>ps aux</code>可以看到</li>
+<li><code>-tt</code>: 打印系统调用发生的时间，精确到微妙</li>
+<li><code>-s</code>: 限定字符串打印的长度，如<code>recvfrom</code>系统调用收到的数据，默认只打印<code>32</code>字节</li>
+<li><code>-c</code> 实时统计每个系统调用的耗时</li>
+<li><code>-T</code> 打印每个系统调用的耗时</li>
+</ul>
+<h4 id="使用-tcpdump-跟踪网络通信过程"><a href="#使用-tcpdump-跟踪网络通信过程" class="headerlink" title="使用 tcpdump 跟踪网络通信过程"></a>使用 <code>tcpdump</code> 跟踪网络通信过程</h4><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo tcpdump -i any tcp port 9501</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>-i</code> 参数制定了网卡，<code>any</code>表示所有网卡</li>
+<li><code>tcp</code> 指定仅监听<code>TCP</code>协议</li>
+<li><code>port</code> 制定监听的端口</li>
+</ul>
+<h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><blockquote>
+<p>强大的<code>TCP/UDP Server</code>框架, <code>EventLoop</code>, 事件驱动, 异步, <code>Worker</code>进程组, <code>Task</code>异步任务, 毫秒定时器, <code>SSL/TLS</code>隧道加密</p>
+</blockquote>
+<ul>
+<li><code>Http\Server</code>是<code>Server</code>的子类, 内置了<code>Http</code>的支持</li>
+<li><code>WebSocket\Server</code>是<code>Http\Server</code>的子类, 内置了<code>WebSocket</code>的支持</li>
+<li><code>Redis\Server</code>是<code>Server</code>的子类, 内置了<code>Redis</code>服务器端协议的支持</li>
+</ul>
+<blockquote>
+<p>子类可以调用父类的所有方法和属性</p>
+</blockquote>
+<h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><blockquote>
+<p><code>TCP/UDP/UnixSocket</code>客户端，支持<code>IPv4/IPv6</code>，支持<code>SSL/TLS</code>隧道加密，支持<code>SSL</code>双向证书，支持同步并发调用，支持异步事件驱动编程。</p>
+</blockquote>
+<h2 id="Coroutine"><a href="#Coroutine" class="headerlink" title="Coroutine"></a>Coroutine</h2><blockquote>
+<p><strong>协程</strong>可以理解为<strong>纯用户态的线程</strong>，其通过<code>协作</code>而不是<code>抢占</code>来进行切换。相对于进程或者线程，协程所有的操作都可以在用户态完成，创建和切换的消耗更低。<code>Swoole</code>可以为每一个请求创建对应的协程，根据IO的状态来合理的调度协程，这会带来了以下优势：</p>
+</blockquote>
+<blockquote>
+<p>开发者可以无感知的用同步的代码编写方式达到异步IO的效果和性能，避免了传统异步回调所带来的离散的代码逻辑和陷入多层回调中导致代码无法维护。</p>
+</blockquote>
+<h2 id="Process"><a href="#Process" class="headerlink" title="Process"></a>Process</h2><blockquote>
+<p>进程管理模块，可以方便的创建子进程，进程间通信，进程管理。</p>
+</blockquote>
+<h2 id="Table"><a href="#Table" class="headerlink" title="Table"></a>Table</h2><blockquote>
+<p>基于<code>共享内存</code>和<code>自旋锁</code>实现的超高性能内存表。彻底解决线程，进程间数据共享，加锁同步等问题。<br><code>Table</code>的性能可以达到单线程每秒读写<code>200W</code>次</p>
+</blockquote>
+<h2 id="Event"><a href="#Event" class="headerlink" title="Event"></a>Event</h2><blockquote>
+<p><code>EventLoop API</code>，让用户可以直接操作底层的事件循环，将<code>socket</code>，<code>stream</code>，管道等<code>Linux</code>文件加入到事件循环中。<br><code>eventloop</code>接口仅可用于<code>socket</code>类型的文件描述符，不能用于磁盘文件读写</p>
+</blockquote>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="无法连接到服务器的简单检测手段"><a href="#无法连接到服务器的简单检测手段" class="headerlink" title="无法连接到服务器的简单检测手段"></a>无法连接到服务器的简单检测手段</h3><ul>
+<li>在<code>Linux</code>下，使用<code>netstat -an | grep 端口</code>，查看端口是否已经被打开处于<code>Listening</code>状态</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl Start]# netstat -an | grep 9501</span><br><span class="line">tcp        0      0 127.0.0.1:9501          0.0.0.0:*               LISTEN     </span><br><span class="line">tcp        0      0 127.0.0.1:9501          127.0.0.1:44212         TIME_WAIT  </span><br><span class="line">[root@caoxl Start]# netstat -an | grep 9501</span><br><span class="line">tcp        0      0 127.0.0.1:9501          127.0.0.1:44212         TIME_WAIT</span><br></pre></td></tr></table></figure>
+<ul>
+<li>上一步确认后，再检查防火墙问题</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl Start]# iptables -h</span><br><span class="line">iptables v1.4.21</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意服务器所使用的IP地址，如果是 <code>127.0.0.1</code> 回环地址，则客户端只能使用<code>127.0.0.1</code> 才能连接上</li>
+<li>用的阿里云服务或者腾讯服务，需要在安全权限组进行设置开发的端口</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://wiki.swoole.com" target="_blank" rel="noopener">Swoole</a></li>
+<li><a href="https://man.linuxde.net/" target="_blank" rel="noopener">Linux 命令大全</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/10/17/Swoole-Relearning/" target="_blank" title="Swoole 再学习">http://blog.caoxl.com/2019/10/17/Swoole-Relearning/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoole/">Swoole</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/21/Settled-In-Guangzhou/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          广州黄埔区学历入户指南
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/16/MySQL-Auto-Backup-In-CentOs/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">MySQL 自动备份</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#学习Swoole必备基础"><span class="nav-number">1.</span> <span class="nav-text">学习Swoole必备基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多进程-多线程"><span class="nav-number">1.1.</span> <span class="nav-text">多进程/多线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Socket"><span class="nav-number">1.2.</span> <span class="nav-text">Socket</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO复用"><span class="nav-number">1.3.</span> <span class="nav-text">IO复用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-IP网络协议"><span class="nav-number">1.4.</span> <span class="nav-text">TCP/IP网络协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试工具"><span class="nav-number">1.5.</span> <span class="nav-text">调试工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用-gdb-调试-Linux-程序"><span class="nav-number">1.5.1.</span> <span class="nav-text">使用 gdb 调试 Linux 程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用-strace-跟踪进程的系统调用"><span class="nav-number">1.5.2.</span> <span class="nav-text">使用 strace 跟踪进程的系统调用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用-tcpdump-跟踪网络通信过程"><span class="nav-number">1.5.3.</span> <span class="nav-text">使用 tcpdump 跟踪网络通信过程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Server"><span class="nav-number">2.</span> <span class="nav-text">Server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Client"><span class="nav-number">3.</span> <span class="nav-text">Client</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Coroutine"><span class="nav-number">4.</span> <span class="nav-text">Coroutine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Process"><span class="nav-number">5.</span> <span class="nav-text">Process</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Table"><span class="nav-number">6.</span> <span class="nav-text">Table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Event"><span class="nav-number">7.</span> <span class="nav-text">Event</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见问题"><span class="nav-number">8.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#无法连接到服务器的简单检测手段"><span class="nav-number">8.1.</span> <span class="nav-text">无法连接到服务器的简单检测手段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

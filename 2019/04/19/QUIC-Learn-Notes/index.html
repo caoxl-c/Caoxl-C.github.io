@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>quic 初步认识 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="QUICHTTP/3">
+  
+  
+  
+  
+  <meta name="description" content="QUIC (Quick UDP Internet Connections 快速UDP网络连接) (发音：quick) 由google开发的新一代网络传输协议。QUIC设计的初衷就是利用工程师几十年的经验来改进网络传输延迟。">
+<meta name="keywords" content="QUIC,HTTP&#x2F;3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="QUIC 初步认识">
+<meta property="og:url" content="http://blog.caoxl.com/2019/04/19/QUIC-Learn-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="QUIC (Quick UDP Internet Connections 快速UDP网络连接) (发音：quick) 由google开发的新一代网络传输协议。QUIC设计的初衷就是利用工程师几十年的经验来改进网络传输延迟。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://genuifx.github.io/images/quic/quic-fit.png">
+<meta property="og:image" content="https://genuifx.github.io/images/quic/tcp-tls.png">
+<meta property="og:image" content="https://res.cloudinary.com/practicaldev/image/fetch/s--0hlAeTAi--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://cdn-images-1.medium.com/max/800/1%2Ar6NNOhOGncUfvHXKHUM39w.gif">
+<meta property="og:image" content="https://genuifx.github.io/images/quic/http2-multiplex.png">
+<meta property="og:image" content="https://genuifx.github.io/images/quic/http2-multiplex-head-line-block.png">
+<meta property="og:image" content="https://genuifx.github.io/images/quic/quic-multiplex.png">
+<meta property="og:image" content="https://genuifx.github.io/images/quic/quic-header.png">
+<meta property="og:updated_time" content="2019-08-22T03:44:18.577Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="QUIC 初步认识">
+<meta name="twitter:description" content="QUIC (Quick UDP Internet Connections 快速UDP网络连接) (发音：quick) 由google开发的新一代网络传输协议。QUIC设计的初衷就是利用工程师几十年的经验来改进网络传输延迟。">
+<meta name="twitter:image" content="https://genuifx.github.io/images/quic/quic-fit.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-QUIC-Learn-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      QUIC 初步认识
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/04/19/QUIC-Learn-Notes/" class="article-date">
+	  <time datetime="2019-04-19T07:15:01.000Z" itemprop="datePublished">2019-04-19</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><strong>QUIC</strong> (<code>Quick UDP Internet Connections</code> 快速UDP网络连接) (发音：<code>quick</code>) 由google开发的新一代网络传输协议。<br><code>QUIC</code>设计的初衷就是利用工程师几十年的经验来改进网络传输延迟。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="QUIC简介"><a href="#QUIC简介" class="headerlink" title="QUIC简介"></a>QUIC简介</h1><blockquote>
+<p>据 <code>IETF</code> (Internet Engineering Task Force 意思是<strong>互联网工程任务小组</strong>) 透露，<code>HTTP-over-QUIC</code> 实验协议将被重命名为 <code>HTTP/3</code>，并成为 <code>HTTP</code> 协议的第三个正式版本。</p>
+</blockquote>
+<blockquote>
+<p>说出来你可能不信，HTTP的发展被G家握在手里了，<code>HTTP-over-SPDY</code>被改名为<code>HTTP/2</code>，<code>HTTP-over-QUIC</code>被改名为<code>HTTP/3</code>。</p>
+</blockquote>
+<p><code>QUIC</code>基于<code>UDP</code>协议实现了类似<code>TCP</code>+<code>TLS</code>+<code>HTTP2</code>的功能组合。所以可以把<code>QUIC</code>和现有的协议理解成以下结构：</p>
+<p><img src="https://genuifx.github.io/images/quic/quic-fit.png" alt="QUIC"></p>
+<h1 id="为什么需要QUIC"><a href="#为什么需要QUIC" class="headerlink" title="为什么需要QUIC?"></a>为什么需要QUIC?</h1><p>这个问题也可以理解为，HTTP/2 现在有什么硬伤是不能解决的吗？其实HTTP/2的硬伤就是TCP。</p>
+<p>TCP 协议在70年代设计敲定，当时的网络丢包率高，网速差，链接的稳定和可靠对当时来说是最需要解决的事情。对比今天的网络现状，毫无疑问在网络的可靠性和速度上我们都得到了巨大的进步。</p>
+<p>经过几十年的经验累积，网络工程师对怎么优化网络访问，降低延迟也有了新的认知，于是就想着更新 TCP 协议，但是 TCP 的更新非常困难，因为网络协议栈的实现本来就依赖系统内核更新，而不管是终端设备，中间设备的系统更新都极其缓慢，一个更新迭代可能需要5-15年的时间去普及，对于现在的互联网发展来说太慢了。</p>
+<p>所以 TCP 的硬伤总结一下就是：<strong>TCP的更新优化需要依赖系统内核更新。</strong></p>
+<p>这是一个日益高速高速发展的应用层和缓慢进化的网络传输层的矛盾，于是 <strong>JIM（QUIC协议设计师）</strong> 决定<strong>在传输层抛弃TCP，拥抱UDP协议</strong>。UDP相对TCP协议来说，是一个不稳定的乐观协议，他不需要握手建立连接，至于什么防止IP攻击，怎么保证数据一致性，这些都是UDP之上的工作，这一点刚好契合我们的需求，把很多工作从传输层移动到了应用层（4层网络模型而言~），如此一来，以后QUIC协议的升级完全不依赖于底层操作系统，只需终端和服务器升级到指定版本即可。</p>
+<p>这就是<strong>QUIC 的意义</strong>。</p>
+<h2 id="对比HTTP-2的优势所在"><a href="#对比HTTP-2的优势所在" class="headerlink" title="对比HTTP/2的优势所在"></a>对比HTTP/2的优势所在</h2><p><code>HTTP/2</code> 是个优秀的协议，其最大的特色就是多路复用，那么 <code>QUIC</code> 带了什么新的东西，对比 HTTP/2 有什么优势呢。</p>
+<p>主要在以下几点有着巨大的优势：</p>
+<ul>
+<li>建立连接的延迟</li>
+<li>改进的拥塞控制</li>
+<li>多路复用-无对头阻塞版</li>
+<li>错误自动纠正</li>
+<li>连接迁移</li>
+</ul>
+<p>接下来我们就简洁说明一下为什么会有这些优势</p>
+<h2 id="建立连接的延迟"><a href="#建立连接的延迟" class="headerlink" title="建立连接的延迟"></a>建立连接的延迟</h2><p>首先明确一个概念是 <strong>RTT（round-trip time）</strong>，顾名思义，就是<strong>服务器和终端一次交互需要的时间</strong>。<code>RTT</code> 一般用于衡量网络延迟。</p>
+<p>传统的TCP协议，我们需要进行<strong>3次握手</strong>，也就是 <code>1.5</code> RTT，才开始传输数据。</p>
+<p><code>HTTP/2</code>来说，虽然协议上支持不开启<code>TLS</code>，但是目前大家的实现都是绑定了<code>TLS</code>和<code>HTTP</code>，也就是我们不止要建立连接，还要确定好加密版本，加密密钥等信息，<strong>TCP+TLS需要3 RTT</strong>。</p>
+<p><img src="https://genuifx.github.io/images/quic/tcp-tls.png" alt="TCP-TLS"></p>
+<p>对于现阶段的QUIC来说，其设计了自己的加密协议和过程，实现了最好情况下<strong>0 RTT</strong>的效果。</p>
+<p><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--0hlAeTAi--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://cdn-images-1.medium.com/max/800/1%2Ar6NNOhOGncUfvHXKHUM39w.gif" alt="QUIC"></p>
+<p><strong>0 RTT</strong> 的效果是因为<code>QUIC</code>的客户端会缓存服务器端发的令牌和证书，当有数据需要再次发送的时候，客户端可以直接使用旧的令牌和证书，这样子就实现了 <strong>0 RTT</strong> 了。对于没有缓存的情况，服务器端会直接拒绝请求，并且返回新生产的令牌和证书。 所以当令牌失效或者没有缓存的情况下，<code>QUIC</code>还是需要一次握手才能开始传输数据</p>
+<p>当然这么玩还是有代价的，对于<strong>重放攻击（replay attack）</strong> 的防范就需要从应用层解决了。</p>
+<p>需要注意的是：被<strong>接纳为HTTP/3之后，QUIC未来还是会采用 TLS 1.3，放弃现有加密算法~</strong></p>
+<p><code>TLS 1.3</code> 是对于<code>1.2</code>、<code>1.1</code>版本的大跃迁，目前还没有正式版。<code>TLS 1.3</code> 只需要 <strong>2 RTT</strong> 就完成一次连接建立了。</p>
+<h2 id="改进的拥塞控制"><a href="#改进的拥塞控制" class="headerlink" title="改进的拥塞控制"></a>改进的拥塞控制</h2><p>目前的 <code>QUIC</code> 的<strong>拥塞控制</strong>主要实现了 <code>TCP</code> 的<strong>慢启动，拥塞避免，快重传，快恢复</strong>。在这些拥塞控制算法的基础上，再进行改进。</p>
+<blockquote>
+<p>比如单调递增的 Packet Number。TCP 使用了基于字节序号 Sequence Number 和 ACK 来保证消息的有序到达。但是 Sequence Number 在重传的时候有二义性。你不知道下一个 ACK 是上一次请求的响应还是这次重传的响应。而单调递增的 Packet Number 可以避免这个问题，保证采样 RTT 的准确。</p>
+</blockquote>
+<p><code>QUIC</code> 拥塞控制算法主要重新实现了一遍 <code>TCP</code> 的算法，毕竟 <code>TCP</code> 的算法是经过几十年的生产验证的。</p>
+<h2 id="多路复用——无队头阻塞版"><a href="#多路复用——无队头阻塞版" class="headerlink" title="多路复用——无队头阻塞版"></a>多路复用——无队头阻塞版</h2><p><code>SPDY</code> 和 <code>HTTP/2</code> 已经实现了<strong>多路复用</strong>。多路复用的指的是<strong>我们不需要在为每个资源重新建立一次 TCP 连接，多个资源的传输可以共用一个连接</strong>。</p>
+<p><img src="https://genuifx.github.io/images/quic/http2-multiplex.png" alt="SPDY HTTP/2"></p>
+<p>如此一来，在启用了 HTTP/2 的网站，我们再也不需要对资源进行合并了（：）压缩还是可以做一下的），毕竟一次性发出去多个资源和建立多个连接一个一个下载资源相比还是会快一下的。</p>
+<p>然后 <code>HTTP/2</code> 的多路复用会有个很大的问题，那就是<strong>队头阻塞</strong>。原因还是因为 <code>TCP</code> 的 <code>Sequence Number</code> 机制，为了保证资源的有序到达，如果传输队列的队头某个资源丢失了，TCP 必须等到这个资源重传成功之后才会通知应用层处理后续资源。</p>
+<p><img src="https://genuifx.github.io/images/quic/http2-multiplex-head-line-block.png" alt="队头阻塞"></p>
+<p>由于 <code>QUIC</code> 避开了 <code>TCP</code>， 他设计 <code>connection</code> 和 <code>stream</code> 的概念，一个 <code>connection</code> 可以复用传输多个 <code>stream</code>，每个 <code>stream</code> 之间都是独立的，单一一个 <code>stream</code> 丢包并不会影响到其他资源处理。</p>
+<p><img src="https://genuifx.github.io/images/quic/quic-multiplex.png" alt="QUIC 多路复用"></p>
+<h2 id="错误自动纠正"><a href="#错误自动纠正" class="headerlink" title="错误自动纠正"></a>错误自动纠正</h2><blockquote>
+<p>这里的错误指的是某个包丢了。当某个 <code>packet</code> 丢失的时候，<code>QUIC</code> 能够通过已经接收到的其他包对资源进行修复。</p>
+</blockquote>
+<p>这意味着，实际上每个 <code>packet</code> 都携带着多余的信息，通过这些信息，<code>QUIC</code> 能够重组对应资源，而无需进行重传。</p>
+<p>目前大概<strong>每 10 个包能修复一个 packet</strong>。</p>
+<h2 id="连接迁移"><a href="#连接迁移" class="headerlink" title="连接迁移"></a>连接迁移</h2><p>TCP 是按照 <strong>4-要素(客户端IP、端口, 服务器IP、端口)</strong> 要确定一个连接的，当这4个要素其中一个发生变化的时候，连接就需要重新建立。而在移动端，我们经常会切换 4G/wifi 使用，每一次切换，我们只能重新建立连接。</p>
+<p>在 <code>QUIC</code> 中，连接是由其维护的。 于是 <code>QUIC</code> 通过生成客户端生成一个 <code>Connection ID</code> （64位）的东西来区别不同连接，只要生成的 <code>UUID</code> 不变， 连接就不需要重新建立，即便是客户端的网络发生变化。</p>
+<p><img src="https://genuifx.github.io/images/quic/quic-header.png" alt="QUIC header"></p>
+<h1 id="QUIC-现状"><a href="#QUIC-现状" class="headerlink" title="QUIC 现状"></a>QUIC 现状</h1><p><strong>HTTP-over-QUIC 将被吸收改名为 HTTP/3。</strong></p>
+<p>未来的 <code>web</code> 传输不再依赖 <code>TCP</code> 协议，升级更新也不再需要依赖系统内核升级了，未来的 <code>HTTP</code> 可以跟其他产品一样月更、甚至周更。</p>
+<p>目前，如果想体验 <code>QUIC</code> 可以使用 <u><a href="https://github.com/mholt/caddy/wiki/QUIC" target="_blank" rel="noopener">candy</a></u> 服务器。candy 在 0.9 版本之后就支持 <code>QUIC</code> 了。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://zh.wikipedia.org/wiki/%E5%BF%AB%E9%80%9FUDP%E7%BD%91%E7%BB%9C%E8%BF%9E%E6%8E%A5" target="_blank" rel="noopener">快速UDP网络连接</a></li>
+<li><a href="https://genuifx.github.io/2018/11/27/keynote-for-http3-quic/" target="_blank" rel="noopener">QUIC 简明教程</a></li>
+<li><a href="https://www.nanog.org/sites/default/files//meetings/NANOG64/1051/20150603_Rogan_Quic_Next_Generation_v1.pdf" target="_blank" rel="noopener">QUIC</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/04/19/QUIC-Learn-Notes/" target="_blank" title="QUIC 初步认识">http://blog.caoxl.com/2019/04/19/QUIC-Learn-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP-3/">HTTP/3</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/QUIC/">QUIC</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/05/06/Linux-Tools-Quick-Tutorial/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Linux Tools Quick Tutorial
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/26/MySQL-Dirty-NoRepeatable-Phantom-Read/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">MySQL 脏读、不可重复读、幻读</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#QUIC简介"><span class="nav-number">1.</span> <span class="nav-text">QUIC简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么需要QUIC"><span class="nav-number">2.</span> <span class="nav-text">为什么需要QUIC?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#对比HTTP-2的优势所在"><span class="nav-number">2.1.</span> <span class="nav-text">对比HTTP/2的优势所在</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建立连接的延迟"><span class="nav-number">2.2.</span> <span class="nav-text">建立连接的延迟</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进的拥塞控制"><span class="nav-number">2.3.</span> <span class="nav-text">改进的拥塞控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多路复用——无队头阻塞版"><span class="nav-number">2.4.</span> <span class="nav-text">多路复用——无队头阻塞版</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#错误自动纠正"><span class="nav-number">2.5.</span> <span class="nav-text">错误自动纠正</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#连接迁移"><span class="nav-number">2.6.</span> <span class="nav-text">连接迁移</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#QUIC-现状"><span class="nav-number">3.</span> <span class="nav-text">QUIC 现状</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

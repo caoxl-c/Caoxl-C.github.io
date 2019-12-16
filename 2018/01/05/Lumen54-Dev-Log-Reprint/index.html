@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>lumen5.4 开发记录 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="FrameworkLumenAPI">
+  
+  
+  
+  
+  <meta name="description" content="惠吃猫-重构-API接口 基于二次开发,无法继续开发后的一次重构,使用lumen重构API接口">
+<meta name="keywords" content="Framework,Lumen,API">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lumen5.4 开发记录">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/05/Lumen54-Dev-Log-Reprint/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="惠吃猫-重构-API接口 基于二次开发,无法继续开发后的一次重构,使用lumen重构API接口">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:21:32.524Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lumen5.4 开发记录">
+<meta name="twitter:description" content="惠吃猫-重构-API接口 基于二次开发,无法继续开发后的一次重构,使用lumen重构API接口">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Lumen54-Dev-Log-Reprint" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Lumen5.4 开发记录
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/05/Lumen54-Dev-Log-Reprint/" class="article-date">
+	  <time datetime="2018-01-05T07:16:14.000Z" itemprop="datePublished">2018-01-05</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h3 id="惠吃猫-重构-API接口"><a href="#惠吃猫-重构-API接口" class="headerlink" title="惠吃猫-重构-API接口"></a>惠吃猫-重构-API接口</h3><blockquote>
+<p>基于二次开发,无法继续开发后的一次重构,使用lumen重构API接口</p>
+</blockquote>
+<a id="more"></a>
+<h3 id="引入多个-route-文件"><a href="#引入多个-route-文件" class="headerlink" title="引入多个 route 文件"></a>引入多个 route 文件</h3><p>在 routes 文件夹下创建一个路由文件，比如 api.php，然后在 bootstrap/app.php 中找到并添加：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$app-&gt;group([<span class="string">'namespace'</span> =&gt; <span class="string">'App\Http\Controllers'</span>], <span class="function"><span class="keyword">function</span> <span class="params">($app)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">require</span> <span class="keyword">__DIR__</span>.<span class="string">'/../routes/web.php'</span>;</span><br><span class="line">    <span class="keyword">require</span> <span class="keyword">__DIR__</span>.<span class="string">'/../routes/api.php'</span>;    <span class="comment">// 新增的路由文件</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="为路由定义可选参数"><a href="#为路由定义可选参数" class="headerlink" title="为路由定义可选参数"></a>为路由定义可选参数</h3><p>Lumen 不支持。</p>
+<h3 id="在中间件中获取路由参数"><a href="#在中间件中获取路由参数" class="headerlink" title="在中间件中获取路由参数"></a>在中间件中获取路由参数</h3><p><strong>如下两种 Lumen 不支持但 Laravel 支持：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">($request, Closure $next)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $request-&gt;route()-&gt;parameters();</span><br><span class="line">    $request-&gt;route(<span class="string">'parameter'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Lumen</code> 只能使用：<code>$request-&gt;route()[2]</code> 这个数组，里面就是路由参数。</p>
+<h3 id="路由定义和命名空间"><a href="#路由定义和命名空间" class="headerlink" title="路由定义和命名空间"></a>路由定义和命名空间</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$app-&gt;group([</span></span><br><span class="line"><span class="php">    <span class="string">'namespace'</span> =&gt; <span class="string">'ThirdParty'</span>,</span></span><br><span class="line"><span class="php">], <span class="function"><span class="keyword">function</span> <span class="params">()</span> <span class="title">use</span> <span class="params">($app)</span> </span>&#123;</span></span><br><span class="line"><span class="php">    $app-&gt;group([</span></span><br><span class="line"><span class="php">        <span class="string">'prefix'</span>     =&gt; <span class="string">'qiniu'</span>,</span></span><br><span class="line"><span class="php">        <span class="string">'middleware'</span> =&gt; [</span></span><br><span class="line"><span class="php">            <span class="string">'qiniu_auth'</span>,</span></span><br><span class="line"><span class="php">        ]</span></span><br><span class="line"><span class="php">    ], <span class="function"><span class="keyword">function</span> <span class="params">()</span> <span class="title">use</span> <span class="params">($app)</span> </span>&#123;</span></span><br><span class="line"><span class="php">        $app-&gt;group([</span></span><br><span class="line"><span class="php">            <span class="string">'middleware'</span> =&gt; [</span></span><br><span class="line"><span class="php">                <span class="string">'jwt_auth'</span>,</span></span><br><span class="line"><span class="php">            ],</span></span><br><span class="line"><span class="php">        ], <span class="function"><span class="keyword">function</span> <span class="params">()</span> <span class="title">use</span> <span class="params">($app)</span> </span>&#123;</span></span><br><span class="line"><span class="php">            $app-&gt;get(<span class="string">'up_ticket'</span>, <span class="string">'Qiniu@getUploadTicket'</span>);</span></span><br><span class="line"><span class="php">        &#125;);</span></span><br><span class="line"><span class="php">        $app-&gt;post(<span class="string">'upload_cbk'</span>, [</span></span><br><span class="line"><span class="php">                <span class="string">'as'</span>   =&gt; <span class="string">'qiniu_upload_callback'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'uses'</span> =&gt; <span class="string">'Qiniu@uploadCallback'</span>,</span></span><br><span class="line"><span class="php">            ]);</span></span><br><span class="line"><span class="php">    &#125;);</span></span><br><span class="line"><span class="php">&#125;);</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>在这种路由定义方式中，因为路由文件中默认的命名空间是 <code>App\Http\Controllers</code>，因此如果需要给路由定义 <code>namespace</code>，比如这里的 <code>ThirdParty</code>，则无需再写成：<code>App\Http\Controllers\ThirdParty</code>，因为它会自动在 <code>App\Http\Controllers</code> 命名空间下找 <code>ThirdParty</code> 这个路径，不会报错。</p>
+</blockquote>
+<blockquote>
+<p>同理，上面的 <code>Qiniu@getUploadTicket</code> 也无需写成 <code>App\Http\Controllers\ThirdParty\Qiniu@getUploadTicket</code>，因为在这个群路由定义的开始已经指定为 <code>ThirdParty</code> 了，下级在找路由器的时候便会自动去 <code>App\Http\Controllers\ThirdParty</code> 这个命名空间找，这样一层一层，以此类推。</p>
+</blockquote>
+<h3 id="重定向至命名路由并传递参数"><a href="#重定向至命名路由并传递参数" class="headerlink" title="重定向至命名路由并传递参数"></a>重定向至命名路由并传递参数</h3><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> redirect<span class="function"><span class="params">()</span>-&gt;</span>route(<span class="string">'admin'</span>, [<span class="string">'key'</span> =&gt; <span class="string">'value'</span>]);</span><br></pre></td></tr></table></figure>
+<h3 id="启用自定义-JWT-认证"><a href="#启用自定义-JWT-认证" class="headerlink" title="启用自定义 JWT 认证"></a>启用自定义 JWT 认证</h3><ul>
+<li>首先在 <code>bootstrap/app.php</code> </li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$app-&gt;routeMiddleware([</span><br><span class="line">    <span class="string">'auth_jwt'</span> =&gt; App\Http\Middleware\Auth\JWT::<span class="class"><span class="keyword">class</span>,</span></span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>然后修改 <code>app/Http/Middleware/Auth/JWT.php</code> 为：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Middleware</span>\<span class="title">Auth</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Closure</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Firebase</span>\<span class="title">JWT</span>\<span class="title">JWT</span> <span class="title">as</span> <span class="title">FirebaseJWT</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JWT</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $auth = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">isset</span>($_SERVER[<span class="string">'HTTP_AUTHORIZATION'</span>])) &#123;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;auth = FirebaseJWT::decode(</span><br><span class="line">                    $_SERVER[<span class="string">'HTTP_AUTHORIZATION'</span>],</span><br><span class="line">                    env(<span class="string">'APP_KEY'</span>),</span><br><span class="line">                    [<span class="string">'HS256'</span>]</span><br><span class="line">                );</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (\<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">($request, Closure $next)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">false</span> === <span class="keyword">$this</span>-&gt;auth) &#123;</span><br><span class="line">            <span class="keyword">return</span> response()-&gt;json([</span><br><span class="line">                <span class="string">'error'</span> =&gt; <span class="string">'Unauthorized'</span></span><br><span class="line">            ], <span class="number">401</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        $request-&gt;attributes-&gt;add([</span><br><span class="line">            <span class="string">'auth_jwt'</span> =&gt; <span class="keyword">$this</span>-&gt;auth,</span><br><span class="line">        ]);</span><br><span class="line">        <span class="keyword">return</span> $next($request);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Pass-value-from-middleware-to-controller"><a href="#Pass-value-from-middleware-to-controller" class="headerlink" title="Pass value from middleware to controller"></a>Pass value from middleware to controller</h3><blockquote>
+<p>将中间件的值传递给控制器</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. Middleware</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">($request, Closure $next)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $request-&gt;attributes-&gt;add([</span><br><span class="line">        <span class="string">'key'</span> =&gt; <span class="string">'value'</span></span><br><span class="line">    ]);</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> $next($request);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 2. Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getVauleFromMiddleware</span><span class="params">(Request $req)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> $req-&gt;get(<span class="string">'key'</span>);    <span class="comment">// output: value</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过这种方式，可以对不同的路由使用不同的认证（非常语义化），然后把各种认证的结果（jwt，七牛）传递到控制器，可以使控制器不用再操心认证逻辑，减少控制器代码量。</p>
+<h3 id="自定义配置文件"><a href="#自定义配置文件" class="headerlink" title="自定义配置文件"></a>自定义配置文件</h3><ul>
+<li><code>bootstrap/app.php</code></li>
+</ul>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$app</span>-&gt;configure(<span class="string">'custom'</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建一个 <code>config/custom.php</code> 文件</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="keyword">return</span> [</span></span><br><span class="line"><span class="php">	<span class="string">'key'</span> =&gt; <span class="string">'value'</span></span></span><br><span class="line"><span class="php">];</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用</li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">dd(<span class="built_in">config</span>(<span class="string">'custom'</span>));</span><br><span class="line">/* <span class="built_in">output</span>: </span><br><span class="line">array:<span class="number">1</span> [▼</span><br><span class="line">  <span class="string">"key"</span> =&gt; <span class="string">"value"</span></span><br><span class="line">]</span><br><span class="line">*/</span><br></pre></td></tr></table></figure>
+<h3 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a><code>CORS</code></h3><p>如果是客户端是浏览器，则在调用 <code>API</code> 的时候，基本上无法避免跨域问题。</p>
+<p>不过处理也很简单，需要浏览器和服务器同时配合：浏览器在发起 OPTIONS preflight 请求的时候，服务器返回认可的一些信息就行了。</p>
+<p>具体如下：</p>
+<ul>
+<li><code>app/Http/Middleware/CORS.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Middleware</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Closure</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CORS</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">($request, Closure $next)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">        $headers = [</span><br><span class="line">            <span class="string">'Access-Control-Allow-Origin'</span>  =&gt; <span class="string">'*'</span>,</span><br><span class="line">            <span class="string">'Access-Control-Allow-Methods'</span> =&gt; <span class="string">'*'</span>,</span><br><span class="line">            <span class="string">'Access-Control-Allow-Headers'</span> =&gt; <span class="string">'Access-Control-Allow-Origin, AUTHORIZATION'</span>,</span><br><span class="line">            <span class="string">'Access-Control-Max-Age'</span>       =&gt; <span class="number">86400</span>,</span><br><span class="line">        ];</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">'OPTIONS'</span> == $request-&gt;getMethod()) &#123;</span><br><span class="line">        	<span class="keyword">return</span> response(<span class="keyword">null</span>, <span class="number">200</span>, $headers);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> $next($request)-&gt;withHeaders($headers);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>bootstrap/app.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 指定全局中间件</span></span><br><span class="line">$app-&gt;middleware([</span><br><span class="line">   <span class="string">'cors'</span> =&gt; App\Http\Middleware\CORS::class,</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>jQuery AJAX Demo</code></li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$.ajax(&#123;</span><br><span class="line">  url: <span class="string">'http://api.example.com/path/to/resource'</span>,</span><br><span class="line">  <span class="built_in">type</span>: <span class="string">'GET'</span>,</span><br><span class="line">  dataType: <span class="string">'json'</span>,</span><br><span class="line">  async: <span class="literal">false</span>,</span><br><span class="line">  cors: <span class="literal">true</span> ,</span><br><span class="line">  headers: &#123;</span><br><span class="line">    <span class="string">'Access-Control-Allow-Origin'</span>: <span class="string">'*'</span>,</span><br><span class="line">    <span class="string">'AUTHORIZATION'</span>: <span class="string">'JWT_STRING'</span></span><br><span class="line">  &#125;,</span><br><span class="line">  success: <span class="function"><span class="keyword">function</span> <span class="params">(res)</span></span> &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="built_in">error</span>: <span class="function"><span class="keyword">function</span> <span class="params">(xhr, status)</span></span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="migration-中给表加注释"><a href="#migration-中给表加注释" class="headerlink" title="migration 中给表加注释"></a><code>migration</code> 中给表加注释</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">up</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  Schema::create(<span class="string">'table_name'</span>, <span class="function"><span class="keyword">function</span> <span class="params">(Blueprint $table)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// DDL (数据定义语言)</span></span><br><span class="line">  &#125;);</span><br><span class="line">  DB::statement(<span class="string">'ALTER TABLE `table_name` comment "table_comment"'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="migration-设置-current-timestamp"><a href="#migration-设置-current-timestamp" class="headerlink" title="migration 设置 current_timestamp"></a><code>migration</code> 设置 <code>current_timestamp</code></h3><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$table-&gt;dateTime('create_at')-&gt;<span class="keyword">default</span>(</span><br><span class="line">    <span class="type">DB</span>::<span class="title">raw</span>('<span class="type">CURRENT_TIMESTAMP</span>')</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="连接多个数据库"><a href="#连接多个数据库" class="headerlink" title="连接多个数据库"></a>连接多个数据库</h3><ul>
+<li>初始化数据库配置对象</li>
+</ul>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># bootstrap/app.php</span></span><br><span class="line"><span class="variable">$app</span>-&gt;configure(<span class="string">'database'</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建并修改 <code>config/database.php</code></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="keyword">return</span> [</span></span><br><span class="line"><span class="php">	<span class="comment">// ...</span></span></span><br><span class="line"><span class="php">  </span></span><br><span class="line"><span class="php">    <span class="string">'default'</span>     =&gt; <span class="string">'mysql_db1_rw'</span>,</span></span><br><span class="line"><span class="php">    <span class="string">'connections'</span> =&gt; [</span></span><br><span class="line"><span class="php">      </span></span><br><span class="line"><span class="php">      	<span class="comment">// ...</span></span></span><br><span class="line"><span class="php">      </span></span><br><span class="line"><span class="php">        <span class="string">'mysql_db1_rw'</span>  =&gt; [</span></span><br><span class="line"><span class="php">            <span class="string">'driver'</span>    =&gt; <span class="string">'mysql'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'host'</span>      =&gt; env(<span class="string">'DB_HOST'</span>),</span></span><br><span class="line"><span class="php">            <span class="string">'database'</span>  =&gt; <span class="string">'db1_rw'</span>,    <span class="comment">// read and write</span></span></span><br><span class="line"><span class="php">            <span class="string">'username'</span>  =&gt; env(<span class="string">'DB_USERNAME'</span>),</span></span><br><span class="line"><span class="php">            <span class="string">'password'</span>  =&gt; env(<span class="string">'DB_PASSWORD'</span>),</span></span><br><span class="line"><span class="php">            <span class="string">'charset'</span>   =&gt; <span class="string">'utf8'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'collation'</span> =&gt; <span class="string">'utf8_unicode_ci'</span>,</span></span><br><span class="line"><span class="php">        ],</span></span><br><span class="line"><span class="php">        <span class="string">'mysql_db1_ro'</span>  =&gt; [</span></span><br><span class="line"><span class="php">            <span class="string">'driver'</span>    =&gt; <span class="string">'mysql'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'host'</span>      =&gt; env(<span class="string">'DB_HOST'</span>),</span></span><br><span class="line"><span class="php">            <span class="string">'database'</span>  =&gt; <span class="string">'db1_ro'</span>,    <span class="comment">// read only</span></span></span><br><span class="line"><span class="php">            <span class="string">'username'</span>  =&gt; env(<span class="string">'DB_USERNAME'</span>),</span></span><br><span class="line"><span class="php">            <span class="string">'password'</span>  =&gt; env(<span class="string">'DB_PASSWORD'</span>),</span></span><br><span class="line"><span class="php">            <span class="string">'charset'</span>   =&gt; <span class="string">'utf8'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'collation'</span> =&gt; <span class="string">'utf8_unicode_ci'</span>,</span></span><br><span class="line"><span class="php">        ],</span></span><br><span class="line"><span class="php">      </span></span><br><span class="line"><span class="php">        <span class="comment">// ...</span></span></span><br><span class="line"><span class="php">    ]</span></span><br><span class="line"><span class="php">  </span></span><br><span class="line"><span class="php">  	<span class="comment">// ...</span></span></span><br><span class="line"><span class="php">];</span></span><br></pre></td></tr></table></figure>
+<p><strong>注意：</strong></p>
+<p>一旦创建了 <code>config/database.php</code> 文件，系统默认的 <code>vendor/laravel/lumen-framework/config/database.php</code> 将失效。</p>
+<p>因此，最好的做法是拷贝系统自带的配置文件到项目根目录，然后进行一些自定义的修改。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf <span class="built_in">config</span>/*.php</span><br><span class="line">cp vendor/laravel/lumen-framework/<span class="built_in">config</span>/database.php <span class="built_in">config</span>/</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在控制器中使用不同的数据库连接</li>
+</ul>
+<p>根据上面的配置默认会连接 <code>mysql_db1_rw</code> 这个数据库。那如果需要连接第二个数据库，使用示例如下：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Use default connection =&gt; mysql_db1</span></span><br><span class="line"><span class="selector-tag">app</span>(<span class="string">'db'</span>)<span class="selector-tag">-</span>&gt;<span class="selector-tag">connection</span>()<span class="selector-tag">-</span>&gt;<span class="selector-tag">select</span>(<span class="string">'show tables'</span>);</span><br><span class="line"><span class="selector-tag">DB</span><span class="selector-pseudo">::connection()-</span>&gt;<span class="selector-tag">select</span>(<span class="string">'show tables'</span>);</span><br><span class="line"><span class="comment">// Use mysql_db2 connection</span></span><br><span class="line"><span class="selector-tag">app</span>(<span class="string">'db'</span>)<span class="selector-tag">-</span>&gt;<span class="selector-tag">connection</span>(<span class="string">'mysql_db1_ro'</span>)<span class="selector-tag">-</span>&gt;<span class="selector-tag">select</span>(<span class="string">'show tables'</span>);</span><br><span class="line"><span class="selector-tag">DB</span><span class="selector-pseudo">::connection('mysql_db1_ro')-</span>&gt;<span class="selector-tag">select</span>(<span class="string">'show tables'</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="自定义日志文件名"><a href="#自定义日志文件名" class="headerlink" title="自定义日志文件名"></a>自定义日志文件名</h3><blockquote>
+<p><code>Lumen</code> 中默认的文件名是被硬编码在 <code>Application</code> 类中了的，要实现这样的效果，必须重写 <code>Laravel\Lumen\Application@getMonologHandler()</code> 方法。</p>
+</blockquote>
+<ul>
+<li>新增文件：<code>app/Application.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Custom default or hard-coded behavior of lumen</span></span><br><span class="line"><span class="comment">// hard-coded behavior 硬编码</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Laravel</span>\<span class="title">Lumen</span>\<span class="title">Application</span> <span class="title">as</span> <span class="title">LumenBase</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Monolog</span>\<span class="title">Formatter</span>\<span class="title">LineFormatter</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Monolog</span>\<span class="title">Handler</span>\<span class="title">StreamHandler</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Monolog</span>\<span class="title">Logger</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Application</span> <span class="keyword">extends</span> <span class="title">LumenBase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// Rewrite log handler</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">getMonologHandler</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            <span class="keyword">new</span> StreamHandler(storage_path(env(</span><br><span class="line">                <span class="string">'APP_LOG_PATH'</span>,</span><br><span class="line">                <span class="string">'logs/'</span>.date(<span class="string">'Y-m-d'</span>).<span class="string">'.log'</span></span><br><span class="line">            )),</span><br><span class="line">            Logger::DEBUG</span><br><span class="line">        ))</span><br><span class="line">        -&gt;setFormatter(<span class="keyword">new</span> LineFormatter(<span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">true</span>, <span class="keyword">true</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>修改 bootstrap/app.php<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$app = <span class="keyword">new</span> App\Application(</span><br><span class="line">    realpath(<span class="keyword">__DIR__</span>.<span class="string">'/../'</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="自定义-artisan-命令"><a href="#自定义-artisan-命令" class="headerlink" title="自定义 artisan 命令"></a>自定义 artisan 命令</h3><ul>
+<li>创建一个 command 类</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="comment">// app/Console/Commands/Hello.php</span></span></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Console</span>\<span class="title">Commands</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Console</span>\<span class="title">Command</span>;</span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">Hello</span> <span class="keyword">extends</span> <span class="title">Command</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">protected</span> $name = <span class="string">'patch:hello'</span>;</span></span><br><span class="line"><span class="php">    <span class="keyword">protected</span> $description = <span class="string">'Balabalabala'</span>;</span></span><br><span class="line"><span class="php">    </span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">fire</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;info(<span class="string">'hello atisan cmd'</span>);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建一个 command service provider</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="comment">// app/Providers/CommandService.php</span></span></span><br><span class="line"><span class="php">  </span></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Providers</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">ServiceProvider</span>;</span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">CommandService</span> <span class="keyword">extends</span> <span class="title">ServiceProvider</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">register</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;app-&gt;singleton(<span class="string">'command.patch.hello'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">return</span> <span class="keyword">new</span> \App\Console\Commands\Hello;</span></span><br><span class="line"><span class="php">        &#125;);</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;commands(</span></span><br><span class="line"><span class="php">            <span class="string">'command.patch.hello'</span></span></span><br><span class="line"><span class="php">        );</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>注册该 <code>command service provider</code></li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/<span class="regexp">/ bootstrap/app</span>.php</span><br><span class="line">$app-&gt;register(App\Providers\CommandService::<span class="class"><span class="keyword">class</span>);</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试</li>
+</ul>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">php artisan patch:hello</span><br><span class="line">// output: hello atisan <span class="keyword">cmd</span></span><br></pre></td></tr></table></figure>
+<h3 id="模型查询结果中隐藏部分字段"><a href="#模型查询结果中隐藏部分字段" class="headerlink" title="模型查询结果中隐藏部分字段"></a>模型查询结果中隐藏部分字段</h3><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">protected</span> <span class="variable">$hidden</span> = [</span><br><span class="line">  <span class="string">'passwd'</span>,</span><br><span class="line">];</span><br><span class="line"><span class="attribute">protected</span> <span class="variable">$visible</span> = [</span><br><span class="line">  <span class="string">'uid'</span></span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>其中 $visible 的优先级比 $hidden 高。</p>
+<h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><ul>
+<li><p>docker 搭建的运行环境，macOS 下执行 php artisan migrate 提示：_php_networkgetaddresses: getaddrinfo failed: nodename nor servname provided, or not known？</p>
+<p>这是因为是在本地（macOS）执行的这条命令，而本地对 .env 中配置的 DB_HOST=db 是解析不了的。因此会出现这个错误。</p>
+<p>解决这种问题也很简单，有两种办法：</p>
+</li>
+<li><p>修改主机 hosts 文件，使 db 指向 mysql 容器的 域名／IP。比如：127.0.0.1 db。（推荐）</p>
+</li>
+<li><p>进入 docker 容器再运行迁移。</p>
+</li>
+<li><p>Class ‘Memcache’ not found?</p>
+</li>
+</ul>
+<p>安装 memcached/memcache 扩展。</p>
+<ul>
+<li>php artisan migrate PDOException: user not exist?<ul>
+<li>检查是主机地址是否填错。</li>
+<li>检查配置中的数据库服务器是否存在该用户。</li>
+</ul>
+</li>
+</ul>
+<h3 id="可能踩的坑"><a href="#可能踩的坑" class="headerlink" title="可能踩的坑"></a>可能踩的坑</h3><ul>
+<li><p>数据库事务操作时部分逻辑未生效？</p>
+<p>检查对象是否是有效的 Model 对象。举例说明，以下代码第一步将不会生效：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$user = User::select(<span class="string">'money'</span>)-&gt;whereUid(<span class="number">1</span>)-&gt;first();</span><br><span class="line">\DB::beginTransaction();</span><br><span class="line"><span class="comment">// 第一步：减少用户余额</span></span><br><span class="line">$user-&gt;money -= <span class="number">100</span>;</span><br><span class="line">$decreased = $user-&gt;save();</span><br><span class="line"><span class="comment">// 第二步：记录日志</span></span><br><span class="line">$loggedId = Log::insertGetId([</span><br><span class="line">  <span class="string">'uid'</span>      =&gt; <span class="number">1</span>,</span><br><span class="line">  <span class="string">'amount'</span>   =&gt; <span class="number">-10</span>,</span><br><span class="line">  <span class="string">'intro'</span>    =&gt; <span class="string">'test'</span>,</span><br><span class="line">]);</span><br><span class="line"><span class="comment">// 两步结果共同决定是否执行事务</span></span><br><span class="line"><span class="keyword">if</span> ($decreased &amp;&amp; $loggedId) &#123;</span><br><span class="line">  \DB::commit();</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  \DB::rollback();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p> 这是因为，对模型对象调用了 select() 方法后，就不是一个完整的模型对象了（从结果来看）。</p>
+<p> 解决办法是，不使用 select() 或者使用 find()。<br> <figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$<span class="keyword">user</span> <span class="title">= User</span>::whereUid(<span class="number">1</span>)-&gt;first();</span><br><span class="line">// <span class="keyword">Or</span></span><br><span class="line">$<span class="keyword">user</span> <span class="title">= User</span>::find(<span class="number">1</span>);</span><br></pre></td></tr></table></figure></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li><a href="https://stackoverflow.com/questions/30212390/laravel-middleware-return-variable-to-controller" target="_blank" rel="noopener">Laravel Middleware return variable to controller</a></li>
+<li><a href="https://lumen.laravel.com/docs/5.4" target="_blank" rel="noopener">Documentation - Lumen 5.4</a></li>
+<li><a href="https://laravel.com/docs/5.5" target="_blank" rel="noopener">Documentation - Laravel 5.5</a></li>
+<li><a href="http://blog.cjli.info/2017/07/09/Lumen5.4-Exp/#more" target="_blank" rel="noopener">Laravel_API-Manual</a></li>
+<li><a href="https://learninglaravel.net/cheatsheet/" target="_blank" rel="noopener">Laravel 5 Cheat Sheet</a></li>
+<li><a href="https://cs.laravel-china.org/" target="_blank" rel="noopener">Laravel 5.1 LTS速查表</a></li>
+<li><a href="https://paulund.co.uk/configuring-multiple-database-connections-laravel" target="_blank" rel="noopener">Configuring Multiple Database Connections In Lumen</a></li>
+<li><a href="https://blog.ryanrampersad.com/2015/05/26/custom-config-lumen/" target="_blank" rel="noopener">Enable Custom Configuration Files in Lumen</a></li>
+<li><a href="http://codrspace.com/MattWohler/creating-a-new-artisan-command-with-lumen/" target="_blank" rel="noopener">Lumen Recipes :: Creating a New Artisan Command</a></li>
+<li><a href="https://laravel.io/forum/10-14-2014-dbselect-toarray" target="_blank" rel="noopener">DB:select toArray()</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/05/Lumen54-Dev-Log-Reprint/" target="_blank" title="Lumen5.4 开发记录">http://blog.caoxl.com/2018/01/05/Lumen54-Dev-Log-Reprint/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/API/">API</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/">Framework</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lumen/">Lumen</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/05/Markdown-Basic-Syntax/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Markdown 基础语法
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/05/Hexo-Github-Coding/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Hexo 在Github/Coding中搭建</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#惠吃猫-重构-API接口"><span class="nav-number">1.</span> <span class="nav-text">惠吃猫-重构-API接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引入多个-route-文件"><span class="nav-number">2.</span> <span class="nav-text">引入多个 route 文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为路由定义可选参数"><span class="nav-number">3.</span> <span class="nav-text">为路由定义可选参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在中间件中获取路由参数"><span class="nav-number">4.</span> <span class="nav-text">在中间件中获取路由参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由定义和命名空间"><span class="nav-number">5.</span> <span class="nav-text">路由定义和命名空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重定向至命名路由并传递参数"><span class="nav-number">6.</span> <span class="nav-text">重定向至命名路由并传递参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启用自定义-JWT-认证"><span class="nav-number">7.</span> <span class="nav-text">启用自定义 JWT 认证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pass-value-from-middleware-to-controller"><span class="nav-number">8.</span> <span class="nav-text">Pass value from middleware to controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义配置文件"><span class="nav-number">9.</span> <span class="nav-text">自定义配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS"><span class="nav-number">10.</span> <span class="nav-text">CORS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#migration-中给表加注释"><span class="nav-number">11.</span> <span class="nav-text">migration 中给表加注释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#migration-设置-current-timestamp"><span class="nav-number">12.</span> <span class="nav-text">migration 设置 current_timestamp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接多个数据库"><span class="nav-number">13.</span> <span class="nav-text">连接多个数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义日志文件名"><span class="nav-number">14.</span> <span class="nav-text">自定义日志文件名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义-artisan-命令"><span class="nav-number">15.</span> <span class="nav-text">自定义 artisan 命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模型查询结果中隐藏部分字段"><span class="nav-number">16.</span> <span class="nav-text">模型查询结果中隐藏部分字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FAQ"><span class="nav-number">17.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可能踩的坑"><span class="nav-number">18.</span> <span class="nav-text">可能踩的坑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">19.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

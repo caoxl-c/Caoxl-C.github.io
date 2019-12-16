@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>linux sar 找出系统瓶颈的利器 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Linuxsar">
+  
+  
+  
+  
+  <meta name="description" content="sar是System Activity Reporter（系统活动情况报告）的缩写.">
+<meta name="keywords" content="Linux,sar">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux sar 找出系统瓶颈的利器">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/22/Linux-Tool-sar/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="sar是System Activity Reporter（系统活动情况报告）的缩写.">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:50:16.366Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux sar 找出系统瓶颈的利器">
+<meta name="twitter:description" content="sar是System Activity Reporter（系统活动情况报告）的缩写.">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Linux-Tool-sar" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Linux sar 找出系统瓶颈的利器
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/22/Linux-Tool-sar/" class="article-date">
+	  <time datetime="2018-08-22T02:37:36.000Z" itemprop="datePublished">2018-08-22</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><strong>sar</strong>是<code>System Activity Reporter</code>（系统活动情况报告）的缩写.</p>
+</blockquote>
+<a id="more"></a>
+<p>sar工具将对系统当前的状态进行取样，然后通过计算数据和比例来表达系统的当前运行状态。它的特点是可以连续对系统取样，获得大量的取样数据；取样数据和分析的结果都可以存入文件，所需的负载很小。</p>
+<p>sar是目前Linux上最为全面的系统性能分析工具之一，可以从14个大方面对系统的活动进行报告，包括文件的读写情况、系统调用的使用情况、串口、CPU效率、内存使用状况、进程活动及IPC有关的活动等，使用也是较为复杂。</p>
+<p>sar是查看操作系统报告指标的各种工具中，最为普遍和方便的；它有两种用法:</p>
+<ul>
+<li><ol>
+<li>追溯过去的统计数据（默认）</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>周期性的查看当前数据</li>
+</ol>
+</li>
+</ul>
+<h1 id="追溯过去的统计数据"><a href="#追溯过去的统计数据" class="headerlink" title="追溯过去的统计数据"></a>追溯过去的统计数据</h1><p>默认情况下，sar从最近的0点0分开始显示数据；如果想继续查看一天前的报告；可以查看保存在<code>/var/log/sa/</code>下的<code>sa</code>日志； 使用sar工具查看:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl sa]# sar -r -f /var/log/sa/sa28</span><br><span class="line">Linux <span class="number">3.10</span><span class="number">.0</span><span class="number">-862.3</span><span class="number">.2</span>.el7.x86_64 (caoxianliang) 	<span class="number">07</span>/<span class="number">28</span>/<span class="number">2018</span> 	_x86_64_	(<span class="number">1</span> CPU)</span><br><span class="line"></span><br><span class="line"><span class="number">12</span>:<span class="number">00</span>:<span class="number">01</span> AM kbmemfree kbmemused  %memused kbbuffers  kbcached  kbcommit   %commit  kbactive   kbinact   kbdirty</span><br><span class="line"><span class="number">12</span>:<span class="number">10</span>:<span class="number">01</span> AM    <span class="number">140860</span>    <span class="number">874576</span>     <span class="number">86.13</span>     <span class="number">75444</span>    <span class="number">439424</span>    <span class="number">663856</span>     <span class="number">65.38</span>    <span class="number">494472</span>    <span class="number">256208</span>       <span class="number">224</span></span><br><span class="line"><span class="number">12</span>:<span class="number">20</span>:<span class="number">01</span> AM    <span class="number">140564</span>    <span class="number">874872</span>     <span class="number">86.16</span>     <span class="number">75636</span>    <span class="number">439436</span>    <span class="number">663856</span>     <span class="number">65.38</span>    <span class="number">498048</span>    <span class="number">252836</span>       <span class="number">248</span></span><br><span class="line"><span class="number">12</span>:<span class="number">30</span>:<span class="number">01</span> AM    <span class="number">140380</span>    <span class="number">875056</span>     <span class="number">86.18</span>     <span class="number">75900</span>    <span class="number">439432</span>    <span class="number">663856</span>     <span class="number">65.38</span>    <span class="number">498112</span>    <span class="number">253032</span>       <span class="number">292</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h1 id="查看CPU使用率"><a href="#查看CPU使用率" class="headerlink" title="查看CPU使用率"></a>查看CPU使用率</h1><ul>
+<li><code>sar -u</code> : 默认情况下显示的cpu使用率等信息就是sar -u；</li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl sa]# sar <span class="number">1</span> <span class="number">3</span></span><br><span class="line">Linux <span class="number">3.10</span><span class="number">.0</span><span class="number">-862.9</span><span class="number">.1</span>.el7.x86_64 (caoxl) 	<span class="number">08</span>/<span class="number">22</span>/<span class="number">2018</span> 	_x86_64_	(<span class="number">1</span> CPU)</span><br><span class="line"></span><br><span class="line"><span class="number">10</span>:<span class="number">48</span>:<span class="number">33</span> AM     CPU     %user     %nice   %system   %iowait    %steal     %idle</span><br><span class="line"><span class="number">10</span>:<span class="number">48</span>:<span class="number">34</span> AM     all      <span class="number">0.00</span>      <span class="number">0.00</span>      <span class="number">0.00</span>      <span class="number">0.00</span>      <span class="number">0.00</span>    <span class="number">100.00</span></span><br><span class="line"><span class="number">10</span>:<span class="number">48</span>:<span class="number">35</span> AM     all      <span class="number">0.00</span>      <span class="number">0.00</span>      <span class="number">1.00</span>      <span class="number">0.00</span>      <span class="number">0.00</span>     <span class="number">99.00</span></span><br><span class="line"><span class="number">10</span>:<span class="number">48</span>:<span class="number">36</span> AM     all      <span class="number">1.00</span>      <span class="number">0.00</span>      <span class="number">0.00</span>      <span class="number">0.00</span>      <span class="number">0.00</span>     <span class="number">99.00</span></span><br><span class="line">Average:        all      <span class="number">0.33</span>      <span class="number">0.00</span>      <span class="number">0.33</span>      <span class="number">0.00</span>      <span class="number">0.00</span>     <span class="number">99.33</span></span><br></pre></td></tr></table></figure>
+<p>可以看到这台机器使用了虚拟化技术，有相应的时间消耗； 各列的指标分别是:</p>
+<ul>
+<li><code>%user</code>: 用户模式下消耗的CPU时间的比例</li>
+<li><code>%nice</code>: 通过nice改变了进程调度优先级的进程，在用户模式下消耗的CPU时间的比例</li>
+<li><code>%system</code>: 系统模式下消耗的CPU时间的比例</li>
+<li><code>%iowait</code>:  CPU等待磁盘I/O导致空闲状态消耗的时间比例</li>
+<li><code>%steal</code>: 利用Xen等操作系统虚拟化技术，等待其它虚拟CPU计算占用的时间比例</li>
+<li><code>$idle</code>: CPU空闲时间比例</li>
+</ul>
+<h1 id="查看平均负载"><a href="#查看平均负载" class="headerlink" title="查看平均负载"></a>查看平均负载</h1><ul>
+<li><code>sar -q</code>: 查看平均负载</li>
+</ul>
+<p>指定-q后，就能查看运行队列中的进程数、系统上的进程大小、平均负载等；与其它命令相比，它能查看各项指标随时间变化的情况；</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl sa]# sar -q <span class="number">1</span> <span class="number">10</span></span><br><span class="line">Linux <span class="number">3.10</span><span class="number">.0</span><span class="number">-862.9</span><span class="number">.1</span>.el7.x86_64 (caoxl) 	<span class="number">08</span>/<span class="number">22</span>/<span class="number">2018</span> 	_x86_64_	(<span class="number">1</span> CPU)</span><br><span class="line"></span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">42</span> AM   runq-sz  plist-sz   ldavg<span class="number">-1</span>   ldavg<span class="number">-5</span>  ldavg<span class="number">-15</span>   blocked</span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">43</span> AM         <span class="number">0</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">44</span> AM         <span class="number">0</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">45</span> AM         <span class="number">0</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">46</span> AM         <span class="number">0</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">47</span> AM         <span class="number">0</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">48</span> AM         <span class="number">0</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">49</span> AM         <span class="number">1</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">50</span> AM         <span class="number">1</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">51</span> AM         <span class="number">1</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br><span class="line"><span class="number">10</span>:<span class="number">55</span>:<span class="number">52</span> AM         <span class="number">1</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br><span class="line">Average:            <span class="number">0</span>       <span class="number">185</span>      <span class="number">0.01</span>      <span class="number">0.02</span>      <span class="number">0.05</span>         <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>runq-sz</code>: 运行队列的长度（等待运行的进程数）</li>
+<li><code>plist-sz</code>: 进程列表中进程（processes）和线程（threads）的数量</li>
+<li><code>ldavg-1</code>: 最后1分钟的系统平均负载 ldavg-5：过去5分钟的系统平均负载</li>
+<li><code>ldavg-15</code>: 过去15分钟的系统平均负载</li>
+</ul>
+<h1 id="查看内存使用状况"><a href="#查看内存使用状况" class="headerlink" title="查看内存使用状况"></a>查看内存使用状况</h1><ul>
+<li><code>sar -r</code>： 指定-r之后，可查看物理内存使用状况:</li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl sa]# sar -r <span class="number">1</span> <span class="number">3</span></span><br><span class="line">Linux <span class="number">3.10</span><span class="number">.0</span><span class="number">-862.9</span><span class="number">.1</span>.el7.x86_64 (caoxl) 	<span class="number">08</span>/<span class="number">22</span>/<span class="number">2018</span> 	_x86_64_	(<span class="number">1</span> CPU)</span><br><span class="line"></span><br><span class="line"><span class="number">11</span>:<span class="number">02</span>:<span class="number">52</span> AM kbmemfree kbmemused  %memused kbbuffers  kbcached  kbcommit   %commit  kbactive   kbinact   kbdirty</span><br><span class="line"><span class="number">11</span>:<span class="number">02</span>:<span class="number">53</span> AM    <span class="number">107144</span>    <span class="number">908292</span>     <span class="number">89.45</span>     <span class="number">69736</span>    <span class="number">440984</span>    <span class="number">894140</span>     <span class="number">88.05</span>    <span class="number">540500</span>    <span class="number">254560</span>        <span class="number">36</span></span><br><span class="line"><span class="number">11</span>:<span class="number">02</span>:<span class="number">54</span> AM    <span class="number">107144</span>    <span class="number">908292</span>     <span class="number">89.45</span>     <span class="number">69736</span>    <span class="number">440984</span>    <span class="number">894140</span>     <span class="number">88.05</span>    <span class="number">540504</span>    <span class="number">254560</span>        <span class="number">36</span></span><br><span class="line"><span class="number">11</span>:<span class="number">02</span>:<span class="number">55</span> AM    <span class="number">107144</span>    <span class="number">908292</span>     <span class="number">89.45</span>     <span class="number">69736</span>    <span class="number">440984</span>    <span class="number">894140</span>     <span class="number">88.05</span>    <span class="number">540508</span>    <span class="number">254560</span>        <span class="number">36</span></span><br><span class="line">Average:       <span class="number">107144</span>    <span class="number">908292</span>     <span class="number">89.45</span>     <span class="number">69736</span>    <span class="number">440984</span>    <span class="number">894140</span>     <span class="number">88.05</span>    <span class="number">540504</span>    <span class="number">254560</span>        <span class="number">36</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>kbmemfree</code>：这个值和<code>free</code>命令中的<code>free</code>值基本一致,所以它不包括<code>buffer</code>和<code>cache</code>的空间.</li>
+<li><code>kbmemused</code>：这个值和<code>free</code>命令中的<code>used</code>值基本一致,所以它包括<code>buffer</code>和<code>cache</code>的空间.</li>
+<li><code>%memused</code>：物理内存使用率，这个值是<code>kbmemused</code>和内存总量(不包括swap)的一个百分比.</li>
+<li><code>kbbuffers</code>和<code>kbcached</code>：这两个值就是<code>free</code>命令中的<code>buffer</code>和<code>cache</code>.</li>
+<li><code>kbcommit</code>：保证当前系统所需要的内存,即为了确保不溢出而需要的内存(<code>RAM+swap</code>).</li>
+<li><code>%commit</code>：这个值是<code>kbcommit</code>与内存总量(包括<code>swap</code>)的一个百分比.</li>
+</ul>
+<h1 id="查看页面交换发生状况"><a href="#查看页面交换发生状况" class="headerlink" title="查看页面交换发生状况"></a>查看页面交换发生状况</h1><ul>
+<li><code>sar -W</code>：查看页面交换发生状况</li>
+</ul>
+<p>页面发生交换时，服务器的吞吐量会大幅下降；服务器状况不良时，如果怀疑因为内存不足而导致了页面交换的发生，可以使用这个命令来确认是否发生了大量的交换；</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl sa]# sar -W <span class="number">1</span> <span class="number">3</span></span><br><span class="line">Linux <span class="number">3.10</span><span class="number">.0</span><span class="number">-862.9</span><span class="number">.1</span>.el7.x86_64 (caoxl) 	<span class="number">08</span>/<span class="number">22</span>/<span class="number">2018</span> 	_x86_64_	(<span class="number">1</span> CPU)</span><br><span class="line"></span><br><span class="line"><span class="number">11</span>:<span class="number">06</span>:<span class="number">59</span> AM  pswpin/s pswpout/s</span><br><span class="line"><span class="number">11</span>:<span class="number">07</span>:<span class="number">00</span> AM      <span class="number">0.00</span>      <span class="number">0.00</span></span><br><span class="line"><span class="number">11</span>:<span class="number">07</span>:<span class="number">01</span> AM      <span class="number">0.00</span>      <span class="number">0.00</span></span><br><span class="line"><span class="number">11</span>:<span class="number">07</span>:<span class="number">02</span> AM      <span class="number">0.00</span>      <span class="number">0.00</span></span><br><span class="line">Average:         <span class="number">0.00</span>      <span class="number">0.00</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>pswpin/s</code>：每秒系统换入的交换页面（swap page）数量</li>
+<li><code>pswpout/s</code>：每秒系统换出的交换页面（swap page）数量</li>
+</ul>
+<p>要判断系统瓶颈问题，有时需几个 sar 命令选项结合起来:</p>
+<ul>
+<li>怀疑CPU存在瓶颈，可用 <code>sar -u</code> 和 <code>sar -q</code> 等来查看</li>
+<li>怀疑内存存在瓶颈，可用 <code>sar -B</code>、<code>sar -r</code> 和 <code>sar -W</code> 等来查看</li>
+<li>怀疑I/O存在瓶颈，可用 <code>sar -b</code>、<code>sar -u</code> 和 <code>sar -d</code> 等来查看</li>
+</ul>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><ul>
+<li><ol>
+<li>有的linux系统下，默认可能没有安装这个包:</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CentOS</span></span><br><span class="line">yum <span class="keyword">install</span> systat</span><br><span class="line"></span><br><span class="line"><span class="comment"># Ubuntu</span></span><br><span class="line">apt-<span class="keyword">get</span> <span class="keyword">install</span> sysstat</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="2">
+<li>安装完毕，将性能收集工具的开关打开： <code>vi /etc/default/sysstat</code></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">设置 <span class="attribute">ENABLED</span>=<span class="string">"true"</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="3">
+<li>启动这个工具来收集系统性能数据： <code>/etc/init.d/sysstat start</code></li>
+</ol>
+</li>
+</ul>
+<h1 id="sar参数说明"><a href="#sar参数说明" class="headerlink" title="sar参数说明"></a>sar参数说明</h1><ul>
+<li><code>-A</code>: 汇总所有的报告</li>
+<li><code>-a</code>: 报告文件读写使用情况</li>
+<li><code>-B</code>: 报告附加的缓存的使用情况</li>
+<li><code>-b</code>: 报告缓存的使用情况</li>
+<li><code>-c</code>: 报告系统调用的使用情况</li>
+<li><code>-d</code>: 报告磁盘的使用情况</li>
+<li><code>-g</code>: 报告串口的使用情况</li>
+<li><code>-h</code>: 报告关于buffer使用的统计数据</li>
+<li><code>-m</code>: 报告IPC消息队列和信号量的使用情况</li>
+<li><code>-n</code>: 报告命名cache的使用情况</li>
+<li><code>-p</code>: 报告调页活动的使用情况</li>
+<li><code>-q</code>: 报告运行队列和交换队列的平均长度</li>
+<li><code>-R</code>: 报告进程的活动情况</li>
+<li><code>-r</code>: 报告没有使用的内存页面和硬盘块</li>
+<li><code>-u</code>: 报告CPU的利用率</li>
+<li><code>-v</code>: 报告进程、i节点、文件和锁表状态</li>
+<li><code>-w</code>: 报告系统交换活动状况</li>
+<li><code>-y</code>: 报告TTY设备活动状况</li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/22/Linux-Tool-sar/" target="_blank" title="Linux sar 找出系统瓶颈的利器">http://blog.caoxl.com/2018/08/22/Linux-Tool-sar/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sar/">sar</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/22/Linux-find-cmd-install-package/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Linux查找命令或组件对应安装包的方法
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/21/PHP-Install-Dev-Log/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">PHP 「安装日志」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#追溯过去的统计数据"><span class="nav-number">1.</span> <span class="nav-text">追溯过去的统计数据</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看CPU使用率"><span class="nav-number">2.</span> <span class="nav-text">查看CPU使用率</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看平均负载"><span class="nav-number">3.</span> <span class="nav-text">查看平均负载</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看内存使用状况"><span class="nav-number">4.</span> <span class="nav-text">查看内存使用状况</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#查看页面交换发生状况"><span class="nav-number">5.</span> <span class="nav-text">查看页面交换发生状况</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">6.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sar参数说明"><span class="nav-number">7.</span> <span class="nav-text">sar参数说明</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

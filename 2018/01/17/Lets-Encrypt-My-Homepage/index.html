@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>let&#39;s encrypt 简单使用 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="HTTPSLet's Encrypt服务器">
+  
+  
+  
+  
+  <meta name="description" content="初次部署 https 使用 Let’s Encrypt给域名加把小绿锁  Let’s Encrypt 客户端安装1234567# yum install -y epel-release nginx gitgit clone https://github.com/letsencrypt/letsencryptcd letsencrypt./letsencrypt-auto --help">
+<meta name="keywords" content="HTTPS,Let&#39;s Encrypt,服务器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Let&#39;s Encrypt 简单使用">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/17/Lets-Encrypt-My-Homepage/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="初次部署 https 使用 Let’s Encrypt给域名加把小绿锁  Let’s Encrypt 客户端安装1234567# yum install -y epel-release nginx gitgit clone https://github.com/letsencrypt/letsencryptcd letsencrypt./letsencrypt-auto --help">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:47:55.183Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Let&#39;s Encrypt 简单使用">
+<meta name="twitter:description" content="初次部署 https 使用 Let’s Encrypt给域名加把小绿锁  Let’s Encrypt 客户端安装1234567# yum install -y epel-release nginx gitgit clone https://github.com/letsencrypt/letsencryptcd letsencrypt./letsencrypt-auto --help">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Lets-Encrypt-My-Homepage" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Let&#39;s Encrypt 简单使用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/17/Lets-Encrypt-My-Homepage/" class="article-date">
+	  <time datetime="2018-01-17T06:37:53.000Z" itemprop="datePublished">2018-01-17</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h2 id="初次部署-https"><a href="#初次部署-https" class="headerlink" title="初次部署 https"></a>初次部署 https</h2><blockquote>
+<p>使用 <u><a href="https://letsencrypt.org/" target="_blank" rel="noopener">Let’s Encrypt</a></u>给域名加把小绿锁</p>
+</blockquote>
+<h3 id="Let’s-Encrypt-客户端"><a href="#Let’s-Encrypt-客户端" class="headerlink" title="Let’s Encrypt 客户端"></a>Let’s Encrypt 客户端</h3><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># yum install -y epel-release nginx git</span></span><br><span class="line"></span><br><span class="line">git clone https:<span class="string">//github.com/letsencrypt/letsencrypt</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">cd</span> letsencrypt</span><br><span class="line"></span><br><span class="line"><span class="string">./letsencrypt-auto</span> <span class="params">--help</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="获取-SSL-证书"><a href="#获取-SSL-证书" class="headerlink" title="获取 SSL 证书"></a>获取 SSL 证书</h3><h4 id="证书申请频率限制"><a href="#证书申请频率限制" class="headerlink" title="证书申请频率限制"></a>证书申请频率限制</h4><ul>
+<li>IP 限制：每注册 IP 每 3 个小时不超过 10 次</li>
+<li>域名数量限制：每个域名（包含子域名）每 7 天不超过 5 个</li>
+</ul>
+<p>Let’s Encrypt 验证方式有很多种，我使用的服务器已经运行了 <code>nginx</code> 且不想终止 web 服务，因此使用 <code>webroot</code> 模式。</p>
+<h4 id="webroot-模式"><a href="#webroot-模式" class="headerlink" title="webroot 模式"></a>webroot 模式</h4><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./letsencrypt-auto certonly --webroot --webroot-path /home/wwwroot<span class="built_in">/default </span>-d caoxl.com --agree-tos --email code0809@163.com</span><br></pre></td></tr></table></figure>
+<p><strong>注意: <code>/home/wwwroot/defaul</code> 是项目根目录</strong></p>
+<h4 id="certonly-模式"><a href="#certonly-模式" class="headerlink" title="certonly 模式"></a>certonly 模式</h4><p>当然，除了 <code>webroot</code> 模式，也可以是用先手动只获取证书，然后配置 <code>nginx</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">service nginx <span class="keyword">stop</span></span><br><span class="line"><span class="comment"># Or: systemctl stop nginx</span></span><br><span class="line"></span><br><span class="line">ss -tln</span><br><span class="line">./letsencrypt-<span class="keyword">auto</span> certonly <span class="comment">--standalone -d caoxl.com</span></span><br></pre></td></tr></table></figure>
+<p>唯一需要注意的一点就是，<code>certonly</code> 模式下获取证书需要先关闭 nginx。</p>
+<p>获取成功后，会输出类似如下内容：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Saving debug log to <span class="regexp">/var/</span>log<span class="regexp">/letsencrypt/</span>letsencrypt.log</span><br><span class="line">Plugins <span class="string">selected:</span> Authenticator standalone, Installer None</span><br><span class="line">Obtaining a <span class="keyword">new</span> certificate</span><br><span class="line">Performing the following <span class="string">challenges:</span></span><br><span class="line">tls-sni<span class="number">-01</span> challenge <span class="keyword">for</span> caoxl.com</span><br><span class="line">Waiting <span class="keyword">for</span> verification...</span><br><span class="line">Cleaning up challenges</span><br><span class="line">IMPORTANT <span class="string">NOTES:</span></span><br><span class="line"> - Congratulations! Your certificate and chain have been saved <span class="string">at:</span></span><br><span class="line">   <span class="regexp">/etc/</span>letsencrypt<span class="regexp">/live/</span>caoxl.com/fullchain.pem</span><br><span class="line">   Your key file has been saved <span class="string">at:</span></span><br><span class="line">   <span class="regexp">/etc/</span>letsencrypt<span class="regexp">/live/</span>caoxl.com/privkey.pem</span><br><span class="line">   Your cert will expire on <span class="number">2017</span><span class="number">-05</span><span class="number">-08.</span> To obtain a <span class="keyword">new</span> or tweaked</span><br><span class="line">   version of <span class="keyword">this</span> certificate <span class="keyword">in</span> the future, simply run</span><br><span class="line">   letsencrypt-auto again. To non-interactively renew *all* of your</span><br><span class="line">   certificates, run <span class="string">"letsencrypt-auto renew"</span></span><br><span class="line"> - If you like Certbot, please consider supporting our work <span class="string">by:</span></span><br><span class="line">   Donating to ISRG <span class="regexp">/ Let's Encrypt:   https:/</span><span class="regexp">/letsencrypt.org/</span>donate</span><br><span class="line">   Donating to <span class="string">EFF:</span>                    <span class="string">https:</span><span class="comment">//eff.org/donate-le</span></span><br></pre></td></tr></table></figure>
+<p>然后，注意上面成功提示信息中的证书和私钥文件的路径，用于接下来 nginx 的配置。</p>
+<ul>
+<li>证书: <code>/etc/letsencrypt/live/caoxl.com/fullchain.pem</code></li>
+<li>私钥文件: <code>/etc/letsencrypt/live/caoxl.com/privkey.pem</code></li>
+</ul>
+<h3 id="生成-dhparam"><a href="#生成-dhparam" class="headerlink" title="生成 dhparam"></a>生成 dhparam</h3><p>为了进一步提高安全性，建议为 nginx 再生成 2048 位 <code>DH parameters</code>：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl dhparam -<span class="keyword">out</span> /etc/ssl/certs/dhparams.pem <span class="number">2048</span></span><br></pre></td></tr></table></figure>
+<p>关于 <a href="https://wiki.openssl.org/index.php/Diffie-Hellman_parameters" target="_blank" rel="noopener">DH Parameters</a> 的解释，可以参考：<u><a href="https://security.stackexchange.com/questions/94390/whats-the-purpose-of-dh-parameters" target="_blank" rel="noopener">What’s the purpose of DH Parameters?</a></u>。</p>
+<h3 id="nginx-部署-ssl-证书"><a href="#nginx-部署-ssl-证书" class="headerlink" title="nginx 部署 ssl 证书"></a>nginx 部署 ssl 证书</h3><h4 id="为域名配置-443-端口的虚拟主机"><a href="#为域名配置-443-端口的虚拟主机" class="headerlink" title="为域名配置 443 端口的虚拟主机"></a>为域名配置 443 端口的虚拟主机</h4><blockquote>
+<p>我的LNMP环境, 打开 /usr/local/nginx/conf/vhost/caoxl.com.conf</p>
+</blockquote>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># caoxl.com.conf</span></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">  <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">  <span class="attribute">listen</span> <span class="number">443</span> ssl http2;</span><br><span class="line">  <span class="attribute">server_name</span> caoxl.com www.caoxl.com;</span><br><span class="line">  <span class="attribute">ssl_certificate</span> /etc/letsencrypt/live/caoxl.com/fullchain.pem;</span><br><span class="line">  <span class="attribute">ssl_certificate_key</span> /etc/letsencrypt/live/caoxl.com/privkey.pem;</span><br><span class="line">  <span class="attribute">ssl_dhparam</span> /etc/ssl/certs/dhparams.pem;</span><br><span class="line">  <span class="attribute">ssl_protocols</span> TLSv1 TLSv1.<span class="number">1</span> TLSv1.<span class="number">2</span>;</span><br><span class="line">  <span class="attribute">ssl_ciphers</span> EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;</span><br><span class="line">  <span class="attribute">ssl_prefer_server_ciphers</span> <span class="literal">on</span>;</span><br><span class="line">  <span class="attribute">ssl_session_timeout</span> <span class="number">10m</span>;</span><br><span class="line">  <span class="attribute">ssl_session_cache</span> builtin:<span class="number">1000</span> shared:SSL:<span class="number">10m</span>;</span><br><span class="line">  <span class="attribute">ssl_buffer_size</span> <span class="number">1400</span>;</span><br><span class="line">  <span class="attribute">add_header</span> Strict-Transport-Security max-age=<span class="number">15768000</span>;</span><br><span class="line">  <span class="attribute">ssl_stapling</span> <span class="literal">on</span>;</span><br><span class="line">  <span class="attribute">ssl_stapling_verify</span> <span class="literal">on</span>;</span><br><span class="line">  <span class="attribute">server_name</span> caoxl.com www.caoxl.com;</span><br><span class="line">  <span class="attribute">location</span> / &#123;</span><br><span class="line">    <span class="attribute">root</span>   caoxl.com;</span><br><span class="line">    <span class="attribute">index</span>  index.html index.htm;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="http-强跳转-https（为同样的域名配置-80-端口的虚拟主机）"><a href="#http-强跳转-https（为同样的域名配置-80-端口的虚拟主机）" class="headerlink" title="http 强跳转 https（为同样的域名配置 80 端口的虚拟主机）"></a>http 强跳转 https（为同样的域名配置 80 端口的虚拟主机）</h4><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># caoxl.com.conf</span></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> caoxl.com www.caoxl.com;</span><br><span class="line">    <span class="attribute">return</span> <span class="number">301</span> https://caoxl.com;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="重载配置后测试"><a href="#重载配置后测试" class="headerlink" title="重载配置后测试"></a>重载配置后测试</h4><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nginx</span> <span class="string">-t</span></span><br><span class="line"><span class="attr">nginx</span> <span class="string">-s reload</span></span><br></pre></td></tr></table></figure>
+<p>然后访问 <u><a href="https://caoxl.com" target="_blank" rel="noopener">https://caoxl.com</a></u> 和 <u><a href="http://caoxl.com" target="_blank" rel="noopener">http://caoxl.com</a></u>，不出意外应该就能在浏览器地址栏最左端看到一把靠谱的小绿锁了。</p>
+<p><strong><u><a href="https://www.ssllabs.com/ssltest/index.html" target="_blank" rel="noopener">点击此处输入域名查询SSL证书</a></u></strong></p>
+<h2 id="证书续期"><a href="#证书续期" class="headerlink" title="证书续期"></a>证书续期</h2><p>由于 Let’s Encrypt 颁发的服务器证书有效期只有 90 天，因此如果需要长期使用，就有必要设置好自动续期。</p>
+<p>通过 letsencrypt-auto 工具，手动续期命令为：<br><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./letsencrypt-<span class="built_in">auto</span> renew</span><br></pre></td></tr></table></figure></p>
+<p>而所谓的自动续期，就是自动定时执行上面手动获得证书的操作，对于 Linux 来说，可以使用 crontab。</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> '@monthly root <span class="string">/path/to/letsencrypt-auto</span> certonly <span class="params">--webroot</span> <span class="params">--webroot-path</span> <span class="string">/home/wwwroot/default</span> -d caoxl.com <span class="params">--agree-tos</span> <span class="params">--email</span> code0809@163.com &gt;&gt; <span class="string">/var/log/letsencrypt/letsencrypt-auto-update.log</span>' | tee <span class="params">--append</span> <span class="string">/etc/crontab</span></span><br></pre></td></tr></table></figure>
+<h2 id="其他姿势"><a href="#其他姿势" class="headerlink" title="其他姿势"></a>其他姿势</h2><h3 id="acme-sh"><a href="#acme-sh" class="headerlink" title="acme.sh"></a><u><a href="https://github.com/Neilpang/acme.sh/wiki/%E8%AF%B4%E6%98%8E" target="_blank" rel="noopener">acme.sh</a></u></h3><p>以 <strong>nginx</strong> 为例：<br><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 0. 安装 acme.sh </span></span><br><span class="line">curl https:<span class="comment">//get.acme.sh | sh</span></span><br><span class="line"><span class="meta"># 1. 获取证书</span></span><br><span class="line">acme.sh --issue -d www.example.com -w <span class="meta-keyword">/path/</span>to/webapp</span><br><span class="line"><span class="meta"># 2. 生成 dhparam</span></span><br><span class="line"><span class="meta"># 同上，略</span></span><br><span class="line"><span class="meta"># 3. 拷贝证书到 WEB 服务器能正常读取的路径 (安装证书)</span></span><br><span class="line">acme.sh  --installcert  -d  example.com   \</span><br><span class="line">--key-file   <span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/nginx/</span>conf<span class="meta-keyword">/ssl/</span>example.com.key \</span><br><span class="line">--fullchain-file <span class="meta-keyword">/usr/</span>local<span class="meta-keyword">/nginx/</span>conf<span class="meta-keyword">/ssl/</span>fullchain.cer \</span><br><span class="line"><span class="meta"># --reloadcmd  <span class="string">"service nginx force-reload"</span>    # 可选，我是安装证书完成后，手动改完配置再重启的</span></span><br><span class="line"><span class="meta"># 4. 配置 nginx</span></span><br><span class="line">ssl_protocols TLSv1 TLSv1<span class="number">.1</span> TLSv1<span class="number">.2</span>;</span><br><span class="line">ssl_prefer_server_ciphers on;</span><br><span class="line">listen <span class="number">443</span> ssl;</span><br><span class="line">ssl_certificate         <span class="meta-keyword">/path/</span>to<span class="meta-keyword">/ssl/</span>example.com.cer;</span><br><span class="line">ssl_certificate_key     <span class="meta-keyword">/path/</span>to<span class="meta-keyword">/ssl/</span>example.com.key;</span><br><span class="line">ssl_dhparam             <span class="meta-keyword">/path/</span>to<span class="meta-keyword">/ssl/</span>dhparam.pem;</span><br><span class="line"><span class="meta"># 5. 强制重启 nginx</span></span><br><span class="line">nginx -t</span><br><span class="line">nginx -s reload    <span class="meta"># 如果证书配置不能被加载成功，请强制性重启 nginx</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><ul>
+<li><p><strong>已经成功安装配置好证书，部分 URL 仍然显示非安全？</strong></p>
+<p>显示非安全的 URL 页面里面含有 mixed content。</p>
+<blockquote>
+<p>When you set a site to use SSL, all the contents, urls to load js, images, etc. should have https links instead of http.</p>
+</blockquote>
+<p><strong>简单来说:就是网站内包含不安全内容</strong></p>
+</li>
+<li><p><strong>使用 oneinstack 新建 vhost 时安装 let‘s Encrypt 提示：DNS problem: NXDOMAIN looking up A</strong></p>
+<p>这可能是因为在域名解析设置那里，给这个域名设置了 CDN 的 CNAME（出于加速静态文件和隐藏服务器真实地址的原因），而阿里云不能给相同主机头（RR）同时设置一个 CNAME 和 A 纪录，导致 Let’s Encrypt 检测不通过，只能删除 CNAME 纪录。</p>
+</li>
+<li><p><strong>To fix these errors, please make sure that your domain name was entered correctly and the DNS A/AAAA record(s) for that domain contain(s) the right IP address.</strong></p>
+<p>查看域名解析中 <code>A</code> 记录中的IP地址是否指向自己的服务器IP地址,且只能指向自己的服务器IP地址,不可多个指向.</p>
+<blockquote>
+<p>我刚开始一直遇到这个问题就是因为的我A记录指向了两个不同的IP</p>
+</blockquote>
+<p>此外，对于所申请 Let’s Encrypt 证书的域名来说，其顶级域名对应的 www 子域名必须要有一个 A 记录。可参考 LE 的该社区讨论：<a href="https://community.letsencrypt.org/t/no-www-record-in-dns-means-certficate-cannot-be-issued/14830/3" target="_blank" rel="noopener">No WWW Record in DNS Means Certficate Cannot Be Issued。</a></p>
+</li>
+<li><p><strong>Problem binding to port 443: Could not bind to IPv4 or IPv6.. Skipping</strong><br>执行证书续期命令的时候先，暂停 nginx，续期成功后再启动 nginx 即可。</p>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://www.binarization.com/archive/2016/lets-encrypt-apache-ubuntu/" target="_blank" rel="noopener">如何获得Let’s Encrypt证书？Apache+Ubuntu</a></li>
+<li><a href="https://www.jianshu.com/p/eaac0d082ba2" target="_blank" rel="noopener">Let’s Encrypt SSL证书配置</a></li>
+<li><a href="https://www.ssllabs.com/ssltest/index.html" target="_blank" rel="noopener">SSL Server Test 或者叫检测网站的证书</a></li>
+<li><a href="http://www.ptbird.cn/oneinstack-letsencrypt.html" target="_blank" rel="noopener">oneinstack自动部署Lets Encrypt实现多域名SSL</a></li>
+<li><a href="https://help.aliyun.com/knowledge_detail/39787.html" target="_blank" rel="noopener">设置解析记录时提示冲突的原因</a></li>
+<li><a href="http://www.ituring.com.cn/article/273643" target="_blank" rel="noopener">如何选购 SSL 证书</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/17/Lets-Encrypt-My-Homepage/" target="_blank" title="Let&#39;s Encrypt 简单使用">http://blog.caoxl.com/2018/01/17/Lets-Encrypt-My-Homepage/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTPS/">HTTPS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Let-s-Encrypt/">Let's Encrypt</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/服务器/">服务器</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/19/MySQL-Optimization/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          MySQL 优化
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/17/JWT-Lumen54-Custom/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">基于Lumen5.4 使用JWT</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#初次部署-https"><span class="nav-number">1.</span> <span class="nav-text">初次部署 https</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Let’s-Encrypt-客户端"><span class="nav-number">1.1.</span> <span class="nav-text">Let’s Encrypt 客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">1.2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取-SSL-证书"><span class="nav-number">1.3.</span> <span class="nav-text">获取 SSL 证书</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#证书申请频率限制"><span class="nav-number">1.3.1.</span> <span class="nav-text">证书申请频率限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#webroot-模式"><span class="nav-number">1.3.2.</span> <span class="nav-text">webroot 模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#certonly-模式"><span class="nav-number">1.3.3.</span> <span class="nav-text">certonly 模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成-dhparam"><span class="nav-number">1.4.</span> <span class="nav-text">生成 dhparam</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx-部署-ssl-证书"><span class="nav-number">1.5.</span> <span class="nav-text">nginx 部署 ssl 证书</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#为域名配置-443-端口的虚拟主机"><span class="nav-number">1.5.1.</span> <span class="nav-text">为域名配置 443 端口的虚拟主机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#http-强跳转-https（为同样的域名配置-80-端口的虚拟主机）"><span class="nav-number">1.5.2.</span> <span class="nav-text">http 强跳转 https（为同样的域名配置 80 端口的虚拟主机）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重载配置后测试"><span class="nav-number">1.5.3.</span> <span class="nav-text">重载配置后测试</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#证书续期"><span class="nav-number">2.</span> <span class="nav-text">证书续期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他姿势"><span class="nav-number">3.</span> <span class="nav-text">其他姿势</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#acme-sh"><span class="nav-number">3.1.</span> <span class="nav-text">acme.sh</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FAQ"><span class="nav-number">4.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

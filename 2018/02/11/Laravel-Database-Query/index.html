@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>laravel 数据库请求构建器 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LaravelDatabaseQuery">
+  
+  
+  
+  
+  <meta name="description" content="Laravel 的数据库查询构造器提供了一个方便的接口来创建及运行数据库查询语句。它能用来执行应用程序中的大部分数据库操作，且能在所有被支持的数据库系统中使用。 Laravel 的查询构造器使用 PDO 参数绑定来保护你的应用程序免受 SQL 注入的攻击。因此没有必要清理作为绑定传递的字符串。">
+<meta name="keywords" content="Laravel,Database,Query">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel 数据库请求构建器">
+<meta property="og:url" content="http://blog.caoxl.com/2018/02/11/Laravel-Database-Query/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Laravel 的数据库查询构造器提供了一个方便的接口来创建及运行数据库查询语句。它能用来执行应用程序中的大部分数据库操作，且能在所有被支持的数据库系统中使用。 Laravel 的查询构造器使用 PDO 参数绑定来保护你的应用程序免受 SQL 注入的攻击。因此没有必要清理作为绑定传递的字符串。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:40:12.852Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel 数据库请求构建器">
+<meta name="twitter:description" content="Laravel 的数据库查询构造器提供了一个方便的接口来创建及运行数据库查询语句。它能用来执行应用程序中的大部分数据库操作，且能在所有被支持的数据库系统中使用。 Laravel 的查询构造器使用 PDO 参数绑定来保护你的应用程序免受 SQL 注入的攻击。因此没有必要清理作为绑定传递的字符串。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Laravel-Database-Query" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Laravel 数据库请求构建器
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/02/11/Laravel-Database-Query/" class="article-date">
+	  <time datetime="2018-02-11T08:30:04.000Z" itemprop="datePublished">2018-02-11</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/框架相关/">框架相关</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>Laravel 的数据库查询构造器提供了一个方便的接口来创建及运行数据库查询语句。它能用来执行应用程序中的大部分数据库操作，且能在所有被支持的数据库系统中使用。</p>
+<p>Laravel 的查询构造器使用 PDO 参数绑定来保护你的应用程序免受 SQL 注入的攻击。因此没有必要清理作为绑定传递的字符串。</p>
+<a id="more"></a>
+<h1 id="获取结果"><a href="#获取结果" class="headerlink" title="获取结果"></a>获取结果</h1><h2 id="从数据表中获取所有的数据"><a href="#从数据表中获取所有的数据" class="headerlink" title="从数据表中获取所有的数据"></a>从数据表中获取所有的数据</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Controllers</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">DB</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Controllers</span>\<span class="title">Controller</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">UserController</span> <span class="keyword">extends</span> <span class="title">Controller</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line">    /**</span><br><span class="line">     * 显示所有应用程序用户的列表</span><br><span class="line">     *</span><br><span class="line">     * @return Response</span><br><span class="line"><span class="php">     */</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">index</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $users = DB::table(<span class="string">'users'</span>)-&gt;get();</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">return</span> view(<span class="string">'user.index'</span>, [<span class="string">'users'</span> =&gt; $users]);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<p><code>get</code> 方法会返回一个包含 <code>Illuminate\Support\Collection</code> 的结果，其中每个结果都是一个 <code>PHP StdClass</code> 对象的一个实例。你可以通过访问字段作为对象的属性来访问每列的值：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">get</span> 方法会返回一个包含 Illuminate\Support\Collection 的结果，其中每个结果都是一个 PHP StdClass 对象的一个实例。你可以通过访问字段作为对象的属性来访问每列的值：</span><br></pre></td></tr></table></figure>
+<h2 id="从数据表中获取单个列或行"><a href="#从数据表中获取单个列或行" class="headerlink" title="从数据表中获取单个列或行"></a>从数据表中获取单个列或行</h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$user = DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>where<span class="function"><span class="params">(<span class="string">'name'</span>, <span class="string">'John'</span>)</span>-&gt;</span>first();</span><br><span class="line"></span><br><span class="line">echo $user-&gt;name;</span><br></pre></td></tr></table></figure>
+<p>如果你甚至不需要整行数据，就使用 value 方法从记录中取出单个值。该方法将直接返回字段的值：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$email = DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>where<span class="function"><span class="params">(<span class="string">'name'</span>, <span class="string">'John'</span>)</span>-&gt;</span>value(<span class="string">'email'</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="获取一列的值"><a href="#获取一列的值" class="headerlink" title="获取一列的值"></a>获取一列的值</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$titles = DB::table(<span class="string">'roles'</span>)-&gt;pluck(<span class="string">'title'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($titles <span class="keyword">as</span> $title) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $title;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>你也可以在返回的集合中指定字段的自定义键值：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$roles = DB::table(<span class="string">'roles'</span>)-&gt;pluck(<span class="string">'title'</span>, <span class="string">'name'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($roles <span class="keyword">as</span> $name =&gt; $title) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $title;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="结果分块"><a href="#结果分块" class="headerlink" title="结果分块"></a>结果分块</h2><p>如果你需要操作数千条数据库记录，可以考虑使用 chunk 方法。这个方法每次只取出一小块结果传递给 闭包 处理，这对于编写数千条记录的 Artisan 命令 而言是非常有用的</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DB::table(<span class="string">'users'</span>)-&gt;orderBy(<span class="string">'id'</span>)-&gt;chunk(<span class="number">100</span>, <span class="function"><span class="keyword">function</span> <span class="params">($users)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">foreach</span> ($users <span class="keyword">as</span> $user) &#123;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>你可以从 <code>闭包</code> 中返回 <code>false</code> 来阻止进一步的分块的处理：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DB::table(<span class="string">'users'</span>)-&gt;orderBy(<span class="string">'id'</span>)-&gt;chunk(<span class="number">100</span>, <span class="function"><span class="keyword">function</span> <span class="params">($users)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Process the records...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h2><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$users</span> = DB::table(<span class="string">'users'</span>)-&gt;count();</span><br><span class="line"></span><br><span class="line"><span class="variable">$price</span> = DB::table(<span class="string">'orders'</span>)-&gt;max(<span class="string">'price'</span>);</span><br></pre></td></tr></table></figure>
+<p>当然，你也可以将这些方法和其它语句结合起来：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$price = DB::table(<span class="string">'orders'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>where(<span class="string">'finalized'</span>, <span class="number">1</span>)</span><br><span class="line"><span class="function">                -&gt;</span>avg(<span class="string">'price'</span>);</span><br></pre></td></tr></table></figure>
+<h1 id="Selects"><a href="#Selects" class="headerlink" title="Selects"></a><code>Selects</code></h1><h2 id="指定一个-Select-语句"><a href="#指定一个-Select-语句" class="headerlink" title="指定一个 Select 语句"></a>指定一个 <code>Select</code> 语句</h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>select<span class="function"><span class="params">(<span class="string">'name'</span>, <span class="string">'email as user_email'</span>)</span>-&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<p><code>distinct</code> 方法允许你强制让查询返回不重复的结果：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>distinct<span class="function"><span class="params">()</span>-&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<p>如果你已有一个查询构造器实例，并且希望在现有的 <code>select</code> 语句中加入一个字段，则可以使用 <code>addSelect</code> 方法：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$query</span> = DB::table(<span class="string">'users'</span>)-&gt;select(<span class="string">'name'</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$users</span> = <span class="variable">$query</span>-&gt;addSelect(<span class="string">'age'</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+<h1 id="原生表达式"><a href="#原生表达式" class="headerlink" title="原生表达式"></a>原生表达式</h1><p>使用 <code>DB::raw</code> 方法可以创建原生表达式</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">           -&gt;</span>select(DB::raw(<span class="string">'count(*) as user_count, status'</span>))</span><br><span class="line"><span class="function">           -&gt;</span>where(<span class="string">'status'</span>, <span class="string">'&lt;&gt;'</span>, <span class="number">1</span>)</span><br><span class="line"><span class="function">           -&gt;</span>groupBy(<span class="string">'status'</span>)</span><br><span class="line"><span class="function">           -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<p><strong>原生表达式将会被当作字符串注入到查询中，所以要小心避免创建 SQL 注入漏洞。</strong></p>
+<h1 id="原生方法"><a href="#原生方法" class="headerlink" title="原生方法"></a>原生方法</h1><p>可以使用以下的方法代替 <code>DB::raw</code> 将原生表达式插入查询的各个部分。</p>
+<h2 id="selectRaw"><a href="#selectRaw" class="headerlink" title="selectRaw"></a><code>selectRaw</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第二个参数接受一个可选的绑定参数的数组：</span></span><br><span class="line">$orders = DB::table(<span class="string">'orders'</span>)</span><br><span class="line">                -&gt;selectRaw(<span class="string">'price * ? as price_with_tax'</span>, [<span class="number">1.0825</span>])</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
+<h2 id="whereRaw-orWhereRaw"><a href="#whereRaw-orWhereRaw" class="headerlink" title="whereRaw / orWhereRaw"></a><code>whereRaw</code> / <code>orWhereRaw</code></h2><figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 这些方法接受一个可选的绑定数组作为他们的第二个参数：</span><br><span class="line"><span class="variable">$orders</span> = DB::<span class="built_in">table</span>('orders')</span><br><span class="line">                -&gt;whereRaw('price &gt; IF(<span class="keyword">state</span> = <span class="string">"TX"</span>, ?, <span class="number">100</span>)', [<span class="number">200</span>])</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
+<h2 id="havingRaw-orHavingRaw"><a href="#havingRaw-orHavingRaw" class="headerlink" title="havingRaw / orHavingRaw"></a><code>havingRaw</code> / <code>orHavingRaw</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可用于将原生字符串设置为 having 语句的值</span></span><br><span class="line">$orders = DB::table(<span class="string">'orders'</span>)</span><br><span class="line">                -&gt;select(<span class="string">'department'</span>, DB::raw(<span class="string">'SUM(price) as total_sales'</span>))</span><br><span class="line">                -&gt;groupBy(<span class="string">'department'</span>)</span><br><span class="line">                -&gt;havingRaw(<span class="string">'SUM(price) &gt; 2500'</span>)</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
+<h2 id="orderByRaw"><a href="#orderByRaw" class="headerlink" title="orderByRaw"></a><code>orderByRaw</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可用于将原生字符串设置为 order by 语句的值</span></span><br><span class="line">$orders = DB::table(<span class="string">'orders'</span>)</span><br><span class="line">                -&gt;orderByRaw(<span class="string">'updated_at - created_at DESC'</span>)</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
+<h1 id="Joins"><a href="#Joins" class="headerlink" title="Joins"></a><code>Joins</code></h1><h2 id="Inner-Join-语句"><a href="#Inner-Join-语句" class="headerlink" title="Inner Join 语句"></a><code>Inner Join</code> 语句</h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>join(<span class="string">'contacts'</span>, <span class="string">'users.id'</span>, <span class="string">'='</span>, <span class="string">'contacts.user_id'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>join(<span class="string">'orders'</span>, <span class="string">'users.id'</span>, <span class="string">'='</span>, <span class="string">'orders.user_id'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>select(<span class="string">'users.*'</span>, <span class="string">'contacts.phone'</span>, <span class="string">'orders.price'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h2 id="Left-Join-语句"><a href="#Left-Join-语句" class="headerlink" title="Left Join 语句"></a><code>Left Join</code> 语句</h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>leftJoin(<span class="string">'posts'</span>, <span class="string">'users.id'</span>, <span class="string">'='</span>, <span class="string">'posts.user_id'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h2 id="Cross-Join-语句"><a href="#Cross-Join-语句" class="headerlink" title="Cross Join 语句"></a><code>Cross Join</code> 语句</h2><p>使用 crossJoin 方法和你想要交叉连接的表名来做「交叉连接」。交叉连接在第一个表和连接之间生成笛卡尔积：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'sizes'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>crossJoin(<span class="string">'colours'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h2 id="高级-Join-语句"><a href="#高级-Join-语句" class="headerlink" title="高级 Join 语句"></a>高级 <code>Join</code> 语句</h2><p>你也可以指定更高级的 <code>join</code> 语句。比如传递一个 闭包 作为 <code>join</code> 方法的第二个参数。此 闭包 接收一个 <code>JoinClause</code> 对象，从而在其中指定 <code>join</code> 语句中指定约束：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">        -&gt;</span>join(<span class="string">'contacts'</span>, <span class="keyword">function</span> ($join) &#123;</span><br><span class="line">            $join-&gt;<span class="literal">on</span><span class="function"><span class="params">(<span class="string">'users.id'</span>, <span class="string">'='</span>, <span class="string">'contacts.user_id'</span>)</span>-&gt;</span>orOn(...);</span><br><span class="line">        &#125;)</span><br><span class="line"><span class="function">        -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<p>如果你想要在连接上使用<code>「where」</code>风格的语句，可以在连接上使用 <code>where</code> 和 <code>orWhere</code> 方法。这些方法可以用来比较值和对应的字段：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">        -&gt;</span>join(<span class="string">'contacts'</span>, <span class="keyword">function</span> ($join) &#123;</span><br><span class="line">            $join-&gt;<span class="literal">on</span>(<span class="string">'users.id'</span>, <span class="string">'='</span>, <span class="string">'contacts.user_id'</span>)</span><br><span class="line"><span class="function">                 -&gt;</span>where(<span class="string">'contacts.user_id'</span>, <span class="string">'&gt;'</span>, <span class="number">5</span>);</span><br><span class="line">        &#125;)</span><br><span class="line"><span class="function">        -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h1 id="Unions"><a href="#Unions" class="headerlink" title="Unions"></a><code>Unions</code></h1><p>查询构造器还提供了将两个查询「合并」起来的快捷方式</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$first = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>whereNull(<span class="string">'first_name'</span>);</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>whereNull(<span class="string">'last_name'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>union($first)</span><br><span class="line"><span class="function">            -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h1 id="Where-语句"><a href="#Where-语句" class="headerlink" title="Where 语句"></a><code>Where</code> 语句</h1><h2 id="简单的-Where-语句"><a href="#简单的-Where-语句" class="headerlink" title="简单的 Where 语句"></a>简单的 <code>Where</code> 语句</h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>where<span class="function"><span class="params">(<span class="string">'votes'</span>, <span class="string">'='</span>, <span class="number">100</span>)</span>-&gt;</span>get();</span><br><span class="line"></span><br><span class="line"><span class="comment"># Or</span></span><br><span class="line">$users = DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>where<span class="function"><span class="params">(<span class="string">'votes'</span>, <span class="number">100</span>)</span>-&gt;</span>get();</span><br><span class="line"></span><br><span class="line"><span class="comment"># Or</span></span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>where(<span class="string">'votes'</span>, <span class="string">'&gt;='</span>, <span class="number">100</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>where(<span class="string">'votes'</span>, <span class="string">'&lt;&gt;'</span>, <span class="number">100</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>where(<span class="string">'name'</span>, <span class="string">'like'</span>, <span class="string">'T%'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br><span class="line">                </span><br><span class="line"> <span class="comment"># Or</span></span><br><span class="line"> $users = DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>where([</span><br><span class="line">     [<span class="string">'status'</span>, <span class="string">'='</span>, <span class="string">'1'</span>],</span><br><span class="line">     [<span class="string">'subscribed'</span>, <span class="string">'&lt;&gt;'</span>, <span class="string">'1'</span>],</span><br><span class="line"> ])-&gt;get();</span><br></pre></td></tr></table></figure>
+<h2 id="Or-语句"><a href="#Or-语句" class="headerlink" title="Or 语句"></a><code>Or</code> 语句</h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>where(<span class="string">'votes'</span>, <span class="string">'&gt;'</span>, <span class="number">100</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>orWhere(<span class="string">'name'</span>, <span class="string">'John'</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h2 id="其它-Where-语句"><a href="#其它-Where-语句" class="headerlink" title="其它 Where 语句"></a>其它 <code>Where</code> 语句</h2><h3 id="whereBetween"><a href="#whereBetween" class="headerlink" title="whereBetween"></a><code>whereBetween</code></h3><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>whereBetween<span class="function"><span class="params">(<span class="string">'votes'</span>, [<span class="number">1</span>, <span class="number">100</span>])</span>-&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h3 id="whereNotBetween"><a href="#whereNotBetween" class="headerlink" title="whereNotBetween"></a><code>whereNotBetween</code></h3><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>whereNotBetween(<span class="string">'votes'</span>, [<span class="number">1</span>, <span class="number">100</span>])</span><br><span class="line"><span class="function">                    -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h3 id="whereIn-whereNotIn"><a href="#whereIn-whereNotIn" class="headerlink" title="whereIn / whereNotIn"></a><code>whereIn</code> / <code>whereNotIn</code></h3><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>whereIn(<span class="string">'id'</span>, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</span><br><span class="line"><span class="function">                    -&gt;</span>get();</span><br><span class="line">                    </span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>whereNotIn(<span class="string">'id'</span>, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</span><br><span class="line"><span class="function">                    -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h3 id="whereNull-whereNotNull"><a href="#whereNull-whereNotNull" class="headerlink" title="whereNull / whereNotNull"></a><code>whereNull</code> / <code>whereNotNull</code></h3><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>whereNull(<span class="string">'updated_at'</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>get();</span><br><span class="line">                    </span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>whereNotNull(<span class="string">'updated_at'</span>)</span><br><span class="line"><span class="function">                    -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h3 id="whereDate-whereMonth-whereDay-whereYear-whereTime"><a href="#whereDate-whereMonth-whereDay-whereYear-whereTime" class="headerlink" title="whereDate / whereMonth / whereDay / whereYear / whereTime"></a><code>whereDate</code> / <code>whereMonth</code> / <code>whereDay</code> / <code>whereYear</code> / <code>whereTime</code></h3><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>whereDate(<span class="string">'created_at'</span>, <span class="string">'2016-12-31'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>whereMonth(<span class="string">'created_at'</span>, <span class="string">'12'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br><span class="line">                </span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>whereDay(<span class="string">'created_at'</span>, <span class="string">'31'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br><span class="line">                </span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>whereYear(<span class="string">'created_at'</span>, <span class="string">'2016'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br><span class="line">                </span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>whereTime(<span class="string">'created_at'</span>, <span class="string">'='</span>, <span class="string">'11:20'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h3 id="whereColumn"><a href="#whereColumn" class="headerlink" title="whereColumn"></a><code>whereColumn</code></h3><p><code>whereColumn</code> 方法用于验证两个字段是否相等：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>whereColumn(<span class="string">'first_name'</span>, <span class="string">'last_name'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<p>还可以将比较运算符传递给该方法：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>whereColumn(<span class="string">'updated_at'</span>, <span class="string">'&gt;'</span>, <span class="string">'created_at'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<p><code>whereColumn</code> 方法也可以传递一个包含多个条件的数组。这些条件将使用 <code>and</code> 运算符进行连接：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$users</span> = DB::table(<span class="string">'users'</span>)</span><br><span class="line">                -&gt;whereColumn([</span><br><span class="line">                    [<span class="string">'first_name'</span>, <span class="string">'='</span>, <span class="string">'last_name'</span>],</span><br><span class="line">                    [<span class="string">'updated_at'</span>, <span class="string">'&gt;'</span>, <span class="string">'created_at'</span>]</span><br><span class="line">                ])-&gt;get();</span><br></pre></td></tr></table></figure>
+<h3 id="参数分组"><a href="#参数分组" class="headerlink" title="参数分组"></a>参数分组</h3><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>where(<span class="string">'name'</span>, <span class="string">'='</span>, <span class="string">'John'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>orWhere(<span class="keyword">function</span> ($query) &#123;</span><br><span class="line">                $query-&gt;where(<span class="string">'votes'</span>, <span class="string">'&gt;'</span>, <span class="number">100</span>)</span><br><span class="line"><span class="function">                      -&gt;</span>where(<span class="string">'title'</span>, <span class="string">'&lt;&gt;'</span>, <span class="string">'Admin'</span>);</span><br><span class="line">            &#125;)</span><br><span class="line"><span class="function">            -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h1 id="Where-Exists-语句"><a href="#Where-Exists-语句" class="headerlink" title="Where Exists 语句"></a><code>Where Exists</code> 语句</h1><p><code>whereExists</code> 方法允许你编写 <code>where exists</code> SQL 语句</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>whereExists(<span class="keyword">function</span> ($query) &#123;</span><br><span class="line">                $query-&gt;select(DB::raw(<span class="number">1</span>))</span><br><span class="line"><span class="function">                      -&gt;</span><span class="keyword">from</span>(<span class="string">'orders'</span>)</span><br><span class="line"><span class="function">                      -&gt;</span>whereRaw(<span class="string">'orders.user_id = users.id'</span>);</span><br><span class="line">            &#125;)</span><br><span class="line"><span class="function">            -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h1 id="JSON-where-语句"><a href="#JSON-where-语句" class="headerlink" title="JSON where 语句"></a><code>JSON where</code> 语句</h1><p>Laravel 也支持查询 JSON 类型的字段（仅在对 JSON 类型支持的数据库上）。目前，本特性仅支持 MySQL 5.7+ 和 Postgres数据库。可以使用 <code>-&gt;</code> 运算符来查询 JSON 列数据：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>where(<span class="string">'options-&gt;language'</span>, <span class="string">'en'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>where(<span class="string">'preferences-&gt;dining-&gt;meal'</span>, <span class="string">'salad'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h1 id="Ordering-Grouping-Limit-amp-Offset"><a href="#Ordering-Grouping-Limit-amp-Offset" class="headerlink" title="Ordering, Grouping, Limit, &amp; Offset"></a><code>Ordering</code>, <code>Grouping</code>, <code>Limit</code>, &amp; <code>Offset</code></h1><h2 id="orderBy"><a href="#orderBy" class="headerlink" title="orderBy"></a>orderBy</h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>orderBy(<span class="string">'name'</span>, <span class="string">'desc'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h2 id="latest-oldest"><a href="#latest-oldest" class="headerlink" title="latest / oldest"></a><code>latest</code> / <code>oldest</code></h2><p><code>latest</code> 和 <code>oldest</code> 方法允许你轻松地按日期对查询结果排序。默认情况下是对 <code>created_at</code> 字段进行排序。或者，你可以传递你想要排序的字段名称：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$user = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>latest()</span><br><span class="line"><span class="function">                -&gt;</span>first();</span><br></pre></td></tr></table></figure>
+<h2 id="inRandomOrder"><a href="#inRandomOrder" class="headerlink" title="inRandomOrder"></a><code>inRandomOrder</code></h2><p><code>inRandomOrder</code> 方法可以将查询结果随机排序</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$randomUser = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>inRandomOrder()</span><br><span class="line"><span class="function">                -&gt;</span>first();</span><br></pre></td></tr></table></figure>
+<h2 id="groupBy-having"><a href="#groupBy-having" class="headerlink" title="groupBy / having"></a><code>groupBy</code> / <code>having</code></h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>groupBy(<span class="string">'account_id'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>having(<span class="string">'account_id'</span>, <span class="string">'&gt;'</span>, <span class="number">100</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<p>可以将多个参数传递给 groupBy 方法，按多个字段进行分组：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>groupBy(<span class="string">'first_name'</span>, <span class="string">'status'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>having(<span class="string">'account_id'</span>, <span class="string">'&gt;'</span>, <span class="number">100</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h2 id="skip-take"><a href="#skip-take" class="headerlink" title="skip / take"></a><code>skip</code> / <code>take</code></h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>skip<span class="function"><span class="params">(<span class="number">10</span>)</span>-&gt;</span>take<span class="function"><span class="params">(<span class="number">5</span>)</span>-&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<p>或者，你也可以使用 limit 和 offset 方法：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">                -&gt;</span>offset(<span class="number">10</span>)</span><br><span class="line"><span class="function">                -&gt;</span>limit(<span class="number">5</span>)</span><br><span class="line"><span class="function">                -&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<h1 id="条件语句"><a href="#条件语句" class="headerlink" title="条件语句"></a>条件语句</h1><p>有时你可能想要子句只适用于某个情况为真时才执行查询</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$role = $request-&gt;input(<span class="string">'role'</span>);</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line">                -&gt;when($role, <span class="function"><span class="keyword">function</span> <span class="params">($query)</span> <span class="title">use</span> <span class="params">($role)</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> $query-&gt;where(<span class="string">'role_id'</span>, $role);</span><br><span class="line">                &#125;)</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
+<p>只有当 <code>when</code> 方法的第一个参数为 <code>true</code> 时，闭包里的 <code>where</code> 语句才会执行。如果第一个参数是 <code>false</code>，这个闭包将不会被执行。</p>
+<p>你可以将另一个闭包当作第三个参数传递给 <code>when</code> 方法。如果第一个参数的值为 <code>false</code> 时，这个闭包将执行。为了说明如何使用此功能，我们将使用它配置查询的默认排序：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$sortBy = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">$users = DB::table(<span class="string">'users'</span>)</span><br><span class="line">                -&gt;when($sortBy, <span class="function"><span class="keyword">function</span> <span class="params">($query)</span> <span class="title">use</span> <span class="params">($sortBy)</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> $query-&gt;orderBy($sortBy);</span><br><span class="line">                &#125;, <span class="function"><span class="keyword">function</span> <span class="params">($query)</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> $query-&gt;orderBy(<span class="string">'name'</span>);</span><br><span class="line">                &#125;)</span><br><span class="line">                -&gt;get();</span><br></pre></td></tr></table></figure>
+<h1 id="Inserts"><a href="#Inserts" class="headerlink" title="Inserts"></a><code>Inserts</code></h1><p>查询构造器也提供了将记录插入数据库表的 insert 方法</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>insert(</span><br><span class="line">    [<span class="string">'email'</span> =&gt; <span class="string">'john@example.com'</span>, <span class="string">'votes'</span> =&gt; <span class="number">0</span>]</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>你还可以在 <code>insert</code> 中传入一个嵌套数组向表中插入多条记录。每个数组代表要插入表中的行：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>insert([</span><br><span class="line">    [<span class="string">'email'</span> =&gt; <span class="string">'taylor@example.com'</span>, <span class="string">'votes'</span> =&gt; <span class="number">0</span>],</span><br><span class="line">    [<span class="string">'email'</span> =&gt; <span class="string">'dayle@example.com'</span>, <span class="string">'votes'</span> =&gt; <span class="number">0</span>]</span><br><span class="line">]);</span><br></pre></td></tr></table></figure>
+<h2 id="自增-ID"><a href="#自增-ID" class="headerlink" title="自增 ID"></a>自增 ID</h2><p>若数据表存在自增的 ID，则可以使用 <code>insertGetId</code> 方法来插入记录然后获取其 ID：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$id = DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>insertGetId(</span><br><span class="line">    [<span class="string">'email'</span> =&gt; <span class="string">'john@example.com'</span>, <span class="string">'votes'</span> =&gt; <span class="number">0</span>]</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h1 id="Updates"><a href="#Updates" class="headerlink" title="Updates"></a><code>Updates</code></h1><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>where(<span class="string">'id'</span>, <span class="number">1</span>)</span><br><span class="line"><span class="function">            -&gt;</span>update([<span class="string">'votes'</span> =&gt; <span class="number">1</span>]);</span><br></pre></td></tr></table></figure>
+<h2 id="更新-JSON-字段"><a href="#更新-JSON-字段" class="headerlink" title="更新 JSON 字段"></a>更新 <code>JSON</code> 字段</h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DB::table(<span class="string">'users'</span>)</span><br><span class="line"><span class="function">            -&gt;</span>where(<span class="string">'id'</span>, <span class="number">1</span>)</span><br><span class="line"><span class="function">            -&gt;</span>update([<span class="string">'options-&gt;enabled'</span> =&gt; <span class="literal">true</span>]);</span><br></pre></td></tr></table></figure>
+<h2 id="自增-amp-自减"><a href="#自增-amp-自减" class="headerlink" title="自增 &amp; 自减"></a>自增 &amp; 自减</h2><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>increment(<span class="string">'votes'</span>);</span><br><span class="line"></span><br><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>increment(<span class="string">'votes'</span>, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>decrement(<span class="string">'votes'</span>);</span><br><span class="line"></span><br><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>decrement(<span class="string">'votes'</span>, <span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+<p>你也可以在操作过程中指定要更新的字段</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>increment(<span class="string">'votes'</span>, <span class="number">1</span>, [<span class="string">'name'</span> =&gt; <span class="string">'John'</span>]);</span><br></pre></td></tr></table></figure>
+<h1 id="Deletes"><a href="#Deletes" class="headerlink" title="Deletes"></a><code>Deletes</code></h1><p>查询构造器也可使用 <code>delete</code> 方法从数据表中删除记录</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span><span class="keyword">delete</span>();</span><br><span class="line"></span><br><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>where<span class="function"><span class="params">(<span class="string">'votes'</span>, <span class="string">'&gt;'</span>, <span class="number">100</span>)</span>-&gt;</span><span class="keyword">delete</span>();</span><br></pre></td></tr></table></figure>
+<p>如果你需要清空表，你可以使用 <code>truncate</code> 方法，这将删除所有行，并重置自动递增 ID 为零：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>truncate();</span><br></pre></td></tr></table></figure>
+<h1 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h1><p>查询构造器也包含一些可以帮助你在 <code>select</code> 语句上实现「悲观锁定」的函数 。若要在查询中使用 <strong>「共享锁」</strong>，可以使用 <code>sharedLock</code> 方法。</p>
+<p><strong>共享锁可以防止选中的行被篡改，直到事务被提交为止：</strong></p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>where<span class="function"><span class="params">(<span class="string">'votes'</span>, <span class="string">'&gt;'</span>, <span class="number">100</span>)</span>-&gt;</span>sharedLock<span class="function"><span class="params">()</span>-&gt;</span>get();</span><br></pre></td></tr></table></figure>
+<p>或者，你也可以使用 <code>lockForUpdate</code> 方法。使用<strong>「更新」锁</strong> 可避免行被其它共享锁修改或选取：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DB::table<span class="function"><span class="params">(<span class="string">'users'</span>)</span>-&gt;</span>where<span class="function"><span class="params">(<span class="string">'votes'</span>, <span class="string">'&gt;'</span>, <span class="number">100</span>)</span>-&gt;</span>lockForUpdate<span class="function"><span class="params">()</span>-&gt;</span>get();</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/02/11/Laravel-Database-Query/" target="_blank" title="Laravel 数据库请求构建器">http://blog.caoxl.com/2018/02/11/Laravel-Database-Query/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Database/">Database</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Query/">Query</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/23/Laravel-Startup-Process-Notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Laravel 执行流程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/10/Eloquent-The-ORM-OF-Laravel/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Eloquent:ORM of Laravel</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#获取结果"><span class="nav-number">1.</span> <span class="nav-text">获取结果</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#从数据表中获取所有的数据"><span class="nav-number">1.1.</span> <span class="nav-text">从数据表中获取所有的数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从数据表中获取单个列或行"><span class="nav-number">1.2.</span> <span class="nav-text">从数据表中获取单个列或行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取一列的值"><span class="nav-number">1.3.</span> <span class="nav-text">获取一列的值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果分块"><span class="nav-number">1.4.</span> <span class="nav-text">结果分块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聚合"><span class="nav-number">1.5.</span> <span class="nav-text">聚合</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Selects"><span class="nav-number">2.</span> <span class="nav-text">Selects</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#指定一个-Select-语句"><span class="nav-number">2.1.</span> <span class="nav-text">指定一个 Select 语句</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原生表达式"><span class="nav-number">3.</span> <span class="nav-text">原生表达式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原生方法"><span class="nav-number">4.</span> <span class="nav-text">原生方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#selectRaw"><span class="nav-number">4.1.</span> <span class="nav-text">selectRaw</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#whereRaw-orWhereRaw"><span class="nav-number">4.2.</span> <span class="nav-text">whereRaw / orWhereRaw</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#havingRaw-orHavingRaw"><span class="nav-number">4.3.</span> <span class="nav-text">havingRaw / orHavingRaw</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#orderByRaw"><span class="nav-number">4.4.</span> <span class="nav-text">orderByRaw</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Joins"><span class="nav-number">5.</span> <span class="nav-text">Joins</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Inner-Join-语句"><span class="nav-number">5.1.</span> <span class="nav-text">Inner Join 语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Left-Join-语句"><span class="nav-number">5.2.</span> <span class="nav-text">Left Join 语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cross-Join-语句"><span class="nav-number">5.3.</span> <span class="nav-text">Cross Join 语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级-Join-语句"><span class="nav-number">5.4.</span> <span class="nav-text">高级 Join 语句</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Unions"><span class="nav-number">6.</span> <span class="nav-text">Unions</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Where-语句"><span class="nav-number">7.</span> <span class="nav-text">Where 语句</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单的-Where-语句"><span class="nav-number">7.1.</span> <span class="nav-text">简单的 Where 语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Or-语句"><span class="nav-number">7.2.</span> <span class="nav-text">Or 语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其它-Where-语句"><span class="nav-number">7.3.</span> <span class="nav-text">其它 Where 语句</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#whereBetween"><span class="nav-number">7.3.1.</span> <span class="nav-text">whereBetween</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#whereNotBetween"><span class="nav-number">7.3.2.</span> <span class="nav-text">whereNotBetween</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#whereIn-whereNotIn"><span class="nav-number">7.3.3.</span> <span class="nav-text">whereIn / whereNotIn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#whereNull-whereNotNull"><span class="nav-number">7.3.4.</span> <span class="nav-text">whereNull / whereNotNull</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#whereDate-whereMonth-whereDay-whereYear-whereTime"><span class="nav-number">7.3.5.</span> <span class="nav-text">whereDate / whereMonth / whereDay / whereYear / whereTime</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#whereColumn"><span class="nav-number">7.3.6.</span> <span class="nav-text">whereColumn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数分组"><span class="nav-number">7.3.7.</span> <span class="nav-text">参数分组</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Where-Exists-语句"><span class="nav-number">8.</span> <span class="nav-text">Where Exists 语句</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JSON-where-语句"><span class="nav-number">9.</span> <span class="nav-text">JSON where 语句</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ordering-Grouping-Limit-amp-Offset"><span class="nav-number">10.</span> <span class="nav-text">Ordering, Grouping, Limit, &amp; Offset</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#orderBy"><span class="nav-number">10.1.</span> <span class="nav-text">orderBy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#latest-oldest"><span class="nav-number">10.2.</span> <span class="nav-text">latest / oldest</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#inRandomOrder"><span class="nav-number">10.3.</span> <span class="nav-text">inRandomOrder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#groupBy-having"><span class="nav-number">10.4.</span> <span class="nav-text">groupBy / having</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#skip-take"><span class="nav-number">10.5.</span> <span class="nav-text">skip / take</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#条件语句"><span class="nav-number">11.</span> <span class="nav-text">条件语句</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Inserts"><span class="nav-number">12.</span> <span class="nav-text">Inserts</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#自增-ID"><span class="nav-number">12.1.</span> <span class="nav-text">自增 ID</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Updates"><span class="nav-number">13.</span> <span class="nav-text">Updates</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#更新-JSON-字段"><span class="nav-number">13.1.</span> <span class="nav-text">更新 JSON 字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自增-amp-自减"><span class="nav-number">13.2.</span> <span class="nav-text">自增 &amp; 自减</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Deletes"><span class="nav-number">14.</span> <span class="nav-text">Deletes</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#悲观锁"><span class="nav-number">15.</span> <span class="nav-text">悲观锁</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

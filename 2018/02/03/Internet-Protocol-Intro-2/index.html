@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>互联网协议入门（二） | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Internet">
+  
+  
+  
+  
+  <meta name="description" content="上一篇文章分析了互联网的总体构思，从下至上，每一层协议的设计思想。 这是从设计者的角度看问题，今天我想切换到用户的角度，看看用户是如何从上至下，与这些协议互动的。">
+<meta name="keywords" content="Internet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="互联网协议入门（二）">
+<meta property="og:url" content="http://blog.caoxl.com/2018/02/03/Internet-Protocol-Intro-2/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="上一篇文章分析了互联网的总体构思，从下至上，每一层协议的设计思想。 这是从设计者的角度看问题，今天我想切换到用户的角度，看看用户是如何从上至下，与这些协议互动的。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201205/bg2012052913.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061101.jpg">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061111.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061102.png">
+<meta property="og:image" content="http://blog.caoxl.com/2018/02/03/Internet-Protocol-Intro-2/然后他打开浏览器，想要访问Google，在地址栏输入了网址：www.google.com。">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061106.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061107.png">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061104.jpg">
+<meta property="og:updated_time" content="2019-08-22T03:47:07.509Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="互联网协议入门（二）">
+<meta name="twitter:description" content="上一篇文章分析了互联网的总体构思，从下至上，每一层协议的设计思想。 这是从设计者的角度看问题，今天我想切换到用户的角度，看看用户是如何从上至下，与这些协议互动的。">
+<meta name="twitter:image" content="http://www.ruanyifeng.com/blogimg/asset/201205/bg2012052913.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Internet-Protocol-Intro-2" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      互联网协议入门（二）
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/02/03/Internet-Protocol-Intro-2/" class="article-date">
+	  <time datetime="2018-02-03T08:40:24.000Z" itemprop="datePublished">2018-02-03</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p><a href="http://blog.caoxl.com/2018/02/03/Internet-Protocol-Intro-1/">上一篇文章</a>分析了互联网的总体构思，从下至上，每一层协议的设计思想。</p>
+<p>这是从设计者的角度看问题，今天我想切换到用户的角度，看看用户是如何从上至下，与这些协议互动的。</p>
+<a id="more"></a>
+<blockquote>
+<p>原文地址: <a href="http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html</a></p>
+</blockquote>
+<h1 id="一个小结"><a href="#一个小结" class="headerlink" title="一个小结"></a>一个小结</h1><p>先对前面的内容，做一个小结。</p>
+<p>我们已经知道，网络通信就是交换数据包。电脑A向电脑B发送一个数据包，后者收到了，回复一个数据包，从而实现两台电脑之间的通信。数据包的结构，基本上是下面这样：</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201205/bg2012052913.png" alt></p>
+<p>发送这个包，需要知道两个地址：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">对方的MAC地址</span><br><span class="line"> </span><br><span class="line">对方的<span class="built_in">IP</span>地址</span><br></pre></td></tr></table></figure>
+<p>有了这两个地址，数据包才能准确送到接收者手中。但是，前面说过，MAC地址有局限性，如果两台电脑不在同一个子网络，就无法知道对方的MAC地址，必须通过 <code>网关（gateway）</code>转发。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061101.jpg" alt></p>
+<p>上图中，1号电脑要向4号电脑发送一个数据包。它先判断4号电脑是否在同一个子网络，结果发现不是（后文介绍判断方法），于是就把这个数据包发到网关A。网关A通过路由协议，发现4号电脑位于子网络B，又把数据包发给网关B，网关B再转发到4号电脑。</p>
+<p>1号电脑把数据包发到网关A，必须知道网关A的MAC地址。所以，数据包的目标地址，实际上分成两种情况：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">场景</th>
+<th style="text-align:left">数据包地址</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">同一个子网络</td>
+<td style="text-align:left">对方的MAC地址，对方的IP地址</td>
+</tr>
+<tr>
+<td style="text-align:left">非同一个子网络</td>
+<td style="text-align:left">网关的MAC地址，对方的IP地址</td>
+</tr>
+</tbody>
+</table>
+<p>发送数据包之前，电脑必须判断对方是否在同一个子网络，然后选择相应的MAC地址。接下来，我们就来看，实际使用中，这个过程是怎么完成的。</p>
+<h1 id="用户的上网设置"><a href="#用户的上网设置" class="headerlink" title="用户的上网设置"></a>用户的上网设置</h1><h2 id="静态IP地址"><a href="#静态IP地址" class="headerlink" title="静态IP地址"></a>静态IP地址</h2><p>你买了一台新电脑，插上网线，开机，这时电脑能够上网吗？</p>
+<p>通常你必须做一些设置。有时，管理员（或者ISP）会告诉你下面四个参数，你把它们填入操作系统，计算机就能连上网了：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">　　* </span>本机的IP地址</span><br><span class="line"><span class="bullet">　　* </span>子网掩码</span><br><span class="line"><span class="bullet">　　* </span>网关的IP地址</span><br><span class="line"><span class="bullet">　　* </span>DNS的IP地址</span><br></pre></td></tr></table></figure>
+<p>下图是Windows系统的设置窗口。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061111.png" alt></p>
+<p>这四个参数缺一不可，后文会解释为什么需要知道它们才能上网。由于它们是给定的，计算机每次开机，都会分到同样的IP地址，所以这种情况被称作 <strong>“静态IP地址上网”</strong>。</p>
+<p>但是，这样的设置很专业，普通用户望而生畏，而且如果一台电脑的IP地址保持不变，其他电脑就不能使用这个地址，不够灵活。出于这两个原因，大多数用户使用”动态IP地址上网”。</p>
+<h2 id="动态IP地址"><a href="#动态IP地址" class="headerlink" title="动态IP地址"></a>动态IP地址</h2><p>所谓”动态IP地址”，指计算机开机后，会自动分配到一个IP地址，不用人为设定。它使用的协议叫做<u><a href="http://zh.wikipedia.org/zh/DHCP" target="_blank" rel="noopener">DHCP协议</a></u>。</p>
+<p>这个协议规定，每一个子网络中，有一台计算机负责管理本网络的所有IP地址，它叫做”DHCP服务器”。新的计算机加入网络，必须向”DHCP服务器”发送一个”DHCP请求”数据包，申请IP地址和相关的网络参数。</p>
+<p>前面说过，如果两台计算机在同一个子网络，必须知道对方的MAC地址和IP地址，才能发送数据包。但是，新加入的计算机不知道这两个地址，怎么发送数据包呢？</p>
+<p>DHCP协议做了一些巧妙的规定。</p>
+<h2 id="DHCP协议"><a href="#DHCP协议" class="headerlink" title="DHCP协议"></a>DHCP协议</h2><p>首先，它是一种应用层协议，建立在UDP协议之上，所以整个数据包是这样的：</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061102.png" alt></p>
+<ul>
+<li><p>（1）最前面的”以太网标头”，设置发出方（本机）的MAC地址和接收方（DHCP服务器）的MAC地址。前者就是本机网卡的MAC地址，后者这时不知道，就填入一个广播地址：FF-FF-FF-FF-FF-FF。</p>
+</li>
+<li><p>（2）后面的”IP标头”，设置发出方的IP地址和接收方的IP地址。这时，对于这两者，本机都不知道。于是，发出方的IP地址就设为0.0.0.0，接收方的IP地址设为255.255.255.255。</p>
+</li>
+<li><p>（3）最后的”UDP标头”，设置发出方的端口和接收方的端口。这一部分是DHCP协议规定好的，发出方是68端口，接收方是67端口。</p>
+</li>
+</ul>
+<p>这个数据包构造完成后，就可以发出了。以太网是广播发送，同一个子网络的每台计算机都收到了这个包。因为接收方的MAC地址是FF-FF-FF-FF-FF-FF，看不出是发给谁的，所以每台收到这个包的计算机，还必须分析这个包的IP地址，才能确定是不是发给自己的。当看到发出方IP地址是<code>0.0.0.0</code>，接收方是<code>255.255.255.255</code>，于是DHCP服务器知道”这个包是发给我的”，而其他计算机就可以丢弃这个包。</p>
+<p>接下来，DHCP服务器读出这个包的数据内容，分配好IP地址，发送回去一个”DHCP响应”数据包。这个响应包的结构也是类似的，以太网标头的MAC地址是双方的网卡地址，IP标头的IP地址是DHCP服务器的IP地址（发出方）和255.255.255.255（接收方），UDP标头的端口是67（发出方）和68（接收方），分配给请求端的IP地址和本网络的具体参数则包含在Data部分。</p>
+<p>新加入的计算机收到这个响应包，于是就知道了自己的IP地址、子网掩码、网关地址、DNS服务器等等参数。</p>
+<h2 id="上网设置：小结"><a href="#上网设置：小结" class="headerlink" title="上网设置：小结"></a>上网设置：小结</h2><p>这个部分，需要记住的就是一点：不管是”静态IP地址”还是”动态IP地址”，电脑上网的首要步骤，是确定四个参数。这四个值很重要，值得重复一遍：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">　　* </span>本机的IP地址</span><br><span class="line"><span class="bullet">　　* </span>子网掩码</span><br><span class="line"><span class="bullet">　　* </span>网关的IP地址</span><br><span class="line"><span class="bullet">　　* </span>DNS的IP地址</span><br></pre></td></tr></table></figure>
+<p>有了这几个数值，电脑就可以上网”冲浪”了。接下来，我们来看一个实例，当用户访问网页的时候，互联网协议是怎么运作的。</p>
+<h1 id="一个实例：访问网页"><a href="#一个实例：访问网页" class="headerlink" title="一个实例：访问网页"></a>一个实例：访问网页</h1><h2 id="本机参数"><a href="#本机参数" class="headerlink" title="本机参数"></a>本机参数</h2><p>我们假定,经过上一节的步骤，用户设置好了自己的网络参数：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">　　* 本机的IP地址：<span class="number">192.168</span><span class="number">.1</span><span class="number">.100</span></span><br><span class="line">　　* 子网掩码：<span class="number">255.255</span><span class="number">.255</span><span class="number">.0</span></span><br><span class="line">　　* 网关的IP地址：<span class="number">192.168</span><span class="number">.1</span><span class="number">.1</span></span><br><span class="line">　　* DNS的IP地址：<span class="number">8.8</span><span class="number">.8</span><span class="number">.8</span></span><br></pre></td></tr></table></figure>
+<p>然后他打开浏览器，想要访问Google，在地址栏输入了网址：<a href="http://www.google.com。" target="_blank" rel="noopener">www.google.com。</a></p>
+<p><img src="然后他打开浏览器，想要访问Google，在地址栏输入了网址：www.google.com。" alt></p>
+<p>这意味着，浏览器要向Google发送一个网页请求的数据包。</p>
+<h2 id="DNS协议"><a href="#DNS协议" class="headerlink" title="DNS协议"></a>DNS协议</h2><p>我们知道，发送数据包，必须要知道对方的IP地址。但是，现在，我们只知道网址<a href="http://www.google.com，不知道它的IP地址。" target="_blank" rel="noopener">www.google.com，不知道它的IP地址。</a></p>
+<p><u><a href="https://en.wikipedia.org/wiki/Domain_Name_System" target="_blank" rel="noopener">DNS协议</a></u>可以帮助我们，将这个网址转换成IP地址。已知DNS服务器为<code>8.8.8.8</code>，于是我们向这个地址发送一个<code>DNS</code>数据包（53端口）。</p>
+<p>然后，DNS服务器做出响应，告诉我们Google的IP地址是<code>172.194.72.105</code>。于是，我们知道了对方的IP地址。</p>
+<h2 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a>子网掩码</h2><p>接下来，我们要判断，这个IP地址是不是在同一个子网络，这就要用到子网掩码。</p>
+<p>已知子网掩码是255.255.255.0，本机用它对自己的IP地址192.168.1.100，做一个二进制的AND运算（两个数位都为1，结果为1，否则为0），计算结果为192.168.1.0；然后对Google的IP地址172.194.72.105也做一个AND运算，计算结果为172.194.72.0。这两个结果不相等，所以结论是，Google与本机不在同一个子网络。</p>
+<p>因此，我们要向Google发送数据包，必须通过网关192.168.1.1转发，也就是说，接收方的MAC地址将是网关的MAC地址。</p>
+<h2 id="应用层协议"><a href="#应用层协议" class="headerlink" title="应用层协议"></a>应用层协议</h2><p>浏览网页用的是HTTP协议，它的整个数据包构造是这样的：</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061106.png" alt></p>
+<p>HTTP部分的内容，类似于下面这样：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">　　<span class="builtin-name">GET</span> / HTTP/1.1</span><br><span class="line">　　Host: www.google.com</span><br><span class="line">　　Connection: keep-alive</span><br><span class="line">　　User-Agent: Mozilla/5.0 (Windows NT 6.1) <span class="built_in">..</span><span class="built_in">..</span><span class="built_in">..</span></span><br><span class="line">　　Accept: text/html,application/xhtml+xml,application/xml;<span class="attribute">q</span>=0.9,*/*;q=0.8</span><br><span class="line">　　Accept-Encoding: gzip,deflate,sdch</span><br><span class="line">　　Accept-Language: zh-CN,zh;<span class="attribute">q</span>=0.8</span><br><span class="line">　　Accept-Charset: GBK,utf-8;<span class="attribute">q</span>=0.7,*;q=0.3</span><br><span class="line">　　Cookie: <span class="built_in">..</span>. <span class="built_in">..</span>.</span><br></pre></td></tr></table></figure>
+<p>我们假定这个部分的长度为4960字节，它会被嵌在TCP数据包之中。</p>
+<h2 id="TCP协议"><a href="#TCP协议" class="headerlink" title="TCP协议"></a>TCP协议</h2><p>TCP数据包需要设置端口，接收方（Google）的HTTP端口默认是80，发送方（本机）的端口是一个随机生成的<code>1024-65535</code>之间的整数，假定为<code>51775</code>。</p>
+<p>TCP数据包的标头长度为20字节，加上嵌入HTTP的数据包，总长度变为<code>4980</code>字节。</p>
+<h2 id="IP协议"><a href="#IP协议" class="headerlink" title="IP协议"></a>IP协议</h2><p>然后，TCP数据包再嵌入IP数据包。IP数据包需要设置双方的IP地址，这是已知的，<strong>发送方是192.168.1.100（本机），接收方是172.194.72.105（Google）</strong>。</p>
+<p>IP数据包的标头长度为20字节，加上嵌入的TCP数据包，总长度变为5000字节。</p>
+<h2 id="以太网协议"><a href="#以太网协议" class="headerlink" title="以太网协议"></a>以太网协议</h2><p>最后，IP数据包嵌入以太网数据包。以太网数据包需要设置双方的MAC地址，发送方为本机的网卡MAC地址，接收方为网关192.168.1.1的MAC地址（通过ARP协议得到）。</p>
+<p>以太网数据包的数据部分，最大长度为1500字节，而现在的IP数据包长度为5000字节。因此，IP数据包必须分割成四个包。因为每个包都有自己的IP标头（20字节），所以四个包的IP数据包的长度分别为1500、1500、1500、560。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061107.png" alt></p>
+<h2 id="服务器端响应"><a href="#服务器端响应" class="headerlink" title="服务器端响应"></a>服务器端响应</h2><p>经过多个网关的转发，Google的服务器172.194.72.105，收到了这四个以太网数据包。</p>
+<p>根据IP标头的序号，Google将四个包拼起来，取出完整的TCP数据包，然后读出里面的”HTTP请求”，接着做出”HTTP响应”，再用TCP协议发回来。</p>
+<p>本机收到HTTP响应以后，就可以将网页显示出来，完成一次网络通信。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201206/bg2012061104.jpg" alt></p>
+<p>这个例子就到此为止，虽然经过了简化，但它大致上反映了互联网协议的整个通信过程。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://www.ruanyifeng.com/blog/2012/06/internet_protocol_suite_part_ii.html" target="_blank" rel="noopener">互联网协议入门(二)</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/02/03/Internet-Protocol-Intro-2/" target="_blank" title="互联网协议入门（二）">http://blog.caoxl.com/2018/02/03/Internet-Protocol-Intro-2/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/">Internet</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/03/TCP-Protocol-Intro/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          TCP 协议简介
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/03/Internet-Protocol-Intro-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">互联网协议入门（一）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一个小结"><span class="nav-number">1.</span> <span class="nav-text">一个小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用户的上网设置"><span class="nav-number">2.</span> <span class="nav-text">用户的上网设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#静态IP地址"><span class="nav-number">2.1.</span> <span class="nav-text">静态IP地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态IP地址"><span class="nav-number">2.2.</span> <span class="nav-text">动态IP地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DHCP协议"><span class="nav-number">2.3.</span> <span class="nav-text">DHCP协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#上网设置：小结"><span class="nav-number">2.4.</span> <span class="nav-text">上网设置：小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一个实例：访问网页"><span class="nav-number">3.</span> <span class="nav-text">一个实例：访问网页</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#本机参数"><span class="nav-number">3.1.</span> <span class="nav-text">本机参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS协议"><span class="nav-number">3.2.</span> <span class="nav-text">DNS协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子网掩码"><span class="nav-number">3.3.</span> <span class="nav-text">子网掩码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用层协议"><span class="nav-number">3.4.</span> <span class="nav-text">应用层协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP协议"><span class="nav-number">3.5.</span> <span class="nav-text">TCP协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP协议"><span class="nav-number">3.6.</span> <span class="nav-text">IP协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#以太网协议"><span class="nav-number">3.7.</span> <span class="nav-text">以太网协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器端响应"><span class="nav-number">3.8.</span> <span class="nav-text">服务器端响应</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

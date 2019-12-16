@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>linux lsof 一切皆文件 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Linuxlsof">
+  
+  
+  
+  
+  <meta name="description" content="lsof（list open files）是一个查看当前系统文件的工具。在linux环境下，任何事物都以文件的形式存在，通过文件不仅仅可以访问常规数据，还可以访问网络连接和硬件。如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等，系统在后台都为该应用程序分配了一个文件描述符，该文件描述符提供了大量关于这个应用程序本身的信息。">
+<meta name="keywords" content="Linux,lsof">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux lsof 一切皆文件">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/20/Linux-Tool-lsof/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="lsof（list open files）是一个查看当前系统文件的工具。在linux环境下，任何事物都以文件的形式存在，通过文件不仅仅可以访问常规数据，还可以访问网络连接和硬件。如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等，系统在后台都为该应用程序分配了一个文件描述符，该文件描述符提供了大量关于这个应用程序本身的信息。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:50:02.363Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux lsof 一切皆文件">
+<meta name="twitter:description" content="lsof（list open files）是一个查看当前系统文件的工具。在linux环境下，任何事物都以文件的形式存在，通过文件不仅仅可以访问常规数据，还可以访问网络连接和硬件。如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等，系统在后台都为该应用程序分配了一个文件描述符，该文件描述符提供了大量关于这个应用程序本身的信息。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Linux-Tool-lsof" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Linux lsof 一切皆文件
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/20/Linux-Tool-lsof/" class="article-date">
+	  <time datetime="2018-08-20T01:25:33.000Z" itemprop="datePublished">2018-08-20</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><code>lsof（list open files）</code>是一个查看当前系统文件的工具。在linux环境下，任何事物都以文件的形式存在，通过文件不仅仅可以访问常规数据，还可以访问网络连接和硬件。如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等，系统在后台都为该应用程序分配了一个文件描述符，该文件描述符提供了大量关于这个应用程序本身的信息。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="lsof打开的文件可以是："><a href="#lsof打开的文件可以是：" class="headerlink" title="lsof打开的文件可以是："></a><code>lsof</code>打开的文件可以是：</h1><ul>
+<li><ol>
+<li>普通文件</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>目录</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>网络文件系统的文件</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>字符或设备文件</li>
+</ol>
+</li>
+<li><ol start="5">
+<li>(函数)共享库</li>
+</ol>
+</li>
+<li><ol start="6">
+<li>管道, 命名管道</li>
+</ol>
+</li>
+<li><ol start="7">
+<li>符号链接</li>
+</ol>
+</li>
+<li><ol start="8">
+<li>网络文件(例如: NFS file、网络socket、unix域名socket)</li>
+</ol>
+</li>
+<li><ol start="9">
+<li>还有其他类型的文件,等等</li>
+</ol>
+</li>
+</ul>
+<h1 id="命令参数"><a href="#命令参数" class="headerlink" title="命令参数"></a>命令参数</h1><ul>
+<li><code>-a</code>: 列出打开文件存在的进程</li>
+<li><code>-c&lt;进程号&gt;</code>: 列出指定进程所打开的文件</li>
+<li><code>-g</code>: 列出GID号进程详情</li>
+<li><code>-d&lt;文件号&gt;</code>: 列出占用该文件的进程</li>
+<li><code>+d&lt;目录&gt;</code>: 列出目录下被打开的文件</li>
+<li><code>+D&lt;目录&gt;</code>: 递归列出目录下被打开的文件</li>
+<li><code>-n&lt;目录&gt;</code>: 列出使用NFS的文件</li>
+<li><code>-i&lt;条件&gt;</code>: 列出符合条件的进程 (4、6、协议、:端口、@ip)</li>
+<li><code>-p&lt;进程号&gt;</code>: 列出指定进程号所打开的文件</li>
+<li><code>-u</code>: 列出UID号进程详情</li>
+<li><code>-h</code>: 显示帮助信息</li>
+<li><code>-v</code>: 显示版本信息</li>
+</ul>
+<h1 id="使用实例"><a href="#使用实例" class="headerlink" title="使用实例"></a>使用实例</h1><h2 id="实例1：无任何参数"><a href="#实例1：无任何参数" class="headerlink" title="实例1：无任何参数"></a>实例1：无任何参数</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# lsof | more</span><br><span class="line">COMMAND     PID   TID    USER   FD      TYPE             DEVICE  SIZE/OFF       NODE NAME</span><br><span class="line">systemd       <span class="number">1</span>          root  cwd       DIR              <span class="number">253</span>,<span class="number">1</span>      <span class="number">4096</span>          <span class="number">2</span> /</span><br><span class="line">systemd       <span class="number">1</span>          root  rtd       DIR              <span class="number">253</span>,<span class="number">1</span>      <span class="number">4096</span>          <span class="number">2</span> /</span><br><span class="line">systemd       <span class="number">1</span>          root  txt       REG              <span class="number">253</span>,<span class="number">1</span>   <span class="number">1612152</span>    <span class="number">1053843</span> /usr/lib/</span><br><span class="line">systemd/systemd</span><br><span class="line">systemd       <span class="number">1</span>          root  mem       REG              <span class="number">253</span>,<span class="number">1</span>     <span class="number">20112</span>    <span class="number">1050279</span> /usr/lib6</span><br><span class="line"><span class="number">4</span>/libuuid.so<span class="number">.1</span><span class="number">.3</span><span class="number">.0</span></span><br><span class="line">systemd       <span class="number">1</span>          root  mem       REG              <span class="number">253</span>,<span class="number">1</span>    <span class="number">261456</span>    <span class="number">1067233</span> /usr/lib6</span><br><span class="line"><span class="number">4</span>/libblkid.so<span class="number">.1</span><span class="number">.1</span><span class="number">.0</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p><strong>说明:</strong></p>
+<p><code>lsof</code>输出各列信息的意义如下：</p>
+<ul>
+<li><code>COMMAND</code>：进程的名称</li>
+<li><code>PID</code>：进程标识符</li>
+<li><code>PPID</code>：父进程标识符（需要指定-R参数）</li>
+<li><code>USER</code>：进程所有者</li>
+<li><code>PGID</code>：进程所属组</li>
+<li><code>FD</code>：文件描述符，应用程序通过文件描述符识别该文件。如cwd、txt等:</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">（1）cwd：表示current work dirctory，即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改</span><br><span class="line">（2）txt ：该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的 /sbin/init 程序</span><br><span class="line">（3）lnn：library references (AIX);</span><br><span class="line">（4）er：FD information error (see NAME column);</span><br><span class="line">（5）jld：jail directory (FreeBSD);</span><br><span class="line">（6）ltx：shared library text (code and data);</span><br><span class="line">（7）mxx ：hex memory-mapped type number xx.</span><br><span class="line">（8）m86：DOS <span class="keyword">Merge</span> mapped <span class="keyword">file</span>;</span><br><span class="line">（9）mem：memory-mapped file;</span><br><span class="line">（10）mmap：memory-mapped device;</span><br><span class="line">（11）pd：parent directory;</span><br><span class="line">（12）rtd：root directory;</span><br><span class="line">（13）tr：kernel trace file (OpenBSD);</span><br><span class="line">（14）v86  VP/ix mapped file;</span><br><span class="line">（15）0：表示标准输入</span><br><span class="line">（16）1：表示标准输出</span><br><span class="line">（17）2：表示标准错误</span><br><span class="line">一般在标准输出、标准错误、标准输入后还跟着文件状态模式：r、w、u等</span><br><span class="line">（1）u：表示该文件被打开并处于读取/写入模式</span><br><span class="line">（2）r：表示该文件被打开并处于只读模式</span><br><span class="line">（3）w：表示该文件被打开并处于</span><br><span class="line">（4）空格：表示该文件的状态模式为unknow，且没有锁定</span><br><span class="line">（5）-：表示该文件的状态模式为unknow，且被锁定</span><br><span class="line">同时在文件状态模式后面，还跟着相关的锁</span><br><span class="line">（1）N：for a Solaris NFS <span class="keyword">lock</span> <span class="keyword">of</span> <span class="literal">unknown</span> <span class="keyword">type</span>;</span><br><span class="line">（2）r：for read <span class="keyword">lock</span> <span class="keyword">on</span> part <span class="keyword">of</span> the <span class="keyword">file</span>;</span><br><span class="line">（3）R：for a read <span class="keyword">lock</span> <span class="keyword">on</span> the entire <span class="keyword">file</span>;</span><br><span class="line">（4）w：for a write <span class="keyword">lock</span> <span class="keyword">on</span> part <span class="keyword">of</span> the <span class="keyword">file</span>;（文件的部分写锁）</span><br><span class="line">（5）W：for a write <span class="keyword">lock</span> <span class="keyword">on</span> the entire <span class="keyword">file</span>;（整个文件的写锁）</span><br><span class="line">（6）u：for a read and write <span class="keyword">lock</span> <span class="keyword">of</span> <span class="keyword">any</span> <span class="keyword">length</span>;</span><br><span class="line">（7）U：for a <span class="keyword">lock</span> <span class="keyword">of</span> <span class="literal">unknown</span> <span class="keyword">type</span>;</span><br><span class="line">（8）x：for an SCO OpenServer Xenix <span class="keyword">lock</span> <span class="keyword">on</span> part      <span class="keyword">of</span> the <span class="keyword">file</span>;</span><br><span class="line">（9）X：for an SCO OpenServer Xenix <span class="keyword">lock</span> <span class="keyword">on</span> the      entire <span class="keyword">file</span>;</span><br><span class="line">（10）space：if there is no lock.</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>TYPE</code>：文件类型，如DIR、REG等，常见的文件类型:</li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>）DIR：表示目录</span><br><span class="line">（<span class="number">2</span>）CHR：表示字符类型</span><br><span class="line">（<span class="number">3</span>）BLK：块设备类型</span><br><span class="line">（<span class="number">4</span>）UNIX： UNIX 域套接字</span><br><span class="line">（<span class="number">5</span>）FIFO：先进先出 (FIFO) 队列</span><br><span class="line">（<span class="number">6</span>）IPv4：网际协议 (IP) 套接字</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>DEVICE</code>：指定磁盘的名称</li>
+<li><code>SIZE</code>：文件的大小</li>
+<li><code>NODE</code>：索引节点（文件在磁盘上的标识）</li>
+<li><code>NAME</code>：打开文件的确切名称</li>
+</ul>
+<h2 id="实例2：查找某个文件相关的进程"><a href="#实例2：查找某个文件相关的进程" class="headerlink" title="实例2：查找某个文件相关的进程"></a>实例2：查找某个文件相关的进程</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# lsof /bin/bash</span><br><span class="line">COMMAND     PID<span class="built_in"> USER </span> FD  <span class="built_in"> TYPE </span>DEVICE SIZE/OFF    NODE NAME</span><br><span class="line">mysqld_sa   777 root txt    REG  253,1   964544 1055537 /usr/bin/bash</span><br><span class="line">bash      31039 root txt    REG  253,1   964544 1055537 /usr/bin/bash</span><br></pre></td></tr></table></figure>
+<h2 id="实例3：列出某个用户打开的文件信息"><a href="#实例3：列出某个用户打开的文件信息" class="headerlink" title="实例3：列出某个用户打开的文件信息"></a>实例3：列出某个用户打开的文件信息</h2><figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="symbol">@caoxl</span> ~]<span class="meta"># lsof -u root</span></span><br><span class="line">-u 选项,u是user的缩写</span><br></pre></td></tr></table></figure>
+<h2 id="实例4：列出某个程序进程所打开的文件信息"><a href="#实例4：列出某个程序进程所打开的文件信息" class="headerlink" title="实例4：列出某个程序进程所打开的文件信息"></a>实例4：列出某个程序进程所打开的文件信息</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# lsof -c mysql</span><br><span class="line">COMMAND    PID  USER   FD   TYPE             DEVICE  SIZE/OFF    NODE NAME</span><br><span class="line">mysqld_sa  <span class="number">777</span>  root  cwd    DIR              <span class="number">253</span>,<span class="number">1</span>      <span class="number">4096</span> <span class="number">1445566</span> /usr/local/mysql</span><br><span class="line">mysqld_sa  <span class="number">777</span>  root  rtd    DIR              <span class="number">253</span>,<span class="number">1</span>      <span class="number">4096</span>       <span class="number">2</span> /</span><br><span class="line">mysqld_sa  <span class="number">777</span>  root  txt    REG              <span class="number">253</span>,<span class="number">1</span>    <span class="number">964544</span> <span class="number">1055537</span> /usr/bin/bash</span><br><span class="line">mysqld_sa  <span class="number">777</span>  root  mem    REG              <span class="number">253</span>,<span class="number">1</span>     <span class="number">62184</span> <span class="number">1053860</span> /usr/lib64/libnss_files<span class="number">-2.17</span>.so</span><br><span class="line">mysqld_sa  <span class="number">777</span>  root  mem    REG              <span class="number">253</span>,<span class="number">1</span> <span class="number">106070960</span> <span class="number">1050452</span> /usr/lib/locale/locale-archive</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>-c 选项将会列出所有以mysql这个进程开头的程序的文件，其实你也可以写成 <code>lsof | grep mysql</code>, 但是第一种方法明显比第二种方法要少打几个字符；</p>
+<h2 id="实例5：列出某个用户以及某个进程所打开的文件信息"><a href="#实例5：列出某个用户以及某个进程所打开的文件信息" class="headerlink" title="实例5：列出某个用户以及某个进程所打开的文件信息"></a>实例5：列出某个用户以及某个进程所打开的文件信息</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# lsof -u git -c mysql</span><br><span class="line">COMMAND    PID  USER   FD   TYPE             DEVICE  SIZE/OFF    NODE NAME</span><br><span class="line">mysqld_sa  <span class="number">777</span>  root  cwd    DIR              <span class="number">253</span>,<span class="number">1</span>      <span class="number">4096</span> <span class="number">1445566</span> /usr/local/mysql</span><br><span class="line">mysqld_sa  <span class="number">777</span>  root  rtd    DIR              <span class="number">253</span>,<span class="number">1</span>      <span class="number">4096</span>       <span class="number">2</span> /</span><br><span class="line">mysqld_sa  <span class="number">777</span>  root  txt    REG              <span class="number">253</span>,<span class="number">1</span>    <span class="number">964544</span> <span class="number">1055537</span> /usr/bin/bash</span><br><span class="line">mysqld_sa  <span class="number">777</span>  root  mem    REG              <span class="number">253</span>,<span class="number">1</span>     <span class="number">62184</span> <span class="number">1053860</span> /usr/lib64/libnss_files<span class="number">-2.17</span>.so</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="实例6：通过某个进程号显示该进程打开的文件"><a href="#实例6：通过某个进程号显示该进程打开的文件" class="headerlink" title="实例6：通过某个进程号显示该进程打开的文件"></a>实例6：通过某个进程号显示该进程打开的文件</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# lsof -p <span class="number">777</span></span><br><span class="line">COMMAND   PID USER   FD   TYPE             DEVICE  SIZE/OFF    NODE NAME</span><br><span class="line">mysqld_sa <span class="number">777</span> root  cwd    DIR              <span class="number">253</span>,<span class="number">1</span>      <span class="number">4096</span> <span class="number">1445566</span> /usr/local/mysql</span><br><span class="line">mysqld_sa <span class="number">777</span> root  rtd    DIR              <span class="number">253</span>,<span class="number">1</span>      <span class="number">4096</span>       <span class="number">2</span> /</span><br><span class="line">mysqld_sa <span class="number">777</span> root  txt    REG              <span class="number">253</span>,<span class="number">1</span>    <span class="number">964544</span> <span class="number">1055537</span> /usr/bin/bash</span><br><span class="line">mysqld_sa <span class="number">777</span> root  mem    REG              <span class="number">253</span>,<span class="number">1</span>     <span class="number">62184</span> <span class="number">1053860</span> /usr/lib64/libnss_files<span class="number">-2.17</span>.so</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="实例7：列出所有的网络连接"><a href="#实例7：列出所有的网络连接" class="headerlink" title="实例7：列出所有的网络连接"></a>实例7：列出所有的网络连接</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# lsof -i</span><br><span class="line">COMMAND     PID <span class="built_in"> USER </span>  FD  <span class="built_in"> TYPE </span>DEVICE SIZE/OFF NODE NAME</span><br><span class="line">ntpd        468  <span class="built_in"> ntp </span>  16u  IPv4  12395      0t0  UDP *:ntp </span><br><span class="line">ntpd        468  <span class="built_in"> ntp </span>  17u <span class="built_in"> IPv6 </span> 12408      0t0  UDP *:ntp </span><br><span class="line">ntpd        468  <span class="built_in"> ntp </span>  18u  IPv4  12610      0t0  UDP localhost:ntp </span><br><span class="line">ntpd        468  <span class="built_in"> ntp </span>  20u  IPv4  15043      0t0  UDP caoxl:ntp </span><br><span class="line"><span class="built_in">..</span>.</span><br></pre></td></tr></table></figure>
+<h2 id="实例8：列出所有tcp-网络连接信息"><a href="#实例8：列出所有tcp-网络连接信息" class="headerlink" title="实例8：列出所有tcp 网络连接信息"></a>实例8：列出所有tcp 网络连接信息</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# lsof -i tcp</span><br><span class="line">COMMAND     PID <span class="built_in"> USER </span>  FD  <span class="built_in"> TYPE </span>DEVICE SIZE/OFF NODE NAME</span><br><span class="line">mysqld     1358 mysql   11u  IPv4  15262      0t0  TCP *:mysql (LISTEN)</span><br><span class="line">AliYunDun  1366  root   18u  IPv4 234684      0t0  TCP caoxl:49352-&gt;106.11.248.51:http (ESTABLISHED)</span><br><span class="line">python     1448  root    4u <span class="built_in"> IPv6 </span> 15329      0t0  TCP *:smc-https (LISTEN)</span><br><span class="line">python     1448  root   10u <span class="built_in"> IPv6 </span>661910      0t0  TCP caoxl:smc-https-&gt;61.242.42.166:15810 (ESTABLISHED)</span><br><span class="line">python     1448  root   11u  IPv4 661911      0t0  TCP caoxl:39612-&gt;th-in-f188.1e100.net:hpvroom (ESTABLISHED)</span><br><span class="line"><span class="built_in">..</span>.</span><br></pre></td></tr></table></figure>
+<h2 id="实例9：列出谁在使用某个端口"><a href="#实例9：列出谁在使用某个端口" class="headerlink" title="实例9：列出谁在使用某个端口"></a>实例9：列出谁在使用某个端口</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# lsof -i :3306</span><br><span class="line">COMMAND  PID <span class="built_in"> USER </span>  FD  <span class="built_in"> TYPE </span>DEVICE SIZE/OFF NODE NAME</span><br><span class="line">mysqld  1358 mysql   11u  IPv4  15262      0t0  TCP *:mysql (LISTEN)</span><br></pre></td></tr></table></figure>
+<h2 id="实例10：列出某个用户的所有活跃的网络端口"><a href="#实例10：列出某个用户的所有活跃的网络端口" class="headerlink" title="实例10：列出某个用户的所有活跃的网络端口"></a>实例10：列出某个用户的所有活跃的网络端口</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# lsof -a -u root -i</span><br><span class="line">COMMAND     PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME</span><br><span class="line">AliYunDun  <span class="number">1366</span> root   <span class="number">18</span>u  IPv4 <span class="number">234684</span>      <span class="number">0</span>t0  TCP caoxl:<span class="number">49352</span>-&gt;<span class="number">106.11</span><span class="number">.248</span><span class="number">.51</span>:http (ESTABLISHED)</span><br><span class="line">python     <span class="number">1448</span> root    <span class="number">4</span>u  IPv6  <span class="number">15329</span>      <span class="number">0</span>t0  TCP *:smc-https (LISTEN)</span><br><span class="line">python     <span class="number">1448</span> root    <span class="number">6</span>u  IPv6  <span class="number">15330</span>      <span class="number">0</span>t0  UDP *:smc-https </span><br><span class="line">python     <span class="number">1448</span> root    <span class="number">9</span>u  IPv4  <span class="number">15332</span>      <span class="number">0</span>t0  UDP *:<span class="number">49276</span> </span><br><span class="line">python     <span class="number">1448</span> root   <span class="number">10</span>u  IPv6 <span class="number">662052</span>      <span class="number">0</span>t0  TCP caoxl:smc-https-&gt;<span class="number">61.242</span><span class="number">.42</span><span class="number">.166</span>:<span class="number">15379</span> (ESTABLISHED)</span><br><span class="line">python     <span class="number">1448</span> root   <span class="number">11</span>u  IPv4 <span class="number">662053</span>      <span class="number">0</span>t0  TCP caoxl:<span class="number">36753</span>-&gt;th-<span class="keyword">in</span>-f188<span class="number">.1e100</span>.net:hpvroom (ESTABLISHED)</span><br><span class="line">sshd       <span class="number">1476</span> root    <span class="number">3</span>u  IPv4  <span class="number">15908</span>      <span class="number">0</span>t0  TCP *:ssh (LISTEN)</span><br><span class="line">java      <span class="number">25899</span> root   <span class="number">49</span>u  IPv4 <span class="number">555565</span>      <span class="number">0</span>t0  TCP *:webcache (LISTEN)</span><br><span class="line">java      <span class="number">25899</span> root   <span class="number">54</span>u  IPv4 <span class="number">555569</span>      <span class="number">0</span>t0  TCP *:<span class="number">8009</span> (LISTEN)</span><br><span class="line">java      <span class="number">25899</span> root   <span class="number">71</span>u  IPv4 <span class="number">555583</span>      <span class="number">0</span>t0  TCP localhost:mxi (LISTEN)</span><br><span class="line">php-fpm   <span class="number">26119</span> root    <span class="number">7</span>u  IPv4 <span class="number">557416</span>      <span class="number">0</span>t0  TCP localhost:cslistener (LISTEN)</span><br><span class="line">nginx     <span class="number">26512</span> root    <span class="number">8</span>u  IPv4 <span class="number">561908</span>      <span class="number">0</span>t0  TCP *:http (LISTEN)</span><br><span class="line">nginx     <span class="number">26512</span> root    <span class="number">9</span>u  IPv4 <span class="number">561909</span>      <span class="number">0</span>t0  TCP *:https (LISTEN)</span><br><span class="line">sshd      <span class="number">31037</span> root    <span class="number">3</span>u  IPv4 <span class="number">651391</span>      <span class="number">0</span>t0  TCP caoxl:ssh-&gt;<span class="number">61.140</span><span class="number">.74</span><span class="number">.12</span>:d2k-datamover1 (ESTABLISHED)</span><br></pre></td></tr></table></figure>
+<h2 id="实例11：根据文件描述列出对应的文件信息"><a href="#实例11：根据文件描述列出对应的文件信息" class="headerlink" title="实例11：根据文件描述列出对应的文件信息"></a>实例11：根据文件描述列出对应的文件信息</h2><figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">lsof</span> -<span class="variable">d</span> <span class="function"><span class="title">description</span>(<span class="variable">like</span> <span class="number">2</span>)</span></span><br></pre></td></tr></table></figure>
+<p>示例:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# lsof -d <span class="number">2</span> | grep systemd</span><br><span class="line">systemd       <span class="number">1</span>    root    <span class="number">2</span>u   CHR                <span class="number">1</span>,<span class="number">3</span>      <span class="number">0</span>t0    <span class="number">5078</span> /dev/<span class="literal">null</span></span><br><span class="line">systemd-j   <span class="number">322</span>    root    <span class="number">2</span>w   CHR                <span class="number">1</span>,<span class="number">3</span>      <span class="number">0</span>t0    <span class="number">5078</span> /dev/<span class="literal">null</span></span><br><span class="line">systemd-u   <span class="number">354</span>    root    <span class="number">2</span>u  unix <span class="number">0xffff8d25f6a74c00</span>      <span class="number">0</span>t0   <span class="number">10945</span> socket</span><br><span class="line">systemd-l   <span class="number">470</span>    root    <span class="number">2</span>u  unix <span class="number">0xffff8d25faf60400</span>      <span class="number">0</span>t0   <span class="number">12201</span> socket</span><br></pre></td></tr></table></figure>
+<p>说明： 0表示标准输入，1表示标准输出，2表示标准错误，从而可知：所以大多数应用程序所打开的文件的 FD 都是从 3 开始</p>
+<h2 id="实例12：列出被进程号为1358的进程所打开的所有IPV4-network-files"><a href="#实例12：列出被进程号为1358的进程所打开的所有IPV4-network-files" class="headerlink" title="实例12：列出被进程号为1358的进程所打开的所有IPV4 network files"></a>实例12：列出被进程号为1358的进程所打开的所有IPV4 network files</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# lsof -i 4 -a -p 1358</span><br><span class="line">COMMAND  PID <span class="built_in"> USER </span>  FD  <span class="built_in"> TYPE </span>DEVICE SIZE/OFF NODE NAME</span><br><span class="line">mysqld  1358 mysql   11u  IPv4  15262      0t0  TCP *:mysql (LISTEN)</span><br></pre></td></tr></table></figure>
+<h2 id="实例13：列出目前连接主机caoxl上端口为：20，21，80相关的所有文件信息，且每隔3秒重复执行"><a href="#实例13：列出目前连接主机caoxl上端口为：20，21，80相关的所有文件信息，且每隔3秒重复执行" class="headerlink" title="实例13：列出目前连接主机caoxl上端口为：20，21，80相关的所有文件信息，且每隔3秒重复执行"></a>实例13：列出目前连接主机caoxl上端口为：20，21，80相关的所有文件信息，且每隔3秒重复执行</h2><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# lsof -i @caoxl:20,21,80 -r 3</span><br><span class="line">=======</span><br><span class="line">=======</span><br><span class="line">=======</span><br><span class="line">=======</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/20/Linux-Tool-lsof/" target="_blank" title="Linux lsof 一切皆文件">http://blog.caoxl.com/2018/08/20/Linux-Tool-lsof/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/lsof/">lsof</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/20/Linux-Tool-pstack/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Linux pstack 跟踪进程栈
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/17/Linux-Tool-ps/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Linux ps 进程查看器</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#lsof打开的文件可以是："><span class="nav-number">1.</span> <span class="nav-text">lsof打开的文件可以是：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命令参数"><span class="nav-number">2.</span> <span class="nav-text">命令参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用实例"><span class="nav-number">3.</span> <span class="nav-text">使用实例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实例1：无任何参数"><span class="nav-number">3.1.</span> <span class="nav-text">实例1：无任何参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例2：查找某个文件相关的进程"><span class="nav-number">3.2.</span> <span class="nav-text">实例2：查找某个文件相关的进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例3：列出某个用户打开的文件信息"><span class="nav-number">3.3.</span> <span class="nav-text">实例3：列出某个用户打开的文件信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例4：列出某个程序进程所打开的文件信息"><span class="nav-number">3.4.</span> <span class="nav-text">实例4：列出某个程序进程所打开的文件信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例5：列出某个用户以及某个进程所打开的文件信息"><span class="nav-number">3.5.</span> <span class="nav-text">实例5：列出某个用户以及某个进程所打开的文件信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例6：通过某个进程号显示该进程打开的文件"><span class="nav-number">3.6.</span> <span class="nav-text">实例6：通过某个进程号显示该进程打开的文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例7：列出所有的网络连接"><span class="nav-number">3.7.</span> <span class="nav-text">实例7：列出所有的网络连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例8：列出所有tcp-网络连接信息"><span class="nav-number">3.8.</span> <span class="nav-text">实例8：列出所有tcp 网络连接信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例9：列出谁在使用某个端口"><span class="nav-number">3.9.</span> <span class="nav-text">实例9：列出谁在使用某个端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例10：列出某个用户的所有活跃的网络端口"><span class="nav-number">3.10.</span> <span class="nav-text">实例10：列出某个用户的所有活跃的网络端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例11：根据文件描述列出对应的文件信息"><span class="nav-number">3.11.</span> <span class="nav-text">实例11：根据文件描述列出对应的文件信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例12：列出被进程号为1358的进程所打开的所有IPV4-network-files"><span class="nav-number">3.12.</span> <span class="nav-text">实例12：列出被进程号为1358的进程所打开的所有IPV4 network files</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例13：列出目前连接主机caoxl上端口为：20，21，80相关的所有文件信息，且每隔3秒重复执行"><span class="nav-number">3.13.</span> <span class="nav-text">实例13：列出目前连接主机caoxl上端口为：20，21，80相关的所有文件信息，且每隔3秒重复执行</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

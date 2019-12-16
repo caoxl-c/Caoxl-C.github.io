@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>docker 初见 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Docker开发工具">
+  
+  
+  
+  
+  <meta name="description" content="Docker-First-Try 因为PHP开发环境需要多个环境,由此学习Docker  最近的一个项目使用了低版本的 PHP 5.4，而我主要用的 PHP5.6，又不时想体验最新的 PHP 7+，之前一直使用 vagrant 管理 `Linux 虚拟机，里面同一时刻只能使用一个版本的 PHP，虽然可以安装多个版本的虚拟机，但是每次都要更新环境变量，且同一时刻只能运行一个项目。">
+<meta name="keywords" content="Docker,开发工具">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker 初见">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/05/Docker-First-Try/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Docker-First-Try 因为PHP开发环境需要多个环境,由此学习Docker  最近的一个项目使用了低版本的 PHP 5.4，而我主要用的 PHP5.6，又不时想体验最新的 PHP 7+，之前一直使用 vagrant 管理 `Linux 虚拟机，里面同一时刻只能使用一个版本的 PHP，虽然可以安装多个版本的虚拟机，但是每次都要更新环境变量，且同一时刻只能运行一个项目。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:31:10.168Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker 初见">
+<meta name="twitter:description" content="Docker-First-Try 因为PHP开发环境需要多个环境,由此学习Docker  最近的一个项目使用了低版本的 PHP 5.4，而我主要用的 PHP5.6，又不时想体验最新的 PHP 7+，之前一直使用 vagrant 管理 `Linux 虚拟机，里面同一时刻只能使用一个版本的 PHP，虽然可以安装多个版本的虚拟机，但是每次都要更新环境变量，且同一时刻只能运行一个项目。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Docker-First-Try" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Docker 初见
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/05/Docker-First-Try/" class="article-date">
+	  <time datetime="2018-01-05T10:29:39.000Z" itemprop="datePublished">2018-01-05</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/开发工具/">开发工具</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h2 id="Docker-First-Try"><a href="#Docker-First-Try" class="headerlink" title="Docker-First-Try"></a>Docker-First-Try</h2><blockquote>
+<p>因为PHP开发环境需要多个环境,由此学习Docker</p>
+</blockquote>
+<p>最近的一个项目使用了低版本的 PHP <code>5.4</code>，而我主要用的 <code>PHP5.6</code>，又不时想体验最新的 <code>PHP 7+</code>，之前一直使用 <code>vagrant</code> 管理 `Linux 虚拟机，里面同一时刻只能使用一个版本的 PHP，虽然可以安装多个版本的虚拟机，但是每次都要更新环境变量，且同一时刻只能运行一个项目。</p>
+<a id="more"></a>
+<blockquote>
+<p>下面以在 macOS 上总结使用 Docker 运行 N 个版本项目的实际经历，以及学到的新东西。</p>
+</blockquote>
+<h2 id="安装-Docker"><a href="#安装-Docker" class="headerlink" title="安装 Docker"></a>安装 Docker</h2><p><code>Docker</code> 可以直接安装在 <code>Linux</code>、<code>macOS</code>，甚至 <code>Windows</code> 上。</p>
+<p>这里有一个 <code>Docker Toolbox</code> 的东西，如果安装的是这个，那么无论是在 <code>macOS</code> 还是 <code>Windows</code> 上，<code>Docker</code> 实际运行的系统还是 <code>Linux</code>，因为安装 <code>Docker Toolbox</code> 的时候会安装好 <code>VirtualBox</code> 和一个 <code>Linux</code> 虚拟机。</p>
+<p>推荐直接安装 <a href="https://docs.docker.com/docker-for-mac/install/" target="_blank" rel="noopener">Docker for Mac</a>，这样可以不用绕几个弯，直接让 Docker 运行在 macOS 上。</p>
+<h2 id="Docker-镜像"><a href="#Docker-镜像" class="headerlink" title="Docker 镜像"></a>Docker 镜像</h2><blockquote>
+<p>Docker 镜像是一个特殊的文件系统，除了提供容器运行时所需的程序、库、资 源、配置等文件外，还包含了一些为运行时准备的一些配置参数(如匿名卷、环境 变量、用户等)。镜像不包含任何动态数据，其内容在构建之后也不会被改变。</p>
+</blockquote>
+<h3 id="设置加速镜像"><a href="#设置加速镜像" class="headerlink" title="设置加速镜像"></a>设置加速镜像</h3><p>至于为什么要先设置这个，因为不设置国内镜像下载速度真的过于感人，不方便后面的操作。（神秘的东方力量，大家都懂的）</p>
+<p>国内有阿里云和 DaoCloud 等大厂提供的 Docker 加速镜像地址，我这里使用的是 DaoCloud，在<a href="https://www.daocloud.io/mirror#accelerator-doc" target="_blank" rel="noopener">配置 Docker 加速器</a>这里，有文档说明在三大操作系统中镜像地址的配置。以 Docker For Mac 为例：</p>
+<blockquote>
+<p>右键点击桌面顶栏的 docker 图标，选择 Preferences ，在 Daemon 标签（Docker 17.03 之前版本为 Advanced 标签）下的 Registry mirrors 列表中加入下面的镜像地址: <a href="http://xxxx.m.daocloud.io。" target="_blank" rel="noopener">http://xxxx.m.daocloud.io。</a></p>
+</blockquote>
+<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 完整命令格式：<span class="selector-tag">docker</span> <span class="selector-tag">pull</span> <span class="selector-attr">[OPTIONS]</span> <span class="selector-attr">[DOCKER_REGISTRY]</span> &lt;<span class="selector-tag">IMAGE_NAME</span>&gt;<span class="selector-attr">[:TAG|@DIGEST]</span></span><br><span class="line"><span class="selector-tag">docker</span> <span class="selector-tag">pull</span> <span class="selector-tag">nginx</span></span><br></pre></td></tr></table></figure>
+<p>DOCKER_REGISTRY 是镜像的来源，格式：&lt;域名/IP&gt;[:端口]，不指明则默认为 Docker Hub。</p>
+<p>IMAGE_NAME 是镜像在镜像源上的仓库名，格式：[用户名/]&lt;软件名&gt;，如果不指定用户名则默认使用官方镜像用户名 Library。</p>
+<p>这里将从 Docker Hub 下载 <code>library/nginx:latest</code>。</p>
+<h3 id="定制镜像"><a href="#定制镜像" class="headerlink" title="定制镜像"></a>定制镜像</h3><p>定制镜像有两种方式：</p>
+<ul>
+<li>commit<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker commit <span class="string">\</span></span><br><span class="line">--author <span class="string">"AUTHOR NAME"</span> <span class="string">\</span></span><br><span class="line">--message <span class="string">"COMMIT MESSAGE"</span> <span class="string">\</span></span><br><span class="line">BASE_IMAGE <span class="string">\</span></span><br><span class="line">NEW_IMAGE[:NEW_TAG]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>Dockerfile<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t <span class="symbol">IMAGE</span>[:<span class="symbol">TAG</span>] .</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>但是，<strong>不建议使用 commit 方式定制镜像，</strong> 原因如下：<br>使镜像非常庞大：</p>
+<blockquote>
+<p>在构建镜像过程中，除了命令的执行，还有很多文件被改动或添加了。这还仅仅是最简单的操作，如果是安装软件包、编译构建，那会有大量的无关内容被添加进来，如果不小心清理，将会导致镜 像极为臃肿。</p>
+</blockquote>
+<p>不方便共享和维护：</p>
+<blockquote>
+<p>此外，使用 docker commit 意味着所有对镜像的操作都是黑箱操作，生成的镜像也被称为黑箱镜像，换句话说，就是除了制作镜像的人知道执行过什么命令、怎 么生成的镜像，别人根本无从得知。而且，即使是这个制作镜像的人，过一段时间 后也无法记清具体在操作的。虽然 docker diff 或许可以告诉得到一些线索， 但是远远不到可以确保生成一致镜像的地步。这种黑箱镜像的维护工作是非常痛苦 的。</p>
+</blockquote>
+<h3 id="镜像常用命令"><a href="#镜像常用命令" class="headerlink" title="镜像常用命令"></a>镜像常用命令</h3><ul>
+<li>删除所有未打 tag 的镜像：docker rmi $(docker images -q | awk ‘/^<none>/ { print $3 }’)</none></li>
+<li>删除所有镜像：docker rmi $(docker images -q)</li>
+<li><strong>上传一个自定义镜像到 Docker Hub：</strong><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">tag</span> <span class="title">IMAGE</span>[:<span class="keyword">TAG</span>] NAMESAPCE/IMAGE[:<span class="keyword">TAG</span>]</span><br><span class="line">docker push NAMESAPCE/IMAGE[:<span class="keyword">TAG</span>]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p> 这里如果上传失败，则需要再 hub.docker.com 注册一个 namespace，然后使用 docker login 登录后，再试一下。</p>
+<p> 上传时如果已经 tag 存在，则会直接更新。</p>
+<h2 id="Docker-容器"><a href="#Docker-容器" class="headerlink" title="Docker 容器"></a>Docker 容器</h2><h3 id="镜像和容器的关系？"><a href="#镜像和容器的关系？" class="headerlink" title="镜像和容器的关系？"></a>镜像和容器的关系？</h3><p>都是学过 OOP 的，我想关于 Docker 中镜像和容器的区别用 OOP 中的一句很基本的概念来类比就是：镜像相当于类，容器则相当于对象。我觉得够了，不多作解释。</p>
+<h3 id="启动容器"><a href="#启动容器" class="headerlink" title="启动容器"></a>启动容器</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="builtin-name">run</span> --name nginx-container -d -p 8888:80 <span class="attribute">--rm</span>=<span class="literal">true</span> nginx</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>docker run</code> 将从一个镜像中启动一个容器。</li>
+<li><code>--name</code> 为这个容器命名</li>
+<li><code>-d</code> 表示 后台运行</li>
+<li><code>-p</code> 指明端口映射关系，这里的 8888:80 代表的是将宿主系统上来自 8888 端口的数据转发到 nginx-container 这个容器的 80 端口。</li>
+<li><code>--rm=true</code> 表示容器运行结束时自动删除该容器。</li>
+<li><code>nginx</code> 表示要启动 nginx-container 这个容器的镜像名。</li>
+</ul>
+<h3 id="容器常用命令"><a href="#容器常用命令" class="headerlink" title="容器常用命令"></a>容器常用命令</h3><ul>
+<li>启动容器并打开 Bash：<code>docker run -it --rm=true IMAGE[:TAG] /bin/bash</code></li>
+<li>删除所有 Docker 容器：<code>docker rm $(docker ps -a -q)</code></li>
+<li>删除所有已退出运行的容器：<code>docker rm $(docker ps -qf status=exited)</code></li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><h3 id="路径问题"><a href="#路径问题" class="headerlink" title="路径问题"></a>路径问题</h3><p>可能大家在初次构建镜像的时候，都会遇到提示找不到文件或者路径的提示，导致构建失败。下面我把我遇到的几种情况简单总结一下：</p>
+<ul>
+<li><p><code>ADD</code><br>比如：ADD ./build /root 是把当前路径下 build 文件夹下所有的文件和目录添加到容器的 <em>root</em> 路径中，是不再含 <em>build</em> 的。因此在容器或者 Dockerfile 中不能通过 <em>/root/build/file</em> 来引用，而是 <em>/root/file</em>。</p>
+</li>
+<li><p><code>WORKDIR</code><br>这个指定了工作路径，在构建的时候所有的相对路径会以这个路径为基础进行引用，同时，构建结束之后，进入容器时默认也会进入这个路径。</p>
+</li>
+</ul>
+<h2 id="实战：构建一个-CentOS-6-Apache-PHP-镜像"><a href="#实战：构建一个-CentOS-6-Apache-PHP-镜像" class="headerlink" title="实战：构建一个 CentOS 6+Apache+PHP 镜像"></a>实战：构建一个 CentOS 6+Apache+PHP 镜像</h2><p>下面就为最近做的那个低版本 PHP（5.4）项目来构建的一个专门的镜像。</p>
+<p>准备好如下文件：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">cd /path/to/php54</span><br><span class="line">tree .</span><br><span class="line">.</span><br><span class="line">├── Dockerfile</span><br><span class="line">├── README.md</span><br><span class="line">├── app</span><br><span class="line">│   └── index.php</span><br><span class="line">├── build</span><br><span class="line">│   ├── ZendGuardLoader-<span class="number">70429</span>-PHP-<span class="number">5.4</span>-linux-glibc23-x86_64<span class="selector-class">.tar</span>.gz</span><br><span class="line">│   └── zendguardloader.ini</span><br><span class="line">└── docker.run</span><br><span class="line"><span class="number">2</span> directories, <span class="number">6</span> files</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Dockerfile 的内容：<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">FROM</span> <span class="string">centos:6</span></span><br><span class="line"><span class="attr">MAINTAINER</span> <span class="string">Caoxl &lt;code0809@163.com&gt;</span></span><br><span class="line"><span class="attr">ADD</span> <span class="string">./build /tmp</span></span><br><span class="line"><span class="attr">WORKDIR</span> <span class="string">/tmp</span></span><br><span class="line"><span class="attr">RUN</span> <span class="string">yum update -y \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">yum install -y wget\</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">wget -O /etc/yum.repos.d/CentOS-Base.repo  http://mirrors.aliyun.com/repo/Centos-6.repo \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">yum install -y epel-release \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">rpm -Uvh remi-release-6*.rpm \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">sed -i 's/enabled=0/enabled=1/g' /etc/yum.repos.d/remi-php54.repo \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">yum install -y php php-mysql php-pdo\</span></span><br><span class="line">	</span><br><span class="line"><span class="comment">	# &amp;&amp; wget http://downloads.zend.com/guard/6.0.0/ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz \</span></span><br><span class="line"><span class="comment">	# &amp;&amp; tar zxf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz \</span></span><br><span class="line"><span class="comment">	# &amp;&amp; cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64/php-5.4.x/ZendGuardLoader.so /usr/lib64/httpd/modules/ \</span></span><br><span class="line"><span class="comment">	# &amp;&amp; echo 'zend_extension=/usr/lib64/httpd/modules/ZendGuardLoader.so' &gt;&gt; /etc/php.ini \</span></span><br><span class="line"><span class="comment">	# &amp;&amp; echo 'zend_loader.enable=1' &gt;&gt; /etc/php.ini \</span></span><br><span class="line"><span class="comment">	# &amp;&amp; echo 'zend_loader.disable_licensing=0' &gt;&gt; /etc/php.ini \</span></span><br><span class="line"><span class="comment">	# &amp;&amp; echo 'zend_loader.obfuscation_level_support=3' &gt;&gt; /etc/php.ini \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">tar zxf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64/php-5.4.x/ZendGuardLoader.so /usr/lib64/httpd/modules/ \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">cat zendguardloader.ini &gt;&gt; /etc/php.ini \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">echo 'ServerName localhost' &gt;&gt; /etc/httpd/conf/httpd.conf \</span></span><br><span class="line">	</span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">yum clean all \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">rm -rf /tmp/* \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">rm -rf /root/* \</span></span><br><span class="line">	<span class="meta">&amp;&amp;</span> <span class="string">rm -rf /var/tmp/*</span></span><br><span class="line"><span class="attr">ADD</span> <span class="string">./app /var/www/html</span></span><br><span class="line"><span class="attr">ADD</span> <span class="string">./docker.run /root</span></span><br><span class="line"><span class="attr">RUN</span> <span class="string">chmod 755 /root/docker.run</span></span><br><span class="line"><span class="attr">WORKDIR</span> <span class="string">/var/www/html</span></span><br><span class="line"><span class="attr">EXPOSE</span> <span class="string">80</span></span><br><span class="line"><span class="attr">CMD</span> <span class="string">["/bin/bash", "/root/docker.run"]</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>README.md<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- build</span><br><span class="line">`docker build -t <span class="string">php54:</span>v1 .`</span><br><span class="line">- run</span><br><span class="line">`docker run -it --name php54 --rm=<span class="literal">true</span> -d -p <span class="number">80</span>:<span class="number">80</span> <span class="string">php54:</span>v1 <span class="regexp">/var/</span>www<span class="regexp">/html/</span>docker.run`</span><br><span class="line">- test</span><br><span class="line">&lt;<span class="string">http:</span><span class="comment">//localhost&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>docker.run<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">/usr/sbin/apachectl -D FOREGROUND</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>app/index.php<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">'&lt;h1 style="text-align:center"&gt;Hello Docker&lt;/h1&gt;'</span>;</span></span><br><span class="line"><span class="php">phpinfo();</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>build/ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz</p>
+<p>从 <a href="http://downloads.zend.com/guard/6.0.0/ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz" target="_blank" rel="noopener">http://downloads.zend.com/guard/6.0.0/ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz</a> 下载而来。</p>
+</li>
+<li><p>build/zendguardloader.ini</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">zend_extension</span>=/usr/lib64/httpd/modules/ZendGuardLoader.so</span><br><span class="line"><span class="attr">zend_loader.enable</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">zend_loader.disable_licensing</span>=<span class="number">0</span></span><br><span class="line"><span class="attr">zend_loader.obfuscation_level_support</span>=<span class="number">3</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p> 最后构建：<br> <figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /path/to/php54</span><br><span class="line">docker build -t php54:v1 .</span><br></pre></td></tr></table></figure></p>
+<p> 如果不出意外，build 结束之后在 docker images 中就可以看到新建的镜像了，便可以运行：<br> <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="builtin-name">run</span> -it --name php54 <span class="attribute">--rm</span>=<span class="literal">true</span> -d -p 80:80 php54:v1</span><br></pre></td></tr></table></figure></p>
+<p> 然后打开浏览器：<a href="http://localhost" target="_blank" rel="noopener">http://localhost</a> 正常情况即可看到 app/index.php 的输出。</p>
+<p> 同理，如果需要使用 PHP5.6／7 版本的环境，可以按照同样的步骤 build 一个相应的镜像，启动后，可以通过本机的不同端口去访问，这样就实现了在一个系统上运行 N 个版本项目的需求。</p>
+<p> Cool~ isn’t it ? (:</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://yeasy.gitbooks.io/docker_practice/" target="_blank" rel="noopener">Docker — 从入门到实践</a></li>
+<li><a href="http://mmenozzi.github.io/2016/01/22/php-web-development-with-docker/" target="_blank" rel="noopener">PHP Web Development with Docker</a></li>
+<li><a href="http://guide.daocloud.io/dcs/php-docker-9153862.html" target="_blank" rel="noopener">PHP 开发者的 Docker 之旅</a></li>
+<li><a href="https://docs.docker.com/" target="_blank" rel="noopener">Docker Documentation</a></li>
+<li><a href="https://www.virtualbox.org/manual/UserManual.html" target="_blank" rel="noopener">Oracle VM VirtualBox-User Manual</a></li>
+<li><a href="https://stackoverflow.com/questions/28212380/why-docker-container-exits-immediately" target="_blank" rel="noopener">Why docker container exits immediately</a></li>
+<li><a href="https://stackoverflow.com/questions/36869443/restart-apache-on-docker" target="_blank" rel="noopener">Restart apache on Docker</a></li>
+<li><a href="https://blog.kuoruan.com/65.html" target="_blank" rel="noopener">Centos/RedHat 7/6/5切换阿里云源并安装EPEL/IUS/REMI仓库</a></li>
+<li><a href="https://blog.itnmg.net/2013/07/05/centos-zend-guard-loader/" target="_blank" rel="noopener">CentOS 安装 Zend Guard Loader</a> Or <a href="https://briansnelson.com/Install_Zend_Guard_6.0_with_PHP_5.4_on_Centos" target="_blank" rel="noopener">Install Zend Guard 6.0 with PHP 5.4 on Centos</a></li>
+<li><a href="http://desert3.iteye.com/blog/1664813" target="_blank" rel="noopener">CentOS Yum 命令详解</a></li>
+<li><a href="http://blog.csdn.net/codemanship/article/details/45056977" target="_blank" rel="noopener">将Centos的yum源为国内的阿里云源</a></li>
+<li><a href="https://stackoverflow.com/questions/41984399/denied-requested-access-to-the-resource-is-denied-docker" target="_blank" rel="noopener">denied: requested access to the resource is denied : docker</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/05/Docker-First-Try/" target="_blank" title="Docker 初见">http://blog.caoxl.com/2018/01/05/Docker-First-Try/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Docker/">Docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/开发工具/">开发工具</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/05/MySQL-Analysis-Commands-Notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          MySQL 分析命令总结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/05/Markdown-Basic-Syntax/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Markdown 基础语法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-First-Try"><span class="nav-number">1.</span> <span class="nav-text">Docker-First-Try</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-Docker"><span class="nav-number">2.</span> <span class="nav-text">安装 Docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-镜像"><span class="nav-number">3.</span> <span class="nav-text">Docker 镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#设置加速镜像"><span class="nav-number">3.1.</span> <span class="nav-text">设置加速镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下载镜像"><span class="nav-number">3.2.</span> <span class="nav-text">下载镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定制镜像"><span class="nav-number">3.3.</span> <span class="nav-text">定制镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#镜像常用命令"><span class="nav-number">3.4.</span> <span class="nav-text">镜像常用命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-容器"><span class="nav-number">4.</span> <span class="nav-text">Docker 容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#镜像和容器的关系？"><span class="nav-number">4.1.</span> <span class="nav-text">镜像和容器的关系？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动容器"><span class="nav-number">4.2.</span> <span class="nav-text">启动容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容器常用命令"><span class="nav-number">4.3.</span> <span class="nav-text">容器常用命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意事项"><span class="nav-number">5.</span> <span class="nav-text">注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#路径问题"><span class="nav-number">5.1.</span> <span class="nav-text">路径问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实战：构建一个-CentOS-6-Apache-PHP-镜像"><span class="nav-number">6.</span> <span class="nav-text">实战：构建一个 CentOS 6+Apache+PHP 镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

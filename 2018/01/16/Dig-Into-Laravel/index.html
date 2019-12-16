@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>深入理解 laravel | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LaravelFrameworkPHP依赖注入DIIoC">
+  
+  
+  
+  
+  <meta name="description" content="理解Laravel 建议深入理解的时候，不要看中文翻译版。  在看 Laravel 手册的时候，关于系统架构的那几页篇幅始终看得懵懵懂懂的，今天得闲找了些资料看，把理解的成果记录一份在这里。">
+<meta name="keywords" content="Laravel,Framework,PHP,依赖注入,DI,IoC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解 Laravel">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/16/Dig-Into-Laravel/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="理解Laravel 建议深入理解的时候，不要看中文翻译版。  在看 Laravel 手册的时候，关于系统架构的那几页篇幅始终看得懵懵懂懂的，今天得闲找了些资料看，把理解的成果记录一份在这里。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:05:07.844Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解 Laravel">
+<meta name="twitter:description" content="理解Laravel 建议深入理解的时候，不要看中文翻译版。  在看 Laravel 手册的时候，关于系统架构的那几页篇幅始终看得懵懵懂懂的，今天得闲找了些资料看，把理解的成果记录一份在这里。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Dig-Into-Laravel" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      深入理解 Laravel
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/16/Dig-Into-Laravel/" class="article-date">
+	  <time datetime="2018-01-16T07:37:00.000Z" itemprop="datePublished">2018-01-16</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h2 id="理解Laravel"><a href="#理解Laravel" class="headerlink" title="理解Laravel"></a>理解Laravel</h2><blockquote>
+<p><strong>建议深入理解的时候，不要看中文翻译版。</strong></p>
+</blockquote>
+<p>在看 Laravel 手册的时候，关于系统架构的那几页篇幅始终看得懵懵懂懂的，今天得闲找了些资料看，把理解的成果记录一份在这里。</p>
+<a id="more"></a>   
+<h2 id="DI"><a href="#DI" class="headerlink" title="DI"></a>DI</h2><blockquote>
+<p>DI 依赖注入</p>
+</blockquote>
+<h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><ul>
+<li>避免在代码中硬编码类依赖，使在 runtime 和 compile time 期间改变依赖成为可能。</li>
+<li><p>由于实现了松耦合，项目变得：</p>
+<ul>
+<li><p>易维护<br>因为不用再担心依赖的实现改变后，依赖的类也要适应性修改。</p>
+</li>
+<li><p>方便单元测试<br>当注入的是一个接口时，测试时可以很容易地创建一个实现该接口的测试类（mock）作为依赖传入，而不需要调用实际需要的类，避免一些单元测试期间并不希望做的实际操作。</p>
+</li>
+<li><p>模块化<br>类与类之间各司其职，不再关心依赖的实现细节。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h3><ul>
+<li>通过 constructor<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  <span class="comment">// implementations...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> $c;</span><br><span class="line">  </span><br><span class="line">  	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(C $c)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">      <span class="keyword">$this</span>-&gt;c = $c;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>因为构造方法只会在实例化类的时候被调用，因此可以确保依赖一旦注入到实例后，在这个实例的 lifetime 期间，依赖始终存在，且不会被改变。</p>
+<ul>
+<li>通过 setter<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  <span class="comment">// implementations...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> $c;</span><br><span class="line">  </span><br><span class="line">  	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">setC</span><span class="params">(C $c)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">      <span class="keyword">$this</span>-&gt;c = $c;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>通过 setter 注入依赖是发生在类被实例化之后，这样的好处有：</p>
+<ul>
+<li>方便注入那些可选的依赖，本类可以用默认值先创建出来，增加了灵活性。</li>
+<li>简化了注入新依赖的过程：只要新增一个 setter 方法就行了，这并不会破坏现有代码，增强了便捷性和扩展性。</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li><p>如果通过构造方法注入依赖</p>
+<ul>
+<li>则会强制性注入所有依赖，这不适合那些只是可选的依赖。（适合注入一些必须依赖）</li>
+<li>继承父类后，子类想要扩展和重写构造方法变得困难。</li>
+</ul>
+</li>
+<li><p>当项目规模增大时，虽然依赖注入实现了松耦合，但是这个解耦过程是通过手动来完成的，当依赖增多，手动注入依赖变成一项繁琐的工程。</p>
+</li>
+</ul>
+<h3 id="什么时候需要依赖注入"><a href="#什么时候需要依赖注入" class="headerlink" title="什么时候需要依赖注入"></a>什么时候需要依赖注入</h3><p>大型项目。小项目使用过多设计模式反复杂化。</p>
+<h2 id="IoC"><a href="#IoC" class="headerlink" title="IoC"></a>IoC</h2><blockquote>
+<p>An IoC Container provides a central location to instantiate the application’s objects and pass their dependencies.</p>
+<p>If an object’s dependencies changes, this only needs to be set in one place, keeping your code DRY.</p>
+</blockquote>
+<h3 id="IoC-容器，-laravel-的核心"><a href="#IoC-容器，-laravel-的核心" class="headerlink" title="IoC 容器， laravel 的核心"></a>IoC 容器， laravel 的核心</h3><blockquote>
+<p>OOP 的一种设计模式。通过控制反转，对象在被创建的时候，由一个调控系统内所有对象的外界实体，将其所依赖的对象的引用传递给它。</p>
+</blockquote>
+<p>Laravel 的核心就是一个 IoC 容器，根据文档，称其为“服务容器”，顾名思义，该容器提供了整个框架中需要的一系列服务。作为初学者，很多人会在这一个概念上犯难，因此，我打算从一些基础的内容开始讲解，通过理解面向对象开发中依赖的产生和解决方法，来逐渐揭开“依赖注入”的面纱，逐渐理解这一神奇的设计理念。</p>
+<p><em>本文一大半内容都是通过举例来让读者去理解什么是 IoC（控制反转） 和 DI（依赖注入），通过理解这些概念，来更加深入。更多关于 laravel 服务容器的用法建议阅读文档即可</em></p>
+<h3 id="和-DI-的关系"><a href="#和-DI-的关系" class="headerlink" title="和 DI 的关系"></a>和 DI 的关系</h3><blockquote>
+<p>Dependency Injection is one and most used way to achieve IoC Pattern, another is Dependency Lookup.</p>
+<p><em>An IoC Container is a convenience mechanism for achieving Dependency Injection. (Taylor Otwell)</em></p>
+</blockquote>
+<p><strong>简单来说: DI(依赖注入是配角),IoC(控制反转是主角)</strong></p>
+<h3 id="IoC-Container-核心原理"><a href="#IoC-Container-核心原理" class="headerlink" title="IoC Container 核心原理"></a>IoC Container 核心原理</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Container</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $binds;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">protected</span> $instances;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">bind</span><span class="params">($abstract, $concrete)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ($concrete <span class="keyword">instanceof</span> Closure) &#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;binds[$abstract] = $concrete;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;instances[$abstract] = $concrete;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">make</span><span class="params">($abstract, $parameters = [])</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;instances[$abstract])) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;instances[$abstract];</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        array_unshift($parameters, <span class="keyword">$this</span>);</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> call_user_func_array(<span class="keyword">$this</span>-&gt;binds[$abstract], $parameters);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是一个只有基础骨架的 IoC Container 实现，Laravel 的实现比这个更智能一点，但是基本原理是一样的。</p>
+<blockquote>
+<p>Laravel 的特性和功能几乎全部是由 IOC Container 实现的，如果想要使用 Laravel 的 IOC Container，也就是说想要用 IOC 的机制去 make 某种对象，那么你就必须先 bind 这个对象的类到 Laravel 的 IOC Container 中，才能把这种对象 make 出来。</p>
+</blockquote>
+<p>需要注意的有：</p>
+<ul>
+<li>IoC Container 可以不止一个，所有继承了该类的子类，都属于 IoC Container，比如 Laravel 的 Application 类。</li>
+<li>Laravel 中的其他类都是先绑定到 IoC Container 之后，再通过 IoC Container 实例化，实现自动注入管理的。</li>
+</ul>
+<h2 id="Service-Container"><a href="#Service-Container" class="headerlink" title="Service Container"></a>Service Container</h2><blockquote>
+<p>服务容器</p>
+<blockquote>
+<p>ServiceContainer 实现Contracts,具体的逻辑实现</p>
+</blockquote>
+</blockquote>
+<p>Laravel 的核心，Service Container，其实就是一个 IoC Container，而无论叫什么名字，归根到实现底层实现，它们的目的只有一个：找到指定的类并实例化。</p>
+<blockquote>
+<p>其实，我个人认为，现代 PHP 的很多核心概念，namaspace，PSR，autoload，Composer 等等，都是为了使「找到指定的类并实例化」这个操作变得简单化，自动化。</p>
+</blockquote>
+<p>那么既然叫做 IoC Container 了，不同之处只是实现「找到指定的类并实例化」这个操作，是通过 IoC 的机制去实现的。</p>
+<h3 id="何为-Laravel-IoC-Container？"><a href="#何为-Laravel-IoC-Container？" class="headerlink" title="何为 Laravel IoC Container？"></a>何为 Laravel IoC Container？</h3><blockquote>
+<p>A container is an object that, as you may expect, contains things.</p>
+<p> Laravel’s IoC container is used to contain many, many different bindings.</p>
+<p> Everything you do in Laravel will at some point have an interaction with the IoC container. This interaction is generally in the form of a binding being resolved.</p>
+</blockquote>
+<p>所以我的简单理解就是，「服务容器」就是存放类绑定关系的容器。</p>
+<h3 id="Laravel-使用-IoC-Container-的两种方式"><a href="#Laravel-使用-IoC-Container-的两种方式" class="headerlink" title="Laravel 使用 IoC Container 的两种方式"></a>Laravel 使用 IoC Container 的两种方式</h3><ul>
+<li><p>不通过 Service Provider，直接使用现成的 IoC Container</p>
+<p>这个所谓的 「现成的 IoC Container」就是 Application 类，在 Laravel 启动后，bootstrap/app.php 中实例化了这个类，保存到变量 $app 了。</p>
+<p>先将类或接口手动绑定到 $app，通过 $app 中直接解析依赖并实例化对象。举例如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>;</span></span><br><span class="line"><span class="php"><span class="comment">// 1. define a class</span></span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">	<span class="keyword">public</span> $foo = <span class="string">'bar'</span>;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php"><span class="comment">// 2. bind class A to IoC container</span></span></span><br><span class="line"><span class="php">App::bind(<span class="string">'a'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($app)</span> </span>&#123;</span></span><br><span class="line"><span class="php">  <span class="keyword">return</span> <span class="keyword">new</span> A;</span></span><br><span class="line"><span class="php">&#125;);</span></span><br><span class="line"><span class="php"><span class="comment">// 3. make instance from A with IoC container</span></span></span><br><span class="line"><span class="php">$a = App::make(<span class="string">'a'</span>);</span></span><br><span class="line"><span class="php"><span class="keyword">echo</span> $a-&gt;foo;    <span class="comment">// bar</span></span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p> 其中，App 也是一个 Facade，是 Laravel 为了让我们在程序的各处都能方便的得到 $app，或者说 Application 类实例，或者说 Laravel 生命周期内的 IoC Container。</p>
+<ul>
+<li>通过 Service Provider（下面马上讲）</li>
+</ul>
+<h2 id="Service-Provider"><a href="#Service-Provider" class="headerlink" title="Service Provider"></a>Service Provider</h2><blockquote>
+<p>服务提供者</p>
+<blockquote>
+<p>ServiceProvider ServiceContainer的服务提供者，返回ServiceContainer的实例化，供其他地方使用，可以把它加入到app/config的provider中，会被自动注册到容器中</p>
+</blockquote>
+</blockquote>
+<p>对，一个类要被容器所能够提取，必须要先注册至这个容器。既然 laravel 称这个容器叫做服务容器，那么我们需要某个服务，就得先注册、绑定这个服务到容器，那么提供服务并绑定服务至容器的东西，就是 <code>服务提供者（ServiceProvider）</code></p>
+<p>服务提供者主要分为两个部分，<code>register（注册）</code> 和 <code>boot（引导、初始化）</code>，具体参考文档。<code>register</code> 负责进行向容器注册“脚本”，但要注意注册部分不要有对未知事物的依赖，如果有，就要移步至 <code>boot</code> 部分。</p>
+<h3 id="什么是「服务提供者」？"><a href="#什么是「服务提供者」？" class="headerlink" title="什么是「服务提供者」？"></a>什么是「服务提供者」？</h3><blockquote>
+<p>我们知道，有时候我们的类、模块会有需要其他类和组件的情况，为了保证初始化阶段不会出现所需要的模块和组件没有注册的情况，Laravel 将注册和初始化行为进行拆分，注册的时候就只能注册，初始化的时候就是初始化。拆分后的产物就是现在的『服务提供者』。</p>
+</blockquote>
+<p>我自己的简单理解就是，自动管理类依赖绑定、注册的机制。</p>
+<p>这下其实就好理解了，「服务容器」，无论事先还是 runtime，存放了大量的类别名到实际类的绑定关系，而「服务提供者」的作用，可以将绑定关系存储到「服务容器」，并在某个类需要某个依赖的时候返回该依赖的实例。</p>
+<h3 id="为什么要通过「服务提供者」来使用-IoC-Container？"><a href="#为什么要通过「服务提供者」来使用-IoC-Container？" class="headerlink" title="为什么要通过「服务提供者」来使用 IoC Container？"></a>为什么要通过「服务提供者」来使用 IoC Container？</h3><p>上面讲到，完全可以不通过服务提供者来使用 IoC Container，为啥非要经过这么一个机制“饶一圈”呢？</p>
+<p>其实还是一个量变引起质变的道理，当项目中只有少数几个类的时候，手动处理这些依赖关系是完全没问题的，但是当项目变复杂，变庞大的时候，人工解决这些依赖关系已经变得既累又不靠谱了，而把处理类与类之间的依赖关系这个过程，从手动变成自动，正是服务提供者的用处。</p>
+<h3 id="如何通过「服务提供者」来使用-IoC-Container？"><a href="#如何通过「服务提供者」来使用-IoC-Container？" class="headerlink" title="如何通过「服务提供者」来使用 IoC Container？"></a>如何通过「服务提供者」来使用 IoC Container？</h3><p>无论是否通过服务提供者来使用 IoC Container，都需要往服务容器中绑定好 key 和实际类的关系。只不过通过「服务提供者」是通过其的 register 系列方法完成了 bind，甚至是 make instance 的操作。</p>
+<p>这些服务提供者，在 config/app.php 的 providers 数组中定义了一组服务提供者，在 app/Providers/ 目录下也定义了一些服务提供者，它们都有一个 <code>register()</code> 方法，通过服务提供者来使用服务容器就是通过这个 <code>register()</code> 方法来完成的。</p>
+<p>比如，config/app.php =&gt; providers =&gt; Illuminate\Routing\RoutingServiceProvider：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="comment">// Register the service provider</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">register</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">$this</span>-&gt;registerRouter();</span><br><span class="line">  <span class="keyword">$this</span>-&gt;registerUrlGenerator();</span><br><span class="line">  <span class="keyword">$this</span>-&gt;registerRedirector();</span><br><span class="line">  <span class="keyword">$this</span>-&gt;registerPsrRequest();</span><br><span class="line">  <span class="keyword">$this</span>-&gt;registerPsrResponse();</span><br><span class="line">  <span class="keyword">$this</span>-&gt;registerResponseFactory();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Register the router instance</span></span><br><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">registerRouter</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">$this</span>-&gt;app[<span class="string">'router'</span>] = <span class="keyword">$this</span>-&gt;app-&gt;share(<span class="function"><span class="keyword">function</span> <span class="params">($app)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Router($app[<span class="string">'events'</span>], $app);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+<p>在服务提供者中，通过 $this-&gt;app 获得服务容器，然后注册一个 key 和实际类绑定。这里对于 RoutingServiceProvider 来说，顺便也返回了一个实例，即同时完成了 bind 和 make 操作。</p>
+<h2 id="Contracts"><a href="#Contracts" class="headerlink" title="Contracts"></a>Contracts</h2><blockquote>
+<p>直接翻译: 合同/契约</p>
+<blockquote>
+<p>Contracts 合同，契约，也就是接口，定义一些规则，每个实现此接口的都要实现里面的方法</p>
+</blockquote>
+</blockquote>
+<p>Contracts 就是 OOP 里的 Interfaces，功能和用途上没有任何区别，之所以叫 Contracts 只是因为在 Laravel 中，接口所在的命名空间是 Illuminate\Contracts 而已。</p>
+<h2 id="Facades"><a href="#Facades" class="headerlink" title="Facades"></a>Facades</h2><blockquote>
+<p>直接翻译: 门面/外墙</p>
+<blockquote>
+<p>Facades 简化ServiceProvider的调用方式，而且可以静态调用ServiceContainer中的方法</p>
+</blockquote>
+</blockquote>
+<p>Facades 只是一些方便调用绑定在 IoC 容器内的类，的类。其作用我总结的是：简化调用方式，减少代码量。</p>
+<p>具体解释在参考中解释的很清楚了，没必要重复。这里只以一条路由为例，简单总结下 Facade 的执行过程：</p>
+<blockquote>
+<p>我们使用的 Route 类实际上是 Illuminate\Support\Facades\Route 通过 class_alias() 函数创造的 别名 而已，这个类被定义在文件 vendor/laravel/framework/src/Illuminate/Support/Facades/Route.php 。</p>
+</blockquote>
+<ul>
+<li>Route::get(‘/‘, ‘Site@index’)</li>
+<li>app/config/app.php =&gt; alias =&gt; Route =&gt; Illuminate\Support\Facades\Route::class<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">amespace <span class="type">Illuminate</span>\<span class="type">Support</span>\<span class="type">Facades</span>;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @see \Illuminate\Routing\Router</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Route</span> <span class="keyword">extends</span> <span class="title">Facade</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> static function getFacadeAccessor()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="symbol">'route</span>r';</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Route 类的这个方法会在后面「后期静态绑定」时用到。</p>
+<ul>
+<li>调用了一个 Route／Facade 类中都不存在的静态 get() 方法 =&gt; 触发 Facade 的 __callStatic() 方法<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// namespace Illuminate\Support\Facades;</span></span><br><span class="line"><span class="comment">// abstract class Facade</span></span><br><span class="line"><span class="comment">// 1. trigger magic method `__callStatic` by call `get()`</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">__callStatic</span><span class="params">($method, $args)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $instance = <span class="keyword">static</span>::getFacadeRoot();</span><br><span class="line">    <span class="keyword">if</span> (! $instance) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">'A facade root has not been set.'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">switch</span> (count($args)) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">return</span> $instance-&gt;$method();</span><br><span class="line">        <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">return</span> $instance-&gt;$method($args[<span class="number">0</span>]);</span><br><span class="line">        <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">        	<span class="comment">// `Route::get('/', 'Site@index')` 会执行到这里</span></span><br><span class="line">            <span class="keyword">return</span> $instance-&gt;$method($args[<span class="number">0</span>], $args[<span class="number">1</span>]);</span><br><span class="line">        <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">            <span class="keyword">return</span> $instance-&gt;$method($args[<span class="number">0</span>], $args[<span class="number">1</span>], $args[<span class="number">2</span>]);</span><br><span class="line">        <span class="keyword">case</span> <span class="number">4</span>:</span><br><span class="line">            <span class="keyword">return</span> $instance-&gt;$method($args[<span class="number">0</span>], $args[<span class="number">1</span>], $args[<span class="number">2</span>], $args[<span class="number">3</span>]);</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">return</span> call_user_func_array([$instance, $method], $args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 2. get facade instance</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">getFacadeRoot</span><span class="params">()</span>  </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  	<span class="comment">// 这里的 `static::getFacadeAccessor()` 属于后期静态绑定</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">static</span>::resolveFacadeInstance(<span class="keyword">static</span>::getFacadeAccessor());</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 3. get resolved instance from $app/IoC container</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">resolveFacadeInstance</span><span class="params">($name)</span></span></span><br><span class="line"><span class="function"></span>&#123;   </span><br><span class="line">    <span class="keyword">if</span> (is_object($name)) &#123;</span><br><span class="line">        <span class="keyword">return</span> $name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="keyword">static</span>::$resolvedInstance[$name])) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">static</span>::$resolvedInstance[$name];</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">static</span>::$resolvedInstance[$name] = <span class="keyword">static</span>::$app[$name];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这里，在第一次执行该代码的情况下，<code>resolveFacadeInstance()</code> 方法将 <code>static::$app[$name]</code> 保存到解析过的实例数组中，并返回 <code>static::$app[$name]</code> 的值。</p>
+<p>这里之所以 <code>static::$app[$name]</code> 可以返回一个对象，是因为 <code>$app</code>/Application 继承了 Container，而 Container 又继承并实现了 ArrayAccess 的 offsetGet 方法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// namespace Illuminate\Container;</span></span><br><span class="line"><span class="comment">// class Container</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">offsetGet</span><span class="params">($key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;make($key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>__callStatic</code> 将执行到 <code>return $instance-&gt;$method($args[0], $args[1])</code>; 这里，而 <code>$instance</code> 就是 <code>offsetGet()</code> 返回的路由类对象，而 <code>$method</code> 就是那个 <code>Route／Facade</code> 都不存在的 <code>get()</code> 方法。于是，最终相当于执行了如下代码：</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">new</span> <span class="type">Illuminate</span>\Routing\Router)-&gt;<span class="keyword">get</span>(<span class="string">'/'</span>, <span class="string">'Site@index'</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>终于，执行到 Illuminate\Routing\Router 的 get() 方法：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">get</span><span class="params">($uri, $action = null)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;addRoute([<span class="string">'GET'</span>, <span class="string">'HEAD'</span>], $uri, $action);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>suggestion: <code>class_alias()</code>.</p>
+</blockquote>
+<p><strong>总的来说，自定义了一个类，为了方便在其他别处使用，便可以使用服务提供者和门面</strong></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://www.insp.top/learn-laravel-container" target="_blank" rel="noopener">laravel 学习笔记 —— 神奇的服务容器</a></li>
+<li><a href="https://code.tutsplus.com/tutorials/digging-in-to-laravels-ioc-container--cms-22167" target="_blank" rel="noopener">Digging in to Laravel’s IoC Container</a></li>
+<li><a href="http://blog.qiji.tech/archives/15626" target="_blank" rel="noopener">从 1 行代码开始，带你系统性的理解 Laravel Service Container 的核心概念</a></li>
+<li><a href="https://segmentfault.com/a/1190000004965752" target="_blank" rel="noopener">Laravel应用</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/16/Dig-Into-Laravel/" target="_blank" title="深入理解 Laravel">http://blog.caoxl.com/2018/01/16/Dig-Into-Laravel/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DI/">DI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/">Framework</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IoC/">IoC</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/依赖注入/">依赖注入</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/16/JSON-WEB-TOKEN/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          JSON-WEB-TOKEN
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/16/Laravel-Basic-knowledge/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Laravel 基础知识</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#理解Laravel"><span class="nav-number">1.</span> <span class="nav-text">理解Laravel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DI"><span class="nav-number">2.</span> <span class="nav-text">DI</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作用"><span class="nav-number">2.1.</span> <span class="nav-text">作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现方式"><span class="nav-number">2.2.</span> <span class="nav-text">实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点"><span class="nav-number">2.3.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么时候需要依赖注入"><span class="nav-number">2.4.</span> <span class="nav-text">什么时候需要依赖注入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IoC"><span class="nav-number">3.</span> <span class="nav-text">IoC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IoC-容器，-laravel-的核心"><span class="nav-number">3.1.</span> <span class="nav-text">IoC 容器， laravel 的核心</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#和-DI-的关系"><span class="nav-number">3.2.</span> <span class="nav-text">和 DI 的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IoC-Container-核心原理"><span class="nav-number">3.3.</span> <span class="nav-text">IoC Container 核心原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Service-Container"><span class="nav-number">4.</span> <span class="nav-text">Service Container</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#何为-Laravel-IoC-Container？"><span class="nav-number">4.1.</span> <span class="nav-text">何为 Laravel IoC Container？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Laravel-使用-IoC-Container-的两种方式"><span class="nav-number">4.2.</span> <span class="nav-text">Laravel 使用 IoC Container 的两种方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Service-Provider"><span class="nav-number">5.</span> <span class="nav-text">Service Provider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是「服务提供者」？"><span class="nav-number">5.1.</span> <span class="nav-text">什么是「服务提供者」？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要通过「服务提供者」来使用-IoC-Container？"><span class="nav-number">5.2.</span> <span class="nav-text">为什么要通过「服务提供者」来使用 IoC Container？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何通过「服务提供者」来使用-IoC-Container？"><span class="nav-number">5.3.</span> <span class="nav-text">如何通过「服务提供者」来使用 IoC Container？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Contracts"><span class="nav-number">6.</span> <span class="nav-text">Contracts</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Facades"><span class="nav-number">7.</span> <span class="nav-text">Facades</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

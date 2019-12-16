@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php异步的几个玩法 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHP异步">
+  
+  
+  
+  
+  <meta name="description" content="没有异步的PHP是世界上最好的语言, 拥有异步的PHP是宇宙上最好的语言">
+<meta name="keywords" content="PHP,异步">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP异步的几个玩法">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/17/PHP-async-notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="没有异步的PHP是世界上最好的语言, 拥有异步的PHP是宇宙上最好的语言">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP异步的几个玩法">
+<meta name="twitter:description" content="没有异步的PHP是世界上最好的语言, 拥有异步的PHP是宇宙上最好的语言">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-async-notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP异步的几个玩法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/17/PHP-async-notes/" class="article-date">
+	  <time datetime="2018-08-17T09:16:30.000Z" itemprop="datePublished">2018-08-17</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>没有异步的PHP是世界上最好的语言, 拥有异步的PHP是宇宙上最好的语言</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="一-先说说鸟哥文章中的几种玩法"><a href="#一-先说说鸟哥文章中的几种玩法" class="headerlink" title="一. 先说说鸟哥文章中的几种玩法"></a>一. 先说说鸟哥文章中的几种玩法</h1><ul>
+<li><p>一是通过渲染前端页面，<strong>使用js执行Ajax</strong>，这种方式现在还适用。只是受限于业务场景，因为只能在浏览器中调用，遇到接口请求就不行了。</p>
+</li>
+<li><p>二是通过<code>popen()</code>方法打开一个指向进程的管道，每个请求会多起一个进程。忽略进程来看最主要的原因是数据的传输特别不方便，使用场景有限。</p>
+</li>
+<li><p>三是使用<code>CURL</code>扩展，通过设置<code>timeout</code>超时参数，能实现离弦之箭的效果。不过这种方法会主动断开连接。被调用的服务如果有做连接检测，也会中断服务端脚本的执行。比如我们请求 微信的某个费时接口（20s），我们调用1s就断开连接，微信端是否会维持请求执行20S是不可控的。<strong>所以这种方法不推荐大家使用</strong>。</p>
+</li>
+<li><p>四方法与<code>CURL</code>类似，通过<code>fsockopen</code>创建<code>socket</code>连接访问远程服务，不循环获取请求结果。一样会有三中连接被断开的问题。</p>
+</li>
+</ul>
+<h1 id="二-PHP发展了这么多年对异步支持方面都有哪些改进？"><a href="#二-PHP发展了这么多年对异步支持方面都有哪些改进？" class="headerlink" title="二. PHP发展了这么多年对异步支持方面都有哪些改进？"></a>二. PHP发展了这么多年对异步支持方面都有哪些改进？</h1><ul>
+<li><p><code>CURL</code>扩展已支持毫秒配置，将 <code>CURLOPT_TIMEOUT</code> 改为 <code>CURLOPT_TIMEOUT_MS</code>即可生效（<code>cURL</code> 版本 &gt;= <code>libcurl</code>/<code>7.21.0</code>，老服务器要检查版本），但还是我前面说的需要服务端配合，不然接口的调用成功失败不可控。</p>
+</li>
+<li><p><code>CURL</code>扩展已支持并发，我们能一次访问N个接口，执行时间取最长接口的时间。比如我们能一次访问 京东支付（1s），微信支付(1.2s)，支付宝(0.8s)不同服务的三个接口,总耗时才1.2s。详细用法 <a href="https://link.jianshu.com/?t=http://php.net/manual/en/function.curl-multi-init.php" target="_blank" rel="noopener">curl_multi_init</a></p>
+</li>
+<li><p>类似<code>Node.js</code>的异步IO框架<code>Swoole</code>，能很好的实现异步调用；不过<code>Swoole</code>理论上不能算PHP框架，他算是PHP功能的扩展。所以除非项目都用<code>Swoole</code>写，不然也是享受不到异步IO的福利。</p>
+</li>
+<li><p>对<code>yield</code>的支持，能实现调度器的功能，写单进程的服务时能大展拳脚，特别是实现协程，异步更不在话下。不过在多进程的web服务上没有太大的使用场景，看未来会不会有新的玩法吧。</p>
+</li>
+</ul>
+<blockquote>
+<p>当然还有很多新的特性，这里不再细说，总之PHP越是被黑越是能快速发展。</p>
+</blockquote>
+<h1 id="三-最好的异步实现方法"><a href="#三-最好的异步实现方法" class="headerlink" title="三. 最好的异步实现方法"></a>三. 最好的异步实现方法</h1><p>我们都知道PHP是支持多进程编程的，那完全可以新建一个进程去实现异步的调用。比如调用<code>popen()</code>方法，但是管道的方式传参异常麻烦，不过多进程这个方法是绝对可行的。如果要实现多进程的功能，毫无疑问我们会选择PHP官方提供的 <code>pcntl</code> 扩展,PHP默认会安装 <code>pcntl</code> 扩展，</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> @caoxl</span><br><span class="line"></span><br><span class="line">class Async</span><br><span class="line">&#123;</span><br><span class="line">    static <span class="variable">$instance</span>;</span><br><span class="line"></span><br><span class="line">    public static <span class="keyword">function</span> getInstance()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (null == Async::<span class="variable">$instance</span>)</span><br><span class="line">            Async::<span class="variable">$instance</span> = new Arrow();</span><br><span class="line">        return Async::<span class="variable">$instance</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public <span class="keyword">function</span> run(<span class="variable">$rb</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="variable">$pid</span> = pcntl_fork();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$pid</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            pcntl_wait(<span class="variable">$status</span>);</span><br><span class="line">        &#125; elseif (<span class="variable">$pid</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="variable">$cid</span> = pcntl_fork();</span><br><span class="line">            <span class="keyword">if</span> (<span class="variable">$cid</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">exit</span>();</span><br><span class="line">            &#125; elseif (<span class="variable">$cid</span> == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="variable">$rb</span>();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">exit</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">exit</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$timeout</span> = <span class="number">30</span>;</span><br><span class="line">Async::getInstance()-&gt;run(<span class="keyword">function</span> () use (<span class="variable">$timeout</span>) &#123;</span><br><span class="line">    echo <span class="number">2</span>;</span><br><span class="line">    sleep(<span class="variable">$timeout</span>);</span><br><span class="line">&#125;);</span><br><span class="line">echo <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>代码说明:</strong></p>
+<p>首先<code>Async</code>类是个单例类，减少多次调用的开销。<code>run()</code>方法传递的是一个匿名函数，这样我们能非常方便的传递参数，并且保留上下文。</p>
+<p>这个类最难的地方在于多进程的处理。因为我们要尽可能快的将数据返回给用户，所以主进程越快结束越好。但是我们又需要子进程来执行我们耗时的操作，执行完退出才行。如果不等子进程执行完就将父进程退出会出现什么结果呢？结果就是子进程会常驻内存变成僵死进程。那我们有什么办法让子进程执行完之后就自动结束呢？答案是很难……那么儿子进程这么不听话，孙子进程会不会听话一点呢？？答案是孙子进程执行结束后会被系统进程回收并销毁（还是孙子听话）。所以我在代码中使用了如下方法：当前请求进程fork出子进程，子进程fork出孙子进程，主进程和子进程都先行退出，最后由孙子进程来执行耗时操作，最后完美的解决了僵死进程问题。</p>
+<p>当然这个方法的缺点就是调用的时候会多产生一个<code>php-fpm</code>的进程</p>
+<p><strong>为避免僵尸进程，当子进程结束后，手动杀死进程</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// PHP Linux Cli 模式下利用 pcntl_fork 实现多进程处理</span></span></span><br><span class="line"><span class="php"><span class="comment">// @caoxl</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// 进程数</span></span></span><br><span class="line"><span class="php">$processes = <span class="number">5</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// 所有任务就是是为了输出0到99中的所有数字</span></span></span><br><span class="line"><span class="php"><span class="comment">// 这些数字将被分成5个块，代表5个进程，</span></span></span><br><span class="line"><span class="php"><span class="comment">// 当输出的时候我们就可以看到所有进程的执行顺序</span></span></span><br><span class="line"></span><br><span class="line"><span class="php">$tasks = range(<span class="number">0</span>, <span class="number">99</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">$blocks = <span class="keyword">array</span>();</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// 将任务按进程分块</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">foreach</span> ($tasks <span class="keyword">as</span> $i) &#123;</span></span><br><span class="line"><span class="php">    $blocks[($i % $processes)][] = $i;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">foreach</span> ($blocks <span class="keyword">as</span> $blockNum =&gt; $block) &#123;</span></span><br><span class="line"><span class="php">    <span class="comment">// 通过pcntl得到一个子进程的PID</span></span></span><br><span class="line"><span class="php">    $pid = pcntl_fork();</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">if</span> ($pid == <span class="number">-1</span>) &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// 错误处理: 创建子进程失败时返回-1</span></span></span><br><span class="line"><span class="php">        <span class="keyword">die</span>(<span class="string">'cloud not fork'</span>);</span></span><br><span class="line"><span class="php">    &#125; <span class="keyword">elseif</span> ($pid) &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// 父进程逻辑</span></span></span><br><span class="line"><span class="php">        <span class="comment">// 等待子进程中断, 防止子进程成为僵尸进程</span></span></span><br><span class="line"><span class="php">        <span class="comment">// WNOHANG为非阻塞进程，具体请查阅pcntl_wait PHP官方文档</span></span></span><br><span class="line"><span class="php">        pcntl_wait($status, WNOHANG);</span></span><br><span class="line"><span class="php">    &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// 子进程逻辑</span></span></span><br><span class="line"><span class="php">        <span class="keyword">foreach</span> ($block <span class="keyword">as</span> $i) &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> <span class="string">"I'm block &#123;$blockNum&#125;, I'm printing:&#123;$i&#125;\n"</span>;</span></span><br><span class="line"><span class="php">            sleep(<span class="number">1</span>);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="comment">// 为避免僵尸进程，当子进程结束后，手动杀死进程</span></span></span><br><span class="line"><span class="php">        <span class="keyword">if</span> (function_exists(<span class="string">'posix_kill'</span>)) &#123;</span></span><br><span class="line"><span class="php">            posix_kill(getmypid(), SIGTERM);</span></span><br><span class="line"><span class="php">        &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="php">            system(<span class="string">'kill -9'</span>.getmypid());</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        <span class="keyword">exit</span>();</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://www.laruence.com/2008/04/14/318.html" target="_blank" rel="noopener">PHP实现异步调用方法研究</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/17/PHP-async-notes/" target="_blank" title="PHP异步的几个玩法">http://blog.caoxl.com/2018/08/17/PHP-async-notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/异步/">异步</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/17/Linux-Tool-ps/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Linux ps 进程查看器
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/16/MongoDB-Compass-DBA-must-know/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">MongoDB 可视化管理工具</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一-先说说鸟哥文章中的几种玩法"><span class="nav-number">1.</span> <span class="nav-text">一. 先说说鸟哥文章中的几种玩法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二-PHP发展了这么多年对异步支持方面都有哪些改进？"><span class="nav-number">2.</span> <span class="nav-text">二. PHP发展了这么多年对异步支持方面都有哪些改进？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三-最好的异步实现方法"><span class="nav-number">3.</span> <span class="nav-text">三. 最好的异步实现方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

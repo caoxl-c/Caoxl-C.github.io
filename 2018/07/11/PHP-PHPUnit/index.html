@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>单元测试「phpunit」的使用 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHPPHPUnit">
+  
+  
+  
+  
+  <meta name="description" content="本文是在Laravel框架下使用PHPUnit进行单元测试">
+<meta name="keywords" content="PHP,PHPUnit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单元测试「PHPUnit」的使用">
+<meta property="og:url" content="http://blog.caoxl.com/2018/07/11/PHP-PHPUnit/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="本文是在Laravel框架下使用PHPUnit进行单元测试">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-11-22T09:36:47.390Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="单元测试「PHPUnit」的使用">
+<meta name="twitter:description" content="本文是在Laravel框架下使用PHPUnit进行单元测试">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-PHPUnit" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      单元测试「PHPUnit」的使用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/07/11/PHP-PHPUnit/" class="article-date">
+	  <time datetime="2018-07-11T08:17:45.000Z" itemprop="datePublished">2018-07-11</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>本文是在<code>Laravel</code>框架下使用<code>PHPUnit</code>进行单元测试</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="为什么要单元测试-？"><a href="#为什么要单元测试-？" class="headerlink" title="为什么要单元测试 ？"></a>为什么要单元测试 ？</h1><blockquote>
+<p>只要你想到输入一些东西到<code>print</code>语句或调试表达式中，就用测试代替它。</p>
+</blockquote>
+<h1 id="安装PHPUnit"><a href="#安装PHPUnit" class="headerlink" title="安装PHPUnit"></a>安装<code>PHPUnit</code></h1><ul>
+<li>使用 <code>composer</code> 方式安装 <code>PHPUnit</code></li>
+</ul>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer <span class="built_in">require</span> <span class="comment">--dev phpunit/phpunit</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>安装 <code>Monolog</code>日志包, 做<code>phpunit</code>测试记录日志使用</li>
+</ul>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">composer</span> <span class="meta">require</span> monolog/monolog</span><br></pre></td></tr></table></figure>
+<h1 id="PHPUnit简单用法"><a href="#PHPUnit简单用法" class="headerlink" title="PHPUnit简单用法"></a><code>PHPUnit</code>简单用法</h1><h2 id="单个文件测试"><a href="#单个文件测试" class="headerlink" title="单个文件测试"></a>单个文件测试</h2><p>创建目录 <code>tests</code>, 新建文件 <code>StackTest.php</code>, 编辑如下:</p>
+<blockquote>
+<p>一般初始化<code>Laravel</code>框架就带有<code>tests</code>文件夹, 用于存放测试代码</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">tests</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line">define(<span class="string">"ROOT_PATH"</span>, dirname(<span class="keyword">__DIR__</span>) . <span class="string">"StackTest.php/"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Monolog</span>\<span class="title">Logger</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Monolog</span>\<span class="title">Handler</span>\<span class="title">StreamHandler</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">PHPUnit</span>\<span class="title">Framework</span>\<span class="title">TestCase</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StackTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testPushAndPop</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $stack = [];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">0</span>, count($stack));</span><br><span class="line"></span><br><span class="line">        array_push($stack, <span class="string">'foo'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加日志文件, 如果没有安装monolog，则有关monolog的代码都可以注释掉</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;Log()-&gt;error(<span class="string">'hello'</span>, $stack);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="string">'foo'</span>, $stack[count($stack) - <span class="number">1</span>]);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">1</span>, count($stack));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="string">'foo'</span>, array_pop($stack));</span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">0</span>, count($stack));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">Log</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// create a log channel</span></span><br><span class="line">        $log = <span class="keyword">new</span> Logger(<span class="string">'Tester'</span>);</span><br><span class="line">        $log-&gt;pushHandler(<span class="keyword">new</span> StreamHandler(ROOT_PATH . <span class="string">'storage/logs/app.log'</span>, Logger::WARNING));</span><br><span class="line">        $log-&gt;error(<span class="string">'Error'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $log;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>代码解释:</strong></p>
+<ul>
+<li><ol>
+<li><code>StackTest</code>为测试类</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><code>StackTest</code> 继承于 <code>PHPUnit\Framework\TestCase</code></li>
+</ol>
+</li>
+<li><ol start="3">
+<li>测试方法<code>testPushAndPop()</code>, 测试方法必须为<code>public</code>权限, 一般以<code>test</code>开头,或者你也可以选择给其加注释<code>@test</code>来表示</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>在测试方法内，类似于 <code>assertEquals()</code> 这样的断言方法<strong>用来对实际值与预期值的匹配做出断言</strong>。</li>
+</ol>
+</li>
+</ul>
+<h3 id="命令行执行"><a href="#命令行执行" class="headerlink" title="命令行执行"></a>命令行执行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phpunit命令 测试文件命名</span><br></pre></td></tr></table></figure>
+<p>例如:<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/vendor/</span>bin<span class="regexp">/phpunit tests/</span>StackTest.php</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 或者可以省略文件后缀名</span><br><span class="line">.<span class="regexp">/vendor/</span>bin<span class="regexp">/phpunit tests/</span>StackTest</span><br></pre></td></tr></table></figure></p>
+<p>执行结果:</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ./vendor/bin/phpunit tests/StackTest.php</span><br><span class="line">PHPUnit 7.2.6 by Sebastian Bergmann and contributors.</span><br><span class="line"></span><br><span class="line">.                                                                   1 / 1 (100%)</span><br><span class="line"></span><br><span class="line"><span class="keyword">Time:</span> 203 ms, Memory: 4.00MB</span><br><span class="line"></span><br><span class="line">OK (1 test, 5 assertions)</span><br></pre></td></tr></table></figure>
+<p>我们可以在<code>app.log</code>文件中查看我们打印的日志信息。</p>
+<ul>
+<li><code>storage/logs/app.log</code></li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">2018</span><span class="number">-07</span><span class="number">-11</span> <span class="number">08</span>:<span class="number">45</span>:<span class="number">24</span>] Tester.ERROR: Error [] []</span><br><span class="line">[<span class="number">2018</span><span class="number">-07</span><span class="number">-11</span> <span class="number">08</span>:<span class="number">45</span>:<span class="number">24</span>] Tester.ERROR: hello [<span class="string">"foo"</span>] []</span><br></pre></td></tr></table></figure>
+<h2 id="类文件引入"><a href="#类文件引入" class="headerlink" title="类文件引入"></a>类文件引入</h2><ul>
+<li><code>Calculator.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sum</span><span class="params">($a, $b)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> $a + $b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>单元测试类: <code>CalculatorTest.php</code></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">tests</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/../vendor/autoload.php'</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">require</span> <span class="string">"Calculator.php"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PHPUnit</span>\<span class="title">Framework</span>\<span class="title">TestCase</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">CalculatorTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testSum</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $obj = <span class="keyword">new</span> \Calculator;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">2</span>, $obj-&gt;sum(<span class="number">1</span>, <span class="number">1</span>));</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>命令执行:</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ./vendor/bin/phpunit tests/CalculatorTest</span><br><span class="line">PHPUnit 7.2.6 by Sebastian Bergmann and contributors.</span><br><span class="line"></span><br><span class="line">.                                                                   1 / 1 (100%)</span><br><span class="line"></span><br><span class="line"><span class="keyword">Time:</span> 185 ms, Memory: 4.00MB</span><br><span class="line"></span><br><span class="line">OK (1 test, 1 assertion)</span><br></pre></td></tr></table></figure>
+<p>如果我们把这里的断言故意写错，<code>$this-&gt;assertEquals(1, $obj-&gt;sum(0, 0));</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">./vendor/bin/phpunit</span> <span class="string">tests/CalculatorTest</span></span><br><span class="line"><span class="string">PHPUnit</span> <span class="number">7.2</span><span class="number">.6</span> <span class="string">by</span> <span class="string">Sebastian</span> <span class="string">Bergmann</span> <span class="string">and</span> <span class="string">contributors.</span></span><br><span class="line"></span><br><span class="line"><span class="string">F</span>                                                                   <span class="number">1</span> <span class="string">/</span> <span class="number">1</span> <span class="string">(100%)</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Time:</span> <span class="number">194</span> <span class="string">ms,</span> <span class="attr">Memory:</span> <span class="number">4.</span><span class="string">00MB</span></span><br><span class="line"></span><br><span class="line"><span class="attr">There was 1 failure:</span></span><br><span class="line"></span><br><span class="line"><span class="number">1</span><span class="string">)</span> <span class="string">App\tests\CalculatorTest::testSum</span></span><br><span class="line"><span class="string">Failed</span> <span class="string">asserting</span> <span class="string">that</span> <span class="number">2</span> <span class="string">matches</span> <span class="string">expected</span> <span class="number">1</span><span class="string">.</span></span><br><span class="line"></span><br><span class="line"><span class="string">C:\WWW\Laravel\tests\CalculatorTest.php:16</span></span><br><span class="line"></span><br><span class="line"><span class="string">FAILURES!</span></span><br><span class="line"><span class="attr">Tests:</span> <span class="number">1</span><span class="string">,</span> <span class="attr">Assertions:</span> <span class="number">1</span><span class="string">,</span> <span class="attr">Failures:</span> <span class="number">1</span><span class="string">.</span></span><br></pre></td></tr></table></figure>
+<p><strong>会直接报出方法错误信息及行号，有助于我们快速找出<code>bug</code></strong></p>
+<h2 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h2><p>你是否已经厌烦了在每一个测试方法命名前面加一个test，是否因为只是调用的参数不同，却要写多个测试用例而纠结？<br>我最喜欢的高级功能，现在隆重推荐给你，叫做<strong>框架生成器</strong>。</p>
+<ul>
+<li><code>Calculator.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span>  </span></span><br><span class="line"><span class="class"></span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sum</span><span class="params">($a, $b)</span>  </span></span><br><span class="line"><span class="function">    </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> $a + $b;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>命令行启动测试用例，使用关键字 <code>--skeleton</code></li>
+</ul>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./vendor/bin/phpunit</span> <span class="params">--skeleton</span> Calculator.php</span><br></pre></td></tr></table></figure>
+<ul>
+<li>执行结果:</li>
+</ul>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PHPUnit <span class="number">7</span>.<span class="number">2</span>.<span class="number">6</span> <span class="keyword">by </span><span class="keyword">Sebastian </span><span class="keyword">Bergmann </span><span class="keyword">and </span>contributors.</span><br><span class="line"></span><br><span class="line">Wrote test class skeleton for Calculator to CalculatorTest.php.</span><br></pre></td></tr></table></figure>
+<p>是不是很简单，因为没有测试数据，所以这里加测试数据，然后重新执行上边的命令</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span>  </span></span><br><span class="line"><span class="class"></span>&#123;  </span><br><span class="line">    <span class="comment">/** </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (0, 0) == 0 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (0, 1) == 1 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (1, 0) == 1 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (1, 1) == 2 </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sum</span><span class="params">($a, $b)</span>  </span></span><br><span class="line"><span class="function">    </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> $a + $b;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>原始类中的每个方法都进行<code>@assert</code>注解的检测。这些被转变为测试代码，像这样:</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Generated from <span class="doctag">@assert</span> (0, 0) == 0.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testSum</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    $obj = <span class="keyword">new</span> Calculator;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">0</span>, $obj-&gt;sum(<span class="number">0</span>, <span class="number">0</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="出现错误-unrecognized-option-skeleton"><a href="#出现错误-unrecognized-option-skeleton" class="headerlink" title="出现错误: unrecognized option --skeleton"></a>出现错误: <code>unrecognized option --skeleton</code></h3><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget <span class="string">https:</span><span class="comment">//phar.phpunit.de/phpunit-skelgen.phar</span></span><br><span class="line">php phpunit-skelgen.phar</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://www.phpunit.cn/" target="_blank" rel="noopener">PHPUnit中文网</a></li>
+<li><a href="http://www.phpunit.cn/manual/current/zh_cn/installation.html" target="_blank" rel="noopener">PHPUnit中文文档</a></li>
+<li><a href="https://segmentfault.com/a/1190000011499301" target="_blank" rel="noopener">PHP单元测试框架PHPUnit的使用</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/07/11/PHP-PHPUnit/" target="_blank" title="单元测试「PHPUnit」的使用">http://blog.caoxl.com/2018/07/11/PHP-PHPUnit/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHPUnit/">PHPUnit</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/12/Page-Static-Design/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          页面静态化技术
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/11/Linux-winRAR/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Linux 压缩/解压缩</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要单元测试-？"><span class="nav-number">1.</span> <span class="nav-text">为什么要单元测试 ？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装PHPUnit"><span class="nav-number">2.</span> <span class="nav-text">安装PHPUnit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHPUnit简单用法"><span class="nav-number">3.</span> <span class="nav-text">PHPUnit简单用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单个文件测试"><span class="nav-number">3.1.</span> <span class="nav-text">单个文件测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命令行执行"><span class="nav-number">3.1.1.</span> <span class="nav-text">命令行执行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类文件引入"><span class="nav-number">3.2.</span> <span class="nav-text">类文件引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级用法"><span class="nav-number">3.3.</span> <span class="nav-text">高级用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#出现错误-unrecognized-option-skeleton"><span class="nav-number">3.3.1.</span> <span class="nav-text">出现错误: unrecognized option --skeleton</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

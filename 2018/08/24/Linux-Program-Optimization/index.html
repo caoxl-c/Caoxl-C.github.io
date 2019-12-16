@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>linux 程序优化 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="优化Linux">
+  
+  
+  
+  
+  <meta name="description" content="性能优化的核心是找出系统的瓶颈点，问题找到了，优化的工作也就完成了大半； 这里介绍的性能优化主要从两个层面来介绍：系统层面和程序层面；">
+<meta name="keywords" content="优化,Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 程序优化">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/24/Linux-Program-Optimization/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="性能优化的核心是找出系统的瓶颈点，问题找到了，优化的工作也就完成了大半； 这里介绍的性能优化主要从两个层面来介绍：系统层面和程序层面；">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux 程序优化">
+<meta name="twitter:description" content="性能优化的核心是找出系统的瓶颈点，问题找到了，优化的工作也就完成了大半； 这里介绍的性能优化主要从两个层面来介绍：系统层面和程序层面；">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Linux-Program-Optimization" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Linux 程序优化
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/24/Linux-Program-Optimization/" class="article-date">
+	  <time datetime="2018-08-24T03:04:53.000Z" itemprop="datePublished">2018-08-24</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>性能优化的核心是<strong>找出系统的瓶颈点</strong>，问题找到了，优化的工作也就完成了大半； 这里介绍的性能优化主要从两个层面来介绍：系统层面和程序层面；</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="分析系统瓶颈"><a href="#分析系统瓶颈" class="headerlink" title="分析系统瓶颈"></a>分析系统瓶颈</h1><p>系统响应变慢，首先得定位大致的问题出在哪里，是IO瓶颈、CPU瓶颈、内存瓶颈还是程序导致的系统问题；</p>
+<p>使用top工具能够比较全面的查看我们关注的点:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# top</span><br><span class="line">top - <span class="number">11</span>:<span class="number">59</span>:<span class="number">14</span> up <span class="number">21</span> days,  <span class="number">2</span>:<span class="number">19</span>,  <span class="number">1</span> user,  load average: <span class="number">0.00</span>, <span class="number">0.01</span>, <span class="number">0.05</span></span><br><span class="line">Tasks:  <span class="number">91</span> total,   <span class="number">1</span> running,  <span class="number">90</span> sleeping,   <span class="number">0</span> stopped,   <span class="number">0</span> zombie</span><br><span class="line">%Cpu(s):  <span class="number">6.2</span> us,  <span class="number">0.0</span> sy,  <span class="number">0.0</span> ni, <span class="number">93.8</span> id,  <span class="number">0.0</span> wa,  <span class="number">0.0</span> hi,  <span class="number">0.0</span> si,  <span class="number">0.0</span> st</span><br><span class="line">KiB Mem :  <span class="number">1015436</span> total,   <span class="number">130888</span> free,   <span class="number">309720</span> used,   <span class="number">574828</span> buff/cache</span><br><span class="line">KiB Swap:        <span class="number">0</span> total,        <span class="number">0</span> free,        <span class="number">0</span> used.   <span class="number">523220</span> avail Mem </span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND                   </span><br><span class="line">    <span class="number">1</span> root      <span class="number">20</span>   <span class="number">0</span>   <span class="number">43392</span>   <span class="number">3080</span>   <span class="number">1888</span> S  <span class="number">0.0</span>  <span class="number">0.3</span>   <span class="number">0</span>:<span class="number">14.98</span> systemd                   </span><br><span class="line">    <span class="number">2</span> root      <span class="number">20</span>   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">00.18</span> kthreadd                  </span><br><span class="line">    <span class="number">3</span> root      <span class="number">20</span>   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">06.86</span> ksoftirqd/<span class="number">0</span>               </span><br><span class="line">    <span class="number">5</span> root       <span class="number">0</span> <span class="number">-20</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">00.00</span> kworker/<span class="number">0</span>:<span class="number">0</span>H              </span><br><span class="line">    <span class="number">6</span> root      <span class="number">20</span>   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">02.57</span> kworker/u2:<span class="number">0</span>              </span><br><span class="line">    <span class="number">7</span> root      rt   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">00.00</span> migration/<span class="number">0</span>               </span><br><span class="line">    <span class="number">8</span> root      <span class="number">20</span>   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">00.00</span> rcu_bh                    </span><br><span class="line">    <span class="number">9</span> root      <span class="number">20</span>   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">1</span>:<span class="number">07.10</span> rcu_sched                 </span><br><span class="line">   <span class="number">10</span> root       <span class="number">0</span> <span class="number">-20</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">00.00</span> lru-add-drain</span><br></pre></td></tr></table></figure>
+<p><strong>进入交互模式后:</strong></p>
+<ul>
+<li>输入<strong>M</strong>，进程列表<code>按内存使用大小降序排序</code>，便于我们观察最大内存使用者使用有问题（检测内存泄漏问题）;</li>
+<li>输入<strong>P</strong>，进程列表按<code>CPU使用大小降序排序</code>，便于我们观察最耗CPU资源的使用者是否有问题；</li>
+</ul>
+<p><strong>top第三行显示当前系统的，其中有两个值很关键:</strong></p>
+<ul>
+<li><code>%id</code>：空闲CPU时间百分比，如果这个值过低，表明系统CPU存在瓶颈；</li>
+<li><code>%wa</code>：等待I/O的CPU时间百分比，如果这个值过高，表明IO存在瓶颈；</li>
+</ul>
+<h1 id="分析内存瓶颈"><a href="#分析内存瓶颈" class="headerlink" title="分析内存瓶颈"></a>分析内存瓶颈</h1><p>查看内存是否存在瓶颈，使用top指令看比较麻烦，而free命令更为直观:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# free</span><br><span class="line">              total        used        free      <span class="keyword">shared</span>  buff/cache   available</span><br><span class="line">Mem:        <span class="number">1015436</span>      <span class="number">309332</span>      <span class="number">127740</span>        <span class="number">2664</span>      <span class="number">578364</span>      <span class="number">523596</span></span><br><span class="line">Swap:             <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>top工具显示了free工具的第一行所有信息，但真实可用的内存，还需要自己计算才知道; 系统实际可用的内存为free工具输出第二行的<code>free</code>+<code>buffer</code>+<code>cached</code>；也就是第三行的free值127740；</p>
+<p>如果是因为缺少内存，系统响应变慢很明显，因为这使得系统不停的做换入换出的工作;</p>
+<p>进一步的监视内存使用情况，可使用vmstat工具，实时动态监视操作系统的内存和虚拟内存的动态变化。</p>
+<h1 id="分析IO瓶颈"><a href="#分析IO瓶颈" class="headerlink" title="分析IO瓶颈"></a>分析IO瓶颈</h1><p>如果IO存在性能瓶颈，top工具中的<code>%wa</code>会偏高；</p>
+<p>进一步分析使用<code>iostat</code>工具:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# iostat -d -x -k <span class="number">1</span> <span class="number">1</span></span><br><span class="line">Linux <span class="number">3.10</span><span class="number">.0</span><span class="number">-862.9</span><span class="number">.1</span>.el7.x86_64 (caoxl) 	<span class="number">08</span>/<span class="number">24</span>/<span class="number">2018</span> 	_x86_64_	(<span class="number">1</span> CPU)</span><br><span class="line"></span><br><span class="line">Device:         rrqm/s   wrqm/s     r/s     w/s    rkB/s    wkB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util</span><br><span class="line">vda               <span class="number">0.00</span>     <span class="number">0.17</span>    <span class="number">0.06</span>    <span class="number">0.31</span>     <span class="number">1.26</span>     <span class="number">2.84</span>    <span class="number">22.37</span>     <span class="number">0.00</span>    <span class="number">5.88</span>    <span class="number">6.97</span>    <span class="number">5.65</span>   <span class="number">0.64</span>   <span class="number">0.02</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果 <code>%iowait</code> 的值过高，表示硬盘存在I/O瓶颈。</li>
+<li>如果 <code>%util</code> 接近 100%，说明产生的I/O请求太多，I/O系统已经满负荷，该磁盘可能存在瓶颈。</li>
+<li>如果 <code>svctm</code> 比较接近 await，说明 I/O 几乎没有等待时间；</li>
+<li>如果 <code>await</code> 远大于 <code>svctm</code>，说明I/O 队列太长，io响应太慢，则需要进行必要优化。</li>
+<li>如果 <code>avgqu-sz</code> 比较大，也表示有大量io在等待。</li>
+</ul>
+<h1 id="分析进程调用"><a href="#分析进程调用" class="headerlink" title="分析进程调用"></a>分析进程调用</h1><p>过top等工具发现系统性能问题是由某个进程导致的之后，接下来我们就需要分析这个进程；继续 查询问题在哪；</p>
+<p>这里我们有两个好用的工具： <code>pstack</code>和<code>strace</code></p>
+<p><code>pstack</code>用来跟踪进程栈，这个命令在排查进程问题时非常有用，比如我们发现一个服务一直处于<code>work</code>状态（如假死状态，好似死循环），使用这个命令就能轻松定位问题所在；可以在一段时间内，多执行几次<code>pstack</code>，若发现代码栈总是停在同一个位置，那个位置就需要重点关注，很可能就是出问题的地方；</p>
+<ul>
+<li>示例：查看bash程序进程栈:</li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# ps -ef | grep bash</span><br><span class="line">root      <span class="number">5459</span>  <span class="number">5457</span>  <span class="number">0</span> <span class="number">10</span>:<span class="number">23</span> pts/<span class="number">0</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> -bash</span><br><span class="line">root      <span class="number">5902</span>  <span class="number">5459</span>  <span class="number">0</span> <span class="number">15</span>:<span class="number">32</span> pts/<span class="number">0</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> grep --color=<span class="built_in">auto</span> bash</span><br><span class="line">[<span class="symbol">root@</span>caoxl ~]# pstack <span class="number">5459</span></span><br><span class="line">#<span class="number">0</span>  <span class="number">0x00007f513172f17c</span> <span class="keyword">in</span> waitpid () <span class="keyword">from</span> /usr/lib64/libc.so<span class="number">.6</span></span><br><span class="line">#<span class="number">1</span>  <span class="number">0x0000000000440b24</span> <span class="keyword">in</span> waitchld.isra<span class="number">.10</span> ()</span><br><span class="line">#<span class="number">2</span>  <span class="number">0x0000000000441ddc</span> <span class="keyword">in</span> wait_for ()</span><br><span class="line">#<span class="number">3</span>  <span class="number">0x0000000000433aae</span> <span class="keyword">in</span> execute_command_internal ()</span><br><span class="line">#<span class="number">4</span>  <span class="number">0x0000000000433cce</span> <span class="keyword">in</span> execute_command ()</span><br><span class="line">#<span class="number">5</span>  <span class="number">0x000000000041e305</span> <span class="keyword">in</span> reader_loop ()</span><br><span class="line">#<span class="number">6</span>  <span class="number">0x000000000041c96e</span> <span class="keyword">in</span> main ()</span><br></pre></td></tr></table></figure>
+<p>而<code>strace</code>用来跟踪进程中的系统调用；这个工具能够动态的跟踪进程执行时的系统调用和所接收的信号。是一个非常有效的检测、指导和调试工具。系统管理员可以通过该命令容易地解决程序问题。</p>
+<h1 id="优化程序代码"><a href="#优化程序代码" class="headerlink" title="优化程序代码"></a>优化程序代码</h1><p>优化自己开发的程序，建议采用以下准则:</p>
+<ol>
+<li><p>二八法则：在任何一组东西中，最重要的只占其中一小部分，约20%，其余80%的尽管是多数，却是次要的；在优化实践中，我们将精力集中在优化那20%最耗时的代码上，整体性能将有显著的提升；这个很好理解。函数A虽然代码量大，但在一次正常执行流程中，只调用了一次。而另一个函数B代码量比A小很多，但被调用了1000次。显然，我们更应关注B的优化。</p>
+</li>
+<li><p>编完代码，再优化；编码的时候总是考虑最佳性能未必总是好的；在强调最佳性能的编码方式的同时，可能就损失了代码的可读性和开发效率；</p>
+</li>
+</ol>
+<h2 id="gprof使用步骤"><a href="#gprof使用步骤" class="headerlink" title="gprof使用步骤"></a>gprof使用步骤</h2><ol>
+<li><p>用gcc、g++、xlC编译程序时，使用-pg参数，如：<code>g++ -pg -o test.exe test.cpp</code>编译器会自动在目标代码中插入用于性能测试的代码片断，这些代码在程序运行时采集并记录函数的调用关系和调用次数，并记录函数自身执行时间和被调用函数的执行时间。</p>
+</li>
+<li><p>执行编译后的可执行程序，如：<code>./test.exe</code>。该步骤运行程序的时间会稍慢于正常编译的可执行程序的运行时间。程序运行结束后，会在程序所在路径下生成一个缺省文件名为<code>gmon.out</code>的文件，这个文件就是记录程序运行的性能、调用关系、调用次数等信息的数据文件。</p>
+</li>
+<li><p>使用gprof命令来分析记录程序运行信息的gmon.out文件，如：<code>gprof test.exe gmon.out</code>则可以在显示器上看到函数调用相关的统计、分析信息。上述信息也可以采用<code>gprof test.exe gmon.out &gt; gprofresult.txt</code>重定向到文本文件以便于后续分析。</p>
+</li>
+</ol>
+<h1 id="其它工具"><a href="#其它工具" class="headerlink" title="其它工具"></a>其它工具</h1><p>调试内存泄漏的工具valgrind，感兴趣的朋友可以google了解；</p>
+<p>OProfile: Linux 平台上的一个功能强大的性能分析工具</p>
+<p>除了上面介绍的工具，还有一些比较全面的性能分析工具，比如sar（Linux系统上默认不安装，需要手动安装下）； 将sar的常驻监控工具打开后，能够收集比较全面的性能分析数据；</p>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/24/Linux-Program-Optimization/" target="_blank" title="Linux 程序优化">http://blog.caoxl.com/2018/08/24/Linux-Program-Optimization/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/28/Learning-From-Interview/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          面试/笔试实战
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/24/Linux-Program-Debug/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Linux 程序调试</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#分析系统瓶颈"><span class="nav-number">1.</span> <span class="nav-text">分析系统瓶颈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分析内存瓶颈"><span class="nav-number">2.</span> <span class="nav-text">分析内存瓶颈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分析IO瓶颈"><span class="nav-number">3.</span> <span class="nav-text">分析IO瓶颈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分析进程调用"><span class="nav-number">4.</span> <span class="nav-text">分析进程调用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#优化程序代码"><span class="nav-number">5.</span> <span class="nav-text">优化程序代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#gprof使用步骤"><span class="nav-number">5.1.</span> <span class="nav-text">gprof使用步骤</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其它工具"><span class="nav-number">6.</span> <span class="nav-text">其它工具</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

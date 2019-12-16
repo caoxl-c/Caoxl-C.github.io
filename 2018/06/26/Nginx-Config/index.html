@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>nginx 配置详解 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Nginx">
+  
+  
+  
+  
+  <meta name="description" content="Nginx（发音同engine x）是一个异步框架的 Web服务器，也可以用作反向代理，负载平衡器 和 HTTP缓存.作为一个后起之秀的http服务器，nginx与他的老大哥apache相比，在性能上，nginx占用更少的系统资源，特定的场景应用(静态数据)能支持更多的并发连接，达到更高的访问效率；">
+<meta name="keywords" content="Nginx">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx 配置详解">
+<meta property="og:url" content="http://blog.caoxl.com/2018/06/26/Nginx-Config/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Nginx（发音同engine x）是一个异步框架的 Web服务器，也可以用作反向代理，负载平衡器 和 HTTP缓存.作为一个后起之秀的http服务器，nginx与他的老大哥apache相比，在性能上，nginx占用更少的系统资源，特定的场景应用(静态数据)能支持更多的并发连接，达到更高的访问效率；">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nginx 配置详解">
+<meta name="twitter:description" content="Nginx（发音同engine x）是一个异步框架的 Web服务器，也可以用作反向代理，负载平衡器 和 HTTP缓存.作为一个后起之秀的http服务器，nginx与他的老大哥apache相比，在性能上，nginx占用更少的系统资源，特定的场景应用(静态数据)能支持更多的并发连接，达到更高的访问效率；">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Nginx-Config" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Nginx 配置详解
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/06/26/Nginx-Config/" class="article-date">
+	  <time datetime="2018-06-26T02:06:02.000Z" itemprop="datePublished">2018-06-26</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Nginx/">Nginx</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><code>Nginx</code>（发音同engine x）是一个异步框架的 <code>Web</code>服务器，也可以用作反向代理，负载平衡器 和 <code>HTTP</code>缓存.<br>作为一个后起之秀的<strong>http服务器</strong>，<code>nginx</code>与他的老大哥<code>apache</code>相比，在性能上，<code>nginx</code>占用更少的系统资源，<br>特定的场景应用(静态数据)能支持更多的并发连接，达到更高的访问效率；</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Nginx-配置管理"><a href="#Nginx-配置管理" class="headerlink" title="Nginx 配置管理"></a><code>Nginx</code> 配置管理</h1><p>初始化的nginx默认主配置</p>
+<p>执行 <code>grep -Evi &quot;#|^$&quot; nginx.conf</code> 得到如下结果！</p>
+<blockquote>
+<p>或者直接找到 <code>nginx.conf</code> 打开即可</p>
+</blockquote>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">worker_processes</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">worker_connections</span> <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span> mime.types;</span><br><span class="line">    <span class="attribute">default_type</span> application/octet-stream;</span><br><span class="line">    <span class="attribute">sendfile</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">keepalive_timeout</span> <span class="number">65</span>;</span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">        <span class="attribute">server_name</span> localhost;</span><br><span class="line">        <span class="attribute">location</span> / &#123;</span><br><span class="line">            <span class="attribute">root</span> html;</span><br><span class="line">            <span class="attribute">index</span> index.html index.htm</span><br><span class="line">        &#125;</span><br><span class="line">        error_page <span class="number">500</span> <span class="number">502</span> <span class="number">503</span> <span class="number">504</span> /50x.html;</span><br><span class="line">        <span class="attribute">location</span> = /50x.html &#123;</span><br><span class="line">            <span class="attribute">root</span> html;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Nginx-配置段"><a href="#Nginx-配置段" class="headerlink" title="Nginx 配置段"></a><code>Nginx</code> 配置段</h1><h2 id="全局配置区"><a href="#全局配置区" class="headerlink" title="全局配置区"></a>全局配置区</h2><ul>
+<li><code>worker_processes 1;</code></li>
+</ul>
+<p>指有一个工作的子进程，可以自行修改，因为要争<code>CPU</code>资源，一般设置为<code>CPU*核数</code>。</p>
+<p>也可以设置成自动: <code>worker_processes auto;</code></p>
+<h2 id="Event配置区"><a href="#Event配置区" class="headerlink" title="Event配置区"></a><code>Event</code>配置区</h2><p>一般是配置Nginx连接的特性</p>
+<ul>
+<li><code>worker_connections 1024;</code></li>
+</ul>
+<p>指一个worker能同时允许产生多少个连接</p>
+<blockquote>
+<p>配置值的时候需要结合系统参数</p>
+</blockquote>
+<h2 id="http服务器配置区"><a href="#http服务器配置区" class="headerlink" title="http服务器配置区"></a><code>http</code>服务器配置区</h2><h3 id="server虚拟主机配置区"><a href="#server虚拟主机配置区" class="headerlink" title="server虚拟主机配置区"></a><code>server</code>虚拟主机配置区</h3><blockquote>
+<p><strong>提 示:</strong> 如果未明确配置服务器IP地址访问配置，将使用第一个<code>server</code>配置。</p>
+</blockquote>
+<h4 id="基于域名的虚拟主机"><a href="#基于域名的虚拟主机" class="headerlink" title="基于域名的虚拟主机"></a>基于域名的虚拟主机</h4><p>使用域名<code>www.caoxl.com</code>为例</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> www.caoxl.com;</span><br><span class="line">    <span class="attribute">error_page</span> <span class="number">404</span> /<span class="number">404</span>.html;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="attribute">location</span> / &#123;</span><br><span class="line">    <span class="attribute">root</span> html/www;</span><br><span class="line">    <span class="attribute">index</span> index.html;</span><br><span class="line">    <span class="attribute">access_log</span> logs/www.caoxl.com_access.log main;</span><br><span class="line">    <span class="attribute">error_loh</span> logs/www.caoxl.com_error.log;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="attribute">location</span> <span class="regexp">~ .+\.php.*$</span> &#123;</span><br><span class="line">    <span class="attribute">fastcgi_pass</span>  <span class="number">127.0.0.1:9000</span>;</span><br><span class="line">    <span class="attribute">fastcgi_index</span>  index.php</span><br><span class="line">    fastcgi_param  SCRIPT_FILENAME <span class="variable">$document_root</span>/<span class="variable">$fastcgi_script_name</span>;</span><br><span class="line">    <span class="attribute">fastcgi_param</span>  SCRIPT_FILENAME <span class="variable">$request_filename</span>;</span><br><span class="line">    <span class="attribute">include</span>  fastcgi_params;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Nginx-日志管理"><a href="#Nginx-日志管理" class="headerlink" title="Nginx 日志管理"></a><code>Nginx</code> 日志管理</h5><p>我们观察<code>Nginx</code>的<code>server</code>段，可以看到如下内容：</p>
+<p><code>access_log logs/www.caoxl.com_access.log main;</code></p>
+<ul>
+<li>参数1: 配置名</li>
+<li>参数2: 指定访问日志的文件是 <code>logs/www.caoxl.com_access.log</code></li>
+<li>参数3: 使用的日志格式<code>main</code>格式, 同时我们也可以通过<code>log_format</code>配置其他格式的日志记录方式</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">log_format</span> main <span class="string">'<span class="variable">$remote_addr</span> - <span class="variable">$remote_user</span> [<span class="variable">$time_local</span>] "<span class="variable">$request</span>"'</span></span><br><span class="line">                <span class="string">'<span class="variable">$status</span> <span class="variable">$body_bytes_sent</span> "<span class="variable">$http_referer</span>"'</span></span><br><span class="line">                <span class="string">'"<span class="variable">$http_user_agent</span>" "<span class="variable">$http_x_forwarded_for</span>"'</span>;</span><br></pre></td></tr></table></figure>
+<p>另外和其他的web服务器一样，<code>nginx</code>可以针对不同的<code>server</code>配置不同的<code>log</code></p>
+<h4 id="基于端口的虚拟主机"><a href="#基于端口的虚拟主机" class="headerlink" title="基于端口的虚拟主机"></a>基于端口的虚拟主机</h4><p>以端口<code>8080</code>为例,域名依然使用<code>www.caoxl.com</code></p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">8080</span>;</span><br><span class="line">    <span class="attribute">server_name</span> www.caoxl.com;</span><br><span class="line">    <span class="attribute">error_page</span> <span class="number">404</span> /<span class="number">404</span>.html;</span><br><span class="line">    </span><br><span class="line">    <span class="attribute">location</span> / &#123;</span><br><span class="line">        <span class="attribute">root</span> html/port;</span><br><span class="line">        <span class="attribute">index</span> index.html;</span><br><span class="line">        <span class="attribute">access_log</span> logs/www.caoxl.com_access.log main;</span><br><span class="line">        <span class="attribute">error_log</span> logs/www.caoxl.com.com_error.log;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="attribute">location</span> <span class="regexp">~ .+\.php.*$</span> &#123;</span><br><span class="line">        <span class="attribute">fastcgi_pass</span> <span class="number">127.0.0.1:9000</span>;</span><br><span class="line">        <span class="attribute">fastcgi_index</span> index.php;</span><br><span class="line">        <span class="attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="variable">$document_root</span>/<span class="variable">$fastcgi_script_name</span>;</span><br><span class="line">        <span class="attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="variable">$request_filename</span>;</span><br><span class="line">        <span class="attribute">include</span> fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="基于IP虚拟主机"><a href="#基于IP虚拟主机" class="headerlink" title="基于IP虚拟主机"></a>基于<code>IP</code>虚拟主机</h4><p>以 <code>192.168.0.200</code> 为默认<code>IP</code>配置虚拟主机</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> <span class="number">192.168.0.200</span>;</span><br><span class="line">    <span class="attribute">error_page</span> <span class="number">404</span> /<span class="number">404</span>.html;</span><br><span class="line">    </span><br><span class="line">    <span class="attribute">location</span> / &#123;</span><br><span class="line">        <span class="attribute">root</span> html/ipvhosts;</span><br><span class="line">        <span class="attribute">index</span> index.html;</span><br><span class="line">        <span class="attribute">access_log</span> logs/<span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.200_access.log main;</span><br><span class="line">        <span class="attribute">error_log</span> logs/<span class="number">192</span>.<span class="number">168</span>.<span class="number">0</span>.200_error.log;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="attribute">location</span> <span class="regexp">~ .+\.php.*$</span> &#123;</span><br><span class="line">        <span class="attribute">fastcgi_pass</span>  <span class="number">127.0.0.1:9000</span>;</span><br><span class="line">        <span class="attribute">fastcgi_index</span> index.php;</span><br><span class="line">        <span class="attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="variable">$document_root</span>/<span class="variable">$fastcgi_script_name</span>;</span><br><span class="line">        <span class="attribute">fastcgi_param</span> SCRIPT_FILENAME <span class="variable">$request_filename</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Nginx定时任务完成日志切割"><a href="#Nginx定时任务完成日志切割" class="headerlink" title="Nginx定时任务完成日志切割"></a><code>Nginx</code>定时任务完成日志切割</h1><p>任务需求：每日凌晨将<code>nginx</code>日志根据日期重命名日志文件进行切割。</p>
+<ul>
+<li>昨天时间命令 <code>date -d yesterday +%Y%m%d</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># filename cutlog.sh</span></span><br><span class="line"></span><br><span class="line">DATE=$(date -d yesterday + %Y%m%d)</span><br><span class="line">LOG_PATH=/usr/<span class="built_in">local</span>/nginx/logs/</span><br><span class="line">LOG_NAME=access.log</span><br><span class="line">BASE_PATH=/var/<span class="built_in">log</span>/</span><br><span class="line">SAVE_LOG_NAME=<span class="variable">$&#123;DATE&#125;</span>.<span class="variable">$&#123;LOG_NAME&#125;</span></span><br><span class="line"></span><br><span class="line">mv <span class="variable">$&#123;LOG_PATH&#125;</span><span class="variable">$&#123;LOG_NAME&#125;</span> <span class="variable">$&#123;BASE_PATH&#125;</span><span class="variable">$&#123;SAVE_LOG_NAME&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">kill</span> -USR1 $(cat /usr/<span class="built_in">local</span>/nginx/logs/nginx.pid)</span><br></pre></td></tr></table></figure>
+<h2 id="定时执行任务"><a href="#定时执行任务" class="headerlink" title="定时执行任务"></a>定时执行任务</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span><span class="regexp">/* 0 * * * /u</span>sr<span class="regexp">/bin/</span>crontab <span class="regexp">/root/</span>cutlog.sh &gt; <span class="regexp">/dev/</span>null <span class="number">2</span> &gt; &amp;<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h1 id="Nginx的location详解"><a href="#Nginx的location详解" class="headerlink" title="Nginx的location详解"></a><code>Nginx</code>的<code>location</code>详解</h1><h2 id="location-语法"><a href="#location-语法" class="headerlink" title="location 语法"></a><code>location</code> 语法</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">location</span> <span class="title">[=|~|~*|^~\ patt</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>参数解释：</strong></p>
+<ul>
+<li><code>=</code> 开头表示精确匹配</li>
+<li><code>^~</code>开头表示<code>uri</code>以某个常规字符串开头,理解为匹配<code>url</code>路径即可<blockquote>
+<p><code>nginx</code>不对<code>url</code>做编码，因此请求为<code>/static/20%/aa</code>，可以被规则<code>^~ /static/ /aa</code>匹配到（注意是空格）。</p>
+</blockquote>
+</li>
+<li><code>~</code>  开头表示区分大小写的正则匹配</li>
+<li><code>~*</code> 开头表示不区分大小写的正则匹配</li>
+<li><code>!~</code> 开头表示区分大小写不匹配的正则</li>
+<li><code>!~*</code> 开头表示不区分大小写不匹配的正则</li>
+</ul>
+<h2 id="location匹配类型"><a href="#location匹配类型" class="headerlink" title="location匹配类型"></a><code>location</code>匹配类型</h2><h3 id="location匹配之精准匹配"><a href="#location匹配之精准匹配" class="headerlink" title="location匹配之精准匹配"></a><code>location</code>匹配之精准匹配</h3><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">location</span> <span class="title">= / &#123;</span></span><br><span class="line"><span class="title">    # 规则A</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">location</span> <span class="title">= /login</span> &#123;</span><br><span class="line">    <span class="comment"># 规则B</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="location匹配之正则匹配"><a href="#location匹配之正则匹配" class="headerlink" title="location匹配之正则匹配"></a><code>location</code>匹配之正则匹配</h3><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">location</span> <span class="title">^~ /static</span>/ &#123;</span><br><span class="line">    <span class="comment"># 规则C</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">location</span> <span class="title">~ \.(gif</span>|jpg|png|js|css)$ &#123;</span><br><span class="line">    <span class="comment"># 规则D</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">location</span> <span class="title">~* \.png</span>$ &#123;</span><br><span class="line">    <span class="comment"># 规则E</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">location</span> <span class="title">!~ \.xhtml</span>$ &#123;</span><br><span class="line">    <span class="comment"># 规则F</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">location</span> <span class="title">!~* \.xhtml</span>$ &#123;</span><br><span class="line">    <span class="comment"># 规则G</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="location匹配之一般匹配"><a href="#location匹配之一般匹配" class="headerlink" title="location匹配之一般匹配"></a><code>location</code>匹配之一般匹配</h3><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">location</span> <span class="title">/ &#123;</span></span><br><span class="line"><span class="title">    # 规则H</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="location配置优先级"><a href="#location配置优先级" class="headerlink" title="location配置优先级"></a><code>location</code>配置优先级</h3><ol>
+<li>先判断精准匹配，如果匹配，立即返回结果并结束解析过程</li>
+<li>然后，判断普通命中没如果有多个命中，<strong>记录最长</strong>的匹配结果</li>
+<li>再然后判断正则表达式的解析过程，按配置里的正则表达式顺序为准，由上到下开始匹配，一旦匹配成功立即返回结果并结束解析过程。</li>
+</ol>
+<p>通过上面的分析我们可以知道：</p>
+<ul>
+<li>普通匹配与顺序无关，因为<strong>按照匹配的长短来取匹配结果</strong>。</li>
+<li>正则匹配与顺序有关，因为是从上往下匹配。(首先匹配，取其之。结束解析过程)</li>
+</ul>
+<h1 id="nginx的rewrite语法详解"><a href="#nginx的rewrite语法详解" class="headerlink" title="nginx的rewrite语法详解"></a><code>nginx</code>的<code>rewrite</code>语法详解</h1><h2 id="rewrite-使用环境"><a href="#rewrite-使用环境" class="headerlink" title="rewrite 使用环境"></a><code>rewrite</code> 使用环境</h2><ul>
+<li><code>Server</code></li>
+<li><code>location</code></li>
+<li><code>if</code></li>
+</ul>
+<h2 id="重写过程中可能用到的指令"><a href="#重写过程中可能用到的指令" class="headerlink" title="重写过程中可能用到的指令"></a>重写过程中可能用到的指令</h2><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (条件) &#123;</span><br><span class="line">    <span class="comment">// 设定条件再进行重写</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span> <span class="meta"># 设置变量</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="meta"># 返回状态码</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">break</span> <span class="meta"># 跳出rewrite</span></span><br><span class="line"></span><br><span class="line">rewrite <span class="meta"># 重写</span></span><br></pre></td></tr></table></figure>
+<h1 id="nginx缓存expires模块"><a href="#nginx缓存expires模块" class="headerlink" title="nginx缓存expires模块"></a><code>nginx</code>缓存<code>expires</code>模块</h1><p>控制图片等过期时间为<code>30</code>天，当然这个时间可以设置的更长。<br>具体视情况而定,将下列的<code>location</code>配置写入<code>server</code>下。</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location ~\.(gif|<span class="type">jpg</span>|<span class="type">jpeg</span>|<span class="type">png</span>|<span class="type">bmp</span>|<span class="type">ico</span>)$ &#123;</span><br><span class="line">    expires <span class="number">30</span>d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="nginx-conf配置文件"><a href="#nginx-conf配置文件" class="headerlink" title="nginx.conf配置文件"></a><code>nginx.conf</code>配置文件</h1><p><code>Nginx</code>配置文件主要分成四部分：</p>
+<ul>
+<li><code>main</code>（全局设置）、</li>
+<li><code>server</code>（主机设置）、</li>
+<li><code>upstream</code>（上游服务器设置，主要为反向代理、负载均衡相关配置）</li>
+<li><code>location</code>（URL匹配特定位置后的设置）</li>
+</ul>
+<blockquote>
+<p>main部分设置的指令将影响其它所有部分的设置；<br>server部分的指令主要用于指定虚拟主机域名、IP和端口；<br>upstream的指令用于设置一系列的后端服务器，设置反向代理及后端服务器的负载均衡；<br>location部分用于匹配网页位置（比如，根目录“/”,“/images”,等等）<br>他们之间的关系式：server继承main，location继承server；upstream既不会继承指令也不会被继承。它有自己的特殊指令，不需要在其他地方的应用。</p>
+</blockquote>
+<h2 id="通用"><a href="#通用" class="headerlink" title="通用"></a>通用</h2><p>下面的<code>nginx.conf</code>简单的实现<code>nginx</code>在前端做反向代理服务器的例子，<br>处理<code>js</code>、<code>png</code>等静态文件，<code>jsp</code>等动态请求转发到其它服务器<code>tomcat</code>：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># nginx.conf</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">user</span> www www;</span><br><span class="line"><span class="attribute">worker_processes</span> <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="attribute">error_log</span> logs/error.log;</span><br><span class="line"><span class="comment">#error_log logs/error.log notice;</span></span><br><span class="line"><span class="comment">#error_log logs/error.log info;</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">pid</span>  logs/nginx.pid;</span><br><span class="line"></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">use</span> <span class="literal">epoll</span>;</span><br><span class="line">    <span class="attribute">worker_connections</span> <span class="number">2048</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>       mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#log_format   main  '$remote_addr - $remote_user [$time_local] "$request" '</span></span><br><span class="line">    <span class="comment">#                  '$status $body_bytes_sent "$http_referer" '</span></span><br><span class="line">    <span class="comment">#                  '"$http_user_agent" "$http_x_forwarded_for"';</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">#access_log   logs/access.log main;</span></span><br><span class="line">    </span><br><span class="line">    <span class="attribute">sendfile</span>      <span class="literal">on</span>;</span><br><span class="line">    <span class="comment"># tcp_nopush  on;</span></span><br><span class="line">    </span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#gzip压缩功能设置</span></span><br><span class="line">    <span class="attribute">gzip</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">gzip_min_length</span> <span class="number">1k</span>;</span><br><span class="line">    <span class="attribute">gzip_buffers</span>    <span class="number">4</span> <span class="number">16k</span>;</span><br><span class="line">    <span class="attribute">gzip_http_version</span> <span class="number">1</span>.<span class="number">0</span>;</span><br><span class="line">    <span class="attribute">gzip_comp_level</span> <span class="number">6</span>;</span><br><span class="line">    <span class="attribute">gzip_types</span> text/html text/plain text/css text/javascript application/json application/javascript application/x-javascript application/xml;</span><br><span class="line">    <span class="attribute">gzip_vary</span> <span class="literal">on</span>; </span><br><span class="line">    </span><br><span class="line">    <span class="comment">#http_proxy设置</span></span><br><span class="line">    <span class="attribute">client_max_body_size</span>   <span class="number">10m</span>;</span><br><span class="line">    <span class="attribute">client_body_buffer_size</span>   <span class="number">128k</span>;</span><br><span class="line">    <span class="attribute">proxy_connect_timeout</span>   <span class="number">75</span>;</span><br><span class="line">    <span class="attribute">proxy_send_timeout</span>   <span class="number">75</span>;</span><br><span class="line">    <span class="attribute">proxy_read_timeout</span>   <span class="number">75</span>;</span><br><span class="line">    <span class="attribute">proxy_buffer_size</span>   <span class="number">4k</span>;</span><br><span class="line">    <span class="attribute">proxy_buffers</span>   <span class="number">4</span> <span class="number">32k</span>;</span><br><span class="line">    <span class="attribute">proxy_busy_buffers_size</span>   <span class="number">64k</span>;</span><br><span class="line">    <span class="attribute">proxy_temp_file_write_size</span>  <span class="number">64k</span>;</span><br><span class="line">    <span class="attribute">proxy_temp_path</span>   /usr/local/nginx/proxy_temp <span class="number">1</span> <span class="number">2</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#设定负载均衡后台服务器列表</span></span><br><span class="line">    <span class="attribute">upstream</span> backend &#123;</span><br><span class="line">        <span class="comment">#ip_hash;</span></span><br><span class="line">        <span class="attribute">server</span> <span class="number">192.168.10.100:8080</span> max_fails=<span class="number">2</span> fail_timeout=<span class="number">30s</span> ;</span><br><span class="line">        <span class="attribute">server</span> <span class="number">192.168.11.100:8080</span> max_fails=<span class="number">2</span> fail_timeout=<span class="number">30s</span> ;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#很重要的虚拟主机配置</span></span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">listen</span>  <span class="number">80</span>;</span><br><span class="line">        <span class="attribute">server_name</span> itoatest.example.com;</span><br><span class="line">        <span class="attribute">root</span> /apps/oaapp;</span><br><span class="line">        </span><br><span class="line">        <span class="attribute">charset</span> utf-<span class="number">8</span>;</span><br><span class="line">        <span class="attribute">access_log</span> logs/host.access.log main;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">#对 / 所有做负载均衡+反向代理</span></span><br><span class="line">        <span class="attribute">location</span> / &#123;</span><br><span class="line">            <span class="attribute">root</span> /apps/oaapp;</span><br><span class="line">            <span class="attribute">index</span> index.jsp index.html index.htm;</span><br><span class="line">            </span><br><span class="line">            <span class="attribute">proxy_pass</span>  http://backend;</span><br><span class="line">            <span class="attribute">proxy_redirect</span> <span class="literal">off</span>;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">#后端的web服务器可以通过X-Forward-For获取用户真实IP</span></span><br><span class="line">            <span class="attribute">proxy_set_header</span>  Host  <span class="variable">$host</span>;</span><br><span class="line">            <span class="attribute">proxy_set_header</span>  X-Real-IP  <span class="variable">$remote_addr</span>;  </span><br><span class="line">            <span class="attribute">proxy_set_header</span>  X-Forwarded-For  <span class="variable">$proxy_add_x_forwarded_for</span>;</span><br><span class="line">            <span class="attribute">proxy_next_upstream</span> <span class="literal">error</span> timeout invalid_header http_500 http_502 http_503 http_504;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">#静态文件，nginx自己处理，不去backend请求tomcat</span></span><br><span class="line">        <span class="attribute">location</span>  <span class="regexp">~* /download/</span> &#123;  </span><br><span class="line">            <span class="attribute">root</span> /apps/oa/fs;  </span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> <span class="regexp">~ .*\.(gif|jpg|jpeg|bmp|png|ico|txt|js|css)$</span>   </span><br><span class="line">        &#123;   </span><br><span class="line">            <span class="attribute">root</span> /apps/oaapp;   </span><br><span class="line">            <span class="attribute">expires</span>      <span class="number">7d</span>; </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="attribute">location</span> /nginx_status &#123;</span><br><span class="line">            <span class="attribute">stub_status</span> <span class="literal">on</span>;</span><br><span class="line">            <span class="attribute">access_log</span> <span class="literal">off</span>;</span><br><span class="line">            <span class="attribute">allow</span> <span class="number">192.168.10.0</span>/<span class="number">24</span>;</span><br><span class="line">            <span class="attribute">deny</span> all;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">location</span> <span class="regexp">~ ^/(WEB-INF)/</span> &#123;   </span><br><span class="line">            <span class="attribute">deny</span> all;   </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">#error_page  404              /404.html;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># redirect server error pages to the static page /50x.html</span></span><br><span class="line">        <span class="comment">#</span></span><br><span class="line">        <span class="attribute">error_page</span>   <span class="number">500</span> <span class="number">502</span> <span class="number">503</span> <span class="number">504</span>  /50x.html;</span><br><span class="line">        <span class="attribute">location</span> = /50x.html &#123;</span><br><span class="line">            <span class="attribute">root</span>   html;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">## 其它虚拟主机，server 指令开始</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://segmentfault.com/a/1190000002797601" target="_blank" rel="noopener">nginx服务器安装及配置文件详解</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/06/26/Nginx-Config/" target="_blank" title="Nginx 配置详解">http://blog.caoxl.com/2018/06/26/Nginx-Config/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/">Nginx</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/06/26/PHP-port/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          PHP 常用端口
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/15/Swoole-quick-quide/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Swoole 快速起步</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx-配置管理"><span class="nav-number">1.</span> <span class="nav-text">Nginx 配置管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx-配置段"><span class="nav-number">2.</span> <span class="nav-text">Nginx 配置段</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#全局配置区"><span class="nav-number">2.1.</span> <span class="nav-text">全局配置区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Event配置区"><span class="nav-number">2.2.</span> <span class="nav-text">Event配置区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http服务器配置区"><span class="nav-number">2.3.</span> <span class="nav-text">http服务器配置区</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#server虚拟主机配置区"><span class="nav-number">2.3.1.</span> <span class="nav-text">server虚拟主机配置区</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基于域名的虚拟主机"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">基于域名的虚拟主机</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Nginx-日志管理"><span class="nav-number">2.3.1.1.1.</span> <span class="nav-text">Nginx 日志管理</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基于端口的虚拟主机"><span class="nav-number">2.3.1.2.</span> <span class="nav-text">基于端口的虚拟主机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基于IP虚拟主机"><span class="nav-number">2.3.1.3.</span> <span class="nav-text">基于IP虚拟主机</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx定时任务完成日志切割"><span class="nav-number">3.</span> <span class="nav-text">Nginx定时任务完成日志切割</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#定时执行任务"><span class="nav-number">3.1.</span> <span class="nav-text">定时执行任务</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx的location详解"><span class="nav-number">4.</span> <span class="nav-text">Nginx的location详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#location-语法"><span class="nav-number">4.1.</span> <span class="nav-text">location 语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#location匹配类型"><span class="nav-number">4.2.</span> <span class="nav-text">location匹配类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#location匹配之精准匹配"><span class="nav-number">4.2.1.</span> <span class="nav-text">location匹配之精准匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#location匹配之正则匹配"><span class="nav-number">4.2.2.</span> <span class="nav-text">location匹配之正则匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#location匹配之一般匹配"><span class="nav-number">4.2.3.</span> <span class="nav-text">location匹配之一般匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#location配置优先级"><span class="nav-number">4.2.4.</span> <span class="nav-text">location配置优先级</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx的rewrite语法详解"><span class="nav-number">5.</span> <span class="nav-text">nginx的rewrite语法详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#rewrite-使用环境"><span class="nav-number">5.1.</span> <span class="nav-text">rewrite 使用环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重写过程中可能用到的指令"><span class="nav-number">5.2.</span> <span class="nav-text">重写过程中可能用到的指令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx缓存expires模块"><span class="nav-number">6.</span> <span class="nav-text">nginx缓存expires模块</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx-conf配置文件"><span class="nav-number">7.</span> <span class="nav-text">nginx.conf配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通用"><span class="nav-number">7.1.</span> <span class="nav-text">通用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

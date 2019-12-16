@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>七牛云 「开发日志」 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="第三方ThirdPartyQiniu七牛">
+  
+  
+  
+  
+  <meta name="description" content="总结下使用七牛云 PHP SDK 和 JS SDK 的过程中经常使用的代码 demo，以及坑。  PHP-SDk安装123composer config -g repo.packagist composer https://packagist.phpcomposer.comcomposer require qiniu/php-sdk">
+<meta name="keywords" content="第三方,ThirdParty,Qiniu,七牛">
+<meta property="og:type" content="article">
+<meta property="og:title" content="七牛云 「开发日志」">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/23/Qiniu-Dev-Log/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="总结下使用七牛云 PHP SDK 和 JS SDK 的过程中经常使用的代码 demo，以及坑。  PHP-SDk安装123composer config -g repo.packagist composer https://packagist.phpcomposer.comcomposer require qiniu/php-sdk">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:46:00.470Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="七牛云 「开发日志」">
+<meta name="twitter:description" content="总结下使用七牛云 PHP SDK 和 JS SDK 的过程中经常使用的代码 demo，以及坑。  PHP-SDk安装123composer config -g repo.packagist composer https://packagist.phpcomposer.comcomposer require qiniu/php-sdk">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Qiniu-Dev-Log" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      七牛云 「开发日志」
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/23/Qiniu-Dev-Log/" class="article-date">
+	  <time datetime="2018-01-23T03:25:02.000Z" itemprop="datePublished">2018-01-23</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/第三方应用/">第三方应用</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>总结下使用七牛云 PHP SDK 和 JS SDK 的过程中经常使用的代码 demo，以及坑。</p>
+</blockquote>
+<h1 id="PHP-SDk"><a href="#PHP-SDk" class="headerlink" title="PHP-SDk"></a>PHP-SDk</h1><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">composer <span class="built_in">config</span> -g repo.packagist composer https:<span class="comment">//packagist.phpcomposer.com</span></span><br><span class="line"></span><br><span class="line">composer require qiniu/php-sdk</span><br></pre></td></tr></table></figure>
+<a id="more"></a> 
+<h2 id="操作的前提和对象"><a href="#操作的前提和对象" class="headerlink" title="操作的前提和对象"></a>操作的前提和对象</h2><ul>
+<li>「前提」就是认证 acess_key 和 secret_key；</li>
+<li>「对象」就是认证通过后的 $auth 对象。</li>
+</ul>
+<p>在调用 PHP SDK 的时候，所有七牛云的操作都是通过这个通过认证的 $auth 对象来完成的。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Qiniu</span>\<span class="title">Auth</span>;</span><br><span class="line"></span><br><span class="line">$ak = env(<span class="string">'QINIU_ACCESSKEY'</span>);</span><br><span class="line">$sk = env(<span class="string">'QINIU_SECRETKEY'</span>);</span><br><span class="line"></span><br><span class="line">$auth = <span class="keyword">new</span> Auth($ak, $sk);</span><br></pre></td></tr></table></figure>
+<p>简单地说，<strong>在 SDK 中调用七牛云的所有 API 都需要从获得 $auth 对象开始</strong>。</p>
+<h2 id="私有空间"><a href="#私有空间" class="headerlink" title="私有空间"></a>私有空间</h2><h3 id="获得私有空间的下载链接"><a href="#获得私有空间的下载链接" class="headerlink" title="获得私有空间的下载链接"></a>获得私有空间的下载链接</h3><p>想要操作私有空间的文件，首先必须对私有空间文件进行签名，然后把签名的结果当作公开文件外链那样再进行所需处理。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 私有空间文件地址 = 私有空间域名+私有空间中的文件 key</span></span><br><span class="line"><span class="variable">$prvt_url</span> = <span class="string">'http://prvt.eme168.com/00521276847c7dfc21981faaddb1881e14766870526616.jpg?attname='</span>.<span class="variable">$save_as</span>;</span><br><span class="line">    </span><br><span class="line">/<span class="regexp">/ $save_as 是下载后的文件名 可以不选</span></span><br><span class="line"><span class="regexp">echo $auth-&gt;privateDownloadUrl($prvt_url, 600);    /</span><span class="regexp">/ 600 指的是该下载链接在公网上的失效时间</span></span><br></pre></td></tr></table></figure>
+<h3 id="下载链接-访问链接"><a href="#下载链接-访问链接" class="headerlink" title="下载链接=访问链接"></a>下载链接=访问链接</h3><p>简单的说，七牛云中私有空间的下载链接可以当做公开空间的外链使用。</p>
+<p>这其实也是公共空间和私有空间调用七牛云 API 的主要区别。</p>
+<p>下载链接要真正返回一个下载相应的话，请求参数中带上 <code>?attname=SAVE_AS</code> 即可。</p>
+<p><em>注意</em></p>
+<p>对于中文文件名，为了更好的支持中文，将 <code>attname=</code> 后面的中文文件名部分要进行 <code>URL encode</code> 操作。</p>
+<h2 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h2><p>七牛云中的「持久化（pfop）」就是用队列的形式处理一系列耗时操作。</p>
+<h3 id="上传时触发"><a href="#上传时触发" class="headerlink" title="上传时触发"></a>上传时触发</h3><p>只需在构造上传凭证时，在上传策略中设置 <code>persistentOps</code> 和 <code>persistentNotifyUrl</code> 两个字段。</p>
+<p><strong>举例说明:</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$bucket     = <span class="string">'private'</span>;</span><br><span class="line">$origin_img = <span class="string">'00521276847c7dfc21981faaddb1881e14766870526616.jpg'</span>;</span><br><span class="line">$notify_url = <span class="string">'http://www.eme168.com/api/cloudcapture/shrink_notify'</span>;</span><br><span class="line"></span><br><span class="line">$policy = [</span><br><span class="line">  <span class="string">'persistentOps'</span>       =&gt; $pfop,</span><br><span class="line">  <span class="string">'persistentNotifyUrl'</span> =&gt; $notify_url    <span class="comment">// 必须和 persistentOps 同时存在</span></span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$token = $auth-&gt;uploadToken(</span><br><span class="line">  $bucket, <span class="keyword">null</span>, <span class="number">7200</span>, $policy</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">$upload_res = $uploader-&gt;putFile(</span><br><span class="line">  $token,        <span class="comment">// 上传 token</span></span><br><span class="line">  $origin_img,   <span class="comment">// 上传后要重命名时需填 不需要时直接填 null 即可</span></span><br><span class="line">  base_path($save_path).<span class="string">'/'</span>.$origin_img    <span class="comment">// 要上传文件的本地路径</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="pipeline"><a href="#pipeline" class="headerlink" title="pipeline"></a>pipeline</h3><ul>
+<li>持久化操作期间使用的队列名称（pipeline）可选 可以不填或填 null 但不能乱填。举例说明：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Qiniu</span>\<span class="title">Processing</span>\<span class="title">PersistentFop</span>;</span><br><span class="line"></span><br><span class="line">$bucket   = <span class="string">'private'</span>;     <span class="comment">// 资源空间名</span></span><br><span class="line">$pipeline = <span class="string">'em-shrink-'</span>.rand(<span class="number">1</span>, <span class="number">16</span>);    <span class="comment">// 或者 $pipeline = null</span></span><br><span class="line">$pfop = <span class="keyword">new</span> PersistentFop($auth, $bucket, $pipeline);</span><br></pre></td></tr></table></figure>
+<p>当 <code>$pipeline</code> 为 null 时，七牛云会默认为你的这个操作分配一个队列名。</p>
+<ul>
+<li><code>pipeline</code> 需要事先在控制台创建</li>
+</ul>
+<h3 id="保存持久化处理结果"><a href="#保存持久化处理结果" class="headerlink" title="保存持久化处理结果"></a>保存持久化处理结果</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$origin_img   = <span class="string">'00521276847c7dfc21981faaddb1881e14766870526616'</span>;</span><br><span class="line">$shrink_name  = <span class="string">'shrink_'</span>.(microtime(<span class="keyword">true</span>)*<span class="number">10000</span>).<span class="string">'.jpg'</span>;</span><br><span class="line">$save_as      = base64_encode(<span class="string">'yimai:'</span>.$shrink_name);</span><br><span class="line">$fops = <span class="string">'imageMogr2/thumbnail/!30p/crop/x500|saveas/'</span>.$save_as;</span><br><span class="line"><span class="keyword">list</span>($id, $err) = $pfop-&gt;execute($origin_img, $fops);    <span class="comment">// $pfop 是持久化操作对象</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"\n====&gt; pfop thumbnail result: \n"</span>;</span><br><span class="line"><span class="keyword">if</span> ($err != <span class="keyword">null</span>)</span><br><span class="line">  print_r($err);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="keyword">echo</span> <span class="string">"PersistentFop Id: $id\n"</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="持久化处理通知回调"><a href="#持久化处理通知回调" class="headerlink" title="持久化处理通知回调"></a>持久化处理通知回调</h3><p>持久化处理本质是对七牛云一些列 API 的请求，七牛云在自己的队列中处理，处理后通过在构造上传 token 时指定的 persistentNotifyUrl 来主动通知到业务服务器。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">//</span> 处理七牛云持久化操作结束后的通知请求</span><br><span class="line">public <span class="keyword">function</span> prstNotifyCallBack(CloudCaptureModel <span class="variable">$ccm</span>)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="variable">$notify_body</span> = file_get_contents(<span class="string">'php://input'</span>);</span><br><span class="line">  <span class="variable">$this</span>-&gt;log(<span class="string">'prstNotifyCallBack'</span>, <span class="variable">$notify_body</span>);</span><br><span class="line">  <span class="keyword">if</span> (<span class="variable">$notify_body</span>) &#123;</span><br><span class="line">    <span class="variable">$data</span> = json_decode(<span class="variable">$notify_body</span>, true);</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$data</span>[<span class="string">'code'</span>]===<span class="number">0</span> &amp;&amp; <span class="variable">$data</span>[<span class="string">'items'</span>]) &#123;</span><br><span class="line">      <span class="regexp">//</span> 你的业务代码</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">exit</span>(<span class="string">'empty php input flow'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="查询持久化处理结果"><a href="#查询持久化处理结果" class="headerlink" title="查询持久化处理结果"></a>查询持久化处理结果</h3><h4 id="通过持久化处理-ID"><a href="#通过持久化处理-ID" class="headerlink" title="通过持久化处理 ID"></a>通过持久化处理 ID</h4><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">http:</span>/<span class="regexp">/api.qiniu.com/status</span><span class="regexp">/get/prefop</span>?id=&lt;PersistentFop Id&gt;    <span class="comment"># z0.582b573845a2655db7679b5f</span></span><br></pre></td></tr></table></figure>
+<h4 id="通过-PHP-SDK"><a href="#通过-PHP-SDK" class="headerlink" title="通过 PHP SDK"></a>通过 PHP SDK</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">list</span>($ret, $err) = $pfop-&gt;status($id);    <span class="comment">// $pfop 是持久化操作对象</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"\n====&gt; pfop xxxx status: \n"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ($err != <span class="keyword">null</span>)</span><br><span class="line">  print_r($err);  </span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  print_r($ret);</span><br></pre></td></tr></table></figure>
+<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><h3 id="单文件下载"><a href="#单文件下载" class="headerlink" title="单文件下载"></a>单文件下载</h3><blockquote>
+<p>「公开」和「私有」下载链接的区别只是签名与否。</p>
+</blockquote>
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$.<span class="keyword">get</span>('/get_down_link', &#123;</span><br><span class="line">	<span class="string">'id'</span> : <span class="number">1</span></span><br><span class="line">&#125;, <span class="function"><span class="keyword">function</span> (<span class="params">res</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (res.status != <span class="string">'500'</span>) &#123;</span><br><span class="line">    	saveFile(res.link);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">saveFile</span>(<span class="params">down_link</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a  = <span class="built_in">document</span>.createElement(<span class="string">'a'</span>);</span><br><span class="line">    a.href = down_link;</span><br><span class="line">    a.download = down_link;</span><br><span class="line">    a.click();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="服务器"><a href="#服务器" class="headerlink" title="服务器"></a>服务器</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">$this</span>-&gt;validate($req, [</span><br><span class="line">  <span class="string">'id'</span> =&gt; <span class="string">'required|integer|min:1'</span></span><br><span class="line">]);</span><br><span class="line">$id = $req-&gt;get(<span class="string">'id'</span>);</span><br><span class="line"><span class="comment">// get the file key of this id in qiniu from db =&gt; $data</span></span><br><span class="line">  	</span><br><span class="line"><span class="keyword">if</span> ($data) &#123;</span><br><span class="line">  $uri = <span class="string">'http://www.proj.com/'</span></span><br><span class="line">  .$data[<span class="string">'origin'</span>]</span><br><span class="line">  .<span class="string">'?attname='</span></span><br><span class="line">  .$save_as;    <span class="comment">// 下载时保存到本地的文件名（中文名等请强制使用 `urlencode()` 编码）</span></span><br><span class="line">  <span class="comment">// if store in private buket (assume here)</span></span><br><span class="line">  $link = $private</span><br><span class="line">  ? $auth-&gt;privateDownloadUrl($uri, <span class="number">7200</span>)</span><br><span class="line">  : $uri;</span><br><span class="line">  <span class="keyword">return</span> [</span><br><span class="line">      <span class="string">'status'</span> =&gt; <span class="number">200</span>,</span><br><span class="line">      <span class="string">'link'</span>   =&gt; $link</span><br><span class="line">  ];    <span class="comment">// auto json response</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> [<span class="string">'status'</span> =&gt; <span class="number">500</span>];</span><br></pre></td></tr></table></figure>
+<h3 id="多文件打包下载"><a href="#多文件打包下载" class="headerlink" title="多文件打包下载"></a>多文件打包下载</h3><p>当出现批量下载的需求的时候，就得先调用 pfop 处理成一个压缩包，然后再走单文件下载的思路就行了。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> $qiniu_prst_query_api = <span class="string">'http://api.qiniu.com/status/get/prefop?id='</span>;</span><br><span class="line"><span class="keyword">protected</span> $origin_buket      = <span class="string">'private'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// yield the compress file with the res origin keys</span></span><br><span class="line"><span class="comment">// Array $origins</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">yieldQiniuCompressFile</span><span class="params">($origins)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (is_array($origins) <span class="keyword">and</span> $origins) &#123;</span><br><span class="line">    $ak   = env(<span class="string">'QINIU_ACCESSKEY'</span>);</span><br><span class="line">    $sk   = env(<span class="string">'QINIU_SECRETKEY'</span>);</span><br><span class="line">    $auth = <span class="keyword">new</span> Auth($ak, $sk);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 指定 buket 中存在的 要压缩的文件名</span></span><br><span class="line">    $key = $origins[<span class="number">0</span>][<span class="string">'origin'</span>];</span><br><span class="line">    </span><br><span class="line">    $pfop = <span class="keyword">new</span> PersistentFop($auth, <span class="keyword">$this</span>-&gt;origin_buket);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 压缩后的文件名</span></span><br><span class="line">    $zip_key = date(<span class="string">'YmdHis'</span>).<span class="string">'.zip'</span>;</span><br><span class="line">    </span><br><span class="line">    $fops = <span class="string">'mkzip/2'</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 需要进行 zip 压缩的文件名 uri（包含第一个 $key 指定的文件）</span></span><br><span class="line">    <span class="keyword">foreach</span> ($origins <span class="keyword">as</span> $k =&gt; $val) &#123;</span><br><span class="line">      $org_url  = <span class="keyword">$this</span>-&gt;prvt_domain</span><br><span class="line">      .$val[<span class="string">'cc_origin'</span>].<span class="string">'?attname='</span>.$val[<span class="string">'name'</span>].<span class="string">'.'</span>.$val[<span class="string">'format'</span>];</span><br><span class="line">      $prvr_url = $auth-&gt;privateDownloadUrl($org_url, <span class="number">3600</span>);</span><br><span class="line">      $fops .= <span class="string">'/url/'</span>  .\Qiniu\base64_urlSafeEncode($prvr_url);</span><br><span class="line">      $fops .= <span class="string">'/alias/'</span>.\Qiniu\base64_urlSafeEncode(</span><br><span class="line">        $val[<span class="string">'name'</span>].<span class="string">'_'</span>.$k.<span class="string">'.'</span>.$val[<span class="string">'format'</span>]</span><br><span class="line">      );</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 指定压缩文件保存的路径</span></span><br><span class="line">    $fops .= <span class="string">'|saveas/'</span> . \Qiniu\base64_urlSafeEncode(<span class="keyword">$this</span>-&gt;origin_buket.<span class="string">':'</span>.$zip_key);</span><br><span class="line">    <span class="keyword">list</span>($id, $err) = $pfop-&gt;execute($key, $fops);</span><br><span class="line">    <span class="keyword">if</span> (!$err) &#123;</span><br><span class="line">    	<span class="keyword">return</span> [</span><br><span class="line">        	<span class="string">'prstId'</span> =&gt; $id,</span><br><span class="line">        	<span class="string">'resUrl'</span> =&gt; <span class="keyword">$this</span>-&gt;qiniu_prst_query_api.$id</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="number">500</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// query persistent process res status</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getQiniuPrstStatus</span><span class="params">(Request $req)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">$this</span>-&gt;validate($req, [</span><br><span class="line">    <span class="string">'resUrl'</span> =&gt; <span class="string">'required'</span></span><br><span class="line">  ]);</span><br><span class="line">  </span><br><span class="line">  $ch = curl_init();</span><br><span class="line">  curl_setopt($ch, CURLOPT_URL, $req-&gt;get(<span class="string">'resUrl'</span>));</span><br><span class="line">  curl_setopt($ch, CURLOPT_RETURNTRANSFER, <span class="keyword">true</span>);</span><br><span class="line">  $res = curl_exec($ch);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> curl_errno($ch)</span><br><span class="line">    ? <span class="number">500</span></span><br><span class="line">    : $res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>唯一需要注意的一点是，上面的 <code>key = $origins[0][&#39;origin&#39;]</code> 仅仅为符合 <code>pfop</code> 操作的接口规格而存在，并没有实际的意义，但需要是操作空间中存在的资源的 <code>key</code>。（其实我是有点费解为啥要把接口这样定义绕）</p>
+<h1 id="JS-SDK"><a href="#JS-SDK" class="headerlink" title="JS SDK"></a>JS SDK</h1><h2 id="上传-amp-回调"><a href="#上传-amp-回调" class="headerlink" title="上传&amp;回调"></a>上传&amp;回调</h2><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bower </span><span class="keyword">install </span>qiniu</span><br></pre></td></tr></table></figure>
+<p>然后在服务器上新建一个 qiniu.html，内容如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">title</span>&gt;</span>qiniu test<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"container"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">"btn btn-default btn-lg "</span> <span class="attr">id</span>=<span class="string">"pickfiles"</span> <span class="attr">href</span>=<span class="string">"#"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">i</span> <span class="attr">class</span>=<span class="string">"glyphicon glyphicon-plus"</span>&gt;</span><span class="tag">&lt;/<span class="name">i</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">span</span>&gt;</span>选择文件<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">id</span>=<span class="string">"upToken"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/js/jquery.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/bower_components/plupload/js/moxie.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/bower_components/plupload/js/plupload.dev.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"/bower_components/qiniu/dist/qiniu.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="actionscript"><span class="keyword">var</span> uploader = Qiniu.uploader(&#123;</span></span><br><span class="line"><span class="actionscript">    runtimes: <span class="string">'html5,flash,html4'</span>,      <span class="comment">// 上传模式，依次退化</span></span></span><br><span class="line"><span class="actionscript">    browse_button: <span class="string">'pickfiles'</span>,         <span class="comment">// 上传选择的点选按钮，必需</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">// 在初始化时，uptoken，uptoken_url，uptoken_func三个参数中必须有一个被设置</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">// 切如果提供了多个，其优先级为uptoken &gt; uptoken_url &gt; uptoken_func</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">// 其中uptoken是直接提供上传凭证，uptoken_url是提供了获取上传凭证的地址，如果需要定制获取uptoken的过程则可以设置uptoken_func</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">// uptoken : '', // uptoken是上传凭证，由其他程序生成</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">// uptoken_url: 'http://api.example.com/qiniu/up_ticket',         // Ajax请求uptoken的Url，强烈建议设置（服务端提供）</span></span></span><br><span class="line"><span class="actionscript">    uptoken_func: <span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;    <span class="comment">// 在需要获取uptoken时，该方法会被调用</span></span></span><br><span class="line"><span class="javascript">    	<span class="keyword">var</span> jqxhr = $.ajax(&#123;</span></span><br><span class="line"><span class="actionscript">    	   url: <span class="string">'http://api.example.com/qiniu/up_ticket'</span>,</span></span><br><span class="line"><span class="actionscript">    	   type: <span class="string">'GET'</span>,</span></span><br><span class="line"><span class="actionscript">    	   dataType: <span class="string">'json'</span>,</span></span><br><span class="line"><span class="javascript">    	   <span class="keyword">async</span>: <span class="literal">false</span>,</span></span><br><span class="line"><span class="actionscript">    	   cors: <span class="literal">true</span> ,</span></span><br><span class="line">    	   headers: &#123;</span><br><span class="line"><span class="actionscript">    			<span class="string">'Access-Control-Allow-Origin'</span>: <span class="string">'*'</span>,</span></span><br><span class="line"><span class="actionscript">    			<span class="string">'AUTHORIZATION'</span>: <span class="string">'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjF9.SscwZjqXAkp1gY3eVBiMBpdtQhyfcV7V67UDNeacJhc'</span></span></span><br><span class="line">    	   &#125;,</span><br><span class="line"><span class="actionscript">    	   success: <span class="function"><span class="keyword">function</span> <span class="params">(res)</span> </span>&#123;</span></span><br><span class="line">    	   &#125;,</span><br><span class="line"><span class="actionscript">    	   error: <span class="function"><span class="keyword">function</span> <span class="params">(xhr, status)</span> </span>&#123;</span></span><br><span class="line">    	   &#125;</span><br><span class="line">    	&#125;);</span><br><span class="line">    	</span><br><span class="line"><span class="actionscript">    	<span class="keyword">return</span> jqxhr.responseJSON.upToken;</span></span><br><span class="line">    &#125;,</span><br><span class="line"><span class="actionscript">    get_new_uptoken: <span class="literal">false</span>,             <span class="comment">// 设置上传文件的时候是否每次都重新获取新的uptoken</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">// downtoken_url: '/downtoken',</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">// Ajax请求downToken的Url，私有空间时使用，JS-SDK将向该地址POST文件的key和domain，服务端返回的JSON必须包含url字段，url值为该文件的下载地址</span></span></span><br><span class="line"><span class="actionscript">    unique_names: <span class="literal">true</span>,              <span class="comment">// 默认false，key为文件名。若开启该选项，JS-SDK会为每个文件自动生成key（文件名）</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">// save_key: true,                  // 默认false。若在服务端生成uptoken的上传策略中指定了sava_key，则开启，SDK在前端将不对key进行任何处理</span></span></span><br><span class="line"><span class="actionscript">    domain: <span class="string">'static.hcmchi.com'</span>,     <span class="comment">// bucket域名，下载资源时用到，必需</span></span></span><br><span class="line"><span class="actionscript">    container: <span class="string">'container'</span>,             <span class="comment">// 上传区域DOM ID，默认是browser_button的父元素</span></span></span><br><span class="line"><span class="actionscript">    max_file_size: <span class="string">'100mb'</span>,             <span class="comment">// 最大文件体积限制</span></span></span><br><span class="line"><span class="actionscript">    flash_swf_url: <span class="string">'/bower_components/plupload/js/Moxie.swf'</span>,  <span class="comment">//引入flash，相对路径</span></span></span><br><span class="line"><span class="actionscript">    max_retries: <span class="number">3</span>,                     <span class="comment">// 上传失败最大重试次数</span></span></span><br><span class="line"><span class="actionscript">    dragdrop: <span class="literal">true</span>,                     <span class="comment">// 开启可拖曳上传</span></span></span><br><span class="line"><span class="actionscript">    drop_element: <span class="string">'container'</span>,          <span class="comment">// 拖曳上传区域元素的ID，拖曳文件或文件夹后可触发上传</span></span></span><br><span class="line"><span class="actionscript">    chunk_size: <span class="string">'4mb'</span>,                  <span class="comment">// 分块上传时，每块的体积</span></span></span><br><span class="line"><span class="actionscript">    auto_start: <span class="literal">true</span>,                   <span class="comment">// 选择文件后自动上传，若关闭需要自己绑定事件触发上传</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//x_vars : &#123;</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//    查看自定义变量</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//    'time' : function(up,file) &#123;</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//        var time = (new Date()).getTime();</span></span></span><br><span class="line"><span class="actionscript">              <span class="comment">// do something with 'time'</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//        return time;</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//    &#125;,</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//    'size' : function(up,file) &#123;</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//        var size = file.size;</span></span></span><br><span class="line"><span class="actionscript">              <span class="comment">// do something with 'size'</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//        return size;</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//    &#125;</span></span></span><br><span class="line"><span class="actionscript">    <span class="comment">//&#125;,</span></span></span><br><span class="line">    init: &#123;</span><br><span class="line"><span class="actionscript">        <span class="string">'FilesAdded'</span>: <span class="function"><span class="keyword">function</span><span class="params">(up, files)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">            plupload.each(files, <span class="function"><span class="keyword">function</span><span class="params">(file)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">                <span class="comment">// 文件添加进队列后，处理相关的事情</span></span></span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;,</span><br><span class="line"><span class="actionscript">        <span class="string">'BeforeUpload'</span>: <span class="function"><span class="keyword">function</span><span class="params">(up, file)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">               <span class="comment">// 每个文件上传前，处理相关的事情</span></span></span><br><span class="line">        &#125;,</span><br><span class="line"><span class="actionscript">        <span class="string">'UploadProgress'</span>: <span class="function"><span class="keyword">function</span><span class="params">(up, file)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">               <span class="comment">// 每个文件上传时，处理相关的事情</span></span></span><br><span class="line">        &#125;,</span><br><span class="line"><span class="actionscript">        <span class="string">'FileUploaded'</span>: <span class="function"><span class="keyword">function</span><span class="params">(up, file, info)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">               <span class="comment">// 每个文件上传成功后，处理相关的事情</span></span></span><br><span class="line"><span class="actionscript">               <span class="comment">// 其中info是文件上传成功后，服务端返回的json，形式如：</span></span></span><br><span class="line"><span class="actionscript">               <span class="comment">// &#123;</span></span></span><br><span class="line"><span class="actionscript">               <span class="comment">//    "hash": "Fh8xVqod2MQ1mocfI4S4KpRL6D98",</span></span></span><br><span class="line"><span class="actionscript">               <span class="comment">//    "key": "gogopher.jpg"</span></span></span><br><span class="line"><span class="actionscript">               <span class="comment">//  &#125;</span></span></span><br><span class="line"><span class="actionscript">               <span class="comment">// 查看简单反馈</span></span></span><br><span class="line"><span class="actionscript">               <span class="comment">// var domain = up.getOption('domain');</span></span></span><br><span class="line"><span class="actionscript">               <span class="comment">// var res = parseJSON(info);</span></span></span><br><span class="line"><span class="actionscript">               <span class="comment">// var sourceLink = domain +"/"+ res.key; 获取上传成功后的文件的Url</span></span></span><br><span class="line">        &#125;,</span><br><span class="line"><span class="actionscript">        <span class="string">'Error'</span>: <span class="function"><span class="keyword">function</span><span class="params">(up, err, errTip)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">               <span class="comment">//上传出错时，处理相关的事情</span></span></span><br><span class="line">        &#125;,</span><br><span class="line"><span class="actionscript">        <span class="string">'UploadComplete'</span>: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">               <span class="comment">//队列文件处理完毕后，处理相关的事情</span></span></span><br><span class="line">        &#125;,</span><br><span class="line"><span class="actionscript">        <span class="string">'Key'</span>: <span class="function"><span class="keyword">function</span><span class="params">(up, file)</span> </span>&#123;</span></span><br><span class="line"><span class="actionscript">            <span class="comment">// 若想在前端对每个文件的key进行个性化处理，可以配置该函数</span></span></span><br><span class="line"><span class="actionscript">            <span class="comment">// 该配置必须要在unique_names: false，save_key: false时才生效</span></span></span><br><span class="line"><span class="actionscript">            <span class="keyword">var</span> key = <span class="string">""</span>;</span></span><br><span class="line"><span class="actionscript">            <span class="comment">// do something with key here</span></span></span><br><span class="line"><span class="actionscript">            <span class="keyword">return</span> key</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	</span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="JS-SDK-上传完成后七牛云回调参数中没有文件名"><a href="#JS-SDK-上传完成后七牛云回调参数中没有文件名" class="headerlink" title="JS-SDK 上传完成后七牛云回调参数中没有文件名"></a>JS-SDK 上传完成后七牛云回调参数中没有文件名</h2><p>需要在 JS-SDK 获取上传凭证的时候定制一下 <code>callbackBody</code> 的格式：</p>
+<figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$policy</span> = [</span><br><span class="line">  <span class="string">'callbackUrl'</span>  =&gt; route(<span class="string">'qiniu_upload_callback'</span>),</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 1. 通过 JSON 格式</span></span><br><span class="line">  <span class="string">'callbackBody'</span> =&gt; json_encode([</span><br><span class="line">    // <span class="string">'name'</span>  =&gt; <span class="string">'<span class="variable">$(fname)</span>'</span>,</span><br><span class="line">    // <span class="string">'hash'</span>  =&gt; <span class="string">'<span class="variable">$(etag)</span>'</span>,</span><br><span class="line">    <span class="string">'fkey'</span>  =&gt; <span class="string">'<span class="variable">$(key)</span>'</span>,</span><br><span class="line">    <span class="string">'us_id'</span> =&gt; <span class="variable">$this</span>-&gt;req-&gt;us_id,</span><br><span class="line">    <span class="string">'id'</span>    =&gt; <span class="variable">$this</span>-&gt;req-&gt;id,</span><br><span class="line">  ]),</span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 2. 通过 URL 参数对形式</span></span><br><span class="line">  // <span class="string">'callbackBody'</span> =&gt; <span class="string">'fkey=<span class="variable">$(key)</span>&amp;us_id='</span>.<span class="variable">$this</span>-&gt;req-&gt;us_id.<span class="string">'&amp;id='</span>.<span class="variable">$this</span>-&gt;req-&gt;id,</span><br><span class="line">]<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>然后再回调中解析出来：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$callbackBody = file<span class="constructor">_get_contents('<span class="params">php</span>:<span class="operator">/</span><span class="operator">/</span><span class="params">input</span>')</span>;</span><br></pre></td></tr></table></figure>
+<p>注意回调这里收到的参数格式和上传策略（<code>$policy</code>）中定义的 <code>callbackBody</code> 是一样的，因此如果是使用 URL 参数的形式传过去的，接受的时候就不要用 <code>json_decode</code>来解析了。</p>
+<h2 id="三种方式指定上传后的文件名"><a href="#三种方式指定上传后的文件名" class="headerlink" title="三种方式指定上传后的文件名"></a>三种方式指定上传后的文件名</h2><ul>
+<li>JS-SDK 中指定 <code>unique_names</code> 为 true，由 JS-SDK 指定。</li>
+<li>上传策略中指定 <code>callbackFetchKey</code>，然后在七牛回调应用服务器的时候由应用服务端指定。</li>
+<li>服务端生成上传凭证的时候，在上传策略中指定 <code>save_key</code>，该 key 就是最终上传的文件名。</li>
+</ul>
+<h2 id="多个-uploader-返回值不一致问题"><a href="#多个-uploader-返回值不一致问题" class="headerlink" title="多个 uploader 返回值不一致问题"></a>多个 uploader 返回值不一致问题</h2><p>png/jpg 和 rar/zip 格式的文件上传成功后，返回值不一致。</p>
+<ul>
+<li><code>png/jpg</code> 上传成功后其 key 为 <code>JSON.parse(info.response).key</code> ，</li>
+<li>而 <code>rar/zip</code> 上传成功后其 key 在 <code>file.target_name</code> 中。</li>
+</ul>
+<h1 id="官方-API"><a href="#官方-API" class="headerlink" title="官方 API"></a>官方 API</h1><h2 id="接口连贯操作"><a href="#接口连贯操作" class="headerlink" title="接口连贯操作"></a>接口连贯操作</h2><h3 id="同处理接口下的连贯操作"><a href="#同处理接口下的连贯操作" class="headerlink" title="同处理接口下的连贯操作"></a>同处理接口下的连贯操作</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过 K/V</span></span><br><span class="line">http:<span class="regexp">//</span>static.eme168.com<span class="regexp">/12c8da59f1203ccc99beedd31d9dd02214759391349863.jpg?imageMogr2/</span>thumbnail<span class="regexp">/!80p/</span>crop<span class="regexp">/x300</span></span><br></pre></td></tr></table></figure>
+<h3 id="不同处理接口下的连贯操作"><a href="#不同处理接口下的连贯操作" class="headerlink" title="不同处理接口下的连贯操作"></a>不同处理接口下的连贯操作</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过管道符 |</span></span><br><span class="line">http:<span class="regexp">//</span>static.eme168.com<span class="regexp">/12c8da59f1203ccc99beedd31d9dd02214759391349863.jpg?imageMogr2/</span>thumbnail<span class="regexp">/!30p|imageMogr2/</span>crop<span class="regexp">/x300</span></span><br></pre></td></tr></table></figure>
+<h3 id="和-PHP-SDK-一致"><a href="#和-PHP-SDK-一致" class="headerlink" title="和 PHP SDK 一致"></a>和 PHP SDK 一致</h3><p>上面 URL 后面的参数，比如 <code>imageMogr2/thumbnail/!80p/crop/x300</code>，这个和在 PHP SDK 中触发持久化时传递的操作名是一致的。</p>
+<h1 id="可能遇到的坑"><a href="#可能遇到的坑" class="headerlink" title="可能遇到的坑"></a>可能遇到的坑</h1><h2 id="获取含有空格文件名的图片信息"><a href="#获取含有空格文件名的图片信息" class="headerlink" title="获取含有空格文件名的图片信息"></a>获取含有空格文件名的图片信息</h2><p>这个坑在于，当使用 <code>&lt;download_url?imageInfo&gt;</code> 在浏览器实时测试时是发现不了的，因为浏览器（Chrome）默认已经处理过了，只有使用 <code>SDK</code>（PHP-SDK）时才能发现，这时候需要按照浏览器自动转换的格式，<strong>把空格编码成 %20 </strong>即可。</p>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">$file</span> = <span class="string">'abcd 中文.png'</span>;</span><br><span class="line"><span class="symbol">$uri</span>  = rawurlencode(<span class="symbol">$file</span>).<span class="string">'?imageInfo'</span>;    -- not <span class="string">`urlencode()`</span></span><br></pre></td></tr></table></figure>
+<h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><ul>
+<li>PHP-SDK 上传文件时触发持久化操作，在文件大于 20M 后持久化操作失败</li>
+</ul>
+<p>出现此情况的原始持久化操作为：<code>imageslim|imageMogr2/crop/x1170</code>。这是七牛暂时没有处理好的地方。</p>
+<p>解决办法是，连个持久化顺序调换：<code>imageMogr2/crop/x1170|imageslim</code>。原因是：</p>
+<blockquote>
+<p>这种方式 认为 imageslim 是异步，但是 imageMogr2 是同步了，导致 imageMogr2 处理失败了。</p>
+<p>原本是同步处理的 imageMogr2 操作会不允许大于 20M 的文件直接处理，会允许异步的 imageMogr2 操作，这里看起来应该是系统将管道中的处理 也认为是 同步处理了。</p>
+<p>换个顺序应该是 imageMogr2 被认为是异步的，大于 20M 可以处理，处理的结果应该会小于 20M，所以 imageslim 即使是同步也可以被处理成功。</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://developer.qiniu.com/kodo" target="_blank" rel="noopener">七牛开发者中心</a></li>
+<li><a href="https://developer.qiniu.com/dora/manual/1305/processing-results-save-saveas" target="_blank" rel="noopener">处理结果另存(saveas)</a></li>
+<li><a href="https://segmentfault.com/q/1010000003890918" target="_blank" rel="noopener">上传文件七牛回调时没有传回文件名</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/23/Qiniu-Dev-Log/" target="_blank" title="七牛云 「开发日志」">http://blog.caoxl.com/2018/01/23/Qiniu-Dev-Log/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Qiniu/">Qiniu</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ThirdParty/">ThirdParty</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/七牛/">七牛</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/第三方/">第三方</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/23/JieKou-Dev-Log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          接口网 短信接口「开发日志」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/23/WeChat-Subscription-Notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">微信公众号「开发日志」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP-SDk"><span class="nav-number">1.</span> <span class="nav-text">PHP-SDk</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作的前提和对象"><span class="nav-number">1.2.</span> <span class="nav-text">操作的前提和对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#私有空间"><span class="nav-number">1.3.</span> <span class="nav-text">私有空间</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#获得私有空间的下载链接"><span class="nav-number">1.3.1.</span> <span class="nav-text">获得私有空间的下载链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下载链接-访问链接"><span class="nav-number">1.3.2.</span> <span class="nav-text">下载链接=访问链接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#持久化"><span class="nav-number">1.4.</span> <span class="nav-text">持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#上传时触发"><span class="nav-number">1.4.1.</span> <span class="nav-text">上传时触发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pipeline"><span class="nav-number">1.4.2.</span> <span class="nav-text">pipeline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保存持久化处理结果"><span class="nav-number">1.4.3.</span> <span class="nav-text">保存持久化处理结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#持久化处理通知回调"><span class="nav-number">1.4.4.</span> <span class="nav-text">持久化处理通知回调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询持久化处理结果"><span class="nav-number">1.4.5.</span> <span class="nav-text">查询持久化处理结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过持久化处理-ID"><span class="nav-number">1.4.5.1.</span> <span class="nav-text">通过持久化处理 ID</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过-PHP-SDK"><span class="nav-number">1.4.5.2.</span> <span class="nav-text">通过 PHP SDK</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下载"><span class="nav-number">1.5.</span> <span class="nav-text">下载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单文件下载"><span class="nav-number">1.5.1.</span> <span class="nav-text">单文件下载</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">客户端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务器"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">服务器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多文件打包下载"><span class="nav-number">1.5.2.</span> <span class="nav-text">多文件打包下载</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JS-SDK"><span class="nav-number">2.</span> <span class="nav-text">JS SDK</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#上传-amp-回调"><span class="nav-number">2.1.</span> <span class="nav-text">上传&amp;回调</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JS-SDK-上传完成后七牛云回调参数中没有文件名"><span class="nav-number">2.2.</span> <span class="nav-text">JS-SDK 上传完成后七牛云回调参数中没有文件名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三种方式指定上传后的文件名"><span class="nav-number">2.3.</span> <span class="nav-text">三种方式指定上传后的文件名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多个-uploader-返回值不一致问题"><span class="nav-number">2.4.</span> <span class="nav-text">多个 uploader 返回值不一致问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#官方-API"><span class="nav-number">3.</span> <span class="nav-text">官方 API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#接口连贯操作"><span class="nav-number">3.1.</span> <span class="nav-text">接口连贯操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#同处理接口下的连贯操作"><span class="nav-number">3.1.1.</span> <span class="nav-text">同处理接口下的连贯操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不同处理接口下的连贯操作"><span class="nav-number">3.1.2.</span> <span class="nav-text">不同处理接口下的连贯操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#和-PHP-SDK-一致"><span class="nav-number">3.1.3.</span> <span class="nav-text">和 PHP SDK 一致</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#可能遇到的坑"><span class="nav-number">4.</span> <span class="nav-text">可能遇到的坑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#获取含有空格文件名的图片信息"><span class="nav-number">4.1.</span> <span class="nav-text">获取含有空格文件名的图片信息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">5.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

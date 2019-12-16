@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>memcached 使用日志 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="CacheMemcached">
+  
+  
+  
+  
+  <meta name="description" content="Memcached 在正式环境的安装+使用日志。">
+<meta name="keywords" content="Cache,Memcached">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Memcached 使用日志">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/20/Memcached-use-log/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Memcached 在正式环境的安装+使用日志。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:37:05.006Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Memcached 使用日志">
+<meta name="twitter:description" content="Memcached 在正式环境的安装+使用日志。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Memcached-use-log" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Memcached 使用日志
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/20/Memcached-use-log/" class="article-date">
+	  <time datetime="2018-08-20T07:06:21.000Z" itemprop="datePublished">2018-08-20</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><code>Memcached</code> 在正式环境的安装+使用日志。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="memcached-服务器"><a href="#memcached-服务器" class="headerlink" title="memcached 服务器"></a><code>memcached</code> 服务器</h1><h2 id="虚拟主机／CentOS-7-运行"><a href="#虚拟主机／CentOS-7-运行" class="headerlink" title="虚拟主机／CentOS 7 运行"></a>虚拟主机／CentOS 7 运行</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装配置</span></span><br><span class="line">yum <span class="keyword">update</span> &amp;&amp; yum <span class="keyword">install</span> -y memcached</span><br><span class="line"><span class="comment"># SASL 支持</span></span><br><span class="line">yum <span class="keyword">install</span> cyrus-sasl-devel cyrus-sasl-plain</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动+服务自启</span></span><br><span class="line">memcached -d -p <span class="number">11211</span> -u memcached -m <span class="number">229</span> -c <span class="number">1024</span> -P /<span class="keyword">var</span>/run/memcached/memcached.pid -l <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">systemctl <span class="keyword">start</span> memcached</span><br><span class="line">systemctl <span class="keyword">enable</span> memcached</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看运行状态</span></span><br><span class="line">netstat -plunt</span><br><span class="line">memstat <span class="comment">--servers="127.0.0.1"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 允许外网访问（慎用）</span></span><br><span class="line">firewall-cmd <span class="comment">--add-port=11211/tcp --permanent</span></span><br><span class="line">firewall-cmd <span class="comment">--reload</span></span><br></pre></td></tr></table></figure>
+<p>除了通过命名指定 memcached 的启动参数外，最好的方式是将通过配置文件启动：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/sysconfig/memcached</span><br><span class="line"></span><br><span class="line">`</span><br><span class="line">PORT=<span class="string">"11211"</span></span><br><span class="line">USER=<span class="string">"memcached"</span></span><br><span class="line">MAXCONN=<span class="string">"1024"</span></span><br><span class="line">CACHESIZE=<span class="string">"64"</span></span><br><span class="line">OPTIONS=<span class="string">"-l 127.0.0.1 -U 0"</span> </span><br><span class="line">`</span><br></pre></td></tr></table></figure>
+<h3 id="关于服务启动选项"><a href="#关于服务启动选项" class="headerlink" title="关于服务启动选项"></a>关于服务启动选项</h3><ul>
+<li><code>-d</code> 是启动一个守护进程</li>
+<li><code>-m</code> 是分配给Memcache使用的内存数量，单位是MB</li>
+<li><code>-u</code> 是运行Memcache的用户</li>
+<li><code>-l</code> 是监听的服务器IP地址，可以有多个地址</li>
+<li><code>-p</code> 是设置Memcache监听的端口，最好是 1024 以上的端口</li>
+<li><code>-c</code> 是最大运行的并发连接数，默认是1024</li>
+<li><code>-P</code> 是设置保存 Memcache 的 pid 文件</li>
+</ul>
+<h2 id="Docker-容器运行"><a href="#Docker-容器运行" class="headerlink" title="Docker 容器运行"></a>Docker 容器运行</h2><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">docker</span> <span class="string">run --name local-memcached -d -p 11211:11211 \</span></span><br><span class="line"><span class="meta">-e</span> <span class="string">VIRTUAL_HOST=memcached.docker \</span></span><br><span class="line"><span class="meta">-h</span> <span class="string">memcached.docker \</span></span><br><span class="line"><span class="attr">memcached</span></span><br></pre></td></tr></table></figure>
+<h1 id="memcached-客户端"><a href="#memcached-客户端" class="headerlink" title="memcached 客户端"></a><code>memcached</code> 客户端</h1><h2 id="CLI-使用-memcached"><a href="#CLI-使用-memcached" class="headerlink" title="CLI 使用 memcached"></a>CLI 使用 memcached</h2><h3 id="telnet"><a href="#telnet" class="headerlink" title="telnet"></a>telnet</h3><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">telnet <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> <span class="number">11211</span></span><br></pre></td></tr></table></figure>
+<p>终止 telnet：</p>
+<ul>
+<li>ctrl + ]</li>
+<li>quit\r\n</li>
+</ul>
+<h3 id="netcat-nc"><a href="#netcat-nc" class="headerlink" title="netcat/nc"></a>netcat/nc</h3><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> <span class="number">11211</span></span><br></pre></td></tr></table></figure>
+<h3 id="memcache-cli"><a href="#memcache-cli" class="headerlink" title="memcache-cli"></a>memcache-cli</h3><ul>
+<li><code>python</code></li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pip install memcache-cli</span><br><span class="line">memcache-cli host1:port host2:port  # 无参数默认 127.0.0.1:11211</span><br><span class="line"></span><br><span class="line"><span class="comment"># macOS</span></span><br><span class="line">brew<span class="built_in"> upgrade </span>python</span><br><span class="line">pip2 install --upgrade pip</span><br><span class="line">pip2 install memcache-cli</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>nodejs</code></li>
+</ul>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># npm </span></span><br><span class="line">npm install -g memcached-<span class="keyword">cli</span></span><br><span class="line"><span class="meta"># yarn </span></span><br><span class="line">yarn global <span class="keyword">add</span> memcached-<span class="keyword">cli</span></span><br><span class="line"></span><br><span class="line">memcached-<span class="keyword">cli</span> host:port</span><br><span class="line">memcached-<span class="keyword">cli</span> username:password@host:port</span><br></pre></td></tr></table></figure>
+<h2 id="PHP-使用-memcached"><a href="#PHP-使用-memcached" class="headerlink" title="PHP 使用 memcached"></a>PHP 使用 memcached</h2><h3 id="安装-memcached-扩展完整流程"><a href="#安装-memcached-扩展完整流程" class="headerlink" title="安装 memcached 扩展完整流程"></a>安装 memcached 扩展完整流程</h3><p>源码安装 memcached 扩展并启用 <code>SASL</code>／<code>igbinary</code>／<code>json</code> 完整步骤：</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 确保 `gcc -v` 大于 4.2+</span></span><br><span class="line"><span class="meta"># 否则：yum install gcc+ gcc-c++</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 确保 php 完整环境已安装</span></span><br><span class="line"><span class="meta"># 否则：yum install php-devel php-common php-cli</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 确保 SASL 相关环境包已正确安装</span></span><br><span class="line"><span class="meta"># 否则：yum install cyrus-sasl-plain cyrus-sasl cyrus-sasl-devel cyrus-sasl-lib</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 确保 libmemcached 已安装</span></span><br><span class="line"><span class="meta"># rpm -qa | grep libmemcached</span></span><br><span class="line"><span class="meta"># 否则下载编译安装</span></span><br><span class="line">wget https:<span class="comment">//launchpad.net/libmemcached/1.0/1.0.18/+download/libmemcached-1.0.18.tar.gz</span></span><br><span class="line">tar zxf libmemcached<span class="number">-1.0</span><span class="number">.18</span>.tar.gz</span><br><span class="line">cd libmemcached<span class="number">-1.0</span><span class="number">.18</span></span><br><span class="line">./configure --prefix=/usr/<span class="keyword">local</span>/libmemcached --<span class="keyword">enable</span>-sasl</span><br><span class="line"><span class="built_in">make</span> &amp;&amp; <span class="built_in">make</span> install</span><br><span class="line"></span><br><span class="line"><span class="meta"># 安装 igbinary 扩展</span></span><br><span class="line"><span class="meta"># yum install -y php-pecl-igbinary</span></span><br><span class="line">wget https:<span class="comment">//github.com/igbinary/igbinary/releases/download/2.0.5/igbinary-2.0.5.tgz</span></span><br><span class="line">tar -xzvf igbinary<span class="number">-2.0</span><span class="number">.5</span>.tgz</span><br><span class="line">cd igbinary<span class="number">-2.0</span><span class="number">.5</span></span><br><span class="line">phpize</span><br><span class="line">./configure</span><br><span class="line"><span class="built_in">make</span> &amp;&amp; <span class="built_in">make</span> install</span><br><span class="line"></span><br><span class="line">` ini</span><br><span class="line">extension=igbinary.so</span><br><span class="line">`</span><br><span class="line"></span><br><span class="line"><span class="meta"># 安装 memcached</span></span><br><span class="line">yum install zlib-devel</span><br><span class="line">wget http:<span class="comment">//pecl.php.net/get/memcached-3.0.4.tgz</span></span><br><span class="line">tar zxf memcached<span class="number">-3.0</span><span class="number">.4</span>.tgz</span><br><span class="line">cd memcached<span class="number">-3.0</span><span class="number">.4</span></span><br><span class="line">phpize    <span class="meta"># 如果有多套 PHP 环境则需要使用各自的绝对路径</span></span><br><span class="line">./configure --with-libmemcached-dir=/usr/<span class="keyword">local</span>/libmemcached --<span class="keyword">enable</span>-memcached-sasl --<span class="keyword">enable</span>-memcached-json --<span class="keyword">enable</span>-memcached-json --<span class="keyword">enable</span>-memcached-igbinary</span><br><span class="line"><span class="built_in">make</span> &amp;&amp; <span class="built_in">make</span> install</span><br><span class="line">cp modules/memcached.so /path/to/php_extensions/no-<span class="keyword">debug</span>-non-zts-XXXXXX/</span><br><span class="line"></span><br><span class="line"><span class="meta"># 编辑 /path/to/php.ini</span></span><br><span class="line">` ini</span><br><span class="line">extension=memcached.so</span><br><span class="line">memcached.use_sasl = <span class="number">1</span></span><br><span class="line">`</span><br><span class="line"></span><br><span class="line"><span class="meta"># 重启 php-fpm</span></span><br><span class="line">service php-fpm restart</span><br></pre></td></tr></table></figure>
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$connect= <span class="keyword">new</span> Memcached; <span class="comment">//声明一个新的memcached链接</span></span><br><span class="line">$connect-&gt;setOption(Memcached::OPT_COMPRESSION, <span class="keyword">false</span>); <span class="comment">//关闭压缩功能</span></span><br><span class="line">$connect-&gt;setOption(Memcached::OPT_BINARY_PROTOCOL, <span class="keyword">true</span>);<span class="comment">//使用binary二进制协议</span></span><br><span class="line">$connect-&gt;setOption(Memcached::OPT_TCP_NODELAY, <span class="keyword">true</span>); <span class="comment">//重要，php memcached有个bug，当get的值不存在，有固定40ms延迟，开启这个参数，可以避免这个bug</span></span><br><span class="line">$connect-&gt;addServer(<span class="string">'xxxxxxxx.m.yyyyyyyy.ocs.aliyuncs.com'</span>, <span class="number">11211</span>);<span class="comment">//添加OCS实例地址及端口号</span></span><br><span class="line">$connect-&gt;setSaslAuthData(<span class="string">'xxxxxxxx'</span>, <span class="string">'bbbbbbbb'</span>);<span class="comment">//设置OCS帐号密码进行鉴权，如已开启免密码功能，则无需此步骤</span></span><br><span class="line">$user = <span class="keyword">array</span>(</span><br><span class="line">    <span class="string">"name"</span> =&gt; <span class="string">"ocs"</span>,</span><br><span class="line">    <span class="string">"age"</span> =&gt; <span class="number">1</span>,</span><br><span class="line">    <span class="string">"sex"</span> =&gt; <span class="string">"male"</span></span><br><span class="line">); <span class="comment">//声明一组数组  </span></span><br><span class="line">$expire = <span class="number">60</span>; <span class="comment">//设置过期时间</span></span><br><span class="line">$connect-&gt;set(<span class="string">'your_name'</span>,$user,$expire);</span><br></pre></td></tr></table></figure>
+<h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><h2 id="PHP-addServer-“成功”后-getStats-返回-false"><a href="#PHP-addServer-“成功”后-getStats-返回-false" class="headerlink" title="PHP addServer() “成功”后 getStats() 返回 false"></a>PHP <code>addServer()</code> “成功”后 <code>getStats()</code> 返回 false</h2><ul>
+<li>检查 memcached 安装配置是否正确</li>
+<li>检查是否 SASL 连接配置是否正确。</li>
+</ul>
+<h1 id="附录：memcached-命令"><a href="#附录：memcached-命令" class="headerlink" title="附录：memcached 命令"></a>附录：memcached 命令</h1><p><u><a href="https://lzone.de/cheat-sheet/memcached" target="_blank" rel="noopener">memcached Cheat Sheet。</a></u></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://hub.docker.com/_/memcached/" target="_blank" rel="noopener">Docker Hub-Memcached</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-se1cure-memcached-on-centos-7" target="_blank" rel="noopener"> How To Install and Secure Memcached on CentOS 7</a></li>
+<li><a href="https://github.com/andrewgross/memcache-cli/tree/master/memcachecli" target="_blank" rel="noopener">memcachecli</a> &amp;&amp; <a href="https://www.npmjs.com/package/memcached-cli" target="_blank" rel="noopener">memcached-cli</a></li>
+<li><a href="https://help.aliyun.com/document_detail/48432.html?spm=a2c4g.11186623.4.5.ROL7iq" target="_blank" rel="noopener">阿里云文档-PHP: memcached</a></li>
+<li><a href="https://launchpad.net/libmemcached" target="_blank" rel="noopener">libmemcached-memcached 依赖</a></li>
+<li><a href="http://jony-hwong.iteye.com/blog/1174985" target="_blank" rel="noopener">memcache及其telnet命令使用详解</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/20/Memcached-use-log/" target="_blank" title="Memcached 使用日志">http://blog.caoxl.com/2018/08/20/Memcached-use-log/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cache/">Cache</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Memcached/">Memcached</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/20/Redis-use-log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Redis 使用日志
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/20/Linux-Tool-pstack/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Linux pstack 跟踪进程栈</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#memcached-服务器"><span class="nav-number">1.</span> <span class="nav-text">memcached 服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟主机／CentOS-7-运行"><span class="nav-number">1.1.</span> <span class="nav-text">虚拟主机／CentOS 7 运行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关于服务启动选项"><span class="nav-number">1.1.1.</span> <span class="nav-text">关于服务启动选项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker-容器运行"><span class="nav-number">1.2.</span> <span class="nav-text">Docker 容器运行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#memcached-客户端"><span class="nav-number">2.</span> <span class="nav-text">memcached 客户端</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CLI-使用-memcached"><span class="nav-number">2.1.</span> <span class="nav-text">CLI 使用 memcached</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#telnet"><span class="nav-number">2.1.1.</span> <span class="nav-text">telnet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#netcat-nc"><span class="nav-number">2.1.2.</span> <span class="nav-text">netcat/nc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memcache-cli"><span class="nav-number">2.1.3.</span> <span class="nav-text">memcache-cli</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-使用-memcached"><span class="nav-number">2.2.</span> <span class="nav-text">PHP 使用 memcached</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-memcached-扩展完整流程"><span class="nav-number">2.2.1.</span> <span class="nav-text">安装 memcached 扩展完整流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例"><span class="nav-number">2.2.2.</span> <span class="nav-text">代码示例</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">3.</span> <span class="nav-text">FAQ</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-addServer-“成功”后-getStats-返回-false"><span class="nav-number">3.1.</span> <span class="nav-text">PHP addServer() “成功”后 getStats() 返回 false</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#附录：memcached-命令"><span class="nav-number">4.</span> <span class="nav-text">附录：memcached 命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php spl 简介 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHPSPL标准库">
+  
+  
+  
+  
+  <meta name="description" content="每种语言应该都有自己的标准库，而 SPL 是 PHP 的标准库，一般编码中用得比较少，但是其提供的基本数据结构实现在解决相对复杂的应用场景还是很重要的。 What ? 用于解决典型，常见问题的一组接口与类的集合。  所谓的常见问题指的有：  数据结构（数学建模）： 解决数据怎么存储的问题 元素遍历： 数据怎么查看的问题。 常用方法的统一调用： 通用方法（数组或集合的大小）、自定义遍历等。 类定义在">
+<meta name="keywords" content="PHP,SPL,标准库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP SPL 简介">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/22/PHP-SPL-Intro/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="每种语言应该都有自己的标准库，而 SPL 是 PHP 的标准库，一般编码中用得比较少，但是其提供的基本数据结构实现在解决相对复杂的应用场景还是很重要的。 What ? 用于解决典型，常见问题的一组接口与类的集合。  所谓的常见问题指的有：  数据结构（数学建模）： 解决数据怎么存储的问题 元素遍历： 数据怎么查看的问题。 常用方法的统一调用： 通用方法（数组或集合的大小）、自定义遍历等。 类定义在">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP SPL 简介">
+<meta name="twitter:description" content="每种语言应该都有自己的标准库，而 SPL 是 PHP 的标准库，一般编码中用得比较少，但是其提供的基本数据结构实现在解决相对复杂的应用场景还是很重要的。 What ? 用于解决典型，常见问题的一组接口与类的集合。  所谓的常见问题指的有：  数据结构（数学建模）： 解决数据怎么存储的问题 元素遍历： 数据怎么查看的问题。 常用方法的统一调用： 通用方法（数组或集合的大小）、自定义遍历等。 类定义在">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-SPL-Intro" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP SPL 简介
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/22/PHP-SPL-Intro/" class="article-date">
+	  <time datetime="2018-01-22T09:03:29.000Z" itemprop="datePublished">2018-01-22</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>每种语言应该都有自己的标准库，而 <strong>SPL 是 PHP 的标准库</strong>，一般编码中用得比较少，但是其提供的基本数据结构实现在解决相对复杂的应用场景还是很重要的。</p>
+<h1 id="What"><a href="#What" class="headerlink" title="What ?"></a>What ?</h1><blockquote>
+<p>用于解决典型，常见问题的一组接口与类的集合。</p>
+</blockquote>
+<p>所谓的常见问题指的有：</p>
+<ul>
+<li><strong>数据结构（数学建模）：</strong> 解决数据怎么存储的问题</li>
+<li><strong>元素遍历：</strong> 数据怎么查看的问题。</li>
+<li><strong>常用方法的统一调用：</strong> 通用方法（数组或集合的大小）、自定义遍历等。</li>
+<li><strong>类定义在自动装载：</strong> 让 php 适合大型项目的管理需求，把功能的实现分散到不同的文件中。</li>
+</ul>
+<blockquote>
+<p>类定义的自动装载解决的是项目程序在运行的时候自动判断什么时候需要什么类文件。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="Basic-Framework"><a href="#Basic-Framework" class="headerlink" title="Basic Framework"></a>Basic Framework</h2><ul>
+<li>数据结构</li>
+<li>基础接口</li>
+<li>基础函数</li>
+<li>迭代器</li>
+<li>异常</li>
+<li>其他</li>
+</ul>
+<h1 id="SPL-基础函数"><a href="#SPL-基础函数" class="headerlink" title="SPL 基础函数"></a>SPL 基础函数</h1><h2 id="autoload"><a href="#autoload" class="headerlink" title="autoload"></a>autoload</h2><p>为了初始化 PHP 中的类对象，需要通过一定的方法寻找到类的定义。通常情况下，类会定一个在一个单独的文件中。</p>
+<blockquote>
+<p>Yii 的延迟加载就用到了这个特性。</p>
+</blockquote>
+<h3 id="类载入的基本流程"><a href="#类载入的基本流程" class="headerlink" title="类载入的基本流程"></a>类载入的基本流程</h3><ul>
+<li><p>先在<strong>当前文件</strong>中查找，如果找到，则初始化类，然后结束。</p>
+</li>
+<li><p>如果没找到，就依次调用 <code>spl_autoload_register()</code> 注册的方法去找，如果找到，就初始化类，然后结束。</p>
+</li>
+<li><p>如果没找到，就调用文件的 <code>__autoload()</code> 函数去找，如果找到就初始化类，然后结束。</p>
+</li>
+<li><p>如果还是没找到，就会<strong>抛出一个类找不到的异常</strong>。</p>
+</li>
+</ul>
+<h2 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h2><ul>
+<li><code>iterator_apply：</code>为迭代器中的每个元素调用一个用户自定义函数。</li>
+<li><code>iterator_count：</code>计算迭代器中元素的个数。</li>
+<li><code>iterator_to_array：</code>将迭代器中的元素拷贝到数组。</li>
+</ul>
+<h2 id="类信息"><a href="#类信息" class="headerlink" title="类信息"></a>类信息</h2><ul>
+<li><code>class_implements：</code>返回指定类实现的所有接口。</li>
+</ul>
+<blockquote>
+<p>可以用 <code>instanceof</code> 判断某个对象是够实现了某个接口活着是某个类的实例。</p>
+</blockquote>
+<ul>
+<li><code>class_parents：</code>返回指定类的父类，如果继承了多次，则会把所有的父类都打印出来。</li>
+</ul>
+<h1 id="SPL-基础接口"><a href="#SPL-基础接口" class="headerlink" title="SPL 基础接口"></a>SPL 基础接口</h1><h2 id="Countable"><a href="#Countable" class="headerlink" title="Countable"></a>Countable</h2><p>继承该接口的类可以直接调用 <code>count()</code> 得到元素个数。</p>
+<h2 id="OuterIterator"><a href="#OuterIterator" class="headerlink" title="OuterIterator"></a>OuterIterator</h2><p>如果想迭代器进行一定的处理之后再返回，可以用这个接口。</p>
+<p><code>IteratorIterator</code> 是 <code>OuterIterator</code> 的实现，扩展的时候，可以直接继承 <code>IteratorIterator</code>，就可以实现最基本的操作 了。</p>
+<h2 id="RecursiveIterator"><a href="#RecursiveIterator" class="headerlink" title="RecursiveIterator"></a>RecursiveIterator</h2><p>可以对多层结构的迭代器进行迭代，比如遍历一棵树。</p>
+<p>所有具有文件层次结构特点的数据都可以用这个接口遍历，比如文件夹。</p>
+<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
+<li><code>hasChildren：</code>用于判断当前节点是否存在子节点。</li>
+<li><code>getChildren：</code>用于得到当前节点子节点的迭代器。</li>
+</ul>
+<h3 id="SPL-中实现该接口的类"><a href="#SPL-中实现该接口的类" class="headerlink" title="SPL 中实现该接口的类"></a>SPL 中实现该接口的类</h3><ul>
+<li>RecursiveArrayIterator</li>
+<li>RecursiveCachingIterator</li>
+</ul>
+<p><strong>Recursive 开头的类都能够进行多层次结构化的遍历。</strong></p>
+<h2 id="SeekableIterator"><a href="#SeekableIterator" class="headerlink" title="SeekableIterator"></a>SeekableIterator</h2><p>可以通过 <code>seek</code> 方法定位到集合里面的某个特定元素。<strong>seek 方法的参数就是元素的位置，从 0 开始算</strong>。</p>
+<h3 id="实现该接口的类"><a href="#实现该接口的类" class="headerlink" title="实现该接口的类"></a>实现该接口的类</h3><ul>
+<li>ArrayIterator</li>
+<li>DirectoryIterator</li>
+<li>FilesystemIterator：遍历文件系统。</li>
+<li>GlobIterator</li>
+<li>RecursiveArrayIterator</li>
+<li>RecursiveDirectoryIterator</li>
+</ul>
+<h1 id="SAP-迭代器"><a href="#SAP-迭代器" class="headerlink" title="SAP 迭代器"></a>SAP 迭代器</h1><h2 id="What-is-Iterator"><a href="#What-is-Iterator" class="headerlink" title="What is Iterator ?"></a>What is Iterator ?</h2><p>怎样获得链表中每个节点的信息？</p>
+<p>通过某种统一的方式遍历链表活着数组中的元素的过程，叫做<strong>迭代遍历</strong>，而这种统一的遍历工具，就叫做<strong>迭代器</strong>。</p>
+<p>遍历数组的时候，如果使用 <code>foreach</code>，其背后也是通过迭代器对象去执行遍历的。</p>
+<h2 id="Why-using-Iterator"><a href="#Why-using-Iterator" class="headerlink" title="Why using Iterator ?"></a>Why using Iterator ?</h2><p>使用迭代器的目的都是为了<strong>遍历</strong>。</p>
+<h2 id="常用迭代器"><a href="#常用迭代器" class="headerlink" title="常用迭代器"></a>常用迭代器</h2><h3 id="ArrayIterator"><a href="#ArrayIterator" class="headerlink" title="ArrayIterator"></a>ArrayIterator</h3><ul>
+<li>用于遍历数组</li>
+<li>用于跳过某些元素（seek）</li>
+<li>用于排序</li>
+</ul>
+<h3 id="AppendIterator"><a href="#AppendIterator" class="headerlink" title="AppendIterator"></a>AppendIterator</h3><p>按顺序迭代访问几个不同的迭代器，例如，希望在一次循环中迭代访问两个或更多的组合。</p>
+<h3 id="MultipleIterator"><a href="#MultipleIterator" class="headerlink" title="MultipleIterator"></a>MultipleIterator</h3><p>用于把多个 <code>Iterator</code> 里面的数据组合成为一个整体来访问。</p>
+<h1 id="SPL-常用数据结构"><a href="#SPL-常用数据结构" class="headerlink" title="SPL 常用数据结构"></a>SPL 常用数据结构</h1><p>数据结构是与语言无关的，因为它解决的是数据在计算机中是如何存储、组织以及展示的问题。<strong>学习 <code>SPL</code> 常用数据结构的目的就是会用 <code>SPL</code> 里面提供的方法去间接操作数据结构。</strong></p>
+<p>SPL 提供的数据结构有：</p>
+<ul>
+<li>双向链表</li>
+<li>堆栈</li>
+<li>队列</li>
+<li>堆</li>
+<li>降序堆</li>
+<li>升序堆</li>
+<li>优先级队列</li>
+<li>定长数组</li>
+<li>对象容器</li>
+</ul>
+<blockquote>
+<p>其实并不需要亲自实现，程序员作为编程语言的使用者只是调用这些实现而已。（大致所有高级语言皆如此）</p>
+</blockquote>
+<h2 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h2><ul>
+<li><strong>bottom：</strong> 最先添加到链表中的节点叫做 Bottom，也称为头部。</li>
+<li><strong>top：</strong> 最后添加到链表中的节点叫做 Top，也称为尾部</li>
+<li><strong>链表指针：</strong> 是一个当前关注节点的标识，可以指向任意节点。</li>
+<li><strong>当前节点：</strong> 链表指针指向的节点称为当前节点。</li>
+</ul>
+<h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><ul>
+<li><strong>节点名称：</strong> 可以在链表中唯一标识一个节点的名称，我们通常又称为节点的 <code>Key</code> 或 <code>Offset</code>。</li>
+<li><strong>节点数据：</strong> 存放在链表中的应用数据，即 Value。</li>
+</ul>
+<h3 id="SplDoublyLinkedList-类"><a href="#SplDoublyLinkedList-类" class="headerlink" title="SplDoublyLinkedList 类"></a>SplDoublyLinkedList 类</h3><ul>
+<li><p>操作当前节点：</p>
+<ul>
+<li>rewind：使链表的当前指针指向链表的底部（头部）。</li>
+<li>current：指向链表当前节点的指针，必须在调用之前先调用 rewind，当前节点被删除后，会指向一个空节点。<blockquote>
+<p>使用时注意判断 current 的值是否指向一个空节点。</p>
+</blockquote>
+</li>
+<li>next：使链表当前节点的指针指向下一个节点，current 的返回值会改变。</li>
+<li>prev</li>
+</ul>
+</li>
+<li><p>增加节点：</p>
+<ul>
+<li>push：向链表的顶部（尾部）插入一个节点。</li>
+<li>unshift：向链表的底部插入一个节点。</li>
+</ul>
+</li>
+<li><p>删除节点</p>
+<ul>
+<li>pop：获取链表中的顶部节点，并且从链表中删除这个节点；此操作不会改变当前指针的位置。</li>
+<li>shift：删除一个链表底部节点。</li>
+</ul>
+</li>
+<li><p>定位操作</p>
+<ul>
+<li>bottom：获得链表底部元素，当前指针位置不变。</li>
+<li>top：获得链表顶部元素，当前指针位置不变。</li>
+</ul>
+</li>
+<li><p>特定节点操作</p>
+<ul>
+<li>offsetExists</li>
+<li>offsetGet</li>
+<li>offsetSet</li>
+<li>offsetUnset</li>
+</ul>
+</li>
+</ul>
+<h2 id="堆栈"><a href="#堆栈" class="headerlink" title="堆栈"></a>堆栈</h2><p>堆栈和队列刚好相反，具有后进先出（FILO）特点的连续型数据结构。</p>
+<h3 id="SplStack"><a href="#SplStack" class="headerlink" title="SplStack"></a>SplStack</h3><p>继承自 <code>SplDoublyLinkedList</code>，操作如下：</p>
+<ul>
+<li><strong>push：</strong> 压入堆栈。</li>
+<li><strong>pop：</strong> 弹出堆栈。</li>
+</ul>
+<h3 id="SplQueue"><a href="#SplQueue" class="headerlink" title="SplQueue"></a>SplQueue</h3><p>继承自 <code>SplDoublyLinkedList</code>，操作如下：</p>
+<ul>
+<li><strong>enqueue：</strong> 进入队列</li>
+<li><strong>dequeue：</strong> 退出队列</li>
+</ul>
+<h1 id="其他-SPL-类库"><a href="#其他-SPL-类库" class="headerlink" title="其他 SPL 类库"></a>其他 SPL 类库</h1><ul>
+<li><p>文件处理类库</p>
+<ul>
+<li><code>SplFileInfo：</code>用于获得文件的基本信息，比如修改时间、大小、目录等信息。</li>
+<li><code>SplFileObject：</code>用于操作文件的内容。</li>
+</ul>
+</li>
+<li><p><code>SplFixedArray：</code> 定长数组。</p>
+</li>
+<li><p><code>SplMinHeap：</code> 堆栈。（insert、extract）</p>
+</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://php.net/manual/zh/book.spl.php" target="_blank" rel="noopener">PHP标准库 (SPL)</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2008/07/php_spl_notes.html" target="_blank" rel="noopener">PHP SPL笔记</a></li>
+<li><a href="https://github.com/ckwongloy/lbd/tree/master/spl" target="_blank" rel="noopener">Github 示例代码</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/22/PHP-SPL-Intro/" target="_blank" title="PHP SPL 简介">http://blog.caoxl.com/2018/01/22/PHP-SPL-Intro/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SPL/">SPL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/标准库/">标准库</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/22/PHP-Design-Pattern-Intro/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          PHP 设计模式 简介
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/22/PHP-Team-Develop-Standard-And-Git-Standard/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">PHP 团队开发规范和 Git 使用规范</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#What"><span class="nav-number">1.</span> <span class="nav-text">What ?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Basic-Framework"><span class="nav-number">1.1.</span> <span class="nav-text">Basic Framework</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SPL-基础函数"><span class="nav-number">2.</span> <span class="nav-text">SPL 基础函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#autoload"><span class="nav-number">2.1.</span> <span class="nav-text">autoload</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类载入的基本流程"><span class="nav-number">2.1.1.</span> <span class="nav-text">类载入的基本流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代器"><span class="nav-number">2.2.</span> <span class="nav-text">迭代器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类信息"><span class="nav-number">2.3.</span> <span class="nav-text">类信息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SPL-基础接口"><span class="nav-number">3.</span> <span class="nav-text">SPL 基础接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Countable"><span class="nav-number">3.1.</span> <span class="nav-text">Countable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OuterIterator"><span class="nav-number">3.2.</span> <span class="nav-text">OuterIterator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RecursiveIterator"><span class="nav-number">3.3.</span> <span class="nav-text">RecursiveIterator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关键方法"><span class="nav-number">3.3.1.</span> <span class="nav-text">关键方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SPL-中实现该接口的类"><span class="nav-number">3.3.2.</span> <span class="nav-text">SPL 中实现该接口的类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SeekableIterator"><span class="nav-number">3.4.</span> <span class="nav-text">SeekableIterator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现该接口的类"><span class="nav-number">3.4.1.</span> <span class="nav-text">实现该接口的类</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SAP-迭代器"><span class="nav-number">4.</span> <span class="nav-text">SAP 迭代器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-Iterator"><span class="nav-number">4.1.</span> <span class="nav-text">What is Iterator ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Why-using-Iterator"><span class="nav-number">4.2.</span> <span class="nav-text">Why using Iterator ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用迭代器"><span class="nav-number">4.3.</span> <span class="nav-text">常用迭代器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ArrayIterator"><span class="nav-number">4.3.1.</span> <span class="nav-text">ArrayIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AppendIterator"><span class="nav-number">4.3.2.</span> <span class="nav-text">AppendIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MultipleIterator"><span class="nav-number">4.3.3.</span> <span class="nav-text">MultipleIterator</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SPL-常用数据结构"><span class="nav-number">5.</span> <span class="nav-text">SPL 常用数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#双向链表"><span class="nav-number">5.1.</span> <span class="nav-text">双向链表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#节点"><span class="nav-number">5.1.1.</span> <span class="nav-text">节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplDoublyLinkedList-类"><span class="nav-number">5.1.2.</span> <span class="nav-text">SplDoublyLinkedList 类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#堆栈"><span class="nav-number">5.2.</span> <span class="nav-text">堆栈</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SplStack"><span class="nav-number">5.2.1.</span> <span class="nav-text">SplStack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SplQueue"><span class="nav-number">5.2.2.</span> <span class="nav-text">SplQueue</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他-SPL-类库"><span class="nav-number">6.</span> <span class="nav-text">其他 SPL 类库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

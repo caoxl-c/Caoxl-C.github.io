@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mongodb 简介 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="DatabaseMongoDB">
+  
+  
+  
+  
+  <meta name="description" content="MongoDB  是一个基于分布式文件存储的数据库。由C++语言编写。旨在为WEB应用提供可扩展的高性能数据存储解决方案。  简介关键词 开源 NoSQL 免费 良好的技术支持  因此，国内外许多互联网公司都已经采用了 MongoDB。">
+<meta name="keywords" content="Database,MongoDB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB 简介">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/22/MongoDB-Intro/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="MongoDB  是一个基于分布式文件存储的数据库。由C++语言编写。旨在为WEB应用提供可扩展的高性能数据存储解决方案。  简介关键词 开源 NoSQL 免费 良好的技术支持  因此，国内外许多互联网公司都已经采用了 MongoDB。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:29:18.359Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB 简介">
+<meta name="twitter:description" content="MongoDB  是一个基于分布式文件存储的数据库。由C++语言编写。旨在为WEB应用提供可扩展的高性能数据存储解决方案。  简介关键词 开源 NoSQL 免费 良好的技术支持  因此，国内外许多互联网公司都已经采用了 MongoDB。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MongoDB-Intro" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MongoDB 简介
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/22/MongoDB-Intro/" class="article-date">
+	  <time datetime="2018-01-22T10:03:16.000Z" itemprop="datePublished">2018-01-22</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>MongoDB  是一个基于分布式文件存储的数据库。由C++语言编写。旨在为WEB应用提供可扩展的高性能数据存储解决方案。</p>
+</blockquote>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="关键词"><a href="#关键词" class="headerlink" title="关键词"></a>关键词</h2><ul>
+<li>开源</li>
+<li>NoSQL</li>
+<li>免费</li>
+<li>良好的技术支持</li>
+</ul>
+<p>因此，国内外许多互联网公司都已经采用了 MongoDB。</p>
+<a id="more"></a>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><h4 id="什么是数据库？"><a href="#什么是数据库？" class="headerlink" title="什么是数据库？"></a>什么是数据库？</h4><ul>
+<li>有组织地存放数据</li>
+<li>按照不同的需求进行查询</li>
+</ul>
+<p>不同数据库的区别就是，<strong>对存放数据的组织不同，同时也提供了不同的查询方式根据需求选择不同的数据库</strong>。</p>
+<h4 id="数据库分类"><a href="#数据库分类" class="headerlink" title="数据库分类"></a>数据库分类</h4><h5 id="关系型"><a href="#关系型" class="headerlink" title="关系型"></a>关系型</h5><p>支持 SQL 语言的数据库，<code>MySQL</code>，<code>Oracle</code> 等。具有如下特点：</p>
+<ul>
+<li>实时一致性</li>
+<li>事务</li>
+<li>多表联合查询</li>
+</ul>
+<h5 id="NoSql"><a href="#NoSql" class="headerlink" title="NoSql"></a>NoSql</h5><p>不支持 SQL 语言的数据库，<code>Redis</code>, <code>MongoDB</code> 等。特点如下:</p>
+<ul>
+<li>简单便捷</li>
+<li>方便扩展</li>
+<li>更好的性能</li>
+</ul>
+<h4 id="MongoDB"><a href="#MongoDB" class="headerlink" title="MongoDB"></a>MongoDB</h4><h5 id="Why-MongoDB"><a href="#Why-MongoDB" class="headerlink" title="Why MongoDB ?"></a>Why MongoDB ?</h5><ul>
+<li><p>无数据结构的限制</p>
+<ul>
+<li>没有表结构的概念，每条记录可以有完全不同的结构（JSON）</li>
+<li>业务开发方便快捷</li>
+<li>无需事先定义存储结构<br>关系型数据库需要先定义好表结构才能使用。MongoDB 的这种特点非常适合快捷开发和多变的业务需求。</li>
+</ul>
+</li>
+<li><p>完全的索引支持</p>
+<ul>
+<li>类似 <code>redis</code> 的键值存储</li>
+<li>类似 <code>hbase</code> 的单索引，二级索引需要自己实现</li>
+<li>支持：单键索引、多键索引、数组索引、全文索引、地理位置索引。</li>
+</ul>
+<blockquote>
+<p>全文索引还不支持中文。</p>
+<p>MongoDB 被称为最接近 SQL 的 NoSQL 数据库。</p>
+</blockquote>
+</li>
+<li><p>方便的冗余与扩展</p>
+<ul>
+<li>复制集保证数据安全</li>
+<li>分片扩展数据规模</li>
+</ul>
+</li>
+<li><p>良好的支持</p>
+<ul>
+<li>完善的文档</li>
+<li>齐全的驱动支持</li>
+</ul>
+</li>
+</ul>
+<h5 id="学习方向"><a href="#学习方向" class="headerlink" title="学习方向"></a>学习方向</h5><ul>
+<li>mongo</li>
+<li>索引</li>
+<li>集合</li>
+<li>复制集</li>
+<li>分片</li>
+<li>数据均衡</li>
+</ul>
+<h2 id="学习方向-1"><a href="#学习方向-1" class="headerlink" title="学习方向"></a>学习方向</h2><h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><ul>
+<li>最基本的文档读写、增删改</li>
+<li>各种不同类型的索引创建与使用</li>
+<li>复杂的聚合查询</li>
+<li>对数据集进行分片，在不同的分片间维持数据均衡</li>
+<li>数据备份与恢复</li>
+<li>数据迁移</li>
+</ul>
+<h3 id="部署数据库服务"><a href="#部署数据库服务" class="headerlink" title="部署数据库服务"></a>部署数据库服务</h3><ul>
+<li>搭建简单的单机服务</li>
+<li>搭建具有冗余容错功能的复制集</li>
+<li>搭建大规模数据集群</li>
+<li>完成集群的自动部署</li>
+</ul>
+<h3 id="简单运维"><a href="#简单运维" class="headerlink" title="简单运维"></a>简单运维</h3><ul>
+<li>部署 MongoDB 集群</li>
+<li>处理常见故障<ul>
+<li>单节点失效后如何恢复工作</li>
+<li>数据库意外停止如何恢复数据</li>
+<li>数据库发生拒绝服务时如何排查原因</li>
+<li>数据库磁盘快满时如何处理</li>
+</ul>
+</li>
+</ul>
+<h1 id="安装和配置"><a href="#安装和配置" class="headerlink" title="安装和配置"></a>安装和配置</h1><h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><blockquote>
+<p>软件版本命名格式：a.b.c</p>
+<ul>
+<li>a 是大版本，重大更新</li>
+<li>b 是稳定版和非稳定版</li>
+<li>c 是小版本，性能提升和 bug 修复</li>
+</ul>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># download from mongodb website</span></span><br><span class="line">tar xzvf mongodb.xxx.tgz</span><br><span class="line"></span><br><span class="line"><span class="comment"># clone from github</span></span><br><span class="line">apt-get <span class="keyword">install</span> zip</span><br><span class="line">unzip mongodb.zip</span><br><span class="line"></span><br><span class="line">cd /mongodb.xxx/</span><br><span class="line">apt-<span class="keyword">get</span> <span class="keyword">install</span> scons    <span class="comment"># scons 是替代 make 的另一种编译方式</span></span><br><span class="line">scons <span class="keyword">all</span> -j <span class="number">4</span>    <span class="comment"># -j 选项后面跟上 CPU 核数以加速编译过程</span></span><br></pre></td></tr></table></figure>
+<p>如果多次编译都不能通过，也可以直接到官网去下载编译好的可执行二进制文件。</p>
+<p>如果 Linux 是 <code>32</code> 位的，这时为了方便建议直接使用包管理器安装：<code>apt-get install mongodb</code>。</p>
+<blockquote>
+<p>Starting in MongoDB 3.2, 32-bit binaries are deprecated and willbe unavailable in future releases.</p>
+<p>32 bit builds are limited to less than 2GB of data (or less with ­­journal).</p>
+</blockquote>
+<h2 id="搭建简单的-MongoDB-服务器"><a href="#搭建简单的-MongoDB-服务器" class="headerlink" title="搭建简单的 MongoDB 服务器"></a>搭建简单的 MongoDB 服务器</h2><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> mongo_server <span class="keyword">cd</span> mongo_server <span class="built_in">mkdir</span> data</span><br><span class="line"><span class="built_in">mkdir</span> <span class="built_in">log</span></span><br><span class="line"><span class="built_in">mkdir</span> <span class="keyword">conf</span>-<span class="keyword">f</span></span><br><span class="line"><span class="built_in">mkdir</span> bin</span><br><span class="line"><span class="keyword">cp</span> /path/<span class="keyword">to</span>/mongo-xxx/mongod ./bin <span class="keyword">cd</span> <span class="keyword">conf</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">vi</span> mongod.<span class="keyword">conf</span></span><br><span class="line">  port = <span class="number">12345</span></span><br><span class="line">  dbpath = data # 存储数据的路径</span><br><span class="line">  logpath = <span class="built_in">log</span>/mongod.<span class="built_in">log</span></span><br><span class="line">  fork = true # true 表示启动后台进程</span><br><span class="line">  </span><br><span class="line"><span class="keyword">cd</span> ..</span><br><span class="line">./bin/mongod -<span class="keyword">f</span> <span class="keyword">conf</span>/mongod.<span class="keyword">conf</span> <span class="keyword">cd</span> data/</span><br><span class="line"><span class="keyword">ls</span></span><br><span class="line">tail ../<span class="built_in">log</span>/mongod.<span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+<p>运行 MongoDB 服务器：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongod -f <span class="regexp">/etc/m</span>ongod.conf</span><br></pre></td></tr></table></figure>
+<p>如果不修改默认配置文件，那么执行 <code>mongo</code> 就可以直接进入 <code>MongoDB</code> 服务器了，进入后默认选择的数据库是 <code>test</code>。</p>
+<p>但是如果修改了默认配置，就需要指定到正确的配置文件，比如修改了端口为 12345，那么在就需要带上新指定的端口号才能进入：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongo localhost:<span class="number">12345</span></span><br></pre></td></tr></table></figure>
+<p>连接 MongoDB 服务器主要有 2 种方式：</p>
+<ul>
+<li><code>mongodb</code> 自带的客户端</li>
+<li><code>mongodb</code> 为各种编程语言提供的驱动程序</li>
+</ul>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/path/</span>to<span class="regexp">/mongo ip:port/</span>dbname    <span class="comment"># 默认进入不需要认证</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭 Mongodb 服务器</span></span><br><span class="line">use admin</span><br><span class="line">db.shutdownServer()</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Kali 32 树莓派 2 上的 MongoDB 使用 <code>apt-get</code> 安装好之后，配置文件 默认在 <code>/etc/mongod.conf</code>，日志文件在 ：<code>/var/log/mongodb/mongodb.log</code>。</p>
+</blockquote>
+<h1 id="基本使用-1"><a href="#基本使用-1" class="headerlink" title="基本使用"></a>基本使用</h1><h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> dbs</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> db_name</span><br></pre></td></tr></table></figure>
+<p>使用 <code>use</code> 切换数据库的时候可以没有创建该数据库，<code>mongodb</code> 会在合适的时候自动创建数据库。</p>
+<h2 id="删除数据库"><a href="#删除数据库" class="headerlink" title="删除数据库"></a>删除数据库</h2><p>选择了某个数据库后，就可以进行如下操作：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.dropDatabase</span>()</span><br></pre></td></tr></table></figure>
+<p>关系型数据库中的表在 mongodb 中被称为「集合」。（show collections &lt;=&gt; show tables）</p>
+<p><strong>注意：</strong></p>
+<ul>
+<li>插入数据的时候注意使用 JSON 格式的数据结构，使用可嵌套的键值对存储数据</li>
+<li>字符串需要用引号括起来，插入数据后会自动创建数据库和 system.indexes 文件</li>
+</ul>
+<h2 id="查找数据"><a href="#查找数据" class="headerlink" title="查找数据"></a>查找数据</h2><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.dbname_collectionname</span><span class="selector-class">.find</span>( &#123;<span class="attribute">x</span>:<span class="number">1</span>&#125; ) <span class="selector-tag">db</span><span class="selector-class">.dbname_collectionname</span><span class="selector-class">.findOne</span>()</span><br></pre></td></tr></table></figure>
+<p>会看到一个 <code>_id</code> 字段的键值对，这是 <code>mongodb</code> 自动生成的 <code>id</code>，在全局范围内不会重复。</p>
+<h2 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h2><figure class="highlight sas"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.dbname_collectionname1.<span class="meta">insert</span>(&#123; <span class="meta">x</span>:1 &#125;) db.dbname_collectionname2.<span class="meta">insert</span>(&#123; <span class="string">'gender'</span>:<span class="string">'male'</span> &#125;)</span><br></pre></td></tr></table></figure>
+<p>也可以使用 JS 语法在循环中插入数据：</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> ( <span class="built_in">i</span>=<span class="number">3</span>; <span class="built_in">i</span>&lt;<span class="number">100</span>;++<span class="built_in">i</span> ) &#123;</span><br><span class="line">  db.collectionname.insert( &#123;y:<span class="built_in">i</span>&#125; )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>find() 后也可以跟上一些方法和条件，比如：</p>
+<ul>
+<li>count() 计数</li>
+<li>skip() 跳过</li>
+<li>limit() 限制条数</li>
+<li>sort() 排序</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collectionname</span><span class="selector-class">.find</span>()<span class="selector-class">.skip</span>(5)<span class="selector-class">.limit</span>(3)<span class="selector-class">.sort</span>(&#123;<span class="attribute">x</span>:<span class="number">1</span>&#125;)</span><br></pre></td></tr></table></figure>
+<p>方法后面必须有括号 <code>()</code>。</p>
+<h2 id="创建集合"><a href="#创建集合" class="headerlink" title="创建集合"></a>创建集合</h2><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.createCollection</span>( <span class="string">'collection_name'</span> )</span><br></pre></td></tr></table></figure>
+<h2 id="更新数据"><a href="#更新数据" class="headerlink" title="更新数据"></a>更新数据</h2><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collectionname</span><span class="selector-class">.update</span>( &#123; <span class="attribute">x</span>:<span class="number">1</span>&#125;, &#123;<span class="attribute">x</span>:<span class="number">222</span>&#125; )</span><br></pre></td></tr></table></figure>
+<h3 id="部分更新"><a href="#部分更新" class="headerlink" title="部分更新"></a>部分更新</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collectionname</span><span class="selector-class">.insert</span>( &#123;<span class="attribute">x</span>:<span class="number">1</span>&#125;, &#123;<span class="attribute">y</span>:<span class="number">22</span>&#125;, &#123;<span class="attribute">z</span>:<span class="number">333</span>&#125; )</span><br><span class="line"></span><br><span class="line"># 仅更新 <span class="selector-tag">y</span> 字段</span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collectionname</span><span class="selector-class">.update</span>( &#123;<span class="attribute">z</span>:<span class="number">333</span>&#125;, &#123;$<span class="attribute">set</span>: &#123;<span class="attribute">y</span>:<span class="number">2222</span>&#125;&#125; )   <span class="comment">// 这里的 z:333 必须和插入的数据值相同否则更新无效</span></span><br></pre></td></tr></table></figure>
+<h3 id="更新不存在的数据"><a href="#更新不存在的数据" class="headerlink" title="更新不存在的数据"></a>更新不存在的数据</h3><p>设置如果更新的数据不存在就写入这条数据：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collectionname</span><span class="selector-class">.update</span>( &#123;<span class="attribute">x</span>:<span class="number">1</span>&#125;, &#123;<span class="attribute">x</span>:<span class="number">1111</span>&#125;, <span class="selector-tag">true</span> )</span><br></pre></td></tr></table></figure>
+<p>如果不设置为 true 那么更新不存在的数据的时候是不会有任何影响的。</p>
+<h3 id="更新多条数据"><a href="#更新多条数据" class="headerlink" title="更新多条数据"></a>更新多条数据</h3><p>为了防止 update 误操作，mongodb 默认 update 只会更新第一条 找到的数据。</p>
+<p>如果要多记录更新，需要指定 <code>update()</code> 的第二个参数为 <code>set</code> 操 作，并且第四个参数为 <code>true</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collectionname.update( &#123;<span class="built_in">test</span>:1&#125;, &#123;<span class="variable">$set</span>:&#123;<span class="built_in">test</span>:1024&#125;&#125;, <span class="literal">false</span>, <span class="literal">true</span> )</span><br></pre></td></tr></table></figure>
+<h2 id="删除数据"><a href="#删除数据" class="headerlink" title="删除数据"></a>删除数据</h2><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collectionname.<span class="built_in">remove</span>() <span class="comment">// 可以不指定参数</span></span><br></pre></td></tr></table></figure>
+<p><code>remove()</code> 默认会删除所有指定的数据记录，比如：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.test</span><span class="selector-class">.remove</span>( &#123;<span class="attribute">test</span>:<span class="number">1024</span>&#125; ) # 会删除所有 <span class="selector-tag">test</span> 为 1024 的记录</span><br></pre></td></tr></table></figure>
+<h3 id="删除集合-表"><a href="#删除集合-表" class="headerlink" title="删除集合(表)"></a>删除集合(表)</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collection</span><span class="selector-class">.drop</span>()</span><br></pre></td></tr></table></figure>
+<h2 id="创建集合的索引"><a href="#创建集合的索引" class="headerlink" title="创建集合的索引"></a>创建集合的索引</h2><p>在数据量较小的时候查询速度还可以，但是当数据记录量较大时，没有相关字段的索引，查询的速度将变得非常慢，甚至没有结果。</p>
+<h3 id="查看索引"><a href="#查看索引" class="headerlink" title="查看索引"></a>查看索引</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collection</span><span class="selector-class">.getIndexes</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collection</span><span class="selector-class">.ensureIndex</span>(&#123; <span class="attribute">key</span>:<span class="number">1</span> &#125;)</span><br></pre></td></tr></table></figure>
+<p>其中，键 <code>key</code> 代表的是排序方向，<code>1</code> 为正向排序，<code>-1</code> 为逆向排序。</p>
+<h3 id="关于索引和性能"><a href="#关于索引和性能" class="headerlink" title="关于索引和性能"></a>关于索引和性能</h3><p>如果记录太多，创建索引的时间会比较长。</p>
+<p>如果系统负载较重，且有很多已经存在的文档，不能使用 <code>ensureIndex()</code> 来动态创建索引，因为这样会极大影响数据库的性能，这种情况需要事先预料，并创建好相关索引。</p>
+<p>上面创建好 <code>key</code> 的索引后，再次使用查询 <code>key</code> 的时候性能会大幅度提高。对于常见的查询，对其字段创建索引是非常有必要的。</p>
+<p>由于索引是在插入数据后再次构建，所以在创建索引的时候可能会对数据库写入操作造成影响，但是为了查询的高效性，这点影响是可以接受的。</p>
+<h1 id="常见索引"><a href="#常见索引" class="headerlink" title="常见索引"></a>常见索引</h1><h2 id="id-索引"><a href="#id-索引" class="headerlink" title="_id 索引"></a><code>_id</code> 索引</h2><ul>
+<li><code>_id</code> 是绝大多数集合默认建立的索引</li>
+<li>对于每个插入的数据，mongodb 都会自动生成一条唯一的 <code>_id</code> 字段</li>
+</ul>
+<h2 id="单键索引"><a href="#单键索引" class="headerlink" title="单键索引"></a>单键索引</h2><ul>
+<li>单键索引是最普通的索引</li>
+<li>与 <code>_id</code> 不同，单键索引不会自动创建</li>
+</ul>
+<p>比如，一条记录如果为：<code>{x:1,y:2,z:3}</code>。</p>
+<p>在 x 字段上创建索引后，就可以使用 x 字段为条件进行查询。索引可以重复创建，对于已经存在的索引，再次创建时会直接返回成功。</p>
+<h2 id="多键索引"><a href="#多键索引" class="headerlink" title="多键索引"></a>多键索引</h2><p>多键索引与单键索引的创建形式相同，区别在于字段的数量。</p>
+<ul>
+<li><strong>单键索引：</strong> 值为一个单一的值，例如字符串，数字或者日期。</li>
+<li><strong>多键索引：</strong> 值具有多个记录，例如数组。</li>
+</ul>
+<p>比如，<code>db.test.insert({x:[1,2,3,4,5]})</code>，执行该命令后，mongDB 会为 x 字段创建多键索引。</p>
+<h2 id="复合索引"><a href="#复合索引" class="headerlink" title="复合索引"></a>复合索引</h2><p>当我们的查询条件不止一个时，就需要建立复合索引。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collection</span><span class="selector-class">.ensureIndex</span>(&#123;<span class="attribute">x</span>:<span class="number">1</span>, y:<span class="number">1</span>&#125;)</span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.test</span><span class="selector-class">.ensureIndex</span>(&#123;<span class="attribute">x</span>:<span class="number">1</span>,y:<span class="number">2</span>&#125;)</span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.test</span><span class="selector-class">.find</span>(&#123;<span class="attribute">x</span>:<span class="number">1</span>,y:<span class="number">2</span>&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="过期索引"><a href="#过期索引" class="headerlink" title="过期索引"></a>过期索引</h2><p>是在一段时间后会过期的索引。具有如下特点：</p>
+<ul>
+<li>在索引过期后，相应的数据会被删除。</li>
+<li>适合存储一段时间后会失效的数据，比如用户的登录信息，存储的日志等。</li>
+</ul>
+<p>建立方法：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collection</span><span class="selector-class">.ensureIndex</span>(&#123;<span class="attribute">time</span>:<span class="number">1</span>&#125;,&#123;<span class="attribute">expireAfterSeconds</span>:<span class="number">10</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.test</span><span class="selector-class">.ensureIndex</span>( &#123;<span class="attribute">time</span>:<span class="number">1</span>&#125;, &#123;<span class="attribute">expireAfterSeconds</span>:<span class="number">30</span>&#125; ) <span class="selector-tag">db</span><span class="selector-class">.test</span><span class="selector-class">.insert</span>( &#123;<span class="attribute">time</span>:new <span class="built_in">Date</span>()&#125; )</span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.test</span><span class="selector-class">.find</span>()</span><br><span class="line"></span><br><span class="line"># 30 秒后再次执行</span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.test</span><span class="selector-class">.find</span>()</span><br></pre></td></tr></table></figure>
+<p>可以发现，即使设置了 <code>30</code> 秒的生存时间，也会在 <code>60</code> 秒之后才被删除。</p>
+<p>这是因为删除过程是由后台程序每 <code>60</code> 秒执行一次，而且删除本身也需要一些时间，所以存在误差。</p>
+<h3 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h3><ul>
+<li>存储在过期索引字段的值必须是指定的时间类型。<blockquote>
+<p>必须是 ISODate 或 ISODate 数组，不能使用时间戳，否则不能被自动删除。</p>
+</blockquote>
+</li>
+<li>如果制定了 ISODate 数组，则按照最小的时间进行删除。（最小时间删除原则）</li>
+<li>过期索引不能是复合索引</li>
+<li>删除时间不是精确时间</li>
+</ul>
+<h2 id="全文索引"><a href="#全文索引" class="headerlink" title="全文索引"></a>全文索引</h2><p>对字符串与字符串数组创建全文可搜索的索引。</p>
+<p><strong>举例说明：</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attribute">author</span>:<span class="string">''</span>, title:<span class="string">''</span>, article:<span class="string">''</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>则为其建立全文索引的方法：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">db.articles.ensure<span class="constructor">Index(&#123;<span class="params">key</span>:'<span class="params">text</span>'&#125;)</span></span><br><span class="line">db.articles.ensure<span class="constructor">Index(&#123;<span class="params">key_1</span>:'<span class="params">text</span>', <span class="params">key_2</span>:'<span class="params">text</span>'&#125;)</span></span><br><span class="line">db.articles.ensure<span class="constructor">Index(&#123;'$<span class="operator">**</span>':'<span class="params">text</span>'&#125;)</span></span><br></pre></td></tr></table></figure>
+<p>最后一条方法代表的是为该集合的所有字段建立一个全文索引。</p>
+<p>然后就可以使用全文索引进行查询了：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db.articles.<span class="builtin-name">find</span>(&#123;<span class="variable">$text</span> &#123;<span class="variable">$search</span>: <span class="string">'coffee'</span>&#125;&#125;)</span><br><span class="line">db.articles.<span class="builtin-name">find</span>(&#123;<span class="variable">$text</span> &#123;<span class="variable">$search</span>: <span class="string">'a b c'</span>&#125;&#125;)</span><br><span class="line">db.articles.<span class="builtin-name">find</span>(&#123;<span class="variable">$text</span> &#123;<span class="variable">$search</span>: <span class="string">'a b -c'</span>&#125;&#125;)</span><br><span class="line">db.articles.<span class="builtin-name">find</span>(&#123;<span class="variable">$text</span> &#123;<span class="variable">$search</span>: <span class="string">'\'</span>a\<span class="string">' b -c'</span>&#125;&#125;)</span><br></pre></td></tr></table></figure>
+<p>可见使用全文索引查询不用再指定字段名。</p>
+<p><code>MongoDB</code> 中每个数据集合只允许创建一个全文索引。</p>
+<p><code>a b c</code> 之间默认是’或’关系，如果需要<code>’与’</code>关系的查找，则需要将每个独立 的关键字用引号括起来。当然，需要注意转义。</p>
+<p><code>-c</code> 代表不包含 <code>c</code>。</p>
+<h3 id="全文索引相似度"><a href="#全文索引相似度" class="headerlink" title="全文索引相似度"></a>全文索引相似度</h3><p>通过 <code>$meta</code> 操作符：<code>{score: {$meta: &#39;textScore&#39;}}</code></p>
+<p>写在查询条件后面可以返回结果的相似度。与 <code>sort</code> 一起使用，可以达到很好的实用效果。</p>
+<p><code>score</code> 是一个数字，表征的是查询结果的相似度。</p>
+<p>也可以在查询结果后面带上排序：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">db</span>.articles.find( &#123;<span class="variable">$text</span>: &#123;<span class="variable">$search</span>:<span class="string">"xxxx aaaa"</span>&#125;&#125;, &#123;<span class="keyword">score</span>:&#123;<span class="variable">$meta</span>:<span class="string">"textScore"</span>&#125;&#125; ).<span class="keyword">sort</span>(&#123;<span class="keyword">score</span>:&#123;<span class="variable">$meta</span>:<span class="string">"textScore"</span>&#125;&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="限制-1"><a href="#限制-1" class="headerlink" title="限制"></a>限制</h3><ul>
+<li>每次查询，只能指定一个 <code>$text</code> 查询</li>
+<li><code>$text</code> 查询不能出现在 <code>$nor</code> 查询中</li>
+<li>查询中如果包含了 <code>$text</code>，<code>hint</code> 不再起作用（<code>hint</code> 用来手工强制指定索引来测试索引的性能）</li>
+<li>暂不支持中文。</li>
+</ul>
+<h2 id="地理位置索引"><a href="#地理位置索引" class="headerlink" title="地理位置索引"></a>地理位置索引</h2><p>将一些点的位置存储在 MongoDB 中，创建索引后，可以按照位置来查找其他点</p>
+<h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><ul>
+<li><strong>2d 索引：</strong> 用于存储和查找平面上的点</li>
+<li><strong>2dsphere 索引：</strong> 用于存储和查找球面上的点</li>
+</ul>
+<h3 id="查找方式"><a href="#查找方式" class="headerlink" title="查找方式"></a>查找方式</h3><ul>
+<li>查找距离某个点一定距离内的点</li>
+<li>查找包含在某区域内的点</li>
+</ul>
+<h3 id="2D-索引"><a href="#2D-索引" class="headerlink" title="2D 索引"></a>2D 索引</h3><p>平面地理位置索引。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collection</span><span class="selector-class">.ensureIndex</span>(&#123;<span class="attribute">w</span>: <span class="string">' 2d'</span>&#125;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>位置表示方式：经纬度。</li>
+<li>取值范围：经度[-180, 180]；纬度 [-90, 90]</li>
+<li>查询方式<ul>
+<li><code>$near：</code>查询距离某个点最近的点</li>
+<li><code>$geoWithin：</code>查询某个形状内的点</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">db</span>.location.ensureIndex( &#123;<span class="string">"w"</span>:<span class="string">"2d"</span>&#125; )</span><br><span class="line"><span class="keyword">db</span>.location.insert( &#123;w:[180, 100]&#125; ) <span class="comment">// 这样的点虽然能被创建但是会带来不可预知的错误，因此不要插入这样的点</span></span><br><span class="line"><span class="keyword">db</span>.location.remove( &#123;w:[180, 100]&#125; ) <span class="comment">// 删除不合法的地点</span></span><br><span class="line"><span class="keyword">db</span>.location.insert( &#123;w:[180, 10]&#125; )</span><br><span class="line"><span class="keyword">db</span>.location.find( &#123;w:&#123;<span class="variable">$near</span>:[1,1]&#125;&#125;, <span class="variable">$maxDistance</span>:10 ) 持 <span class="variable">$minDistance</span></span><br></pre></td></tr></table></figure>
+<p>默认会查询 100 条结果。</p>
+<ul>
+<li>形状的表示<ul>
+<li><code>$box：</code>矩形</li>
+<li><code>$center：</code>圆形</li>
+<li><code>$polygon：</code>多边形</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">db.location.find( &#123;w:&#123;$geoWithin:&#123;$box:[<span class="number">0</span>,<span class="number">0</span>], [<span class="number">3</span>,<span class="number">3</span>]&#125;&#125;&#125; )</span><br><span class="line">和右边界</span><br><span class="line"></span><br><span class="line"><span class="comment">// 参数是 2 个边界:左边界 // 圆心 + 半径</span></span><br><span class="line">db.location.find( &#123;w:&#123;$geoWithin:&#123;$center:[<span class="number">0</span>,<span class="number">0</span>], <span class="number">5</span>&#125;&#125;&#125; )</span><br><span class="line">db.location.find( &#123;w:&#123;$geoWithin:&#123;$polygon:[<span class="number">0</span>,<span class="number">0</span>], [<span class="number">3</span>,<span class="number">3</span>], [<span class="number">2</span>, <span class="number">4</span>], [<span class="number">1</span>, <span class="number">5</span>]&#125;&#125;&#125; ) <span class="comment">// 多个点组成的多边形</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>geoNear 查询</li>
+</ul>
+<p>geoNear 使用 runCommand 命令进行使用，常用使用如下：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.runCommand</span>(</span><br><span class="line">&#123; <span class="attribute">geoNear</span>: <span class="string">"location"</span>, near:[<span class="number">1</span>,<span class="number">2</span>], maxDistance:<span class="number">10</span>, num:<span class="number">1</span> &#125; )</span><br></pre></td></tr></table></figure>
+<p><code>minDistance</code> 对 <code>2D</code> 索引无效但是对 <code>2dsphere</code> 有效，<code>num</code> 限制返回的数据数目。</p>
+<p>可见，<code>geoNear</code> 比 简单的 <code>near</code> 能够返回更多的数据</p>
+<h3 id="2dsphere"><a href="#2dsphere" class="headerlink" title="2dsphere"></a>2dsphere</h3><p>球面地理位置索引。创建方式：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.collection</span><span class="selector-class">.ensureIndex</span>(&#123;<span class="attribute">w</span>:<span class="string">'2dsphere'</span>&#125;)</span><br></pre></td></tr></table></figure>
+<p>位置表示方式：getJSON 描述一个点，一条直线，多边形等形状。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attribute">type</span>: <span class="string">' '</span>, coordinates:[&lt;coordinates&gt;]&#125;</span><br></pre></td></tr></table></figure>
+<p>查询方式和 2d 索引查询方式类似，支持 <code>$minDistance</code> 与 <code>$maxDistance</code>。</p>
+<p><code>2dsphere</code> 还可以查询几个多边形的相交点。</p>
+<h2 id="索引构建情况分析"><a href="#索引构建情况分析" class="headerlink" title="索引构建情况分析"></a>索引构建情况分析</h2><ul>
+<li><strong>索引好处：</strong> 加快索引相关的查询。</li>
+<li><strong>索引坏处：</strong> 增加磁盘空间消耗，降低写入性能。</li>
+</ul>
+<h3 id="如何评判当前索引构建情况"><a href="#如何评判当前索引构建情况" class="headerlink" title="如何评判当前索引构建情况"></a>如何评判当前索引构建情况</h3><ul>
+<li>mongostat 工具</li>
+</ul>
+<p>查看 mongodb 运行状态：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./mongostat -- help</span><br><span class="line"></span><br><span class="line">mongostat -h <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">12345</span>    <span class="comment">// idx miss</span></span><br></pre></td></tr></table></figure>
+<p>对于性能我们主要关心的是 <code>qr</code> 和 <code>qw</code>，分别代表的是读写队列。而 <code>idx miss</code> 代表的是查询的时候没有使用到索引的百分比，越高则越需要作相应的处理。</p>
+<ul>
+<li>profile 集合</li>
+</ul>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.getProfilingStatus</span>()</span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.getProfilingLevel</span>() <span class="comment">// 结果为 0 则代表 profile 是关闭的;为 1 的时候会记录所有 slowms 的操作</span></span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.setProfilingLevel</span>( <span class="number">2</span> ) <span class="comment">// 2 代表记录所有操作</span></span><br></pre></td></tr></table></figure>
+<p>开启 profile 后，数据库中就会创建一个 system.profile 的集合。</p>
+<p>然后查询：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.<span class="built_in">system</span>.<span class="keyword">profile</span>.<span class="keyword">find</span>().<span class="keyword">sort</span>(&#123;$natura<span class="variable">l:</span>-<span class="number">1</span>&#125;).limit(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：profile 的使用场景是上线前的测试阶段以及刚上线时的观察阶段，仅仅作为了解 系统状态的工具，因为当数据较多的时候它会占用很多资源，从而影响 MongoDB 的性能。</p>
+</blockquote>
+<ul>
+<li>日志</li>
+</ul>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">vi</span> /etc/mongod.<span class="keyword">conf</span></span><br></pre></td></tr></table></figure>
+<p>可以用 <code>verbose = vvvvv</code> 来配置日志的详细程度，v 越多记录的日志越详细。</p>
+<ul>
+<li>explain 分析</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.test</span><span class="selector-class">.find</span>( &#123;<span class="attribute">x</span>:<span class="number">1</span>&#125; )<span class="selector-class">.explain</span>()</span><br></pre></td></tr></table></figure>
+<p>会得到一次操作中使用到的参数信息，比如是否使用索引，耗时等。</p>
+<h1 id="索引属性"><a href="#索引属性" class="headerlink" title="索引属性"></a>索引属性</h1><p>即创建索引时的格式：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.collection.ensure<span class="constructor">Index(&#123;<span class="params">param</span>&#125;, &#123;<span class="params">param</span>&#125;)</span></span><br></pre></td></tr></table></figure>
+<p>其中，第二个参数变色索引的属性。</p>
+<p>比较重要的属性有：</p>
+<ul>
+<li>名字</li>
+</ul>
+<p><code>name</code> 指定：<code>db.collection.ensureIndex({}, {name: &#39; &#39;})。</code></p>
+<p>MongoDB 对字段名有长度限制，目前是 125 字节，可以为复合索引设置 name 简化字段命名。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.test</span><span class="selector-class">.ensureIndex</span>(&#123;<span class="attribute">x</span>:<span class="number">1</span>, y:<span class="number">1</span>, z:<span class="number">1</span>, m:<span class="number">1</span>&#125;, &#123;<span class="attribute">name</span>:<span class="string">"normal_index"</span>&#125;)</span><br></pre></td></tr></table></figure>
+<p>然后就可以使用设置的名字来删除复合索引：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">db</span>.<span class="keyword">test</span>.dropIndex( <span class="string">"normal_index"</span> )</span><br></pre></td></tr></table></figure>
+<ul>
+<li>唯一性</li>
+</ul>
+<p><code>unique</code> 指定：<code>db.collection.ensureIndex({}, {unique:true/false})</code>。</p>
+<p>利用 unique 可以实现 MySQL 中如果存在则不插入如果不存在则插入的功能。</p>
+<ul>
+<li>稀疏性</li>
+</ul>
+<p><code>sparse</code> 指定：<code>db.collection.ensureIndex({}, {sparse: true/false})</code>。</p>
+<p><code>mongoDB</code> 默认创建的索引都是不稀疏的。稀疏性的不同代表了 <code>MongoDB</code> 处理索引中存在但是文档中不存在的字段时，会采取怎样的方法。</p>
+<p>设置稀疏性索引不必为不存在数据的，但是被创建了索引的字段上建立索引，可以减少磁盘占用，提高插入速度。</p>
+<p>稀疏索引的使用可能会带来一些隐患，因此往往配合 <code>exists</code> 操作符。</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">db.<span class="keyword">test</span>.insert(&#123;<span class="string">"m"</span>:<span class="number">1</span>&#125;)</span><br><span class="line">db.<span class="keyword">test</span>.insert(&#123;<span class="string">"n"</span>:<span class="number">2</span>&#125;)</span><br><span class="line">db.<span class="keyword">test</span>.find(&#123;m:&#123;$<span class="keyword">exists</span>:<span class="keyword">true</span>&#125;&#125;) // 为 <span class="keyword">true</span> 代表查找的是存在 m 的记录 db.<span class="keyword">test</span>.ensureIndex(&#123;m:<span class="number">1</span>&#125;,&#123;sparse:<span class="keyword">true</span>&#125;) // 在 m 字段上创建稀疏索引</span><br><span class="line"> </span><br><span class="line">db.<span class="keyword">test</span>.find(&#123;m:&#123;<span class="keyword">exists</span>:<span class="keyword">false</span>&#125;&#125;) // 查找不存在 m 的记录</span><br><span class="line">db.<span class="keyword">test</span>.find(&#123;m:&#123;<span class="keyword">exists</span>:<span class="keyword">false</span>&#125;&#125;).hint( <span class="string">"m_1"</span> ) // 强制使用稀疏索引则不会再找到 n 所在的记录</span><br></pre></td></tr></table></figure>
+<p>由于 <code>MongoDB</code> 在选取索引时如果发现是在稀疏索引上查找不存在的记录的时候，不会使用创建过的稀疏索引，因此，这里仍然会看到结果为 n 的记录。</p>
+<p>因此，不能在稀疏索引上查找不存在的记录。</p>
+<ul>
+<li>是否定时删除</li>
+</ul>
+<p><code>expireAfrerSeconds</code> 指定。</p>
+<h1 id="安全相关"><a href="#安全相关" class="headerlink" title="安全相关"></a>安全相关</h1><h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><ul>
+<li>最安全的是物理隔离，但是不现实</li>
+<li>网络隔离其次</li>
+<li>防火墙、IP 白名单其次</li>
+<li>用户名密码最后</li>
+</ul>
+<h2 id="权限设置"><a href="#权限设置" class="headerlink" title="权限设置"></a>权限设置</h2><ul>
+<li><code>auth</code> 开启</li>
+<li><code>keyfile</code> 开启</li>
+</ul>
+<p>默认情况 <code>MongoDB</code> 没有开启权限验证</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">vi</span> /etc/mongod.<span class="keyword">conf</span></span><br><span class="line"></span><br><span class="line">	auth = true</span><br><span class="line">	</span><br><span class="line"><span class="keyword">ps</span> -ef | <span class="keyword">grep</span> mongod | <span class="keyword">grep</span> <span class="number">12345</span></span><br><span class="line">kill pid</span><br><span class="line"></span><br><span class="line">mongod -<span class="keyword">f</span> /etc/mongod.<span class="keyword">conf</span></span><br></pre></td></tr></table></figure>
+<p>此时查看日志就能够发现鉴权已开启：<code>/auth</code>。</p>
+<p>但仅仅开启鉴权，进入 <code>MongoDB</code> 仍然不需要用户名和密码，因为还需要为 <code>MongoDB</code> 服务器创建用户名和密码，只有创建用户之后才能激活鉴权机制。</p>
+<h2 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h2><p>MongoDB 内建用户类型有：</p>
+<ul>
+<li>read</li>
+<li>readWrite</li>
+<li>dbAdmin</li>
+<li>dbOwner</li>
+<li>userAdmin</li>
+</ul>
+<p>除了内建类型，还可以自定义角色类型。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">db</span><span class="selector-class">.createUser</span>(&#123;<span class="attribute">user</span>:<span class="string">"li"</span>, <span class="attribute">pwd</span>:<span class="string">"enter"</span>, <span class="attribute">customData</span>:<span class="string">"示例"</span>,<span class="attribute">roles</span>: [&#123;<span class="attribute">role</span>:<span class="string">"userAdmin"</span>, <span class="attribute">db</span>:<span class="string">"admin"</span>&#125;, &#123;<span class="attribute">role</span>:<span class="string">"read"</span>,<span class="attribute">db</span>:<span class="string">"test"</span>&#125;]&#125;)</span><br></pre></td></tr></table></figure>
+<p>创建成功后，依然可以无密码登录，但是在执行相应的操作时候会提示没有操作权限这时需要使用用户名和密码登录</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">mongo</span> -<span class="built_in">ip</span>:port -u root -p pwd</span><br></pre></td></tr></table></figure>
+<p>此外，即使使用了用户名和密码登录，在操作有些集合的时候也不一定一定能操作成功，这要根据对具体集合的权限分配。</p>
+<h2 id="用户角色"><a href="#用户角色" class="headerlink" title="用户角色"></a>用户角色</h2><ul>
+<li><p>数据库角色</p>
+<ul>
+<li>read</li>
+<li>readWrite</li>
+<li>dbAdmin</li>
+<li>dbOwner</li>
+<li>userAdmin</li>
+</ul>
+</li>
+<li><p>集群角色</p>
+<ul>
+<li>clusterAdmin</li>
+<li>clusterManger</li>
+</ul>
+</li>
+<li><p>备份角色</p>
+<ul>
+<li>backup</li>
+<li>restore</li>
+</ul>
+</li>
+<li><p>其他特殊权限</p>
+<ul>
+<li>DBAdminAnyDatabase</li>
+</ul>
+</li>
+</ul>
+<p>此外，还有 2 种不对外开放的权限：<code>root</code> 和 <code>__system</code>。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  _id : <span class="string">"myapp.appUser"</span>,</span><br><span class="line">  </span><br><span class="line">  role : <span class="string">"appUser"</span>,</span><br><span class="line">  </span><br><span class="line">  db : <span class="string">"myapp"</span>,</span><br><span class="line">  </span><br><span class="line">  privileges : [</span><br><span class="line">    &#123;<span class="built_in"> resource </span>: &#123;db: <span class="string">"myApp"</span>, collection : <span class="string">" "</span>&#125;,</span><br><span class="line">      actions : [<span class="string">"find"</span>, <span class="string">"createCollection"</span>, <span class="string">"dbStats"</span>, <span class="string">"collStats"</span>]&#125;,</span><br><span class="line">    &#123;<span class="built_in"> resource </span>: &#123;db: <span class="string">"myApp"</span>, collection : <span class="string">" logs "</span>&#125;,</span><br><span class="line">      actions : [<span class="string">"insert"</span>]&#125;,</span><br><span class="line">    &#123;<span class="built_in"> resource </span>: &#123;db: <span class="string">"myApp"</span>, collection : <span class="string">" data "</span>&#125;,</span><br><span class="line">      actions : [<span class="string">"insert"</span>, <span class="string">"update"</span>, <span class="string">"remove"</span>, <span class="string">"compact"</span>]&#125;,</span><br><span class="line">    &#123;<span class="built_in"> resource </span>: &#123;db: <span class="string">"myApp"</span>, collection : <span class="string">" system.indexes "</span>&#125;,</span><br><span class="line">      actions : [<span class="string">"find"</span>]&#125;,</span><br><span class="line">    &#123;<span class="built_in"> resource </span>: &#123;db: <span class="string">"myApp"</span>, collection : <span class="string">" system.namespaces "</span>&#125;,</span><br><span class="line">      actions : [<span class="string">"find"</span>]&#125;</span><br><span class="line">  ],</span><br><span class="line">  </span><br><span class="line">  roles : [],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是使用 <code>createRole()</code> 方法对自定义权限的配置，这样的方式更灵活，也更 方便管理员掌控</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://www.d1net.com/datacenter/tech/256374.html" target="_blank" rel="noopener">SQL vs Nosql ：优劣大对比</a></li>
+<li><a href="http://blog.jobbole.com/1344/" target="_blank" rel="noopener">8 种 NoSQL 数据库系统对比</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/22/MongoDB-Intro/" target="_blank" title="MongoDB 简介">http://blog.caoxl.com/2018/01/22/MongoDB-Intro/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Database/">Database</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/23/WeChat-Subscription-Notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          微信公众号「开发日志」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/22/PHP-Design-Pattern-Intro/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">PHP 设计模式 简介</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#关键词"><span class="nav-number">1.1.</span> <span class="nav-text">关键词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">1.2.</span> <span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库"><span class="nav-number">1.2.1.</span> <span class="nav-text">数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是数据库？"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">什么是数据库？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库分类"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">数据库分类</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#关系型"><span class="nav-number">1.2.1.2.1.</span> <span class="nav-text">关系型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#NoSql"><span class="nav-number">1.2.1.2.2.</span> <span class="nav-text">NoSql</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MongoDB"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">MongoDB</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Why-MongoDB"><span class="nav-number">1.2.1.3.1.</span> <span class="nav-text">Why MongoDB ?</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#学习方向"><span class="nav-number">1.2.1.3.2.</span> <span class="nav-text">学习方向</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#学习方向-1"><span class="nav-number">1.3.</span> <span class="nav-text">学习方向</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本使用"><span class="nav-number">1.3.1.</span> <span class="nav-text">基本使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署数据库服务"><span class="nav-number">1.3.2.</span> <span class="nav-text">部署数据库服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单运维"><span class="nav-number">1.3.3.</span> <span class="nav-text">简单运维</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装和配置"><span class="nav-number">2.</span> <span class="nav-text">安装和配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#下载安装"><span class="nav-number">2.1.</span> <span class="nav-text">下载安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建简单的-MongoDB-服务器"><span class="nav-number">2.2.</span> <span class="nav-text">搭建简单的 MongoDB 服务器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本使用-1"><span class="nav-number">3.</span> <span class="nav-text">基本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建数据库"><span class="nav-number">3.1.</span> <span class="nav-text">创建数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除数据库"><span class="nav-number">3.2.</span> <span class="nav-text">删除数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查找数据"><span class="nav-number">3.3.</span> <span class="nav-text">查找数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插入数据"><span class="nav-number">3.4.</span> <span class="nav-text">插入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建集合"><span class="nav-number">3.5.</span> <span class="nav-text">创建集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新数据"><span class="nav-number">3.6.</span> <span class="nav-text">更新数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#部分更新"><span class="nav-number">3.6.1.</span> <span class="nav-text">部分更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更新不存在的数据"><span class="nav-number">3.6.2.</span> <span class="nav-text">更新不存在的数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更新多条数据"><span class="nav-number">3.6.3.</span> <span class="nav-text">更新多条数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除数据"><span class="nav-number">3.7.</span> <span class="nav-text">删除数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#删除集合-表"><span class="nav-number">3.7.1.</span> <span class="nav-text">删除集合(表)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建集合的索引"><span class="nav-number">3.8.</span> <span class="nav-text">创建集合的索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看索引"><span class="nav-number">3.8.1.</span> <span class="nav-text">查看索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建索引"><span class="nav-number">3.8.2.</span> <span class="nav-text">创建索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于索引和性能"><span class="nav-number">3.8.3.</span> <span class="nav-text">关于索引和性能</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见索引"><span class="nav-number">4.</span> <span class="nav-text">常见索引</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#id-索引"><span class="nav-number">4.1.</span> <span class="nav-text">_id 索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单键索引"><span class="nav-number">4.2.</span> <span class="nav-text">单键索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多键索引"><span class="nav-number">4.3.</span> <span class="nav-text">多键索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复合索引"><span class="nav-number">4.4.</span> <span class="nav-text">复合索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过期索引"><span class="nav-number">4.5.</span> <span class="nav-text">过期索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#限制"><span class="nav-number">4.5.1.</span> <span class="nav-text">限制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#全文索引"><span class="nav-number">4.6.</span> <span class="nav-text">全文索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全文索引相似度"><span class="nav-number">4.6.1.</span> <span class="nav-text">全文索引相似度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#限制-1"><span class="nav-number">4.6.2.</span> <span class="nav-text">限制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#地理位置索引"><span class="nav-number">4.7.</span> <span class="nav-text">地理位置索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分类"><span class="nav-number">4.7.1.</span> <span class="nav-text">分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查找方式"><span class="nav-number">4.7.2.</span> <span class="nav-text">查找方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2D-索引"><span class="nav-number">4.7.3.</span> <span class="nav-text">2D 索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2dsphere"><span class="nav-number">4.7.4.</span> <span class="nav-text">2dsphere</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引构建情况分析"><span class="nav-number">4.8.</span> <span class="nav-text">索引构建情况分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何评判当前索引构建情况"><span class="nav-number">4.8.1.</span> <span class="nav-text">如何评判当前索引构建情况</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引属性"><span class="nav-number">5.</span> <span class="nav-text">索引属性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安全相关"><span class="nav-number">6.</span> <span class="nav-text">安全相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概览"><span class="nav-number">6.1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#权限设置"><span class="nav-number">6.2.</span> <span class="nav-text">权限设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建用户"><span class="nav-number">6.3.</span> <span class="nav-text">创建用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户角色"><span class="nav-number">6.4.</span> <span class="nav-text">用户角色</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

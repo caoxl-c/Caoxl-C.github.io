@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mysql 索引优化 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MySQL优化索引">
+  
+  
+  
+  
+  <meta name="description" content="想要做MySQL索引优化首先得了解MySQL索引!">
+<meta name="keywords" content="MySQL,优化,索引">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 索引优化">
+<meta property="og:url" content="http://blog.caoxl.com/2018/10/20/MySQL-Index-OPT/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="想要做MySQL索引优化首先得了解MySQL索引!">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:27:26.397Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL 索引优化">
+<meta name="twitter:description" content="想要做MySQL索引优化首先得了解MySQL索引!">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MySQL-Index-OPT" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MySQL 索引优化
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/10/20/MySQL-Index-OPT/" class="article-date">
+	  <time datetime="2018-10-20T08:51:58.000Z" itemprop="datePublished">2018-10-20</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>想要做MySQL索引优化首先得了解MySQL索引!</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="索引的作用"><a href="#索引的作用" class="headerlink" title="索引的作用"></a>索引的作用</h1><p>当一个数据表只有很少量的数据时,索引体现不了他的价值。但若是一个表有10w多的数据时,查找数据就要全表查找,<br>最差要查找10w个数据,太慢了,若是用索引的话,就会大大减少时间,<br>例如对 score字段做一个索引,<strong>索引会生成一个文件,查找数据就到索引文件中查找</strong>,又因为索引出来的数据是已经排好序的,<br>所以查找时,数据库会用类似二分法的查找,这样会比不用索引快很多倍。</p>
+<h1 id="MySQL索引种类"><a href="#MySQL索引种类" class="headerlink" title="MySQL索引种类"></a>MySQL索引种类</h1><p>索引是帮助mysql获取数据的数据结构。最常见的索引是<code>Btree</code>索引和<code>Hash</code>索引。</p>
+<p>不同的引擎对于索引有不同的支持：<strong><code>Innodb</code>和<code>MyISAM</code>默认的索引是Btree索引;而<code>Mermory</code>默认的索引是Hash索引</strong>。</p>
+<h2 id="FULLTEXT"><a href="#FULLTEXT" class="headerlink" title="FULLTEXT"></a>FULLTEXT</h2><blockquote>
+<p>即为全文索引,目前只有<code>MyISAM</code>引擎支持。<br>不过目前只有 CHAR、VARCHAR ,TEXT 列上可以创建全文索引。<br>全文索引并不是和MyISAM一起诞生的,它的出现是为了解决<code>WHERE name LIKE “%word%”</code>这类针对文本的模糊查询效率较低的问题。</p>
+</blockquote>
+<h2 id="HASH"><a href="#HASH" class="headerlink" title="HASH"></a>HASH</h2><blockquote>
+<p>由于<strong>hash索引可以一次定位,不需要像树形索引那样逐层查找</strong>,因此具有极高的效率。但是 Hash 索引本身由于其特殊性也带来了很多限制和弊端,<br>主要有以下这些:</p>
+</blockquote>
+<ol>
+<li>Hash 索引仅仅能满足”=”,”IN”和”&lt;=&gt;”查询,不能使用范围查询。</li>
+<li>Hash 索引无法被用来避免数据的排序操作。</li>
+<li>Hash 索引不能利用部分索引键查询。</li>
+<li>Hash 索引在任何时候都不能避免表扫描。</li>
+<li>Hash 索引遇到大量Hash值相等的情况后性能并不一定就会比B-Tree索引高。</li>
+</ol>
+<h2 id="BTREE"><a href="#BTREE" class="headerlink" title="BTREE"></a>BTREE</h2><blockquote>
+<p>B+树索引是B+树在数据库中的一种实现，是最常见也是数据库中使用最为频繁的一种索引。<br>B+树中的B代表平衡（<strong>balance</strong>），而不是二叉（<strong>binary</strong>），因为B+树是从最早的平衡二叉树演化而来的。</p>
+</blockquote>
+<blockquote>
+<p>BTREE索引就是一种将索引值按一定的算法,存入一个树形的数据结构中,<br>如二叉树一样,每次查询都是从树的入口root开始,依次遍历node,获取子节点上的数据。</p>
+</blockquote>
+<p>BTREE索引分两类,一个是<strong>单列索引</strong> 另一个是<strong>多列索引</strong></p>
+<h3 id="单列索引"><a href="#单列索引" class="headerlink" title="单列索引"></a>单列索引</h3><blockquote>
+<p>单列索引是给单个字段做索引,如给math字段。</p>
+</blockquote>
+<h4 id="建立索引"><a href="#建立索引" class="headerlink" title="建立索引"></a>建立索引</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//给 test表 中的math字段加一个索引,索引名叫 math_index</span></span><br><span class="line">alter table test add index math_index(math);</span><br></pre></td></tr></table></figure>
+<p>用命令 <code>show index from test;</code>可以查看是否建立了索引：</p>
+<p>建立索引后,我们就要使用索引,索引一般是用于查找信息（用select语句）</p>
+<blockquote>
+<p><strong>注意：</strong><br>使用索引时,不能 <code>select *</code> ,这样的话,索引是无法使用的,select后面跟的应该包含索引所在的字段,<br>  例如上面我设置了 <code>math</code> 字段的索引为 <code>math_index</code><br>  则就要写成 <code>select math from test;</code>（<code>select math,english from test;</code> 也可以,只要有math字段就行）<br>  因为索引生成索引文件,里面放的是索引对应字段的数据。</p>
+</blockquote>
+<p>使用 <code>select math from test;</code> 得出的结果：可以看出,数据是应该排好序的,因为只要是用到索引,被查找后的字段都会被排好序的。</p>
+<h4 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//删除test表中的名为 `math_index` 的索引</span></span><br><span class="line">alter table test drop index math_index;</span><br></pre></td></tr></table></figure>
+<h3 id="多列索引"><a href="#多列索引" class="headerlink" title="多列索引"></a>多列索引</h3><blockquote>
+<p>多列索引是一个索引对应多个字段的数据。<br>  例如我们想查找 数学成绩&gt;60 且 英语成绩 &gt;60 的学生。可以用多列索引,当然你说用2个单列索引,分别是数学 和 英语的索引行不行？<br>  其实也是可以的,但也有区别,下面会讲解：</p>
+</blockquote>
+<h4 id="创建一个多列索引"><a href="#创建一个多列索引" class="headerlink" title="创建一个多列索引"></a>创建一个多列索引</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在test表中创建一个 为名 indexes 的多列索引,包含 math,english字段</span></span><br><span class="line">alter table test add indexs(math, english);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用 show index from test; 查看是否有创建。</span></span><br></pre></td></tr></table></figure>
+<p>然后对test表：<br>//在test表中找出数学和英语成绩都高于60的数据<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select  math, english  from test where math&gt;<span class="number">60</span> <span class="keyword">and</span> english&gt;<span class="number">60</span>;</span><br></pre></td></tr></table></figure></p>
+<p>可以看出，数据也是排好序的。</p>
+<h4 id="删除多列索引跟删除单列索引一样。"><a href="#删除多列索引跟删除单列索引一样。" class="headerlink" title="删除多列索引跟删除单列索引一样。"></a>删除多列索引跟删除单列索引一样。</h4><h4 id="最左前缀："><a href="#最左前缀：" class="headerlink" title="最左前缀："></a>最左前缀：</h4><p>最左前缀的意思是，例如我创建的多列索引是 （math，english）这样表示的，则：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">select  math  from test;</span><br><span class="line">select  math, english  from test;</span><br><span class="line"><span class="comment">//上面的写法都可以使用多列索引，第一行的写法相当于math的单列索引</span></span><br><span class="line"><span class="comment">// 而</span></span><br><span class="line">selec english from test;</span><br><span class="line"><span class="comment">// 则会使索引失效, 因为他不是math开头</span></span><br></pre></td></tr></table></figure>
+<h2 id="RTREE"><a href="#RTREE" class="headerlink" title="RTREE"></a>RTREE</h2><blockquote>
+<p>RTREE在mysql很少使用,<strong>仅支持geometry数据类型</strong>,相对于BTREE,RTREE的优势在于范围查找。</p>
+</blockquote>
+<h1 id="BTREE和HASH的区别"><a href="#BTREE和HASH的区别" class="headerlink" title="BTREE和HASH的区别?"></a>BTREE和HASH的区别?</h1><h2 id="B-Tree"><a href="#B-Tree" class="headerlink" title="B-Tree"></a>B-Tree</h2><blockquote>
+<p>B-Tree 索引是 MySQL 数据库中使用最为频繁的索引类型，除了 Archive 存储引擎之外的其他所有的存储引擎都支持 B-Tree 索引。<br>不仅仅在 MySQL 中是如此，实际上在其他的很多数据库管理系统中B-Tree 索引也同样是作为最主要的索引类型，<br>这主要是因为B-Tree 索引的存储结构在数据库的数据检索中有非常优异的表现。</p>
+</blockquote>
+<h2 id="HASH-1"><a href="#HASH-1" class="headerlink" title="HASH"></a>HASH</h2><blockquote>
+<p> Hash 索引结构的特殊性，其检索效率非常高，索引的检索可以一次定位，不像B-Tree 索引需要从根节点到枝节点，最后才能访问到页节点这样多次的IO访问，<br>所以 Hash 索引的查询效率要远高于 B-Tree 索引。</p>
+</blockquote>
+<h1 id="B-Tree索引中的最左匹配原则"><a href="#B-Tree索引中的最左匹配原则" class="headerlink" title="B-Tree索引中的最左匹配原则"></a>B-Tree索引中的最左匹配原则</h1><p>Btree是按照从左到右的顺序来建立搜索树的。<br>比如索引是(name,age,sex),会先检查name字段,如果name字段相同再去检查后两个字段。</p>
+<p>所以当传进来的是后两个字段的数据（age,sex）,因为建立搜索树的时候是按照第一个字段建立的,所以必须根据name字段才能知道下一个字段去哪里查询。</p>
+<p>所以传进来的是（name,sex）时,首先会根据name指定搜索方向,但是第二个字段缺失,所以将name字段正确的都找到后,然后才会去匹配sex的数据。</p>
+<h1 id="建立索引的规则："><a href="#建立索引的规则：" class="headerlink" title="建立索引的规则："></a>建立索引的规则：</h1><ol>
+<li><p>利用最左前缀：Mysql会一直向右查找直到遇到范围操作（&gt;,&lt;,like、between）就停止匹配。比如a=1 and b=2 and c&gt;3 and d=6;<br>此时如果建立了（a,b,c,d）索引,那么后面的d索引是完全没有用到,当换成了（a,b,d,c）就可以用到。</p>
+</li>
+<li><p>不能过度索引：在修改表内容的时候,索引必须更新或者重构,所以索引过多时,会消耗更多的时间。</p>
+</li>
+<li><p>尽量扩展索引而不要新建索引</p>
+</li>
+<li><p>最适合的索引的列是出现在where子句中的列或连接子句中指定的列。</p>
+</li>
+<li><p>不同值较少的列不必要建立索引（性别）。</p>
+</li>
+</ol>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/10/20/MySQL-Index-OPT/" target="_blank" title="MySQL 索引优化">http://blog.caoxl.com/2018/10/20/MySQL-Index-OPT/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/索引/">索引</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/10/20/MySQL-SQL-OPT/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          MySQL SQL优化
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/10/16/Ancient-Frame-TP3-2-Notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">远古框架 ThinkPHP3.2</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#索引的作用"><span class="nav-number">1.</span> <span class="nav-text">索引的作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL索引种类"><span class="nav-number">2.</span> <span class="nav-text">MySQL索引种类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#FULLTEXT"><span class="nav-number">2.1.</span> <span class="nav-text">FULLTEXT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HASH"><span class="nav-number">2.2.</span> <span class="nav-text">HASH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BTREE"><span class="nav-number">2.3.</span> <span class="nav-text">BTREE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单列索引"><span class="nav-number">2.3.1.</span> <span class="nav-text">单列索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#建立索引"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">建立索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除索引"><span class="nav-number">2.3.1.2.</span> <span class="nav-text">删除索引</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多列索引"><span class="nav-number">2.3.2.</span> <span class="nav-text">多列索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建一个多列索引"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">创建一个多列索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除多列索引跟删除单列索引一样。"><span class="nav-number">2.3.2.2.</span> <span class="nav-text">删除多列索引跟删除单列索引一样。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最左前缀："><span class="nav-number">2.3.2.3.</span> <span class="nav-text">最左前缀：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RTREE"><span class="nav-number">2.4.</span> <span class="nav-text">RTREE</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BTREE和HASH的区别"><span class="nav-number">3.</span> <span class="nav-text">BTREE和HASH的区别?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#B-Tree"><span class="nav-number">3.1.</span> <span class="nav-text">B-Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HASH-1"><span class="nav-number">3.2.</span> <span class="nav-text">HASH</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#B-Tree索引中的最左匹配原则"><span class="nav-number">4.</span> <span class="nav-text">B-Tree索引中的最左匹配原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#建立索引的规则："><span class="nav-number">5.</span> <span class="nav-text">建立索引的规则：</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php 环境问题汇总 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHPNginx配置">
+  
+  
+  
+  
+  <meta name="description" content="在开发部署 PHP 项目过程中总会遇到一些环境相关的问题，这里简单记录下来。">
+<meta name="keywords" content="PHP,Nginx,配置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP 环境问题汇总">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/22/PHP-Env-FAQ/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="在开发部署 PHP 项目过程中总会遇到一些环境相关的问题，这里简单记录下来。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP 环境问题汇总">
+<meta name="twitter:description" content="在开发部署 PHP 项目过程中总会遇到一些环境相关的问题，这里简单记录下来。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-Env-FAQ" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP 环境问题汇总
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/22/PHP-Env-FAQ/" class="article-date">
+	  <time datetime="2018-01-22T07:06:15.000Z" itemprop="datePublished">2018-01-22</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>在开发部署 PHP 项目过程中总会遇到一些环境相关的问题，这里简单记录下来。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="nginx-连接-php-fpm-的两种方式"><a href="#nginx-连接-php-fpm-的两种方式" class="headerlink" title="nginx 连接 php-fpm 的两种方式"></a><code>nginx</code> 连接 <code>php-fpm</code> 的两种方式</h1><p>php-fpm 的启动方式有两种：</p>
+<h2 id="TCP-sockets"><a href="#TCP-sockets" class="headerlink" title="TCP sockets"></a>TCP sockets</h2><p>就是常见的，也是 php-fpm 默认的启动方式：<strong>监听本机 9000 端口，通过 TCP 协议通信。</strong></p>
+<h2 id="UNIX-domain-sockets"><a href="#UNIX-domain-sockets" class="headerlink" title="UNIX domain sockets"></a>UNIX domain sockets</h2><blockquote>
+<p>Unix domain socket 或者 IPC socket是一种终端，可以使同一台操作系统上的两个或多个进程进行数据通信。与管道相比，Unix domain sockets 既可以使用字节流和数据队列，而管道通信则只能通过字节流。Unix domain sockets的接口和Internet socket很像，但它不使用网络底层协议来通信。Unix domain socket 的功能是POSIX操作系统里的一种组件。</p>
+<p>Unix domain sockets 使用系统文件的地址来作为自己的身份。它可以被系统进程引用。所以两个进程可以同时打开一个 Unix domain sockets 来进行通信。不过这种通信方式是<strong>发生在系统内核里而不会在网络里传播。</strong></p>
+</blockquote>
+<h2 id="TCP-vs-UNIX-Socket"><a href="#TCP-vs-UNIX-Socket" class="headerlink" title="TCP vs UNIX Socket"></a>TCP vs UNIX Socket</h2><blockquote>
+<p>When you are using TCP, you are also using the whole network stack. Even if you are on the same machine, this implies that packets are encapsulated and decapsulated to use the network stack and the related protocols.</p>
+<p>If you use unix domain sockets, you will not be forced to go through all the network protocols that are required otherwise. The sockets are identified solely by the inodes on your hard drive.</p>
+<p>Beware though that sockets are only reachable from programs that are running on the same server (there’s no network support, obviously) and that the programs need to have the necessary permissions to access the socket file.</p>
+</blockquote>
+<p>在服务器压力不大的情况下，tcp 和 socket 差别不大，但在压力比较满的时候，用套接字方式，效果确实比较好。</p>
+<h2 id="php-fpm-配置"><a href="#php-fpm-配置" class="headerlink" title="php-fpm 配置"></a>php-fpm 配置</h2><p>修改 <code>/usr/local/php/etc/php-fpm.conf</code> 文件，换掉注释：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">;listen = 127.0.0.1:9000</span></span><br><span class="line"><span class="attr">listen</span>  = /dev/shm/php-cgi.sock</span><br><span class="line"><span class="attr">listen.owner</span> = www</span><br><span class="line"><span class="attr">listen.group</span> = www</span><br></pre></td></tr></table></figure>
+<p>由于权限问题很多人使用路径 <code>/tmp</code>，但路径 /<code>dev/shm</code> 是个 <code>tmpfs</code>，速度比磁盘快得多。</p>
+<p>至于权限问题，可以在 <code>php-fpm.conf</code> 中指定所有者和所有组决定。否则生成的 <code>/dev/shm/php-cgi.sock</code> 是 <code>root</code> 所有的，<code>PHP</code> 没有权限访问。</p>
+<p>最后重启 <code>php-fpm：service php-fpm restart</code>。可以查看是否成功：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lsof -i<span class="function">:9000</span>    <span class="comment"># nothing</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ls</span> -al <span class="string">/dev/shm</span></span><br></pre></td></tr></table></figure>
+<h2 id="nginx-配置"><a href="#nginx-配置" class="headerlink" title="nginx 配置"></a>nginx 配置</h2><p>可以对虚拟主机的 <code>server</code> 字段进行配置：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">location</span> <span class="regexp">~ [^/]\.php(/|$)</span> &#123;</span><br><span class="line">    <span class="comment">#fastcgi_pass 127.0.0.1:9000;</span></span><br><span class="line">    <span class="attribute">fastcgi_pass</span> unix:/dev/shm/php-cgi.sock;</span><br><span class="line">    <span class="attribute">fastcgi_index</span> index.php;</span><br><span class="line">    <span class="attribute">include</span> fastcgi.conf;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者创建一个配置文件 php5-fpm.conf</span></span><br><span class="line"><span class="attribute">upstream</span> php5-fpm-sock &#123;</span><br><span class="line">    <span class="attribute">server</span> unix:/var/run/php5-fpm.sock;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 引入 nginx 后在 nginx `Server` 字段中引入</span></span><br><span class="line"><span class="attribute">fastcgi_pass</span> php5-fpm-sock;</span><br></pre></td></tr></table></figure>
+<p>最后重启 <code>nginx：service nginx restart</code>。</p>
+<h1 id="出现-“神奇的”-40x-50x-错误-？"><a href="#出现-“神奇的”-40x-50x-错误-？" class="headerlink" title="出现 “神奇的” 40x/50x 错误 ？"></a>出现 “神奇的” <code>40x</code>/<code>50x</code> 错误 ？</h1><ul>
+<li>安装的 <code>php-fpm</code> 版本和 <code>php -v</code> 是否一致？（500）</li>
+<li>Nginx 配置是否有误？路径是否存在？（403）</li>
+<li>CLI 下测试入口文件是否有报错？（502）</li>
+<li><code>composer vendor</code> 目录是否安装完整？（autoload class）</li>
+<li>检查错误日志（php.ini =&gt; php_errors）</li>
+</ul>
+<h1 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h1><h2 id="Xdebug"><a href="#Xdebug" class="headerlink" title="Xdebug"></a>Xdebug</h2><ul>
+<li>xdebug must be loaded as a zend extension in unknown on line 0?</li>
+</ul>
+<p>需要在 php.ini 中改变引入扩展的指令为 <code>zend_extension</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">zend_extension</span> = <span class="string">"xdebug.so"</span></span><br></pre></td></tr></table></figure>
+<p>然后重启 php-fpm 或者 apache。</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">service</span> <span class="string">php-fpm restart</span></span><br><span class="line"></span><br><span class="line"><span class="attr">or</span>:<span class="string"></span></span><br><span class="line"></span><br><span class="line"><span class="attr">apache</span> <span class="string">httpd restart</span></span><br></pre></td></tr></table></figure>
+<h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><ul>
+<li><strong>如何查看操作系统字符集？</strong></li>
+</ul>
+<p>在 Windows 平台下，命令提示符中输入 <code>chcp</code> 可以得到操作系统的代码页信息，你可以从控制面板的语言选项中查看代码页对应的详细的字符集信息。</p>
+<p>例如：我的活动代码页为 <code>936</code>，它对应的编码格式为 <code>GBK</code>。（简体中文的 Windows 字符编码是 GBK）</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://blog.linuxeye.cn/364.html" target="_blank" rel="noopener">使用socket方式连接Nginx优化php-fpm性能</a></li>
+<li><a href="https://unix.stackexchange.com/questions/91774/performance-of-unix-sockets-vs-tcp-ports" target="_blank" rel="noopener">Performance of unix sockets vs TCP ports</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/22/PHP-Env-FAQ/" target="_blank" title="PHP 环境问题汇总">http://blog.caoxl.com/2018/01/22/PHP-Env-FAQ/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/配置/">配置</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/22/PHP-Install-Dev-Log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          PHP 「安装日志」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/22/Nginx-Optimization/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Nginx 优化</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx-连接-php-fpm-的两种方式"><span class="nav-number">1.</span> <span class="nav-text">nginx 连接 php-fpm 的两种方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-sockets"><span class="nav-number">1.1.</span> <span class="nav-text">TCP sockets</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UNIX-domain-sockets"><span class="nav-number">1.2.</span> <span class="nav-text">UNIX domain sockets</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-vs-UNIX-Socket"><span class="nav-number">1.3.</span> <span class="nav-text">TCP vs UNIX Socket</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#php-fpm-配置"><span class="nav-number">1.4.</span> <span class="nav-text">php-fpm 配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx-配置"><span class="nav-number">1.5.</span> <span class="nav-text">nginx 配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#出现-“神奇的”-40x-50x-错误-？"><span class="nav-number">2.</span> <span class="nav-text">出现 “神奇的” 40x/50x 错误 ？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#扩展"><span class="nav-number">3.</span> <span class="nav-text">扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Xdebug"><span class="nav-number">3.1.</span> <span class="nav-text">Xdebug</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">4.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

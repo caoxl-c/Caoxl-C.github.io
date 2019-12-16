@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php 生命周期 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHP生命周期">
+  
+  
+  
+  
+  <meta name="description" content="想做一些关于框架的生命周期的探讨, 又一想, 在那之前很有必要做一下PHP生命周期的功课">
+<meta name="keywords" content="PHP,生命周期">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP 生命周期">
+<meta property="og:url" content="http://blog.caoxl.com/2018/07/06/PHP-life/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="想做一些关于框架的生命周期的探讨, 又一想, 在那之前很有必要做一下PHP生命周期的功课">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://caoxl.com/images/sapi.jpg">
+<meta property="og:image" content="https://caoxl.com/images/sapi-cli-cgi.jpg">
+<meta property="og:image" content="https://caoxl.com/images/sapi-apache2.jpg">
+<meta property="og:image" content="https://caoxl.com/images/sapi-mult.jpg">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP 生命周期">
+<meta name="twitter:description" content="想做一些关于框架的生命周期的探讨, 又一想, 在那之前很有必要做一下PHP生命周期的功课">
+<meta name="twitter:image" content="https://caoxl.com/images/sapi.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-life" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP 生命周期
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/07/06/PHP-life/" class="article-date">
+	  <time datetime="2018-07-06T03:36:00.000Z" itemprop="datePublished">2018-07-06</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>想做一些关于框架的生命周期的探讨, 又一想, 在那之前很有必要做一下<code>PHP</code>生命周期的功课</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="SAPI-一切的开始"><a href="#SAPI-一切的开始" class="headerlink" title="SAPI: 一切的开始"></a><code>SAPI</code>: 一切的开始</h1><p>什么是<code>SAPI</code> ? 为什么先讲这个 ? 看下图!</p>
+<p><img src="https://caoxl.com/images/sapi.jpg" alt="SAPI"></p>
+<blockquote>
+<p>SAPI(Server Application Programming Interface  服务器端应用编程端口) is an application programming interface (API)<br>provided by the web server to help other developers in extending the web server capabilities.</p>
+</blockquote>
+<p><strong><code>SAPI</code>是一个用来帮助其他开发程序扩展<code>web</code>服务器功能的应用程序接口(<code>api</code>)</strong></p>
+<p>它将外部条件抽象,为内部的<code>PHP</code>提供一套固定统一的接口,使得<code>PHP</code>自身实现能够不受外部环境影响，保持一定的独立性。</p>
+<p><code>PHP</code>中常用的<code>SAPI</code>有<code>cli</code>(命令行模式，单进程)、<code>php-fpm</code>、<code>CGI</code>、<code>Apache</code>…</p>
+<p>有点像策略模式,使用相同的接口，但是实现会略有不同。</p>
+<blockquote>
+<p><a href="http://www.laruence.com/2008/08/12/180.html" target="_blank" rel="noopener">深入理解Zend SAPIs(Zend SAPI Internals) </a></p>
+</blockquote>
+<h1 id="PHP的启动和终止"><a href="#PHP的启动和终止" class="headerlink" title="PHP的启动和终止"></a><code>PHP</code>的启动和终止</h1><h2 id="请求之前的开始阶段"><a href="#请求之前的开始阶段" class="headerlink" title="请求之前的开始阶段"></a>请求之前的开始阶段</h2><ul>
+<li><code>MINIT</code>:  模块初始化阶段, 初始化一些扩展、常量、类、资源、等所有被<code>php</code>脚本用到的东西. (常驻内存, 可以被所有请求使用)</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PHP_MINIT_FUNCTION(myphp_extentsion)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 注册常量或者类等初始化操作</span></span><br><span class="line">    <span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>PRINT</code>:  模块激活阶段, <code>PHP</code>惠调用所有模块的<code>RINIT</code>函数, 在这个阶段各个模块也可以执行一些相关的操作, 比如初始化<code>本次请求</code>使用到的变量</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PHP_RINIT_FUNCTION(myphp_extension)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 例如记录请求开始时间</span></span><br><span class="line">    <span class="comment">// 随后在请求结束的时候记录结束时间, 这样我们就能够记录下处理请求所花费的时间了</span></span><br><span class="line">    <span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="请求之后的结束阶段"><a href="#请求之后的结束阶段" class="headerlink" title="请求之后的结束阶段"></a>请求之后的结束阶段</h2><ul>
+<li><code>RSHUTDOWN</code>:  这个页面请求执行完毕，或者被用户给die（exit）了， 这时PHP会启动回收程序，回收本次请求使用的资源。<br>这次会执行所有已加载扩展的<code>RSHUTDOWN</code>（俗称<code>Request Shutdown</code>）方法， 这时候扩展可以利用内核中的变量表等做的一些事情<br>。因为<code>PHP</code>一旦把所有扩展的<code>RSHUTDOWN</code>方法执行完，便会释放掉这次请求使用过的所有资源，比如变量表的所有变量、所有在这次请求中申请的内存等</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PHP_RSHUTDOWN_FUNCTION(myphp_extension)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 例如记录请求结束时间, 并把相应的信息写入到日志文件中</span></span><br><span class="line">    <span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>MSHUTDOWN</code>:  <code>PHP</code>执行所有扩展的<code>MSHUDOWN</code>, 释放资源.</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PHP_MSHUTDOWN_FUNCTION(extension_name)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 自由处理程序和持久内存等</span></span><br><span class="line">    <span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="PHP的生命周期"><a href="#PHP的生命周期" class="headerlink" title="PHP的生命周期"></a><code>PHP</code>的生命周期</h1><h2 id="单进程SAPI生命周期-CLI-CGI"><a href="#单进程SAPI生命周期-CLI-CGI" class="headerlink" title="单进程SAPI生命周期(CLI/CGI)"></a>单进程<code>SAPI</code>生命周期(<code>CLI/CGI</code>)</h2><p><img src="https://caoxl.com/images/sapi-cli-cgi.jpg" alt="单进程SAPI"></p>
+<h2 id="多进程SAPI生命周期-Apache2"><a href="#多进程SAPI生命周期-Apache2" class="headerlink" title="多进程SAPI生命周期(Apache2)"></a>多进程<code>SAPI</code>生命周期(<code>Apache2</code>)</h2><p><img src="https://caoxl.com/images/sapi-apache2.jpg" alt="多进程SAPI"></p>
+<h2 id="多线程SAPI生命周期"><a href="#多线程SAPI生命周期" class="headerlink" title="多线程SAPI生命周期"></a>多线程<code>SAPI</code>生命周期</h2><p><img src="https://caoxl.com/images/sapi-mult.jpg" alt="多线程SAPI"></p>
+<h2 id="Embed"><a href="#Embed" class="headerlink" title="Embed"></a><code>Embed</code></h2><p><code>Embed SAPI</code>是一种比较特殊的<code>sapi</code>, 容许你在<code>C/C++</code>语言中调用<code>PHP/ZE</code>提供的函数。</p>
+<blockquote>
+<p><u><a href="http://www.laruence.com/2008/09/23/539.html" target="_blank" rel="noopener">使用PHP Embed SAPI实现Opcodes查看器 </a></u></p>
+</blockquote>
+<blockquote>
+<p>图片基本是从参考链接那边拿过来, 站在前人的肩膀上</p>
+</blockquote>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://www.laruence.com/2008/08/12/180.html" target="_blank" rel="noopener">深入理解Zend SAPIs(Zend SAPI Internals) </a></li>
+<li><a href="http://www.laruence.com/2008/09/23/539.html" target="_blank" rel="noopener">使用PHP Embed SAPI实现Opcodes查看器 </a></li>
+<li><a href="https://en.wikipedia.org/wiki/Server_Application_Programming_Interface" target="_blank" rel="noopener">服务器应用编程接口</a></li>
+<li><a href="https://foio.github.io/php-sapi/" target="_blank" rel="noopener">理解php内核中SAPI的作用</a></li>
+<li><a href="http://www.php-internals.com/book/?p=chapt02/02-01-php-life-cycle-and-zend-engine" target="_blank" rel="noopener">生命周期和Zend引擎</a></li>
+<li><a href="https://blog.csdn.net/hguisu/article/details/7377520" target="_blank" rel="noopener">深入理解php底层：php生命周期</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/07/06/PHP-life/" target="_blank" title="PHP 生命周期">http://blog.caoxl.com/2018/07/06/PHP-life/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/生命周期/">生命周期</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/06/Laravel-Lumen-Life/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Laravel / Lumen 生命周期
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/04/Shell-Script/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Shell 学习日志</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SAPI-一切的开始"><span class="nav-number">1.</span> <span class="nav-text">SAPI: 一切的开始</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP的启动和终止"><span class="nav-number">2.</span> <span class="nav-text">PHP的启动和终止</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#请求之前的开始阶段"><span class="nav-number">2.1.</span> <span class="nav-text">请求之前的开始阶段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求之后的结束阶段"><span class="nav-number">2.2.</span> <span class="nav-text">请求之后的结束阶段</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP的生命周期"><span class="nav-number">3.</span> <span class="nav-text">PHP的生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单进程SAPI生命周期-CLI-CGI"><span class="nav-number">3.1.</span> <span class="nav-text">单进程SAPI生命周期(CLI/CGI)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多进程SAPI生命周期-Apache2"><span class="nav-number">3.2.</span> <span class="nav-text">多进程SAPI生命周期(Apache2)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程SAPI生命周期"><span class="nav-number">3.3.</span> <span class="nav-text">多线程SAPI生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Embed"><span class="nav-number">3.4.</span> <span class="nav-text">Embed</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

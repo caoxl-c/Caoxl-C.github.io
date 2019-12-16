@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mysql sql优化 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MySQL优化SQL">
+  
+  
+  
+  
+  <meta name="description" content="数据库SQL优化？如何优化？">
+<meta name="keywords" content="MySQL,优化,SQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL SQL优化">
+<meta property="og:url" content="http://blog.caoxl.com/2018/10/20/MySQL-SQL-OPT/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="数据库SQL优化？如何优化？">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:27:29.399Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL SQL优化">
+<meta name="twitter:description" content="数据库SQL优化？如何优化？">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MySQL-SQL-OPT" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MySQL SQL优化
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/10/20/MySQL-SQL-OPT/" class="article-date">
+	  <time datetime="2018-10-20T08:54:07.000Z" itemprop="datePublished">2018-10-20</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>数据库SQL优化？如何优化？</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="数据库SQL优化大总结之-百万级数据库优化方案"><a href="#数据库SQL优化大总结之-百万级数据库优化方案" class="headerlink" title="数据库SQL优化大总结之 百万级数据库优化方案"></a>数据库SQL优化大总结之 百万级数据库优化方案</h1><ol>
+<li><p>对查询进行优化，要尽量避免全表扫描，首先应考虑在 <code>where</code> 及 <code>order by</code> 涉及的列上建立索引。</p>
+</li>
+<li><p>应尽量避免在 <code>where</code> 子句中对字段进行 <code>null</code> 值判断，否则将导致引擎放弃使用索引而进行全表扫描，如：</p>
+</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select id from where num is <span class="keyword">null</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>最好不要给数据库留NULL，尽可能的使用 NOT NULL填充数据库.</strong></p>
+<blockquote>
+<p>不要以为 NULL 不需要空间，比如：char(100) 型，在字段建立时，空间就固定了， 不管是否插入值（NULL也包含在内），<br>都是占用 100个字符的空间的，如果是varchar这样的变长字段， null 不占用空间。</p>
+</blockquote>
+<p>可以在num上设置默认值0，确保表中num列没有null值，然后这样查询：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> <span class="keyword">test</span> <span class="keyword">where</span> <span class="keyword">num</span> = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li><p>应尽量避免在 where 子句中使用 <code>!=</code> 或 <code>&lt;&gt;</code> 操作符，否则将引擎放弃使用索引而进行全表扫描。</p>
+</li>
+<li><p>应尽量避免在 where 子句中使用 <code>or</code> 来连接条件，<br>如果一个字段有索引，一个字段没有索引，将导致引擎放弃使用索引而进行全表扫描.</p>
+</li>
+<li><p>in 和 not in 也要慎用，否则会导致全表扫描.</p>
+</li>
+<li><p>下面的查询也将导致全表扫描：</p>
+</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select id from t where name like <span class="string">'%abc%'</span></span><br></pre></td></tr></table></figure>
+<p>若要提高效率，可以考虑全文检索。</p>
+<ol start="7">
+<li><p>应尽量避免在where子句中对字段进行<strong>函数操作</strong>，这将导致引擎放弃使用索引而进行全表扫描。</p>
+</li>
+<li><p>不要在 where 子句中的<code>“=”</code>左边进行函数、算术运算或其他表达式运算，否则系统将可能无法正确使用索引。</p>
+</li>
+<li><p>在使用索引字段作为条件时，如果该索引是复合索引，那么必须使用到该索引中的第一个字段作为条件时才能保证系统使用该索引，<br>否则该索引将不会被使用，并且应尽可能的让字段顺序与索引顺序相一致。</p>
+</li>
+<li><p>Update 语句，如果只更改1、2个字段，不要Update全部字段，否则频繁调用会引起明显的性能消耗，同时带来大量日志。</p>
+</li>
+<li><p>对于多张大数据量（这里几百条就算大了）的表JOIN，要先分页再JOIN，否则逻辑读会很高，性能很差。</p>
+</li>
+<li><p><code>select count(*) from table;</code> 这样不带任何条件的count会引起全表扫描，并且没有任何业务意义，是一定要杜绝的。</p>
+</li>
+<li><p><strong>索引并不是越多越好</strong>，索引固然可以提高相应的 select 的效率，但同时也降低了 insert 及 update 的效率，<br><strong>因为 <code>insert</code> 或 <code>update</code> 时有可能会重建索引</strong>，所以怎样建索引需要慎重考虑，视具体情况而定。<br>一个表的索引数最好不要超过6个，若太多则应考虑一些不常使用到的列上建的索引是否有 必要。</p>
+</li>
+<li><p><strong>应尽可能的避免更新 <code>clustered</code> 索引数据列</strong>，因为 <code>clustered</code> 索引数据列的顺序就是表记录的物理存储顺序，<br>一旦该列值改变将导致整个表记录的顺序的调整，会耗费相当大的资源。若应用系统需要频繁更新 <code>clustered</code> 索引数据列，<br>那么需要考虑是否应将该索引建为 <code>clustered</code> 索引。</p>
+</li>
+<li><p><strong>尽量使用数字型字段</strong>，若只含数值信息的字段尽量不要设计为字符型，这会降低查询和连接的性能，并会增加存储开销。<br>这是因为引擎在处理查询和连 接时会逐个比较字符串中每一个字符，而对于数字型而言只需要比较一次就够了。</p>
+</li>
+<li><p>尽可能的使用 <code>varchar/nvarchar</code> 代替 <code>char/nchar</code> ，因为首先变长字段存储空间小，<br>可以节省存储空间，其次对于查询来说，在一个相对较小的字段内搜索效率显然要高些。</p>
+</li>
+<li><p>任何地方都不要使用 <code>select * from t</code> ，用具体的字段列表代替<code>“*”</code>，不要返回用不到的任何字段。</p>
+</li>
+<li><p>尽量使用表变量来代替临时表。如果表变量包含大量数据，请注意索引非常有限（只有主键索引）。</p>
+</li>
+<li><p>避免频繁创建和删除临时表，以减少系统表资源的消耗。临时表并不是不可使用，适当地使用它们可以使某些例程更有效，<br>例如，当需要重复引用大型表或常用表中的某个数据集时。但是，对于一次性事件， 最好使用导出表。</p>
+</li>
+<li><p>新建临时表时，如果一次性插入数据量很大，那么可以使用 <code>select into</code> 代替 <code>create table</code>，避免造成大量 log ，以提高速度；<br>如果数据量不大，为了缓和系统表的资源，应先<code>create table</code>，然后<code>insert</code>。</p>
+</li>
+<li><p>如果使用到了临时表，在存储过程的最后务必将所有的临时表显式删除，<br>先 <code>truncate table</code> ，然后 <code>drop table</code> ，这样可以避免系统表的较长时间锁定。</p>
+</li>
+<li><p>尽量避免大事务操作，提高系统并发能力。</p>
+</li>
+<li><p>尽量避免向客户端返回大数据量，若数据量过大，应该考虑相应需求是否合理。</p>
+</li>
+</ol>
+<h1 id="运维角度浅谈MySQL数据库优化"><a href="#运维角度浅谈MySQL数据库优化" class="headerlink" title="运维角度浅谈MySQL数据库优化"></a>运维角度浅谈MySQL数据库优化</h1><p>一个成熟的数据库架构并不是一开始设计就具备高可用、高伸缩等特性的，它是随着用户量的增加，基础架构才逐渐完善。<br>暂且抛开前端应用不说，大致分为以下五个阶段：</p>
+<h2 id="1、数据库表设计"><a href="#1、数据库表设计" class="headerlink" title="1、数据库表设计"></a>1、数据库表设计</h2><p>项目立项后，开发部根据产品部需求开发项目，开发工程师工作其中一部分就是对表结构设计。<br>对于数据库来说，这点很重要，如果设计不当，会直接影响访问速度和用户体验。<br>影响的因素很多，比如慢查询、低效的查询语句、没有适当建立索引、数据库堵塞（死锁）等。</p>
+<h2 id="2、数据库部署"><a href="#2、数据库部署" class="headerlink" title="2、数据库部署"></a>2、数据库部署</h2><p>该运维工程师出场了，项目初期访问量不会很大，所以<strong>单台部署足以应对在1500左右的QPS（每秒查询率）</strong>。<br>考虑到高可用性，可采用<code>MySQL主从复制+Keepalived</code>做双击热备，常见集群软件有<code>Keepalived</code>、<code>Heartbeat</code>。</p>
+<h2 id="3、数据库性能优化"><a href="#3、数据库性能优化" class="headerlink" title="3、数据库性能优化"></a>3、数据库性能优化</h2><p>如果将MySQL部署到普通的X86服务器上，在不经过任何优化情况下，MySQL理论值正常可以处理2000左右QPS，经过优化后，有可能会提升到2500左右QPS，<br>否则，访问量当达到1500左右并发连接时，数据库处理性能就会变慢，而且硬件资源还很富裕，这时就该考虑软件问题了</p>
+<p>那么怎样让数据库最大化发挥性能呢？一方面可以<strong>单台运行多个MySQL实例</strong>让服务器性能发挥到最大化，<br>另一方面是对<strong>数据库进行优化</strong>，往往操作系统和数据库默认配置都比较保守，会对数据库发挥有一定限制，可对这些配置进行适当的调整，尽可能的处理更多连接数。</p>
+<h3 id="数据库配置优化"><a href="#数据库配置优化" class="headerlink" title="数据库配置优化"></a>数据库配置优化</h3><p>MySQL常用有两种存储引擎:<br>一个是<code>MyISAM</code>，<strong>不支持事务处理，读性能处理快，表级别锁</strong>。<br>另一个是<code>InnoDB</code>，<strong>支持事务处理（ACID），设计目标是为处理大容量数据发挥最大化性能，行级别锁</strong>。</p>
+<ul>
+<li>表锁：开销小，锁定粒度大，发生死锁概率高，相对并发也低。</li>
+<li>行锁：开销大，锁定粒度小，发生死锁概率低，相对并发也高。</li>
+</ul>
+<blockquote>
+<p>为什么会出现表锁和行锁呢？主要是为了保证数据的完整性，举个例子，一个用户在操作一张表，其他用户也想操作这张表，那么就要等第一个用户操作完，<br>其他用户才能操作，表锁和行锁就是这个作用。否则多个用户同时操作一张表，肯定会数据产生冲突或者异常。</p>
+</blockquote>
+<p>根据以上看来，使用<code>InnoDB</code>存储引擎是最好的选择，也是<strong>MySQL5.5以后版本中默认存储引擎</strong>。<br>每个存储引擎相关联参数比较多，以下列出主要影响数据库性能的参数。</p>
+<ul>
+<li>公共参数默认值：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#同时处理最大连接数，推荐设置最大连接数是上限连接数的80%左右  </span></span><br><span class="line">max_connections = <span class="number">151</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#查询排序时缓冲区大小，只对order by和group by起作用，可增大此值为16M</span></span><br><span class="line">sort_buffer_size = <span class="number">2</span>M</span><br><span class="line"></span><br><span class="line"><span class="comment">#打开文件数限制，如果show global status like 'open_files'查看的值等于或者大于open_files_limit值时，\</span></span><br><span class="line"><span class="comment">#程序会无法连接数据库或卡死</span></span><br><span class="line">open_file_limit = <span class="number">1024</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>MyISAM</code>参数默认值：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#索引缓存区大小，一般设置物理内存的30-40%</span></span><br><span class="line">key_buffer_size = <span class="number">16</span>M</span><br><span class="line"></span><br><span class="line"><span class="comment">#读操作缓冲区大小，推荐设置16M或32M</span></span><br><span class="line">read_buffer_size = <span class="number">128</span>K</span><br><span class="line"></span><br><span class="line"><span class="comment">#打开查询缓存功能</span></span><br><span class="line">query_cache_type = ON</span><br><span class="line"></span><br><span class="line"><span class="comment">#查询缓存限制，只有1M以下查询结果才会被缓存，以免结果数据较大把缓存池覆盖</span></span><br><span class="line">query_cache_limit = <span class="number">1</span>M</span><br><span class="line"></span><br><span class="line"><span class="comment">#查看缓冲区大小，用于缓存SELECT查询结果，下一次有同样SELECT查询将直接从缓存池返回结果，可适当成倍增加此值</span></span><br><span class="line">query_cache_size = <span class="number">16</span>M</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>InnoDB</code>参数默认值：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#索引和数据缓冲区大小，一般设置物理内存的60%-70%</span></span><br><span class="line">innodb_buffer_pool_size = <span class="number">128</span>M</span><br><span class="line"></span><br><span class="line"><span class="comment">#缓冲池实例个数，推荐设置4个或8个</span></span><br><span class="line">innodb_buffer_pool_instances = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#关键参数，</span></span><br><span class="line"><span class="comment">// 0代表大约每秒写入到日志并同步到磁盘，数据库故障会丢失1秒左右事务数据。</span></span><br><span class="line"><span class="comment">// 1为每执行一条SQL后写入到日志并同步到磁盘，I/O开销大，执行完SQL要等待日志读写，效率低。</span></span><br><span class="line"><span class="comment">// 2代表只把日志写入到系统缓存区，再每秒同步到磁盘，效率很高，如果服务器故障，才会丢失事务数据。对数据安全性要求不是很高的推荐设置2，性能高，修改后效果明显。</span></span><br><span class="line">innodb_flush_log_at_trx_commit = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#默认是共享表空间，共享表空间idbdata文件不断增大，影响一定的I/O性能。</span></span><br><span class="line"><span class="comment">#推荐开启独立表空间模式，每个表的索引和数据都存在自己独立的表空间中，可以实现单表在不同数据库中移动。</span></span><br><span class="line">innodb_file_per_table = OFF</span><br><span class="line"></span><br><span class="line"><span class="comment">#日志缓冲区大小，由于日志最长每秒钟刷新一次，所以一般不用超过16M</span></span><br><span class="line">innodb_log_buffer_size = <span class="number">8</span>M</span><br></pre></td></tr></table></figure>
+<h3 id="系统内核优化"><a href="#系统内核优化" class="headerlink" title="系统内核优化"></a>系统内核优化</h3><p>大多数MySQL都部署在linux系统上，所以操作系统的一些参数也会影响到MySQL性能，<br>以下对linux内核进行适当优化。</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#TIME_WAIT超时时间，默认是60s</span></span><br><span class="line">net.ipv4.tcp_fin_timeout = <span class="number">30</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#1表示开启复用，允许TIME_WAIT socket重新用于新的TCP连接，0表示关闭</span></span><br><span class="line">net.ipv4.tcp_tw_reuse = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#1表示开启TIME_WAIT socket快速回收，0表示关闭</span></span><br><span class="line">net.ipv4.tcp_tw_recycle = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#系统保持TIME_WAIT socket最大数量，如果超出这个数，系统将随机清除一些TIME_WAIT并打印警告信息</span></span><br><span class="line">net.ipv4.tcp_max_tw_buckets = <span class="number">4096</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#进入SYN队列最大长度，加大队列长度可容纳更多的等待连接</span></span><br><span class="line">net.ipv4.tcp_max_syn_backlog = <span class="number">4096</span></span><br></pre></td></tr></table></figure>
+<p>在linux系统中，如果进程打开的文件句柄数量超过系统默认值1024，就会提示<code>“too many files open”</code>信息，所以要调整打开文件句柄限制。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># vi /etc/security/limits.conf  #加入以下配置，*代表所有用户，也可以指定用户，重启系统生效</span></span><br><span class="line">* soft nofile <span class="number">65535</span></span><br><span class="line">* hard nofile <span class="number">65535</span></span><br><span class="line"><span class="comment"># ulimit -SHn 65535   #立刻生效</span></span><br></pre></td></tr></table></figure>
+<h3 id="硬件配置"><a href="#硬件配置" class="headerlink" title="硬件配置"></a>硬件配置</h3><p>加大物理内存，提高文件系统性能。linux内核会从内存中分配出缓存区（系统缓存和数据缓存）来存放热数据，通过文件系统延迟写入机制，<br>等满足条件时（如缓存区大小到达一定百分比或者执行sync命令）才会同步到磁盘。也就是说<strong>物理内存越大，分配缓存区越大，缓存数据越多</strong>。<br>当然，服务器故障会丢失一定的缓存数据。</p>
+<p>SSD硬盘代替SAS硬盘，将RAID级别调整为RAID1+0，相对于RAID1和RAID5有更好的读写性能（IOPS），毕竟数据库的压力主要来自磁盘I/O方面</p>
+<h2 id="4、数据库架构扩展"><a href="#4、数据库架构扩展" class="headerlink" title="4、数据库架构扩展"></a>4、数据库架构扩展</h2><p>随着业务量越来越大，单台数据库服务器性能已无法满足业务需求，该考虑加机器了，该做集群了~~~。<br>主要思想是分解单台数据库负载，突破磁盘I/O性能，热数据存放缓存中，降低磁盘I/O访问频率。</p>
+<h3 id="主从复制与读写分离"><a href="#主从复制与读写分离" class="headerlink" title="主从复制与读写分离"></a>主从复制与读写分离</h3><p>因为生产环境中，数据库大多都是读操作，所以部署一主多从架构，主数据库负责写操作，并做双击热备，多台从数据库做负载均衡，负责读操作，<br>主流的负载均衡器有<code>LVS</code>、<code>HAProxy</code>、<code>Nginx</code>。</p>
+<h3 id="增加缓存"><a href="#增加缓存" class="headerlink" title="增加缓存"></a>增加缓存</h3><p>给数据库增加缓存系统，把热数据缓存到内存中，如果缓存中有要请求的数据就不再去数据库中返回结果，提高读性能。<br>缓存实现有本地缓存和分布式缓存，本地缓存是将数据缓存到本地服务器内存中或者文件中。<br>分布式缓存可以缓存海量数据，扩展性好，主流的分布式缓存系统有<code>memcached</code>、<code>redis</code>，<br><code>memcached</code>性能稳定，数据缓存在内存中，速度很快，<strong>QPS可达8w左右</strong>。如果想数据持久化就选择用<code>redis</code>，性能不低于<code>memcached</code>。</p>
+<h3 id="分库"><a href="#分库" class="headerlink" title="分库"></a>分库</h3><p><strong>分库是根据业务不同把相关的表切分到不同的数据库中</strong>，比如web、bbs、blog等库。<br>如果业务量很大，还可将切分后的库做主从架构，进一步避免单个库压力过大。</p>
+<h3 id="分表"><a href="#分表" class="headerlink" title="分表"></a>分表</h3><p>数据量的日剧增加，数据库中某个表有几百万条数据，导致查询和插入耗时太长，怎么能解决单表压力呢？<br>你就该考虑是否把这个表拆分成多个小表，来减轻单个表的压力，提高处理效率，此方式称为分表。</p>
+<p>分表技术比较麻烦，要修改程序代码里的SQL语句，还要手动去创建其他表，也可以用merge存储引擎实现分表，相对简单许多。<br>分表后，程序是对一个总表进行操作，这个总表不存放数据，只有一些分表的关系，以及更新数据的方式，<br>总表会根据不同的查询，将压力分到不同的小表上，因此提高并发能力和磁盘I/O性能。</p>
+<p>分表分为垂直拆分和水平拆分：</p>
+<ul>
+<li><p>垂直拆分：把原来的一个很多字段的表拆分多个表，解决表的宽度问题。<br>你可以把不常用的字段单独放到一个表中，也可以把大字段独立放一个表中，或者把关联密切的字段放一个表中。</p>
+</li>
+<li><p>水平拆分：把原来一个表拆分成多个表，每个表的结构都一样，解决单表数据量大的问题。</p>
+</li>
+</ul>
+<h3 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h3><p><strong>分区就是把一张表的数据根据表结构中的字段（如range、list、hash等）分成多个区块</strong>，这些区块可以在一个磁盘上，<br>也可以在不同的磁盘上，分区后，表面上还是一张表，但数据散列在多个位置，这样一来，多块硬盘同时处理不同的请求，从而提高磁盘I/O读写性能，实现比较简单。</p>
+<h2 id="数据库维护"><a href="#数据库维护" class="headerlink" title="数据库维护"></a>数据库维护</h2><p>数据库维护是运维工程师或者DBA主要工作，包括性能监控、性能分析、性能调优、数据库备份和恢复等。</p>
+<h3 id="性能状态关键指标"><a href="#性能状态关键指标" class="headerlink" title="性能状态关键指标"></a>性能状态关键指标</h3><ul>
+<li><code>QPS, Queries Per Second</code>：每秒查询数，一台数据库每秒能够处理的查询次数</li>
+<li><code>TPS，Transactions Per Second</code>：每秒处理事务数</li>
+</ul>
+<p>通过<code>show status</code>查看运行状态，会有300多条状态信息记录，其中有几个值帮可以我们计算出QPS和TPS，如下：</p>
+<ul>
+<li><code>Uptime</code>：服务器已经运行的实际，单位秒</li>
+<li><code>Questions</code>：已经发送给数据库查询数</li>
+<li><code>Com_select</code>：查询次数，实际操作数据库的</li>
+<li><code>Com_insert</code>：插入次数</li>
+<li><code>Com_delete</code>：删除次数</li>
+<li><code>Com_update</code>：更新次数</li>
+<li><code>Com_commit</code>：事务次数</li>
+<li><code>Com_rollback</code>：回滚次数</li>
+</ul>
+<p>那么，计算方法来了，基于Questions计算出QPS：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show <span class="keyword">global</span> status like <span class="string">'Questions'</span>;</span><br><span class="line">show <span class="keyword">global</span> status like <span class="string">'Uptime'</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>QPS = Questions / Uptime</strong></p>
+<p>基于Com_commit和Com_rollback计算出TPS：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">show <span class="keyword">global</span> status like <span class="string">'Com_commit'</span>;</span><br><span class="line">show <span class="keyword">global</span> status like <span class="string">'Com_rollback'</span>;</span><br><span class="line">show <span class="keyword">global</span> status like <span class="string">'Uptime'</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>TPS = (Com_commit + Com_rollback) / Uptime</strong></p>
+<p>另一计算方式：基于Com_select、Com_insert、Com_delete、Com_update计算出QPS</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show <span class="keyword">global</span> status where Variable_name in(<span class="string">'com_select'</span>,<span class="string">'com_insert'</span>,<span class="string">'com_delete'</span>,<span class="string">'com_update'</span>);</span><br></pre></td></tr></table></figure>
+<p>等待1秒再执行，获取间隔差值，第二次每个变量值减去第一次对应的变量值，就是QPS</p>
+<p>TPS计算方法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show <span class="keyword">global</span> status where Variable_name in(<span class="string">'com_insert'</span>,<span class="string">'com_delete'</span>,<span class="string">'com_update'</span>);</span><br></pre></td></tr></table></figure>
+<p>计算TPS，就不算查询操作了，计算出插入、删除、更新四个值即可。</p>
+<blockquote>
+<p>经网友对这两个计算方式的测试得出，当数据库中<code>myisam</code>表比较多时，使用<code>Questions</code>计算比较准确。当数据库中<code>innodb</code>表比较多时，则以<code>Com_*</code>计算比较准确。</p>
+</blockquote>
+<h3 id="开启慢查询日志"><a href="#开启慢查询日志" class="headerlink" title="开启慢查询日志"></a>开启慢查询日志</h3><p>MySQL开启慢查询日志，分析出哪条SQL语句比较慢，使用set设置变量，重启服务失效，可以在my.cnf添加参数永久生效。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启慢查询功能</span></span><br><span class="line">mysql&gt; set <span class="keyword">global</span> slow-query-log=on</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定慢查询日志文件位置</span></span><br><span class="line">mysql&gt; set <span class="keyword">global</span> slow_query_log_file=<span class="string">'/var/log/mysql/mysql-slow.log'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 记录没有使用索引的查询</span></span><br><span class="line">mysql&gt; set <span class="keyword">global</span> log_queries_not_using_indexes=on;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 只记录处理时间1s以上的慢查询</span></span><br><span class="line">mysql&gt; set <span class="keyword">global</span> long_query_time=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>分析慢查询日志，可以使用MySQL自带的<code>mysqldumpslow</code>工具，分析的日志较为简单。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldumpslow -t <span class="number">3</span> /<span class="keyword">var</span>/log/mysql/mysql-slow.log    <span class="comment">#查看最慢的前三个查询</span></span><br></pre></td></tr></table></figure>
+<h3 id="数据库备份"><a href="#数据库备份" class="headerlink" title="数据库备份"></a>数据库备份</h3><p>备份数据库是最基本的工作，也是最重要的，否则后果很严重，你懂得！但由于数据库比较大，上百G，往往备份都很耗费时间，所以就该选择一个效率高的备份策略，<br>对于数据量大的数据库，一般都采用<strong>增量备份</strong>。<br>常用的备份工具有<code>mysqldump</code>、<code>mysqlhotcopy</code>、<code>xtrabackup</code>等，<br><code>mysqldump</code>比较适用于小的数据库，因为是逻辑备份，所以备份和恢复耗时都比较长。<br><code>mysqlhotcopy</code>和<code>xtrabackup</code>是物理备份，备份和恢复速度快，不影响数据库服务情况下进行热拷贝，<br><strong>建议使用<code>xtrabackup</code>，支持增量备份</strong>。</p>
+<h3 id="数据库修复"><a href="#数据库修复" class="headerlink" title="数据库修复"></a>数据库修复</h3><p>有时候MySQL服务器突然断电、异常关闭，会导致表损坏，无法读取表数据。<br>这时就可以用到MySQL自带的两个工具进行修复，<code>myisamchk</code>和<code>mysqlcheck</code>。</p>
+<h3 id="另外，查看CPU和I-O性能方法"><a href="#另外，查看CPU和I-O性能方法" class="headerlink" title="另外，查看CPU和I/O性能方法"></a>另外，查看CPU和I/O性能方法</h3><ul>
+<li>查看CPU性能</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vmstat <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>参数-P是显示CPU数，ALL为所有，也可以只显示第几颗CPU</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mpstat -P ALL <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看I/O性能</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iostat -m -x <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p><strong>说明</strong>: 参数<code>-m</code>是以<code>M</code>单位显示，默认<code>K</code></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://blog.csdn.net/baidu_37107022/article/details/77460464" target="_blank" rel="noopener">MySQL/Oracle数据库优化总结（非常全面）</a></li>
+<li><a href="http://blog.51cto.com/lizhenliang/1290431" target="_blank" rel="noopener">Mysql主从复制</a></li>
+<li><a href="https://www.jianshu.com/p/dac715a88b44" target="_blank" rel="noopener">MySQL数据库优化的八种方式(经典必看)</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/10/20/MySQL-SQL-OPT/" target="_blank" title="MySQL SQL优化">http://blog.caoxl.com/2018/10/20/MySQL-SQL-OPT/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SQL/">SQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/10/20/Memcache-And-Redis-Diff/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Redis与Memcached的区别?
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/10/20/MySQL-Index-OPT/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">MySQL 索引优化</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库SQL优化大总结之-百万级数据库优化方案"><span class="nav-number">1.</span> <span class="nav-text">数据库SQL优化大总结之 百万级数据库优化方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运维角度浅谈MySQL数据库优化"><span class="nav-number">2.</span> <span class="nav-text">运维角度浅谈MySQL数据库优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、数据库表设计"><span class="nav-number">2.1.</span> <span class="nav-text">1、数据库表设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、数据库部署"><span class="nav-number">2.2.</span> <span class="nav-text">2、数据库部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、数据库性能优化"><span class="nav-number">2.3.</span> <span class="nav-text">3、数据库性能优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库配置优化"><span class="nav-number">2.3.1.</span> <span class="nav-text">数据库配置优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#系统内核优化"><span class="nav-number">2.3.2.</span> <span class="nav-text">系统内核优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#硬件配置"><span class="nav-number">2.3.3.</span> <span class="nav-text">硬件配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、数据库架构扩展"><span class="nav-number">2.4.</span> <span class="nav-text">4、数据库架构扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#主从复制与读写分离"><span class="nav-number">2.4.1.</span> <span class="nav-text">主从复制与读写分离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#增加缓存"><span class="nav-number">2.4.2.</span> <span class="nav-text">增加缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分库"><span class="nav-number">2.4.3.</span> <span class="nav-text">分库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分表"><span class="nav-number">2.4.4.</span> <span class="nav-text">分表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分区"><span class="nav-number">2.4.5.</span> <span class="nav-text">分区</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库维护"><span class="nav-number">2.5.</span> <span class="nav-text">数据库维护</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#性能状态关键指标"><span class="nav-number">2.5.1.</span> <span class="nav-text">性能状态关键指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开启慢查询日志"><span class="nav-number">2.5.2.</span> <span class="nav-text">开启慢查询日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库备份"><span class="nav-number">2.5.3.</span> <span class="nav-text">数据库备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库修复"><span class="nav-number">2.5.4.</span> <span class="nav-text">数据库修复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#另外，查看CPU和I-O性能方法"><span class="nav-number">2.5.5.</span> <span class="nav-text">另外，查看CPU和I/O性能方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>基于lumen-支付宝支付(payment) | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Lumen支付支付宝">
+  
+  
+  
+  
+  <meta name="description" content="基于Lumen-支付宝支付, 这里使用的是Payment第三方sdk by helei112g/payment">
+<meta name="keywords" content="Lumen,支付,支付宝">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Lumen-支付宝支付(Payment)">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/07/Lumen-Alipay/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="基于Lumen-支付宝支付, 这里使用的是Payment第三方sdk by helei112g/payment">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:19:34.778Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于Lumen-支付宝支付(Payment)">
+<meta name="twitter:description" content="基于Lumen-支付宝支付, 这里使用的是Payment第三方sdk by helei112g/payment">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Lumen-Alipay" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      基于Lumen-支付宝支付(Payment)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/07/Lumen-Alipay/" class="article-date">
+	  <time datetime="2018-08-07T02:12:31.000Z" itemprop="datePublished">2018-08-07</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>基于Lumen-支付宝支付, 这里使用的是<a href="https://github.com/helei112g/payment" target="_blank" rel="noopener">Payment</a>第三方sdk by <u><a href="https://github.com/helei112g/payment" target="_blank" rel="noopener">helei112g/payment</a></u></p>
+</blockquote>
+<a id="more"></a>
+<blockquote>
+<p><strong>Payment是php版本的支付聚合第三方sdk</strong>，集成了微信支付、支付宝支付、招商一网通支付。提供统一的调用接口，方便快速接入各种支付、查询、退款、转账能力。服务端接入支付功能，方便、快捷。</p>
+<blockquote>
+<p><u><a href="https://helei112g1.gitbooks.io/payment-sdk/content/" target="_blank" rel="noopener">Payment使用文档</a></u><br><u><a href="https://helei112g1.gitbooks.io/payment-sdk/content/faq.html" target="_blank" rel="noopener">Payment使用常见问题汇总</a></u></p>
+</blockquote>
+</blockquote>
+<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ul>
+<li><code>Payment</code> 需要 <code>PHP &gt;= 5.6</code>以上的版本，并且同时需要PHP安装以下扩展<ul>
+<li><code>cURL extension</code></li>
+<li><code>mbstring</code></li>
+<li><code>BC Math</code></li>
+<li><code>Guzzle</code><blockquote>
+<p>guzzle 是一个开源的php http请求lib, <a href="https://github.com/guzzle/guzzle" target="_blank" rel="noopener">项目地址</a></p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="安装Payment"><a href="#安装Payment" class="headerlink" title="安装Payment"></a>安装<code>Payment</code></h2><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">composer</span> <span class="meta">require</span> <span class="string">"riverslei/payment:*"</span></span><br></pre></td></tr></table></figure>
+<h2 id="先看几个Payment-Demo"><a href="#先看几个Payment-Demo" class="headerlink" title="先看几个Payment Demo"></a>先看几个<code>Payment Demo</code></h2><h3 id="手机app支付demo"><a href="#手机app支付demo" class="headerlink" title="手机app支付demo"></a>手机<code>app</code>支付<code>demo</code></h3><ul>
+<li><code>vendor/riverslei/example/ali/appCharge.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/../../autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Payment</span>\<span class="title">Common</span>\<span class="title">PayException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Payment</span>\<span class="title">Client</span>\<span class="title">Charge</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Payment</span>\<span class="title">Config</span>;</span><br><span class="line"></span><br><span class="line">date_default_timezone_set(<span class="string">'Asia/Shanghai'</span>);</span><br><span class="line">$aliConfig = <span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/../aliconfig.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 订单信息</span></span><br><span class="line">$orderNo = time() . rand(<span class="number">1000</span>, <span class="number">9999</span>);</span><br><span class="line">$payData = [</span><br><span class="line">    <span class="string">'body'</span>    =&gt; <span class="string">'ali qr pay'</span>,</span><br><span class="line">    <span class="string">'subject'</span>    =&gt; <span class="string">'测试支付宝扫码支付'</span>,</span><br><span class="line">    <span class="string">'order_no'</span>    =&gt; $orderNo,</span><br><span class="line">    <span class="string">'timeout_express'</span> =&gt; time() + <span class="number">600</span>,<span class="comment">// 表示必须 600s 内付款</span></span><br><span class="line">    <span class="string">'amount'</span>    =&gt; <span class="string">'0.01'</span>,<span class="comment">// 单位为元 ,最小为0.01</span></span><br><span class="line">    <span class="string">'return_param'</span> =&gt; <span class="string">'123123'</span>,</span><br><span class="line">    <span class="string">'client_ip'</span> =&gt; <span class="keyword">isset</span>($_SERVER[<span class="string">'REMOTE_ADDR'</span>]) ? $_SERVER[<span class="string">'REMOTE_ADDR'</span>] : <span class="string">'127.0.0.1'</span>,<span class="comment">// 客户地址</span></span><br><span class="line">    <span class="string">'goods_type'</span> =&gt; <span class="string">'1'</span>,</span><br><span class="line">    <span class="string">'store_id'</span> =&gt; <span class="string">''</span>,</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    $str = Charge::run(Config::ALI_CHANNEL_APP, $aliConfig, $payData);</span><br><span class="line">&#125; <span class="keyword">catch</span> (PayException $e) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $e-&gt;errorMessage();</span><br><span class="line">    <span class="keyword">exit</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $str;<span class="comment">// 这里如果直接输出到页面，&amp;not 会被转义，请注意</span></span><br></pre></td></tr></table></figure>
+<h3 id="wap网站支付"><a href="#wap网站支付" class="headerlink" title="wap网站支付"></a><code>wap</code>网站支付</h3><ul>
+<li><code>vendor/riverslei/example/ali/wapCharge.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/../../autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Payment</span>\<span class="title">Common</span>\<span class="title">PayException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Payment</span>\<span class="title">Client</span>\<span class="title">Charge</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Payment</span>\<span class="title">Config</span>;</span><br><span class="line"></span><br><span class="line">date_default_timezone_set(<span class="string">'Asia/Shanghai'</span>);</span><br><span class="line">$aliConfig = <span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/../aliconfig.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 订单信息</span></span><br><span class="line">$orderNo = time() . rand(<span class="number">1000</span>, <span class="number">9999</span>);</span><br><span class="line">$payData = [</span><br><span class="line">    <span class="string">'body'</span>    =&gt; <span class="string">'ali wap pay'</span>,</span><br><span class="line">    <span class="string">'subject'</span>    =&gt; <span class="string">'测试支付宝手机网站支付'</span>,</span><br><span class="line">    <span class="string">'order_no'</span>    =&gt; $orderNo,</span><br><span class="line">    <span class="string">'timeout_express'</span> =&gt; time() + <span class="number">600</span>,<span class="comment">// 表示必须 600s 内付款</span></span><br><span class="line">    <span class="string">'amount'</span>    =&gt; <span class="string">'0.01'</span>,<span class="comment">// 单位为元 ,最小为0.01</span></span><br><span class="line">    <span class="string">'return_param'</span> =&gt; <span class="string">'tata'</span>,<span class="comment">// 一定不要传入汉字，只能是 字母 数字组合</span></span><br><span class="line">    <span class="string">'client_ip'</span> =&gt; <span class="keyword">isset</span>($_SERVER[<span class="string">'REMOTE_ADDR'</span>]) ? $_SERVER[<span class="string">'REMOTE_ADDR'</span>] : <span class="string">'127.0.0.1'</span>,<span class="comment">// 客户地址</span></span><br><span class="line">    <span class="string">'goods_type'</span> =&gt; <span class="string">'1'</span>,</span><br><span class="line">    <span class="string">'store_id'</span> =&gt; <span class="string">''</span>,</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    $url = Charge::run(Config::ALI_CHANNEL_WAP, $aliConfig, $payData);</span><br><span class="line">&#125; <span class="keyword">catch</span> (PayException $e) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $e-&gt;errorMessage();</span><br><span class="line">    <span class="keyword">exit</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">header(<span class="string">'Location:'</span> . $url);</span><br></pre></td></tr></table></figure>
+<h3 id="web电脑支付-即时到账接口"><a href="#web电脑支付-即时到账接口" class="headerlink" title="web电脑支付 即时到账接口"></a><code>web</code>电脑支付 即时到账接口</h3><ul>
+<li><code>vendor/riverslei/example/ali/webCharge.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/../../autoload.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Payment</span>\<span class="title">Common</span>\<span class="title">PayException</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Payment</span>\<span class="title">Client</span>\<span class="title">Charge</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Payment</span>\<span class="title">Config</span>;</span><br><span class="line"></span><br><span class="line">date_default_timezone_set(<span class="string">'Asia/Shanghai'</span>);</span><br><span class="line">$aliConfig = <span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/../aliconfig.php'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 订单信息</span></span><br><span class="line">$orderNo = time() . rand(<span class="number">1000</span>, <span class="number">9999</span>);</span><br><span class="line">$payData = [</span><br><span class="line">    <span class="string">'body'</span>    =&gt; <span class="string">'ali web pay'</span>,</span><br><span class="line">    <span class="string">'subject'</span>    =&gt; <span class="string">'测试支付宝电脑网站支付'</span>,</span><br><span class="line">    <span class="string">'order_no'</span>    =&gt; $orderNo,</span><br><span class="line">    <span class="string">'timeout_express'</span> =&gt; time() + <span class="number">600</span>,<span class="comment">// 表示必须 600s 内付款</span></span><br><span class="line">    <span class="string">'amount'</span>    =&gt; <span class="string">'0.01'</span>,<span class="comment">// 单位为元 ,最小为0.01</span></span><br><span class="line">    <span class="string">'return_param'</span> =&gt; <span class="string">'123123'</span>,</span><br><span class="line">    <span class="string">'client_ip'</span> =&gt; <span class="keyword">isset</span>($_SERVER[<span class="string">'REMOTE_ADDR'</span>]) ? $_SERVER[<span class="string">'REMOTE_ADDR'</span>] : <span class="string">'127.0.0.1'</span>,<span class="comment">// 客户地址</span></span><br><span class="line">    <span class="string">'goods_type'</span> =&gt; <span class="string">'1'</span>,</span><br><span class="line">    <span class="string">'store_id'</span> =&gt; <span class="string">''</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 说明地址：https://doc.open.alipay.com/doc2/detail.htm?treeId=270&amp;articleId=105901&amp;docType=1</span></span><br><span class="line">    <span class="comment">// 建议什么也不填</span></span><br><span class="line">    <span class="string">'qr_mod'</span> =&gt; <span class="string">''</span>,</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    $url = Charge::run(Config::ALI_CHANNEL_WEB, $aliConfig, $payData);</span><br><span class="line">&#125; <span class="keyword">catch</span> (PayException $e) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $e-&gt;errorMessage();</span><br><span class="line">    <span class="keyword">exit</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">header(<span class="string">'Location:'</span> . $url);</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/07/Lumen-Alipay/" target="_blank" title="基于Lumen-支付宝支付(Payment)">http://blog.caoxl.com/2018/08/07/Lumen-Alipay/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lumen/">Lumen</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/支付/">支付</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/支付宝/">支付宝</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/07/Lumen-Custom-Log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          基于Lumen-重写日志方法
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/03/Composer-packages/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Composer 开发自己的组件</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#环境准备"><span class="nav-number">1.</span> <span class="nav-text">环境准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Payment"><span class="nav-number">1.1.</span> <span class="nav-text">安装Payment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#先看几个Payment-Demo"><span class="nav-number">1.2.</span> <span class="nav-text">先看几个Payment Demo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#手机app支付demo"><span class="nav-number">1.2.1.</span> <span class="nav-text">手机app支付demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wap网站支付"><span class="nav-number">1.2.2.</span> <span class="nav-text">wap网站支付</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web电脑支付-即时到账接口"><span class="nav-number">1.2.3.</span> <span class="nav-text">web电脑支付 即时到账接口</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

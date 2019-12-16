@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>curl 「使用笔记」 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LinuxcURLInternet">
+  
+  
+  
+  
+  <meta name="description" content="curl是利用URL语法在命令行方式下工作的开源文件传输工具。它被广泛应用在Unix、多种Linux发行版中，并且有DOS和Win32、Win64下的移植版本。">
+<meta name="keywords" content="Linux,cURL,Internet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cURL 「使用笔记」">
+<meta property="og:url" content="http://blog.caoxl.com/2018/02/02/cURL-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="curl是利用URL语法在命令行方式下工作的开源文件传输工具。它被广泛应用在Unix、多种Linux发行版中，并且有DOS和Win32、Win64下的移植版本。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:47:26.431Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cURL 「使用笔记」">
+<meta name="twitter:description" content="curl是利用URL语法在命令行方式下工作的开源文件传输工具。它被广泛应用在Unix、多种Linux发行版中，并且有DOS和Win32、Win64下的移植版本。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-cURL-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      cURL 「使用笔记」
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/02/02/cURL-Notes/" class="article-date">
+	  <time datetime="2018-02-02T09:23:57.000Z" itemprop="datePublished">2018-02-02</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>curl是利用URL语法在命令行方式下工作的开源文件传输工具。它被广泛应用在Unix、多种Linux发行版中，并且有DOS和Win32、Win64下的移植版本。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="cURL-常用命令"><a href="#cURL-常用命令" class="headerlink" title="cURL 常用命令"></a>cURL 常用命令</h1><h2 id="Download-a-Single-File"><a href="#Download-a-Single-File" class="headerlink" title="Download a Single File"></a>Download a Single File</h2><p><strong>下载单个文件</strong>，默认将输出打印到标准输出中(STDOUT)中</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl http:<span class="comment">//www.centos.org</span></span><br><span class="line"></span><br><span class="line"># 同样可以使用转向字符<span class="string">"&gt;"</span>对输出进行转向输出</span><br><span class="line">curl http:<span class="comment">//www.centos.org &gt; centos-org.html</span></span><br></pre></td></tr></table></figure>
+<h2 id="Save-the-cURL-Output-to-a-file"><a href="#Save-the-cURL-Output-to-a-file" class="headerlink" title="Save the cURL Output to a file"></a>Save the cURL Output to a file</h2><p>通过<code>-o</code>/<code>-O</code>选项<strong>保存下载的文件到指定的文件中</strong>：</p>
+<ul>
+<li><code>-o</code>：将文件保存为命令行中指定的文件名的文件中</li>
+<li><code>-O</code>：使用URL中默认的文件名保存文件到本地</li>
+</ul>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将文件下载到本地并命名为mygettext.html</span></span><br><span class="line">curl -o mygettext.html http:<span class="regexp">//</span>www.gnu.org<span class="regexp">/software/g</span>ettext<span class="regexp">/manual/g</span>ettext.html</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将文件保存到本地并命名为gettext.html</span></span><br><span class="line">curl -O http:<span class="regexp">//</span>www.gnu.org<span class="regexp">/software/g</span>ettext<span class="regexp">/manual/g</span>ettext.html</span><br></pre></td></tr></table></figure>
+<h2 id="Fetch-Multiple-Files-at-a-time"><a href="#Fetch-Multiple-Files-at-a-time" class="headerlink" title="Fetch Multiple Files at a time"></a>Fetch Multiple Files at a time</h2><p><strong>同时获取多个文件</strong></p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -O URL1 -O URL2</span><br><span class="line"></span><br><span class="line">curl -O http:<span class="regexp">//</span>www.gnu.org<span class="regexp">/software/g</span>ettext<span class="regexp">/manual/</span>html_node<span class="regexp">/index.html -O http:/</span><span class="regexp">/www.gnu.org/</span>software<span class="regexp">/gettext/m</span>anual<span class="regexp">/gettext.html</span></span><br></pre></td></tr></table></figure>
+<h2 id="Follow-HTTP-Location-Headers-with-L-option"><a href="#Follow-HTTP-Location-Headers-with-L-option" class="headerlink" title="Follow HTTP Location Headers with -L option"></a>Follow HTTP Location Headers with -L option</h2><p> 默认情况下CURL不会发送 <code>HTTP Location headers</code>(重定向).当一个被请求页面移动到另一个站点时，会发送一个 <code>HTTP Loaction header</code> 作为请求，然后将请求重定向到新的地址上。</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">curl http:<span class="comment">//www.google.com</span></span><br><span class="line"></span><br><span class="line"><span class="params">&lt;TITLE&gt;</span><span class="number">302</span> Moved<span class="params">&lt;/TITLE&gt;</span></span><br><span class="line"><span class="params">&lt;H1&gt;</span><span class="number">302</span> Moved<span class="params">&lt;/H1&gt;</span></span><br><span class="line">The document has moved</span><br><span class="line"><span class="params">&lt;A HREF="http://www.google.co.in/"&gt;</span>here<span class="params">&lt;/A&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 通过-L选项进行重定向</span></span><br><span class="line">curl -L http:<span class="comment">//www.google.com</span></span><br></pre></td></tr></table></figure>
+<h2 id="Continue-Resume-a-Previous-Download"><a href="#Continue-Resume-a-Previous-Download" class="headerlink" title="Continue/Resume a Previous Download"></a>Continue/Resume a Previous Download</h2><p><strong>断点续传</strong></p>
+<p>通过使用-C选项可对大文件使用断点续传功能，如：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 当文件在下载完成之前结束该进程</span><br><span class="line">curl -O http:<span class="comment">//www.gnu.org/software/gettext/manual/gettext.html</span></span><br><span class="line">##############             <span class="number">20.1</span>%</span><br><span class="line"></span><br><span class="line"># 通过添加-C选项继续对该文件进行下载，已经下载过的文件不会被重新下载</span><br><span class="line">curl -C - -O http:<span class="comment">//www.gnu.org/software/gettext/manual/gettext.html</span></span><br><span class="line">###############            <span class="number">21.1</span>%</span><br></pre></td></tr></table></figure>
+<h2 id="Limit-the-Rate-of-Data-Transfer"><a href="#Limit-the-Rate-of-Data-Transfer" class="headerlink" title="Limit the Rate of Data Transfer"></a>Limit the Rate of Data Transfer</h2><p><strong>对CURL使用网络限速</strong></p>
+<p>通过–limit-rate选项对CURL的最大网络使用进行限制</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载速度最大不会超过1000B/second</span></span><br><span class="line"></span><br><span class="line">curl --limit-rate <span class="number">1000</span>B -O http:<span class="regexp">//</span>www.gnu.org<span class="regexp">/software/g</span>ettext<span class="regexp">/manual/g</span>ettext.html</span><br></pre></td></tr></table></figure>
+<h2 id="Download-a-file-only-if-it-is-modified-before-after-the-given-time"><a href="#Download-a-file-only-if-it-is-modified-before-after-the-given-time" class="headerlink" title="Download a file only if it is modified before/after the given time"></a>Download a file only if it is modified before/after the given time</h2><p><strong>下载指定时间内修改过的文件</strong></p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -z <span class="number">31</span>-Dec<span class="number">-18</span> http:<span class="comment">//www.example.com/yy.html</span></span><br><span class="line"></span><br><span class="line">curl -z <span class="number">-31</span>-Dec<span class="number">-18</span> http:<span class="comment">//www.example.com/yy.html</span></span><br></pre></td></tr></table></figure>
+<h2 id="Pass-HTTP-Authentication-in-cURL"><a href="#Pass-HTTP-Authentication-in-cURL" class="headerlink" title="Pass HTTP Authentication in cURL"></a>Pass HTTP Authentication in cURL</h2><p><strong>CURL授权</strong></p>
+<p>在访问需要授权的页面时，可通过-u选项提供用户名和密码进行授权</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -u username:password <span class="built_in">URL</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#  通常的做法是在命令行只输入用户名，之后会提示输入密码，这样可以保证在查看历史记录时不会将密码泄露</span></span><br><span class="line">curl -u username <span class="built_in">URL</span></span><br></pre></td></tr></table></figure>
+<h2 id="Download-Files-from-FTP-server"><a href="#Download-Files-from-FTP-server" class="headerlink" title="Download Files from FTP server"></a>Download Files from FTP server</h2><p><strong>从FTP服务器下载文件</strong></p>
+<p>CURL同样支持FTP下载，若在url中指定的是某个文件路径而非具体的某个要下载的文件名，CURL则会列出该目录下的所有文件名而并非下载该目录下的所有文件</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 列出public_html下的所有文件夹和文件</span></span><br><span class="line">curl -u ftpuser:ftppass -O ftp:<span class="regexp">//</span>ftp_server<span class="regexp">/public_html/</span></span><br><span class="line">   </span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载xss.php文件</span></span><br><span class="line"> curl -u ftpuser:ftppass -O ftp:<span class="regexp">//</span>ftp_server<span class="regexp">/public_html/</span>xss.php</span><br></pre></td></tr></table></figure>
+<h2 id="List-Download-using-Ranges"><a href="#List-Download-using-Ranges" class="headerlink" title="List/Download using Ranges"></a>List/Download using Ranges</h2><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl   <span class="link">ftp://ftp.uk.debian.org/debian/pool/main/</span>[<span class="string">a-z</span>]/</span><br></pre></td></tr></table></figure>
+<h2 id="Upload-Files-to-FTP-Server"><a href="#Upload-Files-to-FTP-Server" class="headerlink" title="Upload Files to FTP Server"></a>Upload Files to FTP Server</h2><p><strong>上传文件到FTP服务器</strong></p>
+<p>通过 -T 选项可将指定的本地文件上传到FTP服务器上</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将myfile.txt文件上传到服务器</span></span><br><span class="line">curl -u ftpuser:ftppass -T myfile.txt <span class="keyword">ftp</span>://<span class="keyword">ftp</span>.testserver.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 同时上传多个文件</span></span><br><span class="line">curl -u ftpuser:ftppass -T <span class="string">"&#123;file1,file2&#125;"</span> <span class="keyword">ftp</span>://<span class="keyword">ftp</span>.testserver.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从标准输入获取内容保存到服务器指定的文件中</span></span><br><span class="line">curl -u ftpuser:ftppass -T - <span class="keyword">ftp</span>://<span class="keyword">ftp</span>.testserver.com/myfile_1.txt</span><br></pre></td></tr></table></figure>
+<h2 id="More-Information-using-Verbose-and-Trace-Option"><a href="#More-Information-using-Verbose-and-Trace-Option" class="headerlink" title="More Information using Verbose and Trace Option"></a>More Information using Verbose and Trace Option</h2><p><strong>获取更多信息</strong></p>
+<p>通过使用 -v 和 -trace获取更多的链接信息</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v <span class="string">http:</span><span class="comment">//google.co.in</span></span><br></pre></td></tr></table></figure>
+<h2 id="Get-Definition-of-a-Word-using-DICT-Protocol"><a href="#Get-Definition-of-a-Word-using-DICT-Protocol" class="headerlink" title="Get Definition of a Word using DICT Protocol"></a>Get Definition of a Word using DICT Protocol</h2><p><strong>通过字典查询单词</strong></p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询bash单词的含义</span></span><br><span class="line">curl <span class="symbol">dict:</span>/<span class="regexp">/dict.org/d</span><span class="symbol">:bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出所有可用词典</span></span><br><span class="line">curl <span class="symbol">dict:</span>/<span class="regexp">/dict.org/show</span><span class="symbol">:db</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 在foldoc词典中查询bash单词的含义</span></span><br><span class="line">curl <span class="symbol">dict:</span>/<span class="regexp">/dict.org/d</span><span class="symbol">:bash</span><span class="symbol">:foldoc</span></span><br></pre></td></tr></table></figure>
+<h2 id="Use-Proxy-to-Download-a-File"><a href="#Use-Proxy-to-Download-a-File" class="headerlink" title="Use Proxy to Download a File"></a>Use Proxy to Download a File</h2><p><strong>为CURL设置代理</strong></p>
+<p>-x 选项可以为CURL添加代理功能</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -x proxysever.test.<span class="string">com:</span><span class="number">3128</span> <span class="string">http:</span><span class="comment">//google.co.in</span></span><br></pre></td></tr></table></figure>
+<h2 id="Send-Mail-using-SMTP-Protocol"><a href="#Send-Mail-using-SMTP-Protocol" class="headerlink" title="Send Mail using SMTP Protocol"></a>Send Mail using SMTP Protocol</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --mail-<span class="keyword">from</span> <span class="symbol">blah@</span>test.com --mail-rcpt <span class="symbol">foo@</span>test.com smtp:<span class="comment">//mailserver.com</span></span><br></pre></td></tr></table></figure>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><h2 id="保存-使用网站cookie信息"><a href="#保存-使用网站cookie信息" class="headerlink" title="保存/使用网站cookie信息"></a>保存/使用网站cookie信息</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将网站的cookies信息保存到sugarcookies文件中</span></span><br><span class="line">curl -D sugarcookies http:<span class="regexp">//</span>localhost<span class="regexp">/sugarcrm/i</span>ndex.php</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用上次保存的cookie信息</span></span><br><span class="line">curl -b sugarcookies http:<span class="regexp">//</span>localhost<span class="regexp">/sugarcrm/i</span>ndex.php</span><br></pre></td></tr></table></figure>
+<h2 id="传递请求数据"><a href="#传递请求数据" class="headerlink" title="传递请求数据"></a>传递请求数据</h2><p>默认curl使用<code>GET</code>方式请求数据，这种方式下直接通过URL传递数据</p>
+<p>可以通过 <code>--data/-d</code> 方式指定使用<code>POST</code>方式传递数据</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># GET</span></span><br><span class="line">curl -u username https:<span class="comment">//api.github.com/user?access_token=XXXXXXXXXX</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># POST</span></span><br><span class="line">curl -u username --data <span class="string">"param1=value1&amp;param2=value"</span> https:<span class="comment">//api.github.com</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 也可以指定一个文件，将该文件中的内容当作数据传递给服务器端</span></span><br><span class="line">curl --data @filename https:<span class="comment">//github.api.com/authorizations</span></span><br></pre></td></tr></table></figure>
+<p><strong>注</strong>：默认情况下，通过POST方式传递过去的数据中若有特殊字符，首先需要将特殊字符转义在传递给服务器端，如value值中包含有空格，则需要先将空格转换成%20，如：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -d <span class="string">"value%201"</span> <span class="string">http:</span><span class="comment">//hostname.com</span></span><br></pre></td></tr></table></figure>
+<p>在新版本的CURL中，提供了新的选项 <code>--data-urlencode</code>，通过该选项提供的参数会自动转义特殊字符。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --data-urlencode <span class="string">"value 1"</span> <span class="string">http:</span><span class="comment">//hostname.com</span></span><br></pre></td></tr></table></figure>
+<p>除了使用<code>GET</code>和<code>POST</code>协议外，还可以通过 <code>-X</code> 选项指定其它协议，如：</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -I -X <span class="keyword">DELETE</span> https:<span class="comment">//api.github.cim</span></span><br></pre></td></tr></table></figure>
+<p>上传文件</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --form <span class="string">"fileupload=@filename.txt"</span> <span class="string">http:</span><span class="comment">//hostname/resource</span></span><br></pre></td></tr></table></figure>
+<h1 id="curl网站开发指南"><a href="#curl网站开发指南" class="headerlink" title="curl网站开发指南"></a>curl网站开发指南</h1><h2 id="一、查看网页源码"><a href="#一、查看网页源码" class="headerlink" title="一、查看网页源码"></a>一、查看网页源码</h2><p>直接在curl命令后加上网址，就可以看到网页源码。我们以网址<a href="http://www.sina.com为例（选择该网址，主要因为它的网页代码较短）：" target="_blank" rel="noopener">www.sina.com为例（选择该网址，主要因为它的网页代码较短）：</a></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">curl</span> <span class="selector-tag">www</span><span class="selector-class">.sina</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<p>如果要把这个网页保存下来，可以使用<code>-o</code>参数，这就相当于使用wget命令了。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">curl</span> <span class="selector-tag">-o</span> <span class="selector-attr">[文件名]</span> <span class="selector-tag">www</span><span class="selector-class">.sina</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<h2 id="二、自动跳转"><a href="#二、自动跳转" class="headerlink" title="二、自动跳转"></a>二、自动跳转</h2><p>有的网址是自动跳转的。使用<code>-L</code>参数，curl就会跳转到新的网址。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">curl</span> <span class="selector-tag">-L</span> <span class="selector-tag">www</span><span class="selector-class">.sina</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<p>键入上面的命令，结果就自动跳转为<a href="http://www.sina.com.cn。" target="_blank" rel="noopener">www.sina.com.cn。</a></p>
+<h2 id="三、显示头信息"><a href="#三、显示头信息" class="headerlink" title="三、显示头信息"></a>三、显示头信息</h2><p><code>-i</code>参数可以显示http response的头信息，连同网页代码一起。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">curl</span> <span class="selector-tag">-i</span> <span class="selector-tag">www</span><span class="selector-class">.sina</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<p><code>-I</code>参数则是只显示http response的头信息。</p>
+<h2 id="四、显示通信过程"><a href="#四、显示通信过程" class="headerlink" title="四、显示通信过程"></a>四、显示通信过程</h2><p><code>-v</code>参数可以显示一次http通信的整个过程，包括端口连接和http request头信息。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">curl</span> <span class="selector-tag">-v</span> <span class="selector-tag">www</span><span class="selector-class">.sina</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<p>如果你觉得上面的信息还不够，那么下面的命令可以查看更详细的通信过程。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">curl</span> <span class="selector-tag">--trace</span> <span class="selector-tag">output</span><span class="selector-class">.txt</span> <span class="selector-tag">www</span><span class="selector-class">.sina</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">curl</span> <span class="selector-tag">--trace-ascii</span> <span class="selector-tag">output</span><span class="selector-class">.txt</span> <span class="selector-tag">www</span><span class="selector-class">.sina</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<p>运行后，请打开output.txt文件查看。</p>
+<h2 id="五、发送表单信息"><a href="#五、发送表单信息" class="headerlink" title="五、发送表单信息"></a>五、发送表单信息</h2><p>发送表单信息有<code>GET</code>和<code>POST</code>两种方法。GET方法相对简单，只要把数据附在网址后面就行。</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl example.com/<span class="keyword">form</span>.cgi?<span class="keyword">data</span>=xxx</span><br></pre></td></tr></table></figure>
+<p>POST方法必须把数据和网址分开，curl就要用到<code>--data</code>参数。</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X <span class="keyword">POST</span> --data <span class="string">"data=xxx"</span> example.com/<span class="keyword">form</span>.cgi</span><br></pre></td></tr></table></figure>
+<p>如果你的数据没有经过表单编码，还可以让curl为你编码，参数是<code>--data-urlencode</code>。</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X <span class="keyword">POST</span>--data-urlencode <span class="string">"date=April 1"</span> example.com/<span class="keyword">form</span>.cgi</span><br></pre></td></tr></table></figure>
+<h2 id="六、HTTP动词"><a href="#六、HTTP动词" class="headerlink" title="六、HTTP动词"></a>六、HTTP动词</h2><p>curl默认的HTTP动词是<code>GET</code>，使用<code>-X</code>参数可以支持其他动词。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">curl</span> <span class="selector-tag">-X</span> <span class="selector-tag">POST</span> <span class="selector-tag">www</span><span class="selector-class">.example</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">curl</span> <span class="selector-tag">-X</span> <span class="selector-tag">DELETE</span> <span class="selector-tag">www</span><span class="selector-class">.example</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<h2 id="七、文件上传"><a href="#七、文件上传" class="headerlink" title="七、文件上传"></a>七、文件上传</h2><p>假定文件上传的表单是下面这样：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">"POST"</span> <span class="attr">enctype</span>=<span class="string">'multipart/form-data'</span> <span class="attr">action</span>=<span class="string">"upload.cgi"</span>&gt;</span></span><br><span class="line">　　　　<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">file</span> <span class="attr">name</span>=<span class="string">upload</span>&gt;</span></span><br><span class="line">　　　　<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">submit</span> <span class="attr">name</span>=<span class="string">press</span> <span class="attr">value</span>=<span class="string">"OK"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>你可以用curl这样上传文件：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --form <span class="attribute">upload</span>=@localfilename --form <span class="attribute">press</span>=OK [URL]</span><br></pre></td></tr></table></figure>
+<h2 id="八、Referer字段"><a href="#八、Referer字段" class="headerlink" title="八、Referer字段"></a>八、Referer字段</h2><p>有时你需要在<code>http request</code>头信息中，提供一个<code>referer</code>字段，表示你是从哪里跳转过来的。</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl <span class="params">--referer</span> http:<span class="string">//www.example.com</span> http:<span class="string">//www.example.com</span></span><br></pre></td></tr></table></figure>
+<h2 id="九、User-Agent字段"><a href="#九、User-Agent字段" class="headerlink" title="九、User Agent字段"></a>九、User Agent字段</h2><p>这个字段是用来表示客户端的设备信息。服务器有时会根据这个字段，针对不同设备，返回不同格式的网页，比如手机版和桌面版。</p>
+<p>iPhone4的User Agent是</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Mozilla/<span class="number">5.0</span> (iPhone; U; CPU iPhone OS <span class="number">4</span>_0 like Mac OS X; en-us) AppleWebKit/<span class="number">532.9</span> (KHTML, like Gecko) Version/<span class="number">4.0</span><span class="number">.5</span> Mobile/<span class="number">8</span>A293 Safari/<span class="number">6531.22</span><span class="number">.7</span></span><br></pre></td></tr></table></figure>
+<p>curl可以这样模拟：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">curl</span> --user-agent <span class="string">"[User Agent]"</span><span class="meta"> [URL]</span></span><br></pre></td></tr></table></figure>
+<h2 id="十、cookie"><a href="#十、cookie" class="headerlink" title="十、cookie"></a>十、cookie</h2><p>使用<code>--cookie</code>参数，可以让curl发送<code>cookie</code>。</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">curl </span><span class="built_in">--cookie</span> <span class="string">"name=xxx"</span> <span class="string">www.</span><span class="string">example.</span><span class="string">com</span></span><br></pre></td></tr></table></figure>
+<p>至于具体的cookie的值，可以从<code>http response</code>头信息的<code>Set-Cookie</code>字段中得到。</p>
+<p><code>-c cookie-file</code>可以保存服务器返回的cookie到文件，<code>-b cookie-file</code>可以使用这个文件作为cookie信息，进行后续的请求。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">    　curl -c cookies <span class="string">http:</span><span class="comment">//example.com</span></span><br><span class="line">    　curl -b cookies <span class="string">http:</span><span class="comment">//example.com</span></span><br></pre></td></tr></table></figure>
+<h2 id="十一、增加头信息"><a href="#十一、增加头信息" class="headerlink" title="十一、增加头信息"></a>十一、增加头信息</h2><p>有时需要在<code>http request</code>之中，自行增加一个头信息。<code>--header</code>参数就可以起到这个作用。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --header <span class="string">"Content-Type:application/json"</span> <span class="string">http:</span><span class="comment">//example.com</span></span><br></pre></td></tr></table></figure>
+<h2 id="十二、HTTP认证"><a href="#十二、HTTP认证" class="headerlink" title="十二、HTTP认证"></a>十二、HTTP认证</h2><p>有些网域需要HTTP认证，这时curl需要用到<code>--user</code>参数。</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --<span class="keyword">user</span> <span class="title">name</span>:password example.com</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://www.ruanyifeng.com/blog/2011/09/curl.html" target="_blank" rel="noopener">curl网站开发指南</a></li>
+<li><a href="https://www.thegeekstuff.com/2012/04/curl-examples/" target="_blank" rel="noopener">15 Practical Linux cURL Command Examples</a></li>
+<li><a href="https://www.cnblogs.com/gbyukg/p/3326825.html" target="_blank" rel="noopener">CURL常用命令</a></li>
+<li><a href="https://curl.haxx.se/docs/httpscripting.html" target="_blank" rel="noopener">Using curl to automate HTTP jobs</a></li>
+<li><a href="https://baike.baidu.com/item/curl/10098606?fr=aladdin" target="_blank" rel="noopener">CURL 百度百科</a></li>
+<li><a href="http://blog.csdn.net/wh211212/article/details/54285921" target="_blank" rel="noopener">Linux curl命令详解</a></li>
+<li><a href="https://curl.haxx.se/" target="_blank" rel="noopener">command line tool and library for transferring data with URLs</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/02/02/cURL-Notes/" target="_blank" title="cURL 「使用笔记」">http://blog.caoxl.com/2018/02/02/cURL-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/">Internet</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cURL/">cURL</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/03/HTTP-Protocol-Intro/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          HTTP 协议入门
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/02/Aliyun-Sms-Dev-Log/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">云通信 「开发日志」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#cURL-常用命令"><span class="nav-number">1.</span> <span class="nav-text">cURL 常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Download-a-Single-File"><span class="nav-number">1.1.</span> <span class="nav-text">Download a Single File</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Save-the-cURL-Output-to-a-file"><span class="nav-number">1.2.</span> <span class="nav-text">Save the cURL Output to a file</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fetch-Multiple-Files-at-a-time"><span class="nav-number">1.3.</span> <span class="nav-text">Fetch Multiple Files at a time</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Follow-HTTP-Location-Headers-with-L-option"><span class="nav-number">1.4.</span> <span class="nav-text">Follow HTTP Location Headers with -L option</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Continue-Resume-a-Previous-Download"><span class="nav-number">1.5.</span> <span class="nav-text">Continue/Resume a Previous Download</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Limit-the-Rate-of-Data-Transfer"><span class="nav-number">1.6.</span> <span class="nav-text">Limit the Rate of Data Transfer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Download-a-file-only-if-it-is-modified-before-after-the-given-time"><span class="nav-number">1.7.</span> <span class="nav-text">Download a file only if it is modified before/after the given time</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-HTTP-Authentication-in-cURL"><span class="nav-number">1.8.</span> <span class="nav-text">Pass HTTP Authentication in cURL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Download-Files-from-FTP-server"><span class="nav-number">1.9.</span> <span class="nav-text">Download Files from FTP server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#List-Download-using-Ranges"><span class="nav-number">1.10.</span> <span class="nav-text">List/Download using Ranges</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Upload-Files-to-FTP-Server"><span class="nav-number">1.11.</span> <span class="nav-text">Upload Files to FTP Server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#More-Information-using-Verbose-and-Trace-Option"><span class="nav-number">1.12.</span> <span class="nav-text">More Information using Verbose and Trace Option</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Get-Definition-of-a-Word-using-DICT-Protocol"><span class="nav-number">1.13.</span> <span class="nav-text">Get Definition of a Word using DICT Protocol</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Proxy-to-Download-a-File"><span class="nav-number">1.14.</span> <span class="nav-text">Use Proxy to Download a File</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Send-Mail-using-SMTP-Protocol"><span class="nav-number">1.15.</span> <span class="nav-text">Send Mail using SMTP Protocol</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他"><span class="nav-number">2.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#保存-使用网站cookie信息"><span class="nav-number">2.1.</span> <span class="nav-text">保存/使用网站cookie信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传递请求数据"><span class="nav-number">2.2.</span> <span class="nav-text">传递请求数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#curl网站开发指南"><span class="nav-number">3.</span> <span class="nav-text">curl网站开发指南</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、查看网页源码"><span class="nav-number">3.1.</span> <span class="nav-text">一、查看网页源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、自动跳转"><span class="nav-number">3.2.</span> <span class="nav-text">二、自动跳转</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、显示头信息"><span class="nav-number">3.3.</span> <span class="nav-text">三、显示头信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、显示通信过程"><span class="nav-number">3.4.</span> <span class="nav-text">四、显示通信过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、发送表单信息"><span class="nav-number">3.5.</span> <span class="nav-text">五、发送表单信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、HTTP动词"><span class="nav-number">3.6.</span> <span class="nav-text">六、HTTP动词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七、文件上传"><span class="nav-number">3.7.</span> <span class="nav-text">七、文件上传</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#八、Referer字段"><span class="nav-number">3.8.</span> <span class="nav-text">八、Referer字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#九、User-Agent字段"><span class="nav-number">3.9.</span> <span class="nav-text">九、User Agent字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十、cookie"><span class="nav-number">3.10.</span> <span class="nav-text">十、cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十一、增加头信息"><span class="nav-number">3.11.</span> <span class="nav-text">十一、增加头信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#十二、HTTP认证"><span class="nav-number">3.12.</span> <span class="nav-text">十二、HTTP认证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

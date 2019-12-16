@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php 项目优化 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHP优化">
+  
+  
+  
+  
+  <meta name="description" content="关于 PHP 性能分析、优化和实践总结在这里。  无论现在有没有遇到性能问题，但是这是迟早都会面临的问题。">
+<meta name="keywords" content="PHP,优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP 项目优化">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/24/PHP-Project-Optimizetion/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="关于 PHP 性能分析、优化和实践总结在这里。  无论现在有没有遇到性能问题，但是这是迟早都会面临的问题。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP 项目优化">
+<meta name="twitter:description" content="关于 PHP 性能分析、优化和实践总结在这里。  无论现在有没有遇到性能问题，但是这是迟早都会面临的问题。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-Project-Optimizetion" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP 项目优化
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/24/PHP-Project-Optimizetion/" class="article-date">
+	  <time datetime="2018-01-24T08:44:34.000Z" itemprop="datePublished">2018-01-24</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>关于 PHP 性能分析、优化和实践总结在这里。</p>
+<blockquote>
+<p>无论现在有没有遇到性能问题，但是这是迟早都会面临的问题。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="性能优化概述"><a href="#性能优化概述" class="headerlink" title="性能优化概述"></a>性能优化概述</h1><h2 id="影响-PHP-性能的可能性"><a href="#影响-PHP-性能的可能性" class="headerlink" title="影响 PHP 性能的可能性"></a>影响 PHP 性能的可能性</h2><ul>
+<li>语法使用不当</li>
+<li>使用 PHP 做了它不擅长的事情</li>
+</ul>
+<p>PHP 适合处理服务端业务逻辑、数据库处理、和视图渲染，不适合计算密集型业务，不适合表示复杂的算法。</p>
+<ul>
+<li>通过 PHP 连接的服务有性能问题</li>
+</ul>
+<p>数据库，第三方服务接口等等。</p>
+<ul>
+<li><p>PHP 语言本身的缺点或特点</p>
+<ul>
+<li>语法不严谨</li>
+</ul>
+<p>严格来说也不叫缺点，而应该是特点</p>
+<p>这个“缺点”会让经验不足、水平不够的程序员写出糟糕的代码。</p>
+<ul>
+<li>原生对多线程支持不好</li>
+</ul>
+<p>通常只能模拟实现简单的多线程场景。</p>
+<ul>
+<li>原生不支持对象常驻内存<br>PHP 所有变量都是页面级的，PHP 页面执行完毕就会被释放。</li>
+</ul>
+</li>
+<li><p>PHP 周边环境问题</p>
+</li>
+</ul>
+<p>比如操作系统、内存、磁盘I/O、网络环境、Web 服务器、DB 等本身的一些限制。</p>
+<blockquote>
+<p>整个项目的性能问题不可能都是 PHP 的性能问题，因此优化 PHP 项目性能时，不要局限于优化 PHP。</p>
+</blockquote>
+<ul>
+<li><p>网络问题</p>
+</li>
+<li><p>一些未知因素</p>
+</li>
+</ul>
+<h2 id="优化-PHP-项目的方向"><a href="#优化-PHP-项目的方向" class="headerlink" title="优化 PHP 项目的方向"></a>优化 PHP 项目的方向</h2><ul>
+<li>PHP 代码级别</li>
+<li>PHP 周边问题</li>
+<li>PHP 语言自身</li>
+</ul>
+<p>从上往下，难度依次增加。</p>
+<h1 id="PHP-代码层优化"><a href="#PHP-代码层优化" class="headerlink" title="PHP 代码层优化"></a>PHP 代码层优化</h1><h2 id="PHP-内核"><a href="#PHP-内核" class="headerlink" title="PHP 内核"></a>PHP 内核</h2><p>标准的 PHP 内核简单说只有 3 个：</p>
+<ul>
+<li>词法分析</li>
+<li>语法分析</li>
+<li>Zend Engine</li>
+</ul>
+<p>从宏观上来看，PHP 内核的实现与世界上绝大多数的程序一样：接收输入数据， 做相应处理，然后输出计算结果。我们编写的代码就是 PHP 接收的输入数据，PHP 内核对我们编写的代码进行解释和运算， 最后返回相应的运算结果。</p>
+<blockquote>
+<p>然而，PHP 与我们自己平时写的一般的 C 程序有所不同的是， 我们的程序一般用来解决某个具体问题， 而 PHP 本身实现了把用户的逻辑“翻译”为机器语言来执行的功能，这也是各种编译语言与承载具体业务逻辑的程序代码的一个明显区别。</p>
+</blockquote>
+<h2 id="Web-应用中-PHP-代码运行流程"><a href="#Web-应用中-PHP-代码运行流程" class="headerlink" title="Web 应用中 PHP 代码运行流程"></a>Web 应用中 PHP 代码运行流程</h2><blockquote>
+<p>之所以要加上 “Web 应用中” 这个前提，是因为 PHP 除了常用的处理 Web 请求外，还可以在 CLI 模式下运行，而两种运行方式的具体实现是不一样的。</p>
+</blockquote>
+<p>从 HTTP 请求到达一个 PHP 脚本开始，到 PHP 处理结束返回结果之间，标准 PHP (<u><a href="https://php.net" target="_blank" rel="noopener">https://php.net</a></u>) 会经历以下过程：</p>
+<ul>
+<li>*.php 文件</li>
+</ul>
+<p>PHP 内核接受 PHP 代码。</p>
+<ul>
+<li>Scanner：词法分析</li>
+</ul>
+<p>词法分析是把 PHP 代码分割成一个个的“单元”（TOKEN）：Zend 引擎逐行运行扫描、分析，结束后保存为 Zend 能识别的代码 Exprs。</p>
+<ul>
+<li>Parser：语法分析</li>
+</ul>
+<p>语法分析则将这些“单元”转化为 Zend Engine 可执行的操作：Exprs 被 Parser 解析为 Opcodes，即最终会被 PHP 内核第三个组成部分 Zend Engine VM，执行的代码</p>
+<ul>
+<li>Exec</li>
+</ul>
+<p>Zend Engine VM 执行 Opcodes。</p>
+<blockquote>
+<p>PHP 现有的很多缓存服务都是直接缓存的 Opcode，这也是为了提高 PHP 的性能。</p>
+</blockquote>
+<ul>
+<li>Output</li>
+</ul>
+<p>输出执行结果。</p>
+<h2 id="多用-PHP-自身能力"><a href="#多用-PHP-自身能力" class="headerlink" title="多用 PHP 自身能力"></a>多用 PHP 自身能力</h2><p><strong>能用 PHP 内置方法解决的就用内置方法，不要重复造轮子。</strong></p>
+<p>自写代码一般冗余较多，可读性不佳，主要是性能低。因为自写代码需要编译解析为底层语言才能被执行，这个过程每次请求 PHP 页面时都会发生，时间开销大。</p>
+<p>因此，多使用 PHP 内置变量、常量、API、解决方案。</p>
+<p><strong>举例说明：</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">vim</span> <span class="selector-tag">-o</span> <span class="selector-tag">bad</span><span class="selector-class">.php</span> <span class="selector-tag">good</span><span class="selector-class">.php</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>bad.php</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php">$arr1 = <span class="keyword">array</span>();</span></span><br><span class="line"><span class="php">$arr2 = <span class="keyword">array</span>();</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">for</span> ( $i=<span class="number">0</span>; $i&lt;rand(<span class="number">1000</span>, <span class="number">2000</span>); ++$i ) &#123;</span></span><br><span class="line"><span class="php">  $arr1[] = rand();</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">for</span> ( $i=<span class="number">0</span>; $i&lt;rand(<span class="number">1000</span>, <span class="number">2000</span>); ++$i ) &#123;</span></span><br><span class="line"><span class="php">  $arr2[] = rand();</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$arr_merged = <span class="keyword">array</span>() ;</span></span><br><span class="line"><span class="php"><span class="keyword">foreach</span> ( $arr1 <span class="keyword">as</span> $val ) &#123;</span></span><br><span class="line"><span class="php">  $arr_merged[] = $v;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">foreach</span> ( $arr2 <span class="keyword">as</span> $val ) &#123;</span></span><br><span class="line"><span class="php">  <span class="keyword">if</span>(!in_array($val, $arr_merged))&#123;</span></span><br><span class="line"><span class="php">	$arr_merged[] = $val ;</span></span><br><span class="line"><span class="php">  &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">var_dump( $arr1, $arr2, $arr_merged ) ;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>good.php</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$arr1 = $arr2 = range( <span class="number">1000</span>, <span class="number">2000</span> ) ;</span></span><br><span class="line"><span class="php"> </span></span><br><span class="line"><span class="php">shuffle( $arr1 ) ;</span></span><br><span class="line"><span class="php">shuffle( $arr2 ) ;</span></span><br><span class="line"><span class="php">$arr_merged = array_merge( $arr1, $arr2 ) ;</span></span><br><span class="line"><span class="php">var_dump( $arr1, $arr2, $arr_merged ) ;</span></span><br></pre></td></tr></table></figure>
+<p>bad.php 和 good.php 都是为了完成合并数组，并要求重复的只出现一次这个操作。但是，两者的性能却差别巨大，可以使用压力测试：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ab -<span class="symbol">n100</span> -c<span class="number">10</span> http:<span class="comment">//localhost/bad.php</span></span><br><span class="line">ab -<span class="symbol">n100</span> -c<span class="number">10</span> http:<span class="comment">//localhost/good.php</span></span><br></pre></td></tr></table></figure>
+<p>结果显示，good.php 比 bad.php 的性能高 &gt; 10 倍。</p>
+<p>bad.php 和 good.php 相比，虽然在执行的时候虽然都会经历上面几个流程，但是，在逐行扫描的过程中，直接用 PHP 内置函数会节省更多的时间，因为 <strong>PHP 内置函数 Zend 引擎是理解的</strong>，就不会耗费时间进行分析，从而极大地提高了速度。</p>
+<p>总之，使用 PHP 自身方法去实现一个功能，比用 PHP 自写代码自定义方法实现同样功能，性能要高很多，所以要尽可能使用 PHP 函数。</p>
+<h2 id="使用性能更好的-PHP-内置函数"><a href="#使用性能更好的-PHP-内置函数" class="headerlink" title="使用性能更好的 PHP 内置函数"></a>使用性能更好的 PHP 内置函数</h2><p>PHP 内置函数之间，仍然存在快和慢的差距。要从代码层优化 PHP 项目，多了解 PHP 内置函数的时间复杂度也是必不可少的。</p>
+<p>以 <code>isset()</code> 和 <code>array_key_exists()</code> 方法对比说明：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">$start = getTime();</span><br><span class="line">$i = <span class="number">0</span>;</span><br><span class="line">$arr = range(<span class="number">1</span>, <span class="number">200000</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> ($i &lt; <span class="number">200000</span>) &#123;</span><br><span class="line">  ++$i;</span><br><span class="line">  <span class="comment">// 1. isset()</span></span><br><span class="line">  <span class="comment">// isset($arr[$i]);</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 2. array_key_exists()</span></span><br><span class="line">  array_key_exists($i, $arr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$end = getTime();</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'Spent: '</span>, number_format($end-$start, <span class="number">3</span>)*<span class="number">1000</span>, <span class="string">'ms'</span>, PHP_EOL;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获得微秒级别的 UNIX 时间戳</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getTime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">list</span>($usecs, $secs) = explode(<span class="string">' '</span>, microtime());</span><br><span class="line">	<span class="keyword">return</span> (float)$usecs + (float)$secs;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行后发现：<code>isset()</code> 比 <code>array_key_exists()</code> 效率更高大约 10 ms。</p>
+<h2 id="尽可能少用魔术方法"><a href="#尽可能少用魔术方法" class="headerlink" title="尽可能少用魔术方法"></a>尽可能少用魔术方法</h2><p>这是因为 PHP 提供的魔术方法性能都不怎么好。</p>
+<p>至于为什么不好，这个理性地解释应该是，为了省事，PHP 为了程序员做了很多。举例说明：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// test.php</span></span><br><span class="line"><span class="comment">// 1. 使用魔术方法</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  <span class="keyword">private</span> $var = <span class="number">1024</span> ;</span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__get</span><span class="params">( $var )</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="keyword">$this</span>-&gt;var ;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">public</span> $var = <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 不使用魔术方法</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  <span class="keyword">public</span> $var = <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试魔术方法</span></span><br><span class="line">$i=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> ( $i &lt; <span class="number">10000</span> ) &#123;</span><br><span class="line">  $i ++;</span><br><span class="line">  $test = <span class="keyword">new</span> Test();</span><br><span class="line">  $test-&gt;var;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以使用 time 命令来简单判断执行时间：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">time</span> php test.php</span><br></pre></td></tr></table></figure>
+<p>测试结果显示，在相同测试条件下，不使用魔术方法比使用魔术方法效率更高（这个例子的规模下，相差近 3 倍）。</p>
+<h2 id="避免使用"><a href="#避免使用" class="headerlink" title="避免使用 @"></a>避免使用 @</h2><p>PHP 提供错误抑制符，也是为了方便懒人。</p>
+<blockquote>
+<p>在每次”方便”之间，损失的是性能。</p>
+</blockquote>
+<p>@ 的实际工作原理是：</p>
+<ul>
+<li>先降低报错等级，再恢复报错等级。</li>
+<li>在代码开始前，结束后，增加 Opcode，忽略报错。</li>
+</ul>
+<p>可以使用 vld 工具（下面会说）测试。举例如下：</p>
+<ul>
+<li>test.php</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"><span class="meta">@file_get_contents( <span class="meta-string">'xxx'</span> )</span>;    <span class="comment">// wrong path</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>vld 测试</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># active=1 表示使用 vld</span></span><br><span class="line"><span class="comment"># execute=0 表示不执行代码只是查看 Opcode</span></span><br><span class="line"><span class="comment"># verbosity 代表输出VLD 生成内容的详细程度</span></span><br><span class="line"></span><br><span class="line">php -dvld.<span class="attribute">active</span>=1 -dvld.<span class="attribute">execute</span>=0 test.php</span><br></pre></td></tr></table></figure>
+<p>建议：尽量使用 <code>try {} catch ()</code> 的方式控制错误而不要使用这种取巧的方式。</p>
+<h2 id="合理使用内存"><a href="#合理使用内存" class="headerlink" title="合理使用内存"></a>合理使用内存</h2><p>虽然 PHP 提供了 GC 机制，但是不意味着放心大胆地使用内存。</p>
+<p><strong>建议：</strong> 使用 <code>unset()</code> 及时释放不使用的内存。</p>
+<h2 id="尽量少用正则"><a href="#尽量少用正则" class="headerlink" title="尽量少用正则"></a>尽量少用正则</h2><p>正则表达式的回溯开销大，且逻辑复杂，容易出错。</p>
+<p><strong>建议：</strong> 能用字符串函数等 PHP 内置 <code>API</code> 解决的问题就不要用正则表达式。</p>
+<h2 id="避免循环中动态计算"><a href="#避免循环中动态计算" class="headerlink" title="避免循环中动态计算"></a>避免循环中动态计算</h2><p>动态计算指的就是函数调用。典型的坏例子：</p>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">$str</span> = <span class="string">'i am a bad example.'</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="symbol">$i</span>=<span class="number">0</span>; <span class="symbol">$i</span>&lt;strlen(<span class="symbol">$str</span>); <span class="symbol">$i</span>++) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种情况，就算 <code>strlen()</code> 效率再高，也是无意义的浪费。</p>
+<p>但是，也不是说循环内就不能调用函数了，一些不是重复的数据，在特定的使用场景下，也不得不在循环内调用函数计算，这和这个例子不一样。</p>
+<blockquote>
+<p>PHP 不适合处理大数据，如果使用 PHP 处理大数据，那么很容易出现性能瓶。</p>
+<p>PHP 配合模板引擎适合 UI 呈现。</p>
+<p>PHP 的所有计算都将转换为 C 语言，很多代码实现都依赖 C 实现。</p>
+</blockquote>
+<h2 id="使用-PHP-Generator"><a href="#使用-PHP-Generator" class="headerlink" title="使用 PHP Generator"></a>使用 PHP Generator</h2><blockquote>
+<p>PHP generators are an underutilized yet remarkably helpful feature introduced in PHP 5.5.0.</p>
+<p>Generators are simple iterators.</p>
+<p>Generators compute and yield iteration values on-demand.</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">myGenerator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">yield</span> <span class="string">'value1'</span>;</span><br><span class="line">    <span class="keyword">yield</span> <span class="string">'value2'</span>;</span><br><span class="line">    <span class="keyword">yield</span> <span class="string">'value3'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (myGenerator() <span class="keyword">as</span> $yieldedValue) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $yieldedValue, PHP_EOL;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是，PHP Generator 只能用于单方向迭代的、一次性的需求，但是这种需求的出现频率还是挺高的。关于用和不同的差距，可以举一个例子对比：</p>
+<ul>
+<li>bad.php</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">makeRange</span><span class="params">($length)</span> </span>&#123;</span><br><span class="line">    $dataset = [];</span><br><span class="line">    <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; $length; $i++) &#123;</span><br><span class="line">        $dataset[] = $i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $dataset;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$customRange = makeRange(<span class="number">900000</span>);</span><br><span class="line"><span class="keyword">foreach</span> ($customRange <span class="keyword">as</span> $i) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $i, PHP_EOL;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>good.php</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">makeRange</span><span class="params">($length)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; $length; $i++) &#123;</span><br><span class="line">        <span class="keyword">yield</span> $i;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (makeRange(<span class="number">900000</span>) <span class="keyword">as</span> $i) &#123;</span><br><span class="line">    <span class="keyword">echo</span> $i, PHP_EOL;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以分析两者的执行结果，结论是：goods.php 比 bad.php 不仅提升性能，而且节约了内存，解决了迭代数据量过大时内存不够的问题。</p>
+<p>在 bad.php 中，如果把规模调大，比如 100000000，那么执行 bad.php 时，其实是没有输出的，因为超过了 PHP 配置中分配给脚本所能使用的上限（<code>memory_limit</code>），但是使用 good.php 却能正常显示，这是因为 <code>yield()</code> 方法是按需生成数据的，占不了多少内存。</p>
+<p>建议：能用 Generator 替换默认迭代的就使用 Generator。</p>
+<h2 id="数组键名为常量问题"><a href="#数组键名为常量问题" class="headerlink" title="数组键名为常量问题"></a>数组键名为常量问题</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">define( <span class="string">'key'</span>, <span class="string">'value'</span> );</span><br><span class="line"></span><br><span class="line">$arr = <span class="keyword">array</span>(</span><br><span class="line">  <span class="string">'key'</span>   =&gt; <span class="string">'hello'</span> ,</span><br><span class="line">  <span class="string">'value'</span> =&gt; <span class="string">'world'</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $arr[ key ], PHP_EOL;</span><br><span class="line"><span class="keyword">echo</span> $arr[ <span class="string">'key'</span> ];</span><br></pre></td></tr></table></figure>
+<p>PHP 会把不带引号的数组键当作常量，从而先去常量表中查找该常量对应的值，只有找不到的时候才会在数组内部中找。</p>
+<p>不过这种“习惯”既不有利于性能，也不有利于程序的健壮性。因此，尽量不要使用常量作为数组的键名。</p>
+<h1 id="PHP-周边环境优化"><a href="#PHP-周边环境优化" class="headerlink" title="PHP 周边环境优化"></a>PHP 周边环境优化</h1><h2 id="PHP-的周边环境"><a href="#PHP-的周边环境" class="headerlink" title="PHP 的周边环境"></a>PHP 的周边环境</h2><ul>
+<li>操作系统性能（光是这一个就有很多影响因素：版本、文件系统、系统软件等等）</li>
+<li>硬盘性能</li>
+<li>内存 / 缓存</li>
+<li>数据库软件（数据库基于文件系统）</li>
+<li>Web 服务器</li>
+<li>网络状况（带宽、传输介质）</li>
+</ul>
+<h2 id="PHP-开销和速度排序"><a href="#PHP-开销和速度排序" class="headerlink" title="PHP 开销和速度排序"></a>PHP 开销和速度排序</h2><ul>
+<li>开销由大到小</li>
+</ul>
+<p>磁盘 I/O &gt; 数据库 I/O &gt; 内存 I/O &gt; 网络 I/O。</p>
+<ul>
+<li>速度由快到慢</li>
+</ul>
+<p>内存 I/O &gt; 数据库 I/O &gt; 磁盘 I/O &gt; 网络 I/O。</p>
+<p>由于数据库软件既可以从内存中读写也可以从磁盘中读写，所以其性能介于内存和磁盘之间。</p>
+<p>读写网络数据本质也是磁盘操作（操作 socket 文件句柄），但是网络都是有延迟的，延迟带来了隐性时间浪费。</p>
+<p>总结：尽量减少对磁盘和网络数据的操作，尤其是慢速网络接口的大数据，尽量使用内存和数据库。</p>
+<h2 id="数据库性能是-Web-项目性能优化的重点"><a href="#数据库性能是-Web-项目性能优化的重点" class="headerlink" title="数据库性能是 Web 项目性能优化的重点"></a>数据库性能是 Web 项目性能优化的重点</h2><p>PHP 脚本是串行执行的，而 PHP 脚本本身的执行时间是比较短的，因此大部分时间都在等待， 尤其往往是在等待网络另一端的数据库。</p>
+<p>由于主要的耗时在数据库，因此优化的时候重心应该在对数据库自身操作的优化，而不是单单考 虑 PHP 语言自身的问题。（关于数据库性能，详见另一篇文章）</p>
+<p>建议：把更多的计算任务交给 PHP 而不要在数据库中进行多余的计算。</p>
+<h2 id="网络请求优化"><a href="#网络请求优化" class="headerlink" title="网络请求优化"></a>网络请求优化</h2><h3 id="网络请求的特点"><a href="#网络请求的特点" class="headerlink" title="网络请求的特点"></a>网络请求的特点</h3><ul>
+<li>对方接口的不确定因素</li>
+<li>网络是否可达</li>
+<li>网络稳定性</li>
+<li>数据格式是否是期望的</li>
+</ul>
+<h3 id="如何优化网络请求"><a href="#如何优化网络请求" class="headerlink" title="如何优化网络请求"></a>如何优化网络请求</h3><ul>
+<li>设置超时时间<ul>
+<li>连接超时：200ms</li>
+<li>读超时：800ms</li>
+<li>写超时：500ms</li>
+</ul>
+</li>
+</ul>
+<p>可根据情况稍微增大超时时间，但是再大不能大于 1 秒。</p>
+<ul>
+<li><p>将串行请求并行化</p>
+<ul>
+<li>使用 <code>curl_multi_*()</code></li>
+</ul>
+<p>但是 <em>curlmulti</em> 扩展依赖于最慢的请求响应时间，所以尽管并行化，但是最终的等待时间仍然是所有并发请求中最慢的那一个，一旦有个响应变慢就会拖慢整个响应。</p>
+<ul>
+<li>使用 swoole 扩展</li>
+</ul>
+<p><code>swoole</code> 是一个 php 扩展，是从 <code>C</code> 语言层面实现并行化。</p>
+</li>
+<li><p>压缩 PHP 接口输出</p>
+<ul>
+<li><p>如何压缩：一般服务器启用 gzip 即可。</p>
+</li>
+<li><p>压缩的利弊：利于数据输出，减少客户端获取数据速度；缺点是会产生额外的 CPU 开销（也会使客户端产生 CPU 开销，因为要解压）。</p>
+</li>
+</ul>
+<p>综合考虑，当接口数据小于几十 KB 时，压缩带来的效果并不明显，甚至比以前更大但是当大于 100 KB 时， <code>Gzip</code> 能够压缩到 30 KB / 40 KB 左右 此外，如果数据内容中重复的数据越多，压缩效率越高，反之越不明显。</p>
+</li>
+</ul>
+<h2 id="缓存重复计算内容"><a href="#缓存重复计算内容" class="headerlink" title="缓存重复计算内容"></a>缓存重复计算内容</h2><ul>
+<li>什么时候需要缓存内容？</li>
+</ul>
+<p>多次请求同一内容时</p>
+<ul>
+<li>缓存原理</li>
+</ul>
+<p>请求某个页面时，首先从缓存中查找是否存在。如果命中，则直接从缓存中返回；如果缓存中没有，则重新计算，并把计算结果保存在缓存中，最后返回给客户端。</p>
+<h2 id="流程优化"><a href="#流程优化" class="headerlink" title="流程优化"></a>流程优化</h2><p>可以将一个串行的流程分解为以下两种并行流程：</p>
+<h3 id="重叠时间窗口"><a href="#重叠时间窗口" class="headerlink" title="重叠时间窗口"></a>重叠时间窗口</h3><p>只有在后一个任务不以前一个任务为强依赖的时候才采取这种思想。</p>
+<h3 id="旁路方案"><a href="#旁路方案" class="headerlink" title="旁路方案"></a>旁路方案</h3><p>旁路方案和重叠时间窗口是非常类似的，因此也有相同的限制条件：前后任务不具有依赖关系。</p>
+<blockquote>
+<p>前面网络请求的复用，就是采用了重叠时间窗口的思想。</p>
+<p>Smarty 在模版渲染的时候就采用了缓存和旁路方案。</p>
+</blockquote>
+<h1 id="关于-PHP-语言自身瓶颈"><a href="#关于-PHP-语言自身瓶颈" class="headerlink" title="关于 PHP 语言自身瓶颈"></a>关于 PHP 语言自身瓶颈</h1><h2 id="Opcode-优化"><a href="#Opcode-优化" class="headerlink" title="Opcode 优化"></a>Opcode 优化</h2><p>优化思路是缓存 Opcod，因为 Opcode 是 PHP 代码在执行过程中最接近与机器码的代码。</p>
+<blockquote>
+<p>这个可用 APC 扩展解决。不过 APC 从 2012 年开始就已经不再更新了，不过可以在上面搜索 Caching 查找相关缓存类扩展方案，比如知名的 memcache/memchached、vainish、vac (@Xinchen Hui @Wei Dai[蘑菇街]）。</p>
+<p>共享内存自认为是替代 APC 和本地 Memcache 的方案 。</p>
+<p>PHP 的扩展实现的目标：通过扩展代替原 PHP 代码中的高频逻辑。</p>
+</blockquote>
+<h2 id="Runtime-优化"><a href="#Runtime-优化" class="headerlink" title="Runtime 优化"></a>Runtime 优化</h2><p>这个目前只能用 HHVM 和 PHP 7 解决。</p>
+<blockquote>
+<p>HHVM 是由 FaceBook 开源的技术，火了一段时间，百度也使用过该技术。</p>
+</blockquote>
+<p><strong>总结：</strong> PHP 的性能优化思路不仅仅局限于 PHP 层面的优化，还包括许多内容，需要综合考虑，必 要时借助工具帮助分析，找到瓶颈所在，找出解决之道。</p>
+<h1 id="性能分析工具"><a href="#性能分析工具" class="headerlink" title="性能分析工具"></a>性能分析工具</h1><h2 id="AB"><a href="#AB" class="headerlink" title="AB"></a>AB</h2><p><u><a href="https://httpd.apache.org/docs/2.4/programs/ab.html" target="_blank" rel="noopener">Apache Benchmark</a></u> 是经常用到的压力测试工具。一般安装 Apache 服务器时会自动安装好该工具。如果没有，可以手动安装：<code>yum install httpd-tools</code>。</p>
+<p>使用方式举例如下：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 使用 <span class="number">100</span> 次并发模拟 <span class="number">1000</span> 次请求</span><br><span class="line">ab -n1000 -c100 https:<span class="comment">//www.myapp.com/</span></span><br><span class="line"></span><br><span class="line"># 在 <span class="number">10</span> 秒内模拟 <span class="number">1000</span> 次并发请求</span><br><span class="line">ab -t <span class="number">10</span> -c <span class="number">1000</span> https:<span class="comment">//www.myapp.com/</span></span><br></pre></td></tr></table></figure>
+<p>需要注意的是：URL 末尾一定要带上 <code>/</code>，否则会提示非法 <code>URL</code>。</p>
+<p>测试结果中需要关注的参数有：</p>
+<ul>
+<li>requests per second</li>
+</ul>
+<p>每秒接受的请求数，优化的方向是越多越好，并发能力要高。</p>
+<ul>
+<li>time per request</li>
+</ul>
+<p>响应每次请求的毫秒数，优化的方向是越短越好，响应时间要小。</p>
+<blockquote>
+<p>本人测试 <code>https://caoxl/com/</code> 后 使得网站https失效~~</p>
+</blockquote>
+<h2 id="XHProf"><a href="#XHProf" class="headerlink" title="XHProf"></a>XHProf</h2><p><u><a href="https://pecl.php.net/package/xhprof" target="_blank" rel="noopener">XHProf</a></u> 是 Facebook 开发的 PHP 性能分析工具，以 PHP PECL 扩展的形式安装使用。</p>
+<h3 id="下载-amp-安装"><a href="#下载-amp-安装" class="headerlink" title="下载&amp;安装"></a>下载&amp;安装</h3><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 下载</span></span><br><span class="line">wget http:<span class="comment">//pecl.php.net/get/xhprof-0.9.4.tgz</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># 解压</span></span><br><span class="line">tar zxvf xhprof<span class="number">-0.9</span><span class="number">.4</span>.tgz</span><br><span class="line"></span><br><span class="line"><span class="meta"># 编译安装（确保 php5-dev 已经安装）</span></span><br><span class="line">cd xhprof<span class="number">-0.9</span><span class="number">.4</span>/extension/</span><br><span class="line">./configure</span><br><span class="line"><span class="meta"># ./configure --with-php- config=/usr/local/php/bin/php-config</span></span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<p>注意，在 make 过程中，如果遇到 <code>warning</code> 和 <code>error</code>，只需找到出错的文件和位置，可以尝试注释，然后重新执行：<code>make clean &amp;&amp; make</code>。</p>
+<p>安装成功后会看到提示：<em>Installing shared extensions: /usr/lib/php5/20131226/</em>。</p>
+<p>如果是 64 位系统，则可能需要将 <code>xhprof.so</code> 拷贝到相关的 <code>lib64</code> 目录下。</p>
+<h3 id="配置-amp-重启"><a href="#配置-amp-重启" class="headerlink" title="配置 &amp; 重启"></a>配置 &amp; 重启</h3><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cd <span class="meta-keyword">/etc/</span>php5<span class="meta-keyword">/fpm/</span>conf.d</span><br><span class="line">vim <span class="number">20</span>-xhprof.ini</span><br><span class="line">    extension=xhprof.so </span><br><span class="line">    xhprof.output_dir=<span class="meta-keyword">/var/</span>www<span class="meta-keyword">/html/</span>xhprof/</span><br><span class="line">    </span><br><span class="line"><span class="meta"># 重启</span></span><br><span class="line"><span class="meta-keyword">/etc/</span>init.d/php5-fpm restart</span><br><span class="line"></span><br><span class="line"><span class="meta"># 查看是否安装 xhprof 扩展</span></span><br><span class="line">php --ri xhprof</span><br></pre></td></tr></table></figure>
+<h3 id="xhprof-web-gui"><a href="#xhprof-web-gui" class="headerlink" title="xhprof web gui"></a>xhprof web gui</h3><p>详细查看：<u><a href="https://github.com/phacility/xhprof。" target="_blank" rel="noopener">https://github.com/phacility/xhprof。</a></u></p>
+<h3 id="XHPorf-使用举例"><a href="#XHPorf-使用举例" class="headerlink" title="XHPorf 使用举例"></a>XHPorf 使用举例</h3><ul>
+<li>cpu：<code>xhprof_enable(XHPROF_FLAGS_CPU)</code></li>
+<li>内存：<code>xhprof_enable(XHPROF_FLAGS_MEMORY)</code></li>
+<li>如果两个一起：<code>xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY)</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. enable xhprof</span></span><br><span class="line">xhprof_enable();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. code to be tested here</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'/path/to/script'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. disable xhprof</span></span><br><span class="line">$data = xhprof_disable();    <span class="comment">// 返回运行数据</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. incloude lib (xhprof_lib 在下载的包里存在这个目录, 需要将目录包含到运行的 php 代码中)</span></span><br><span class="line"><span class="keyword">include_once</span> <span class="string">'/path/to/xhprof_lib/utils/xhprof_lib.php'</span>;</span><br><span class="line"><span class="keyword">include_once</span> <span class="string">'/path/to/xhprof_lib/utils/xhprof_runs.php'</span>;</span><br><span class="line"></span><br><span class="line">$xhprofObj = <span class="keyword">new</span> XHProfRuns_Defatult();</span><br><span class="line">$run_id = $xhprofObj-&gt;save_run($data, <span class="string">'test'</span>);    <span class="comment">// 第一个参数是 xhprof_disable() 函数返回的运行信息; 第二个参数是自定义的命名空间字符串(任意)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 返回运行ID, 用这个 ID 查看相关的运行结果</span></span><br><span class="line">var_dump($run_id);</span><br></pre></td></tr></table></figure>
+<p>请求该页面，然后打开 xhprof 的 VIEW 层展现工具就可以看到详尽的报表和流程图信息。</p>
+<p><strong>报表信息说明：</strong></p>
+<ul>
+<li>Incl. Wall Time</li>
+</ul>
+<p>代表的是流程走到这个函数的时候，当前函数的执行时间，和当前函数之后所有函数的执行时间的总微秒数。</p>
+<ul>
+<li>Excl. Wall Time</li>
+</ul>
+<p>一个函数的执行时间（微秒）。</p>
+<ul>
+<li>一个函数的执行时间（微秒）。</li>
+</ul>
+<p>展示完整的项目请求流程图，<code>黄色、红色和粗的路线</code>代表的是耗时较多的操作和流程。</p>
+<p>假设找到了最耗时的文件，比如为 <code>_import_fromheader</code>，就可以打开源码进行排查：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cd</span> /path/<span class="keyword">to</span>/proj</span><br><span class="line"><span class="keyword">grep</span> <span class="string">'import_from_header'</span></span><br></pre></td></tr></table></figure>
+<p>然后阅读源码进行分析，debug，之后再次重复上述操作看优化是否生效，以及决定是否继续进行优化。</p>
+<h2 id="vld"><a href="#vld" class="headerlink" title="vld"></a>vld</h2><blockquote>
+<p><u><a href="http://www.phppan.com/2011/05/vld-extension/" target="_blank" rel="noopener">Vulcan Logic Dumper</a></u>，是一个在 Zend引擎中，以挂钩的方式实现的，用于输出 PHP 脚本生成的中间代码（Opcode，执行单元）的扩展。 它可以在一定程度上查看 Zend 引擎内部的一些实现原理，是我们学习PHP源码的必备良器。</p>
+</blockquote>
+<h3 id="下载-amp-amp-安装"><a href="#下载-amp-amp-安装" class="headerlink" title="下载&amp;&amp;安装"></a>下载&amp;&amp;安装</h3><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># Centos</span></span><br><span class="line">yum search php5-devel</span><br><span class="line">yum install php5-devel</span><br><span class="line"></span><br><span class="line"><span class="meta"># Or Debian</span></span><br><span class="line"><span class="meta"># apt-get search php5-dev</span></span><br><span class="line"><span class="meta"># apt-get install php5-dev</span></span><br><span class="line"></span><br><span class="line">git clone https:<span class="comment">//github.com/derickr/vld.git vld</span></span><br><span class="line"><span class="meta"># Or</span></span><br><span class="line"><span class="meta"># wget http://pecl.php.net/package/vld/0.13.0</span></span><br><span class="line"></span><br><span class="line">tar zxvf vld<span class="number">-0.13</span><span class="number">.0</span>.tgz</span><br><span class="line">cd vld<span class="number">-0</span><span class="number">-13.0</span></span><br><span class="line">phpize</span><br><span class="line">./configure</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><ul>
+<li>Nginx</li>
+</ul>
+<p>可以通过 <code>phpinfo()</code> 中的 <code>Additional.inifilesparsed</code> 属性来找到 PHP5-FPM 读取配置文件的路径，然后创建配置文件:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cd</span> /etc/php5/fpm/<span class="keyword">conf</span>.d/</span><br><span class="line"></span><br><span class="line"><span class="keyword">vim</span> <span class="number">20</span>-vld.ini</span><br><span class="line"></span><br><span class="line">	extension=vld.<span class="keyword">so</span></span><br><span class="line">	</span><br><span class="line">/etc/init.d/php5-fpm restart</span><br></pre></td></tr></table></figure>
+<p>这里是 <code>20</code> 指的是优先级。<code>extension=vld.so</code>，指的是 PHP 会从它的默认存放扩展库路径下去加载 <code>vld.so</code> 这个链接库文件，当然，也可以使用绝对路径的形式加载不位于 PHP 默认存放扩展库的路径下的扩展。</p>
+<p><strong>注意：</strong> 由于不是对 Nginx 服务器的修改，所以执行 <code>nginx -s reload</code> 不起作用，因为 <code>Nginx</code> 是通过 <code>FPM</code> 去处理 <code>PHP</code> 请求的。</p>
+<ul>
+<li>Apache</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cd /path/<span class="keyword">to</span>/httpd/conf/</span><br><span class="line">cp /etc/php5/fpm/conf.d/20-vld.ini ./</span><br><span class="line"></span><br><span class="line">/etc/init.d/apache2 restart</span><br><span class="line"></span><br><span class="line"><span class="comment"># Or CentOS</span></span><br><span class="line">service httpd restart</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>suggestion：</p>
+<ul>
+<li>Kali 安装好之后的路径在：/usr/lib/php5/20131226。</li>
+<li>ps aux | grep nginx</li>
+<li>find / -name vld.so</li>
+</ul>
+</blockquote>
+<h3 id="CLI-下简单使用"><a href="#CLI-下简单使用" class="headerlink" title="CLI 下简单使用"></a>CLI 下简单使用</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 执行该 PHP 代码 并输出的中间代码</span></span><br><span class="line">php -dvld.<span class="attribute">active</span>=1 test.php</span><br><span class="line"></span><br><span class="line"><span class="comment"># 只看输出的中间代码而不执行该 PHP 代码</span></span><br><span class="line">php -dvld.<span class="attribute">active</span>=1 -dvld.<span class="attribute">execute</span>=0 test.php</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出的详细程度（最大为 3）</span></span><br><span class="line">php -dvld.<span class="attribute">active</span>=1 -dvld.<span class="attribute">verbosity</span>=3 t.php</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将结果输出到 .dot 文件</span></span><br><span class="line">php -dvld.<span class="attribute">active</span>=1 -dvld.<span class="attribute">save_dir</span>=<span class="string">'D:\tmp'</span> -dvld.<span class="attribute">save_paths</span>=1 -dvld.<span class="attribute">dump_paths</span>=1 t.php</span><br></pre></td></tr></table></figure>
+<p><strong>输出说明：</strong></p>
+<ul>
+<li><code>Branch analysis from position：</code>这条信息多在分析数组时使用。</li>
+<li><code>Return found：</code>是否返回，这个基本上有都有。</li>
+<li><code>filename：</code>分析的文件名</li>
+<li><code>function name：</code>函数名，针对每个函数 VLD 都会生成一段如上的独立的信息，这里显示当前函数的名称</li>
+<li><code>number of ops：</code>生成的操作数</li>
+<li><code>compiled vars：</code>编译期间的变量，这些变量是在 PHP5 后添加的，它是一个缓存优化。这样的变量在 PHP 源码中以 IS_CV 标记。</li>
+<li><code>op list：</code>生成的中间代码的变量列表</li>
+</ul>
+<h3 id="Windows-安装-VLD-扩展库"><a href="#Windows-安装-VLD-扩展库" class="headerlink" title="Windows 安装 VLD 扩展库"></a>Windows 安装 VLD 扩展库</h3><ul>
+<li>下载</li>
+</ul>
+<p><u><a href="http://pecl.php.net/package/vld" target="_blank" rel="noopener">http://pecl.php.net/package/vld</a></u></p>
+<p> 注意，要根据 <code>phpinfo()</code> 中显示的是否线程安全下载相应的位数和版本(x64/TS/5.6)，然后解压其中的 <code>php_vld.dll</code> 文件到 <code>/path/to/php/ext/</code> 下面。</p>
+<ul>
+<li>修改配置文件</li>
+</ul>
+<p>编辑：<code>/path/to/php/php.ini</code>。</p>
+<p>找到 <code>Windows Extensions</code> 然后再后面添加如下语句引入 vld 扩展即可<code>extension=php_vld.dll</code></p>
+<ul>
+<li>重启 Apache</li>
+</ul>
+<p>刷新 <code>phpinfo()</code>，然后搜索是否已经引入 vld 扩展。</p>
+<blockquote>
+<p>在 Linux 中配置文件的惯用思路并不是像在 Windows 上那样直接修改主配置文件，而往往是配置独立的配置文件，甚至是单独创建简单 的配置文件。这样的好处是基本上不用去改动主要的配置文件。</p>
+<p>通常，Linux 中同一个配置往往拆分成多个配置文件分开管理，甚至保存在专门的文件夹下，所以不要完全照搬 Windows 的配置思路， 以官方手册为准。</p>
+</blockquote>
+<h2 id="XDebug"><a href="#XDebug" class="headerlink" title="XDebug"></a>XDebug</h2><p>详见官方手册：<u><a href="https://xdebug.org/docs/all" target="_blank" rel="noopener">https://xdebug.org/docs/all</a></u>。</p>
+<h1 id="其他实践"><a href="#其他实践" class="headerlink" title="其他实践"></a>其他实践</h1><h2 id="代码层面"><a href="#代码层面" class="headerlink" title="代码层面"></a>代码层面</h2><ul>
+<li>尽可能避免在循环中做：调用函数；创建对象；查询数据库；文件 I/O 等耗时操作</li>
+<li>从方便查询的角度创建数据库表 从性能的角度使用数据类型</li>
+<li>优先使用单引号</li>
+</ul>
+<h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><ul>
+<li>对文档类型资源启用2级压缩 不要压缩图片和音视频</li>
+<li>对静态资源开启缓存</li>
+</ul>
+<h2 id="Laravel-配合七牛云"><a href="#Laravel-配合七牛云" class="headerlink" title="Laravel 配合七牛云"></a>Laravel 配合七牛云</h2><ul>
+<li>public 下面只留 <code>assets/</code> 和 <code>index.php</code></li>
+<li>静态的 js css imags 全部放到 <code>assets</code> 方便利用七牛的<strong>镜像存储</strong></li>
+<li>上传的东西 全部放到 <code>storage</code> 下面 自己新建目录</li>
+</ul>
+<h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><ul>
+<li>为不同页面需要显示的图片做一比一的缩略图</li>
+<li>单页引用的图片数量较多且较大（1M为界限）时 将图片放在专门的服务器 并做 CDN 加速</li>
+<li>不要滥用图片</li>
+<li>图标类小图使用 CSS Sprite 以减少 HTTP 请求次数 节省带宽</li>
+</ul>
+<h2 id="服务器"><a href="#服务器" class="headerlink" title="服务器"></a>服务器</h2><blockquote>
+<p>对服务器等配置是灵活 从需求出发的</p>
+</blockquote>
+<ul>
+<li>如果用户量上升明显 =&gt; 优先增加带宽</li>
+<li>如果服务器软件完成的事情越多 要求越高 比如压缩等级提升 =&gt; 优先升级 CPU</li>
+<li>如果服务端程序功能复杂度提升 =&gt; 优先增加内存</li>
+</ul>
+<h2 id="请求"><a href="#请求" class="headerlink" title="请求"></a>请求</h2><ul>
+<li>合并请求：减少请求数，适用于请求数可能会超过浏览器限制的情景，类似：</li>
+</ul>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">//</span> 前端资源请求合并</span><br><span class="line">http:<span class="string">//example.com/</span>?jses=a.js,b.js,c.js,d.js,e.js</span><br><span class="line"></span><br><span class="line"><span class="string">//</span> 后端数据接口请求合并</span><br><span class="line">http:<span class="string">//api.com</span>?click=<span class="string">/click</span>?k=1&amp;b=2&amp;answer=<span class="string">/answer/count</span>?id=5&amp;topic=<span class="string">/topic/5</span>&amp;tags=<span class="string">/tag</span>?tid=10&amp;user=<span class="string">/u/5</span></span><br></pre></td></tr></table></figure>
+<h2 id="其他经验"><a href="#其他经验" class="headerlink" title="其他经验"></a>其他经验</h2><ul>
+<li>没有用的全部删掉</li>
+<li>在针对资源（文件／网络／数据库等）的操作时，一定要进行异常处理。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://www.phppan.com/2011/05/vld-extension/" target="_blank" rel="noopener">VLD扩展使用指南</a></li>
+<li><a href="https://www.2cto.com/kf/201404/290863.html" target="_blank" rel="noopener">深入理解PHP代码的执行的过程</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/24/PHP-Project-Optimizetion/" target="_blank" title="PHP 项目优化">http://blog.caoxl.com/2018/01/24/PHP-Project-Optimizetion/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/24/Nginx-Access-Log-Count-Anaysis/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Nginx Access Log日志统计分析常用命令
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/24/Nginx-Dev-Notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Nginx 「通用日志」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#性能优化概述"><span class="nav-number">1.</span> <span class="nav-text">性能优化概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#影响-PHP-性能的可能性"><span class="nav-number">1.1.</span> <span class="nav-text">影响 PHP 性能的可能性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化-PHP-项目的方向"><span class="nav-number">1.2.</span> <span class="nav-text">优化 PHP 项目的方向</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP-代码层优化"><span class="nav-number">2.</span> <span class="nav-text">PHP 代码层优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-内核"><span class="nav-number">2.1.</span> <span class="nav-text">PHP 内核</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Web-应用中-PHP-代码运行流程"><span class="nav-number">2.2.</span> <span class="nav-text">Web 应用中 PHP 代码运行流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多用-PHP-自身能力"><span class="nav-number">2.3.</span> <span class="nav-text">多用 PHP 自身能力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用性能更好的-PHP-内置函数"><span class="nav-number">2.4.</span> <span class="nav-text">使用性能更好的 PHP 内置函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#尽可能少用魔术方法"><span class="nav-number">2.5.</span> <span class="nav-text">尽可能少用魔术方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#避免使用"><span class="nav-number">2.6.</span> <span class="nav-text">避免使用 @</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合理使用内存"><span class="nav-number">2.7.</span> <span class="nav-text">合理使用内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#尽量少用正则"><span class="nav-number">2.8.</span> <span class="nav-text">尽量少用正则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#避免循环中动态计算"><span class="nav-number">2.9.</span> <span class="nav-text">避免循环中动态计算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-PHP-Generator"><span class="nav-number">2.10.</span> <span class="nav-text">使用 PHP Generator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数组键名为常量问题"><span class="nav-number">2.11.</span> <span class="nav-text">数组键名为常量问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP-周边环境优化"><span class="nav-number">3.</span> <span class="nav-text">PHP 周边环境优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-的周边环境"><span class="nav-number">3.1.</span> <span class="nav-text">PHP 的周边环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-开销和速度排序"><span class="nav-number">3.2.</span> <span class="nav-text">PHP 开销和速度排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库性能是-Web-项目性能优化的重点"><span class="nav-number">3.3.</span> <span class="nav-text">数据库性能是 Web 项目性能优化的重点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络请求优化"><span class="nav-number">3.4.</span> <span class="nav-text">网络请求优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络请求的特点"><span class="nav-number">3.4.1.</span> <span class="nav-text">网络请求的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何优化网络请求"><span class="nav-number">3.4.2.</span> <span class="nav-text">如何优化网络请求</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存重复计算内容"><span class="nav-number">3.5.</span> <span class="nav-text">缓存重复计算内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流程优化"><span class="nav-number">3.6.</span> <span class="nav-text">流程优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重叠时间窗口"><span class="nav-number">3.6.1.</span> <span class="nav-text">重叠时间窗口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#旁路方案"><span class="nav-number">3.6.2.</span> <span class="nav-text">旁路方案</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于-PHP-语言自身瓶颈"><span class="nav-number">4.</span> <span class="nav-text">关于 PHP 语言自身瓶颈</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Opcode-优化"><span class="nav-number">4.1.</span> <span class="nav-text">Opcode 优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Runtime-优化"><span class="nav-number">4.2.</span> <span class="nav-text">Runtime 优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#性能分析工具"><span class="nav-number">5.</span> <span class="nav-text">性能分析工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AB"><span class="nav-number">5.1.</span> <span class="nav-text">AB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XHProf"><span class="nav-number">5.2.</span> <span class="nav-text">XHProf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载-amp-安装"><span class="nav-number">5.2.1.</span> <span class="nav-text">下载&amp;安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置-amp-重启"><span class="nav-number">5.2.2.</span> <span class="nav-text">配置 &amp; 重启</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#xhprof-web-gui"><span class="nav-number">5.2.3.</span> <span class="nav-text">xhprof web gui</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XHPorf-使用举例"><span class="nav-number">5.2.4.</span> <span class="nav-text">XHPorf 使用举例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vld"><span class="nav-number">5.3.</span> <span class="nav-text">vld</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载-amp-amp-安装"><span class="nav-number">5.3.1.</span> <span class="nav-text">下载&amp;&amp;安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置"><span class="nav-number">5.3.2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CLI-下简单使用"><span class="nav-number">5.3.3.</span> <span class="nav-text">CLI 下简单使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-安装-VLD-扩展库"><span class="nav-number">5.3.4.</span> <span class="nav-text">Windows 安装 VLD 扩展库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XDebug"><span class="nav-number">5.4.</span> <span class="nav-text">XDebug</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他实践"><span class="nav-number">6.</span> <span class="nav-text">其他实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码层面"><span class="nav-number">6.1.</span> <span class="nav-text">代码层面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx"><span class="nav-number">6.2.</span> <span class="nav-text">Nginx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel-配合七牛云"><span class="nav-number">6.3.</span> <span class="nav-text">Laravel 配合七牛云</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图片"><span class="nav-number">6.4.</span> <span class="nav-text">图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器"><span class="nav-number">6.5.</span> <span class="nav-text">服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求"><span class="nav-number">6.6.</span> <span class="nav-text">请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他经验"><span class="nav-number">6.7.</span> <span class="nav-text">其他经验</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php  研究多一点 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHP">
+  
+  
+  
+  
+  <meta name="description" content="对编程来说，技术是招式，基础是内功，对自己有要求的程序员，就不能对自己使用的技术只是知其然而不知其所以然。   知道怎么做，是一位合格开发者；知道为什么做，是一位优秀的程序员。 基础不稳，面对技术复杂的系统，如同盲人摸象、管中窥豹，只得其门不得其法。（@rango）   下面总结的是使用 PHP 开发过程中，在实现相应功能之后，多的那么一些思考和研究。  鉴于本文的话题较广，因此本文会肯定会随着我">
+<meta name="keywords" content="PHP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP  研究多一点">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/19/Dig-Into-PHP/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="对编程来说，技术是招式，基础是内功，对自己有要求的程序员，就不能对自己使用的技术只是知其然而不知其所以然。   知道怎么做，是一位合格开发者；知道为什么做，是一位优秀的程序员。 基础不稳，面对技术复杂的系统，如同盲人摸象、管中窥豹，只得其门不得其法。（@rango）   下面总结的是使用 PHP 开发过程中，在实现相应功能之后，多的那么一些思考和研究。  鉴于本文的话题较广，因此本文会肯定会随着我">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP  研究多一点">
+<meta name="twitter:description" content="对编程来说，技术是招式，基础是内功，对自己有要求的程序员，就不能对自己使用的技术只是知其然而不知其所以然。   知道怎么做，是一位合格开发者；知道为什么做，是一位优秀的程序员。 基础不稳，面对技术复杂的系统，如同盲人摸象、管中窥豹，只得其门不得其法。（@rango）   下面总结的是使用 PHP 开发过程中，在实现相应功能之后，多的那么一些思考和研究。  鉴于本文的话题较广，因此本文会肯定会随着我">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Dig-Into-PHP" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP  研究多一点
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/19/Dig-Into-PHP/" class="article-date">
+	  <time datetime="2018-01-19T10:29:22.000Z" itemprop="datePublished">2018-01-19</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>对编程来说，技术是招式，基础是内功，对自己有要求的程序员，就不能对自己使用的技术只是知其然而不知其所以然。</p>
+<blockquote>
+<ul>
+<li>知道怎么做，是一位合格开发者；知道为什么做，是一位优秀的程序员。</li>
+<li>基础不稳，面对技术复杂的系统，如同盲人摸象、管中窥豹，只得其门不得其法。（@rango）</li>
+</ul>
+</blockquote>
+<p>下面总结的是使用 PHP 开发过程中，在实现相应功能之后，多的那么一些思考和研究。</p>
+<blockquote>
+<p>鉴于本文的话题较广，因此本文会肯定会随着我研究的继续而定期更新。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="内核-底层"><a href="#内核-底层" class="headerlink" title="内核/底层"></a>内核/底层</h1><h2 id="SAPI"><a href="#SAPI" class="headerlink" title="SAPI"></a>SAPI</h2><blockquote>
+<p>In other words, SAPI is an <strong>application programming interface</strong> (API) provided by the web server to help other developers in extending the web server capabilities.</p>
+</blockquote>
+<h3 id="PHP-常见的两种-SAPI"><a href="#PHP-常见的两种-SAPI" class="headerlink" title="PHP 常见的两种 SAPI"></a>PHP 常见的两种 SAPI</h3><ul>
+<li>Web/CGI SAPI</li>
+</ul>
+<p>浏览器 =&gt; Web 服务器（Apache/Nginx）=&gt; Web/CGI SAPI =&gt; PHP =&gt; Zend。</p>
+<ul>
+<li>CLI SAPI</li>
+</ul>
+<p>CLI SAPI =&gt; PHP =&gt; Zend。</p>
+<h3 id="CLI-PHP-和-CGI-PHP"><a href="#CLI-PHP-和-CGI-PHP" class="headerlink" title="CLI PHP 和 CGI PHP"></a>CLI PHP 和 CGI PHP</h3><p>CLI PHP 曾（3.0+）基于 CGI PHP ，但是直到 PHP 4.2.0 才从 CGI PHP 中独立出来。</p>
+<p>两者功能非常类似，主要的区别在于：</p>
+<ul>
+<li>CLI 是 PHP 功能的基础部分</li>
+<li>CLI 没有只是 CGI 需要的和 Web 服务器相关的接口，不会导入 <code>$_GET</code>/<code>$_POST</code> 等变量，也不会输出 MIME 头信息</li>
+<li>CLI PHP 的运行机制和 Linux Shell 基本一样</li>
+<li>CLI PHP 有着和 CGI PHP 不同的默认值和 php.ini 设置</li>
+</ul>
+<h2 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h2><p><code>内存泄漏（Memory Leak）</code>，我个人简单的理解是：</p>
+<p><em>内存中的一块空间 A，在程序的所有作用域中已经没有任何变量指向 A（理应被标记为垃圾），但是却存在作用域外的另一个内存空间 B 对它保持着引用状态，B 会阻止垃圾回收机制（GC）回收 A，这种现象是内存泄漏。</em></p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$a   = [<span class="string">'v'</span>];    <span class="comment">// 产生一个变量容器</span></span><br><span class="line">$a[] = &amp;$a;</span><br><span class="line">xdebug_debug_zval(<span class="string">'a'</span>);</span><br><span class="line"></span><br><span class="line">--&gt; Output:</span><br><span class="line">a:</span><br><span class="line">(<span class="built_in">ref</span>count=<span class="number">2</span>, is_ref=<span class="number">1</span>)</span><br><span class="line"><span class="built_in">array</span> (size=<span class="number">2</span>)</span><br><span class="line">  <span class="number">0</span> =&gt; (<span class="built_in">ref</span>count=<span class="number">2</span>, is_ref=<span class="number">0</span>)<span class="built_in">string</span> <span class="string">'v'</span> (length=<span class="number">1</span>)</span><br><span class="line">  <span class="number">1</span> =&gt; (<span class="built_in">ref</span>count=<span class="number">2</span>, is_ref=<span class="number">1</span>)</span><br><span class="line">    &amp;<span class="built_in">array<span class="keyword">&lt;</span></span></span><br></pre></td></tr></table></figure>
+<p>如果此时 unset 掉 $a，则会发生内存泄漏。</p>
+<blockquote>
+<p>尽管不再有某个作用域中的任何符号指向这个结构(就是变量容器)，由于数组元素“1”仍然指向数组本身，所以这个容器不能被清除 。因为没有另外的符号指向它，用户没有办法清除这个结构，结果就会导致内存泄漏。</p>
+<p>庆幸的是，php将在脚本执行结束时清除这个数据结构，但是在php清除之前，将耗费不少内存。</p>
+<p>如果你要实现分析算法，或者要做其他像一个子元素指向它的父元素这样的事情，这种情况就会经常发生。</p>
+<p>当然，同样的情况也会发生在对象上，实际上对象更有可能出现这种情况，因为对象总是隐式的被引用。</p>
+</blockquote>
+<h2 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h2><h3 id="Swoole-PHP-X-EasySwoole"><a href="#Swoole-PHP-X-EasySwoole" class="headerlink" title="Swoole/PHP-X/EasySwoole"></a>Swoole/PHP-X/EasySwoole</h3><ul>
+<li><a href="https://wiki.swoole.com/" target="_blank" rel="noopener">https://wiki.swoole.com/</a></li>
+<li><a href="https://www.easyswoole.com/" target="_blank" rel="noopener">https://www.easyswoole.com/</a></li>
+</ul>
+<h3 id="扩展开发"><a href="#扩展开发" class="headerlink" title="扩展开发"></a>扩展开发</h3><p>如果你有如下的应用需求，那么你可能会开始接触 PHP 扩展开发。</p>
+<ul>
+<li>封装当前 PHP 尚不支持而有需要让 PHP 用到的 C/C++ 库</li>
+<li>通过扩展重写一些性能较差的 PHP 代码</li>
+<li>改善现有扩展</li>
+<li>与其他语言编写的库交互</li>
+</ul>
+<p>鉴于 PHP 扩展开发涉及到的东西较多，我会在其他的文章中再详细讨论，这里不详细讨论。</p>
+<blockquote>
+<p><a href="https://stackoverflow.com/questions/645814/reading-a-git-repository-without-git" target="_blank" rel="noopener">https://stackoverflow.com/questions/645814/reading-a-git-repository-without-git</a></p>
+</blockquote>
+<h1 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h1><h2 id="可变函数参数"><a href="#可变函数参数" class="headerlink" title="可变函数参数"></a>可变函数参数</h2><blockquote>
+<p>在 PHP 5.6 及以上的版本中，由 … 语法实现；在 PHP 5.5 及更早版本中，使用函数 <code>func_num_args()</code>，<code>func_get_arg()</code>，和 <code>func_get_args()</code> 。</p>
+</blockquote>
+<ul>
+<li><strong>使用 <code>…</code> 运算符定义变长参数函数</strong></li>
+</ul>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">function <span class="built_in">f</span>(<span class="variable">$req</span>, <span class="variable">$opt</span> = null, ...<span class="variable">$params</span>) &#123;</span><br><span class="line">    <span class="comment">// $params 是一个包含了剩余参数的数组</span></span><br><span class="line">    printf(</span><br><span class="line">      '<span class="variable">$req</span>: %<span class="keyword">d</span>; <span class="variable">$opt</span>: %<span class="keyword">d</span>; number of params: %<span class="keyword">d</span>'.<span class="string">"\n"</span>,</span><br><span class="line">      <span class="variable">$req</span>,</span><br><span class="line">      <span class="variable">$opt</span>,</span><br><span class="line">      <span class="keyword">count</span>(<span class="variable">$params</span>)</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">f</span>(1);</span><br><span class="line"><span class="built_in">f</span>(1, 2);</span><br><span class="line"><span class="built_in">f</span>(1, 2, 3);</span><br><span class="line"><span class="built_in">f</span>(1, 2, 3, 4);</span><br><span class="line"><span class="built_in">f</span>(1, 2, 3, 4, 5);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>使用 <code>…</code> 运算符进行参数展开</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">add</span><span class="params">($a, $b, $c)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> $a + $b + $c;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$operators = [<span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">echo</span> add(<span class="number">1</span>, ...$operators);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>在其他编程语言，比如 Ruby中，这被称为连接运算符。</p>
+</blockquote>
+<h2 id="前期静态绑定与后期静态绑定"><a href="#前期静态绑定与后期静态绑定" class="headerlink" title="前期静态绑定与后期静态绑定"></a>前期静态绑定与后期静态绑定</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">foo</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">self</span>::who();    <span class="comment">// PHP binds this to A::who() right away</span></span><br><span class="line">        <span class="keyword">static</span>::who();  <span class="comment">// PHP waits to resolve `$this` (hence late)</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">who</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="keyword">__CLASS__</span>, PHP_EOL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">self</span>::foo();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">who</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="keyword">__CLASS__</span>, PHP_EOL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">B::test();</span><br></pre></td></tr></table></figure>
+<h2 id="nowdoc-和-heredoc"><a href="#nowdoc-和-heredoc" class="headerlink" title="nowdoc 和 heredoc"></a>nowdoc 和 heredoc</h2><blockquote>
+<p>nowdoc: PHP 5.3.0</p>
+</blockquote>
+<p>两者用途都是为了给变量插入大段的字符串，语法基本相似，区别主要有两点：</p>
+<ul>
+<li>nowdoc 只是会单纯地输出大段字符串，而不会转换和解析字符串段中的任何变量。</li>
+<li>nowdoc 的字符串段区分符需要用单引号包裹起来。</li>
+</ul>
+<p><strong>举例说明：</strong></p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">    $var = <span class="number">1024</span>;</span><br><span class="line">    $strNowdoc = &lt;&lt;&lt; <span class="string">'STR'</span></span><br><span class="line">    <span class="params">...</span> large <span class="built_in">string</span> blocks &#123;$var&#125; <span class="params">...</span></span><br><span class="line">STR;</span><br><span class="line">    echo $strNowdoc;</span><br><span class="line">    --&gt; Output:</span><br><span class="line">    <span class="params">...</span> large <span class="built_in">string</span> blocks &#123;$var&#125; <span class="params">...</span></span><br><span class="line">      </span><br><span class="line">    $strHeredoc = &lt;&lt;&lt; STR</span><br><span class="line">    <span class="params">...</span> large <span class="built_in">string</span> blocks &#123;$var&#125; <span class="params">...</span></span><br><span class="line">STR;</span><br><span class="line">    echo $strHeredoc;</span><br><span class="line">    --&gt; Output:</span><br><span class="line">    <span class="params">...</span> large <span class="built_in">string</span> blocks <span class="number">1024</span> <span class="params">...</span></span><br></pre></td></tr></table></figure>
+<h2 id="和"><a href="#和" class="headerlink" title="?? 和 ?:"></a><code>??</code> 和 <code>?:</code></h2><p><code>??</code> 是从 <strong>PHP 7.0</strong> 开始引入的语法糖，而 <code>?:</code> 是从 <strong>PHP 5.3</strong> 开始就有的。两者的区别是：</p>
+<ul>
+<li><code>??</code>：如果变量存在且值不为NULL， 它就会返回自身的值，否则返回它的第二个操作数。</li>
+<li><code>?:</code>：表达式 expr1 ?: expr3 在 expr1 求值为 TRUE 时返回 expr1，否则返回 expr3。</li>
+</ul>
+<h2 id="PDOStatement-bindValue-VS-bindParam"><a href="#PDOStatement-bindValue-VS-bindParam" class="headerlink" title="PDOStatement bindValue VS bindParam"></a>PDOStatement <code>bindValue</code> VS <code>bindParam</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bindParam()</span></span><br><span class="line">$sex = <span class="string">'male'</span>;</span><br><span class="line">$s = $dbh-&gt;prepare(<span class="string">'SELECT name FROM students WHERE sex = :sex'</span>);</span><br><span class="line">$s-&gt;bindParam(<span class="string">':sex'</span>, $sex); <span class="comment">// use bindParam to bind the variable</span></span><br><span class="line">$sex = <span class="string">'female'</span>;</span><br><span class="line">$s-&gt;execute(); <span class="comment">// executed with WHERE sex = 'female'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// bindValue()</span></span><br><span class="line">$sex = <span class="string">'male'</span>;</span><br><span class="line">$s = $dbh-&gt;prepare(<span class="string">'SELECT name FROM students WHERE sex = :sex'</span>);</span><br><span class="line">$s-&gt;bindValue(<span class="string">':sex'</span>, $sex); <span class="comment">// use bindValue to bind the variable's value</span></span><br><span class="line">$sex = <span class="string">'female'</span>;</span><br><span class="line">$s-&gt;execute(); <span class="comment">// executed with WHERE sex = 'male'</span></span><br></pre></td></tr></table></figure>
+<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><h3 id="PHP-无默认构造函数"><a href="#PHP-无默认构造函数" class="headerlink" title="PHP 无默认构造函数"></a>PHP 无默认构造函数</h3><p>PHP 没有默认构造函数。因此，如果调用类似 <code>parent::__construct()</code> 出现致命错误，可以先检查父类有无构造函数。</p>
+<blockquote>
+<p>See: <u><a href="https://stackoverflow.com/questions/4650542/why-am-i-getting-fatal-error-when-calling-a-parents-constructor" target="_blank" rel="noopener">https://stackoverflow.com/questions/4650542/why-am-i-getting-fatal-error-when-calling-a-parents-constructor</a>.</u></p>
+</blockquote>
+<h3 id="exit-die"><a href="#exit-die" class="headerlink" title="exit/die"></a>exit/die</h3><p>如果在构造函数中使用了 <code>exit</code>或<code>die</code>，析构函数仍然会执行。</p>
+<h3 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h3><p>除非构造对象后显式地再调用一次构造函数可以拿到其返回值外（不推荐，属性可能丢失），一般情况下，直接使用 <code>new</code> 创建一个对象时，构造函数则会表现出“没有返回值”的现象</p>
+<h3 id="抛异常来产生错误"><a href="#抛异常来产生错误" class="headerlink" title="抛异常来产生错误"></a>抛异常来产生错误</h3><p>鉴于构造函数不能有返回值，因此如果在创建对象的时候如果因为一些初始化属性不合法想要产生错误，则最好使用抛异常的方式。</p>
+<h2 id="析构函数"><a href="#析构函数" class="headerlink" title="析构函数"></a>析构函数</h2><h3 id="无参数"><a href="#无参数" class="headerlink" title="无参数"></a>无参数</h3><p>析构函数不能有参数。</p>
+<h3 id="执行时机"><a href="#执行时机" class="headerlink" title="执行时机"></a>执行时机</h3><ul>
+<li><strong>对象被注销：</strong> 不再有任何变量引用该对象。</li>
+<li><strong>请求结束：</strong> PHP 执行引擎会在一个请求结束后调用析构函数。</li>
+</ul>
+<h3 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h3><ul>
+<li>当对象被注销时记录一些日志信息。</li>
+<li>链式调用时，为了保证链式调用的连贯性，可以在析构函数中执行一些默认行为。</li>
+</ul>
+<p><strong>举例说明：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">View</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  	<span class="keyword">protected</span> $html = <span class="string">''</span>;</span><br><span class="line">  	<span class="keyword">protected</span> $outputed = <span class="keyword">false</span>;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// render html only</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">render</span><span class="params">(string $path)</span> : <span class="title">View</span></span></span><br><span class="line"><span class="function">    </span>&#123;      	</span><br><span class="line">      	<span class="keyword">$this</span>-&gt;html = <span class="keyword">include</span> $path;</span><br><span class="line">      </span><br><span class="line">      	<span class="keyword">return</span> <span class="keyword">$this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  	</span><br><span class="line">    <span class="comment">// output html only</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">output</span><span class="params">()</span> : <span class="title">View</span></span></span><br><span class="line"><span class="function">    </span>&#123; </span><br><span class="line">      	<span class="keyword">$this</span>-&gt;outputed = <span class="keyword">true</span>;</span><br><span class="line">      </span><br><span class="line">      	<span class="keyword">echo</span> <span class="keyword">$this</span>-&gt;html;</span><br><span class="line">      </span><br><span class="line">      	<span class="keyword">return</span> <span class="keyword">$this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// 如果对象销毁时候视图模版还没有输出</span></span><br><span class="line">  	<span class="comment">// 则在析构函数中默认执行已渲染模版的输出</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (! <span class="keyword">$this</span>-&gt;outputed) &#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;output();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">$view = <span class="keyword">new</span> View;</span><br><span class="line">$view-&gt;render(<span class="string">'/path/to/file.php'</span>);    <span class="comment">// will render and output template</span></span><br></pre></td></tr></table></figure>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
+<li>PHP 不能准确给出对象析构函数被调用时的准确时间。对象被注销后，析构函数可能回延迟一段时间才被执行。</li>
+<li>不要在析构函数中引用其他对象，因为其他对象的可用性不能保证，可能之前就被注销了。</li>
+</ul>
+<h2 id="浮点数精度问题"><a href="#浮点数精度问题" class="headerlink" title="浮点数精度问题"></a>浮点数精度问题</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 问题示例：</span></span><br><span class="line"><span class="keyword">echo</span> intval(<span class="number">17.9</span> * <span class="number">100</span>);   <span class="comment">// 期望 1790 而实际输出 1789</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 解决办法：</span></span><br><span class="line"><span class="keyword">echo</span> intval(round(<span class="number">17.9</span> * <span class="number">100</span>, <span class="number">0</span>));    <span class="comment">// output: 1790</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Or:</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getIntFee</span><span class="params">(float $float)</span> : <span class="title">int</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  $arr = explode(<span class="string">'.'</span>, $float);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (! <span class="keyword">isset</span>($arr[<span class="number">0</span>])) &#123;</span><br><span class="line">      <span class="keyword">return</span> intval($arr[<span class="number">0</span>]);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$amount = getIntFee(<span class="number">17.9</span> * <span class="number">100</span>); <span class="comment">// output: 1790</span></span><br></pre></td></tr></table></figure>
+<h2 id="生成器"><a href="#生成器" class="headerlink" title="生成器"></a>生成器</h2><h3 id="判断命名空间是否存在"><a href="#判断命名空间是否存在" class="headerlink" title="判断命名空间是否存在"></a>判断命名空间是否存在</h3><p>可使用 <code>class_exists()</code> 来检查命名空间是否存在.但是，但如果某些情况下报错 ：<code>undefined costant</code>，<strong>可以检测命名空间开头是否有反斜线 \，若有则去掉</strong>。</p>
+<h2 id="Trait"><a href="#Trait" class="headerlink" title="Trait"></a>Trait</h2><blockquote>
+<p><a href="http://php.net/manual/zh/language.oop5.traits.php" target="_blank" rel="noopener">http://php.net/manual/zh/language.oop5.traits.php</a></p>
+</blockquote>
+<ul>
+<li>概念&amp;特点<ul>
+<li>Trait 是为了单继承语言而准备的一种<strong>代码复用机制</strong>。</li>
+<li>Trait 和 Class 相似，它为传统的继承增加了水平的特性的组合，多个无关的 Class 之间不需要互相继承</li>
+<li>Trait 使得无关的 Class 可以使用相同的属性和方法。</li>
+<li>Trait 本身就是一个类的子集，不具备事先了解类成员是否冲突的能力。</li>
+</ul>
+</li>
+</ul>
+<p>PHP 5.4 以上便可以使用 Trait 特性。</p>
+<ul>
+<li>优先级：当前类的成员高于 Trait 中的成员，而 Trait 则高于被继承的成员。</li>
+<li>Trait 间冲突</li>
+</ul>
+<p>如果某个类引入的多个 trait 都包含了同名的方法，则会产生致命错误：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="keyword">trait</span> B</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">protected</span> $name = <span class="string">'cxl1'</span>;</span></span><br><span class="line"><span class="php">  	<span class="keyword">public</span> <span class="keyword">static</span> $status = <span class="number">1</span>;</span></span><br><span class="line"><span class="php">    <span class="function"><span class="keyword">function</span> <span class="title">setName</span><span class="params">($name)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;name = $name;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">  </span></span><br><span class="line"><span class="php">  	<span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">staticMethod</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">      	<span class="keyword">echo</span> <span class="string">'trait can define static method too.'</span>;</span></span><br><span class="line"><span class="php">	&#125;</span></span><br><span class="line"><span class="php">  	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">setStatus</span><span class="params">($val)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">     	<span class="keyword">self</span>::$status = $val; </span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">  	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getStatus</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">      	<span class="keyword">echo</span> <span class="keyword">self</span>::$status;</span></span><br><span class="line"><span class="php">	&#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php"><span class="keyword">trait</span> C</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">protected</span> $name = <span class="string">'cxl2'</span>;</span></span><br><span class="line"><span class="php">    <span class="function"><span class="keyword">function</span> <span class="title">setName</span><span class="params">($name)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;name = $name;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">use</span> <span class="title">B</span>,<span class="title">C</span>;</span></span><br><span class="line"><span class="php">  </span></span><br><span class="line"><span class="php">	<span class="keyword">protected</span> $name = <span class="string">'cxl3'</span>;    <span class="comment">// PHP 7.0.0 后没问题，之前版本是 E_STRICT 提醒</span></span></span><br><span class="line"><span class="php">    <span class="function"><span class="keyword">function</span> <span class="title">getName</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> <span class="keyword">$this</span>-&gt;name;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php">$a = <span class="keyword">new</span> A();</span></span><br><span class="line"><span class="php">$a-&gt;getName();</span></span><br><span class="line"><span class="php"><span class="comment">// PHP Fatal error:  B and C define the same property ($name) in the composition of A. However, the definition differs and is considered incompatible. ...</span></span></span><br><span class="line"><span class="php">$a-&gt;setName(<span class="string">'cxl3'</span>);</span></span><br><span class="line"><span class="php"><span class="comment">// PHP Fatal error:  Trait method setName has not been applied, because there are collisions with other trait methods on A in ...</span></span></span><br><span class="line"><span class="php">$a-&gt;staticMethod();    <span class="comment">// trait can define static method too.</span></span></span><br><span class="line"><span class="php">A::staticMethod();     <span class="comment">// trait can define static method too.</span></span></span><br><span class="line"><span class="php">$a-&gt;getStatus();    <span class="comment">// 1</span></span></span><br><span class="line"><span class="php">$a-&gt;setStatus(<span class="number">2</span>);</span></span><br><span class="line"><span class="php">$a-&gt;getStatus();    <span class="comment">// 2</span></span></span><br></pre></td></tr></table></figure>
+<p>Trait 定义了一个属性后，类就不能定义同样名称的属性，否则会产生 <code>fatal error</code>。 有种情况例外：属性是兼容的（同样的访问可见度、初始默认值）。(在 PHP 7.0 之前，属性是兼容的，则会有 E_STRICT 的提醒)</p>
+<p><strong>方法冲突解决办法示例：</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">trait</span> B</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="function"><span class="keyword">function</span> <span class="title">setName</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;name = <span class="string">'b'</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">trait</span> C</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="function"><span class="keyword">function</span> <span class="title">setName</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;name = <span class="string">'c'</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">use</span> <span class="title">B</span>,<span class="title">C</span> &#123;</span></span><br><span class="line"><span class="php">      	<span class="comment">// 将 trait B 中的 setName() 重命名为 setNameB()</span></span></span><br><span class="line"><span class="php">        B::setName <span class="keyword">as</span> setNameB;</span></span><br><span class="line"><span class="php">      	<span class="comment">// 用 trait C 中的 setName() 替换掉 trait B 中的 setName()</span></span></span><br><span class="line"><span class="php">        C::setName <span class="keyword">insteadof</span> B;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">    <span class="keyword">protected</span> $name = <span class="string">'a'</span>;</span></span><br><span class="line"><span class="php">    <span class="function"><span class="keyword">function</span> <span class="title">getName</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> <span class="keyword">$this</span>-&gt;name;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$a = <span class="keyword">new</span> A();</span></span><br><span class="line"><span class="php">$a-&gt;getName();   <span class="comment">// a</span></span></span><br><span class="line"><span class="php">$a-&gt;setNameB();</span></span><br><span class="line"><span class="php">$a-&gt;getName();    <span class="comment">// b</span></span></span><br><span class="line"><span class="php">$a-&gt;setName();</span></span><br><span class="line"><span class="php">$a-&gt;getName();    <span class="comment">// c</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>修改 trait 内方法的访问修饰符</strong></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">trait</span> A</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">echoTrait</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> <span class="string">'trait'</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">B</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">use</span> <span class="title">A</span> &#123;</span></span><br><span class="line"><span class="php">        echoTrait <span class="keyword">as</span> <span class="keyword">private</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">C</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">use</span> <span class="title">A</span> &#123;</span></span><br><span class="line"><span class="php">        echoTrait <span class="keyword">as</span> <span class="keyword">protected</span> printTrait;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$b = <span class="keyword">new</span> B;</span></span><br><span class="line"><span class="php">$c = <span class="keyword">new</span> C;</span></span><br><span class="line"><span class="php">$b-&gt;echoTrait();</span></span><br><span class="line"><span class="php"><span class="comment">// PHP Fatal error:  Uncaught Error: Call to private method B::echoTrait() from context ...</span></span></span><br><span class="line"><span class="php">$c-&gt;echoTrait();</span></span><br><span class="line"><span class="php"><span class="comment">// trait</span></span></span><br><span class="line"><span class="php">$c-&gt;printTrait();</span></span><br><span class="line"><span class="php"><span class="comment">// PHP Fatal error:  Uncaught Error: Call to protected method C::printTrait() from context ...</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>trait with trait</strong></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">trait</span> A</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">echoA</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> <span class="string">'a'</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">trait</span> B</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">echoB</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> <span class="string">'b'</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">trait</span> C</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">use</span> <span class="title">A</span>,<span class="title">B</span>;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">echoC</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> <span class="string">'c'</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">use</span> <span class="title">C</span>;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$test = <span class="keyword">new</span> Test;</span></span><br><span class="line"><span class="php">$test-&gt;echoA();   <span class="comment">// a</span></span></span><br><span class="line"><span class="php">$test-&gt;echoB();   <span class="comment">// b</span></span></span><br><span class="line"><span class="php">$test-&gt;echoC();   <span class="comment">// c</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>trait 中使用抽象方法约束类行为</strong></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">trait</span> A</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">abstract</span> <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">necessary</span><span class="params">()</span></span>;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">B</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">use</span> <span class="title">A</span>;</span></span><br><span class="line"><span class="php">    <span class="comment">// 如果 B 没有此方法则会报错:</span></span></span><br><span class="line"><span class="php">    <span class="comment">// PHP Fatal error:  Class B contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (B::necessary) ...</span></span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">necessary</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// something necessary ...</span></span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>#应用</p>
+<h2 id="防止重复提交表单"><a href="#防止重复提交表单" class="headerlink" title="防止重复提交表单"></a>防止重复提交表单</h2><ul>
+<li>PRG：<u><a href="https://stackoverflow.com/questions/10827242/understanding-post-redirect-get" target="_blank" rel="noopener">https://stackoverflow.com/questions/10827242/understanding-post-redirect-get</a></u></li>
+<li>时间戳判断 过滤同一用户高频率的同一请求</li>
+<li>执行非幂等操作前先判断数据是否已存在、已更新</li>
+<li>客户端：点击提交表单后禁用按钮。</li>
+</ul>
+<h2 id="模版"><a href="#模版" class="headerlink" title="模版"></a>模版</h2><p>PHP 本身就是一门模版语言，因此可以这么使用：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="php"><span class="meta">&lt;?</span>= $name, <span class="string">' is '</span>, $career <span class="meta">?&gt;</span></span></span><br><span class="line"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>其中标签 <code>&lt;?= ?&gt;</code> 之中的 PHP 代码可以没有分号结尾，里面的所有变量默认会被当作字符串输出<code>（&lt;?php echo）</code>，因此，如果不是标量类型的变量使用这种标签则会错误提示。</p>
+<p>相反，<code>&lt;?php ?&gt;</code> 标签就是标准的 <code>PHP</code> 开始结束标签了，里面的 <code>PHP</code> 代码要完全符合正常 PHP 语法。</p>
+<p>此外，<code>PHP</code> 还具有一个 <strong>short_tag</strong> 配置项，当它被设置为 <code>On</code> 时，可以使用更短的起始标签 <strong>&lt;? ?&gt;</strong> 来包裹 PHP 代码。<em>不过不推荐，因为这种标签会和 XML 冲突</em>。</p>
+<h2 id="时间日期"><a href="#时间日期" class="headerlink" title="时间日期"></a>时间日期</h2><ul>
+<li>计算两个日期之间的天数</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$start = <span class="keyword">new</span> Datetime(<span class="string">'2017-01-01'</span>);</span><br><span class="line">$end   = <span class="keyword">new</span> Datetime(<span class="string">'2017-01-11'</span>);</span><br><span class="line"></span><br><span class="line">$interval = $end-&gt;diff($start);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="number">7</span> == $interval-&gt;format(<span class="string">'%a'</span>)) &#123;</span><br><span class="line">    <span class="comment">// do sth</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>计算时间日期等最好使用可靠的库，手动计算容易出错。</p>
+</blockquote>
+<h1 id="设计-思想"><a href="#设计-思想" class="headerlink" title="设计/思想"></a>设计/思想</h1><blockquote>
+<p>探索技术背后的原理，学习技术背后的设计思想，才是偷不走的不可替代性。</p>
+</blockquote>
+<h2 id="DDD"><a href="#DDD" class="headerlink" title="DDD"></a>DDD</h2><p>Domain driven deign。</p>
+<blockquote>
+<p>领域驱动设计。</p>
+</blockquote>
+<h2 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h2><ul>
+<li><u>PHP-MSF开发手册</u></li>
+</ul>
+<h1 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h1><h2 id="CGI-FastCGI／PHP-FPM"><a href="#CGI-FastCGI／PHP-FPM" class="headerlink" title="CGI/FastCGI／PHP-FPM"></a>CGI/FastCGI／PHP-FPM</h2><blockquote>
+<p>PHP-FPM(FastCGI Process Manager：FastCGI进程管理器)是一个PHPFastCGI管理器</p>
+</blockquote>
+<p><code>PHP</code> 解释器实际上只有 <code>php-cgi</code>，即只是一个单纯的 <code>CGI</code> 程序，<code>php-cgi</code> 的工作原理很纯粹，能且只能干：</p>
+<ul>
+<li>解析 php.ini 文件，初始化执行环境</li>
+<li>解析请求</li>
+<li>返回结果</li>
+</ul>
+<p>其中，第一步中的“初始化执行环境”是 PHP 早期产生性能问题的主要原因，为了解决这个问题，fastcgi 协议改善了上述工作流程：</p>
+<blockquote>
+<p>“首先，Fastcgi会先启一个master，解析配置文件，初始化执行环境，然后再启动多个worker。当请求过来时，master会传递给一个worker，然后立即可以接受下一个请求。这样就避免了重复的劳动，效率自然是高。而且当worker不够用时，master可以根据配置预先启动几个worker等着；当然空闲worker太多时，也会停掉一些，这样就提高了性能，也节约了资源。这就是fastcgi的对进程的管理”。</p>
+</blockquote>
+<p>修改 php.ini 之后，php-cgi 进程是没办法平滑重启的。php-fpm 能够实现“平滑重启”的原理也很简单：<strong>新的 <code>php-cgi worker</code> 用新的配置，已经存在的 php-cgi worker 处理完本次请求后就退出</strong>。</p>
+<h2 id="nginx-php-fpm-自定义-HTTP-Header"><a href="#nginx-php-fpm-自定义-HTTP-Header" class="headerlink" title="nginx+php-fpm 自定义 HTTP Header"></a>nginx+php-fpm 自定义 HTTP Header</h2><p>添加到 HTTP 请求中的自定义 <code>Header</code> 格式必须为 <code>A-B-C</code>（-／英文横线），而 PHP <code>$_SERVER</code> 变量得到的就会是：<code>HTTP_A_B_C</code>。</p>
+<p>其他格式则不会被正确获取到，除非修改 <code>nginx</code> 配置 <code>underscores_in_headers</code> 为 <code>On</code> ，See：<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#underscores_in_headers" target="_blank" rel="noopener">Module ngx_http_core_module#underscores_in_headers</a>。</p>
+<h2 id="生产环境常用配置"><a href="#生产环境常用配置" class="headerlink" title="生产环境常用配置"></a>生产环境常用配置</h2><h3 id="zend-opcache（不能同时使用-zend-guard-loader）"><a href="#zend-opcache（不能同时使用-zend-guard-loader）" class="headerlink" title="zend opcache（不能同时使用 zend guard loader）"></a>zend opcache（不能同时使用 zend guard loader）</h3><blockquote>
+<p>Zend OPcache 通过 opcode 缓存和优化提供更快的 PHP 执行过程。它将预编译的脚本文件存储在共享内存中供以后使用，从而避免了从磁盘读取代码并进行编译的时间消耗。同时，它还应用了一些代码优化模式，使得代码执行更快。</p>
+<p>当解释器完成对脚本代码的分析后，便将它们生成可以直接运行的中间代码，也称为操作码（Operate Code，opcode）。Opcode cache 的目地是避免重复编译，减少 CPU 和内存开销。如果动态内容的性能瓶颈不在于 CPU 和内存，而在于 I/O 操作，比如数据库查询带来的磁盘 I/O 开销，那么 opcode cache 的性能提升是非常有限的。但是既然 opcode cache 能带来 CPU 和内存开销的降低，这总归是好事。</p>
+<p>现代操作码缓存器（Optimizer+，APC2.0+，其他）使用共享内存进行存储，并且可以直接从中执行文件，而不用在执行前“反序列化”代码。这将带来显着的性能加速，通常降低了整体服务器的内存消耗，而且很少有缺点。</p>
+</blockquote>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">opcache.enable</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">opcache.enable_cli</span>=<span class="number">1</span>               <span class="comment">; 是否在 CLI 模式下启用 opcache</span></span><br><span class="line"><span class="attr">opcache.memory_consumption</span>=<span class="number">128</span>     <span class="comment">; 共享内存的大小</span></span><br><span class="line"><span class="attr">opcache.max_accelerated_files</span>=<span class="number">2000</span> <span class="comment">; 最大缓存文件个数</span></span><br></pre></td></tr></table></figure>
+<h2 id="php-fpm"><a href="#php-fpm" class="headerlink" title="php-fpm"></a>php-fpm</h2><blockquote>
+<p><u><a href="http://php.net/manual/zh/install.fpm.configuration.php" target="_blank" rel="noopener">http://php.net/manual/zh/install.fpm.configuration.php</a></u></p>
+</blockquote>
+<ul>
+<li>工作进程分配模式</li>
+</ul>
+<p>在 fasgcgi 模式下，php-fpm 会启动多个子进程，来处理 nginx 发来的请求。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">pm</span> = static | dynamic | <span class="literal">on</span>demand</span><br></pre></td></tr></table></figure>
+<p><strong>static 模式：</strong> 表示启动时创建的 php-fpm 子进程数量是固定的，此时只有 pm.max_children 这个参数生效。</p>
+<p><strong>dynamic 模式：</strong> 表示启动的子进程数是有请求量动态变化的，受 <code>pm.max_children／pm.start_servers</code>/<code>pm.min_spare_servers</code>/<code>pm.max_spare_servers</code> 共同决定。</p>
+<p>工作模式选择原则：<strong>小内存机选动态，省内存；大内存机选静态</strong>。</p>
+<p>不过，动态模式下，进程的动态创建和回收本身也需要占用服务器资源。</p>
+<blockquote>
+<p>如果你的内存很大，有8-20G，按照一个php-fpm进程20M算，100个就2G内存了，那就可以开启static模式。如果你的内存很小，比如才256M，那就要小心设置了，因为你的机器里面的其他的进程也算需要占用内存的，所以设置成 <code>dynamic</code> 是最好的，比如：<code>pm.max_chindren = 8</code>, 占用内存<code>160M</code>左右，而且可以随时变化，对于一般访问量的网站足够了。</p>
+</blockquote>
+<ul>
+<li>慢日志</li>
+</ul>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">slowlog</span> = var/log/php-fpm.log.slow    <span class="comment"># 必须在 request_slowlog_timeout 前定义</span></span><br><span class="line"></span><br><span class="line"><span class="attr">request_slowlog_timeout</span> = <span class="number">10</span>s         <span class="comment"># 当一个请求时间超过 10 秒后 将对应的 PHP 调用栈写到慢日志</span></span><br></pre></td></tr></table></figure>
+<h1 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h1><blockquote>
+<p>TODO…</p>
+</blockquote>
+<h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><ul>
+<li><strong><u><a href="https://www.developwebsites.net/match-backslash-preg_match-php/" target="_blank" rel="noopener">How to Match A Backslash with preg_match() in PHP?</a></u></strong></li>
+</ul>
+<p>use <code>\\\\</code> instead of <code>\\</code>。（Regex Tester）</p>
+<ul>
+<li><strong>headers already set</strong></li>
+</ul>
+<blockquote>
+<p><u><a href="https://stackoverflow.com/questions/8028957/how-to-fix-headers-already-sent-error-in-php" target="_blank" rel="noopener">https://stackoverflow.com/questions/8028957/how-to-fix-headers-already-sent-error-in-php</a>.</u></p>
+</blockquote>
+<ul>
+<li><strong>curl 工作不正常？</strong></li>
+</ul>
+<p>curl URI 中含有空格会请求失败。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><h2 id="Book"><a href="#Book" class="headerlink" title="Book"></a>Book</h2><ul>
+<li><u><a href="https://github.com/pangudashu/php7-internal" target="_blank" rel="noopener">PHP7内核剖析-pangudashu</a></u></li>
+<li><u><a href="http://www.phpinternalsbook.com/index.html" target="_blank" rel="noopener">PHP Internals Book</a></u></li>
+</ul>
+<h2 id="Link"><a href="#Link" class="headerlink" title="Link"></a>Link</h2><ul>
+<li><a href="https://stackoverflow.com/questions/9948008/what-is-sapi-and-when-would-you-use-it" target="_blank" rel="noopener">What is SAPI and when would you use it?</a></li>
+<li><a href="https://stackoverflow.com/questions/4389738/where-can-i-learn-about-php-internals" target="_blank" rel="noopener">Where can I learn about PHP internals? [closed]</a></li>
+<li><a href="http://php.net/manual/en/internals2.ze1.zendapi.php" target="_blank" rel="noopener">Zend API: Hacking the Core of PHP</a></li>
+<li><a href="https://yuerblog.cc/2017/08/07/course1-how-to-export-a-module/" target="_blank" rel="noopener">PHP7扩展开发教程[1] – 怎样导出一个模块？</a></li>
+<li><a href="https://github.com/motecshine/php-ext-design-patterns" target="_blank" rel="noopener">motecshine/php-ext-design-patterns</a></li>
+<li><a href="http://www.phptherightway.com/" target="_blank" rel="noopener">PHP The Right Way</a></li>
+<li><a href="https://phpbestpractices.org/" target="_blank" rel="noopener">PHP Best Practices-A short, practical guide for common and confusing PHP tasks</a></li>
+<li><a href="https://stackoverflow.com/questions/10504129/when-using-self-parent-static-and-how" target="_blank" rel="noopener">when using self, parent, static and how?</a></li>
+<li><a href="https://stackoverflow.com/questions/17914402/php-exec-is-not-executing-the-command" target="_blank" rel="noopener">php exec() is not executing the command</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Post/Redirect/Get" target="_blank" rel="noopener">Post/Redirect/Get-Wikipedia</a></li>
+<li><a href="http://www.cnblogs.com/52php/p/5666337.html" target="_blank" rel="noopener">腾讯PHP工程师面试题两份</a></li>
+<li><a href="https://stackoverflow.com/questions/13624639/php-interfaces-iteratoraggregate-vs-iterator" target="_blank" rel="noopener">PHP interfaces IteratorAggregate vs Iterator?</a></li>
+<li><a href="https://www.electrictoolbox.com/php-nowdoc-string/" target="_blank" rel="noopener">PHP’s nowdoc strings</a></li>
+<li><a href="https://stackoverflow.com/questions/1179874/what-is-the-difference-between-bindparam-and-bindvalue" target="_blank" rel="noopener">What is the difference between bindParam and bindValue?</a></li>
+<li><a href="https://www.developer.com/open/implementing-domain-driven-design-in-laravel.html" target="_blank" rel="noopener">Implementing Domain-Driven Design in Laravel</a></li>
+<li><a href="https://www.habby.top/archives/52.html" target="_blank" rel="noopener">php高并发知识栈</a></li>
+<li><a href="https://blog.linuxeye.cn/380.html" target="_blank" rel="noopener">php-fpm参数优化</a></li>
+<li><a href="https://klionsec.github.io/2017/11/23/phpsec/" target="_blank" rel="noopener">php-fpm.conf &amp; php.ini 安全优化实践</a></li>
+<li><a href="https://www.zybuluo.com/phper/note/89081" target="_blank" rel="noopener">php-fpm的配置和优化</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/opensource/os-php-fastapps2/index.html" target="_blank" rel="noopener">分析 PHP 应用程序以查找、诊断和加速运行缓慢的代码</a></li>
+<li><a href="http://www.open-open.com/lib/view/1332904714233#_label0" target="_blank" rel="noopener">PHP高效率写法（详解原因）</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/19/Dig-Into-PHP/" target="_blank" title="PHP  研究多一点">http://blog.caoxl.com/2018/01/19/Dig-Into-PHP/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/22/VIM-Flow-Notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          VIM 流
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/19/MySQL-Tricks/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">MySQL 坑</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#内核-底层"><span class="nav-number">1.</span> <span class="nav-text">内核/底层</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SAPI"><span class="nav-number">1.1.</span> <span class="nav-text">SAPI</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP-常见的两种-SAPI"><span class="nav-number">1.1.1.</span> <span class="nav-text">PHP 常见的两种 SAPI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CLI-PHP-和-CGI-PHP"><span class="nav-number">1.1.2.</span> <span class="nav-text">CLI PHP 和 CGI PHP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存泄漏"><span class="nav-number">1.2.</span> <span class="nav-text">内存泄漏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展"><span class="nav-number">1.3.</span> <span class="nav-text">扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Swoole-PHP-X-EasySwoole"><span class="nav-number">1.3.1.</span> <span class="nav-text">Swoole/PHP-X/EasySwoole</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展开发"><span class="nav-number">1.3.2.</span> <span class="nav-text">扩展开发</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#语法"><span class="nav-number">2.</span> <span class="nav-text">语法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#可变函数参数"><span class="nav-number">2.1.</span> <span class="nav-text">可变函数参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前期静态绑定与后期静态绑定"><span class="nav-number">2.2.</span> <span class="nav-text">前期静态绑定与后期静态绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nowdoc-和-heredoc"><span class="nav-number">2.3.</span> <span class="nav-text">nowdoc 和 heredoc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#和"><span class="nav-number">2.4.</span> <span class="nav-text">?? 和 ?:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PDOStatement-bindValue-VS-bindParam"><span class="nav-number">2.5.</span> <span class="nav-text">PDOStatement bindValue VS bindParam</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构造函数"><span class="nav-number">2.6.</span> <span class="nav-text">构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP-无默认构造函数"><span class="nav-number">2.6.1.</span> <span class="nav-text">PHP 无默认构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#exit-die"><span class="nav-number">2.6.2.</span> <span class="nav-text">exit/die</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值"><span class="nav-number">2.6.3.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抛异常来产生错误"><span class="nav-number">2.6.4.</span> <span class="nav-text">抛异常来产生错误</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#析构函数"><span class="nav-number">2.7.</span> <span class="nav-text">析构函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#无参数"><span class="nav-number">2.7.1.</span> <span class="nav-text">无参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#执行时机"><span class="nav-number">2.7.2.</span> <span class="nav-text">执行时机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用途"><span class="nav-number">2.7.3.</span> <span class="nav-text">用途</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意事项"><span class="nav-number">2.7.4.</span> <span class="nav-text">注意事项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#浮点数精度问题"><span class="nav-number">2.8.</span> <span class="nav-text">浮点数精度问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成器"><span class="nav-number">2.9.</span> <span class="nav-text">生成器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#判断命名空间是否存在"><span class="nav-number">2.9.1.</span> <span class="nav-text">判断命名空间是否存在</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Trait"><span class="nav-number">2.10.</span> <span class="nav-text">Trait</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#防止重复提交表单"><span class="nav-number">2.11.</span> <span class="nav-text">防止重复提交表单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模版"><span class="nav-number">2.12.</span> <span class="nav-text">模版</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间日期"><span class="nav-number">2.13.</span> <span class="nav-text">时间日期</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#设计-思想"><span class="nav-number">3.</span> <span class="nav-text">设计/思想</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DDD"><span class="nav-number">3.1.</span> <span class="nav-text">DDD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#微服务"><span class="nav-number">3.2.</span> <span class="nav-text">微服务</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#环境"><span class="nav-number">4.</span> <span class="nav-text">环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CGI-FastCGI／PHP-FPM"><span class="nav-number">4.1.</span> <span class="nav-text">CGI/FastCGI／PHP-FPM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx-php-fpm-自定义-HTTP-Header"><span class="nav-number">4.2.</span> <span class="nav-text">nginx+php-fpm 自定义 HTTP Header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生产环境常用配置"><span class="nav-number">4.3.</span> <span class="nav-text">生产环境常用配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#zend-opcache（不能同时使用-zend-guard-loader）"><span class="nav-number">4.3.1.</span> <span class="nav-text">zend opcache（不能同时使用 zend guard loader）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#php-fpm"><span class="nav-number">4.4.</span> <span class="nav-text">php-fpm</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#性能"><span class="nav-number">5.</span> <span class="nav-text">性能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">6.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Book"><span class="nav-number">7.1.</span> <span class="nav-text">Book</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Link"><span class="nav-number">7.2.</span> <span class="nav-text">Link</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>使用supervisor监管laravels | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LaravelSSupervisor">
+  
+  
+  
+  
+  <meta name="description" content="Supervisor 是一个 Python 写的进程管理工具，有时一个进程需要在后台运行，并且意外挂掉后能够自动重启，就需要这么一个管理进程的工具。">
+<meta name="keywords" content="LaravelS,Supervisor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Supervisor监管LaravelS">
+<meta property="og:url" content="http://blog.caoxl.com/2019/11/06/Supervisor-For-Laravels/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Supervisor 是一个 Python 写的进程管理工具，有时一个进程需要在后台运行，并且意外挂掉后能够自动重启，就需要这么一个管理进程的工具。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-06T03:24:42.335Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Supervisor监管LaravelS">
+<meta name="twitter:description" content="Supervisor 是一个 Python 写的进程管理工具，有时一个进程需要在后台运行，并且意外挂掉后能够自动重启，就需要这么一个管理进程的工具。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Supervisor-For-Laravels" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      使用Supervisor监管LaravelS
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/11/06/Supervisor-For-Laravels/" class="article-date">
+	  <time datetime="2019-11-06T02:42:02.000Z" itemprop="datePublished">2019-11-06</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>Supervisor 是一个 Python 写的进程管理工具，有时一个进程需要在后台运行，并且意外挂掉后能够自动重启，就需要这么一个管理进程的工具。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li>使用 pip 工具进行安装：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># sudo pip install supervisor</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>Ubuntu 系统使用 apt-get</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install supervisor</span><br></pre></td></tr></table></figure>
+<ul>
+<li>检查是否安装完成</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># supervisord --help</span></span><br><span class="line">supervisord -- run a set of applications <span class="keyword">as</span> daemons.</span><br><span class="line"></span><br><span class="line">Usage: /usr/bin/supervisord [options]</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">-c/--configuration FILENAME -- configuration file path (searches <span class="keyword">if</span> not given)</span><br><span class="line">-n/--nodaemon -- run in the foreground (same <span class="keyword">as</span> <span class="string">'nodaemon=true'</span> in config file)</span><br><span class="line">-h/--help -- <span class="keyword">print</span> this usage message <span class="keyword">and</span> <span class="keyword">exit</span></span><br><span class="line">-v/--version -- <span class="keyword">print</span> supervisord version number <span class="keyword">and</span> <span class="keyword">exit</span></span><br><span class="line">-u/--user USER -- run supervisord <span class="keyword">as</span> this user (<span class="keyword">or</span> numeric uid)</span><br><span class="line">-m/--umask UMASK -- <span class="keyword">use</span> <span class="title">this</span> <span class="title">umask</span> <span class="title">for</span> <span class="title">daemon</span> <span class="title">subprocess</span> (<span class="title">default</span> <span class="title">is</span> 022)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>运行这个命令可以生成一个默认的配置文件：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo_supervisord_conf &gt; /etc/supervisord/supervisord.conf</span><br></pre></td></tr></table></figure>
+<p>生成成功后，打开编辑这个文件，把最后的 include 块的注释打开，并修改如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">include</span>]</span><br><span class="line">files = /etc/supervisor<span class="comment">/*.conf</span></span><br></pre></td></tr></table></figure>
+<p>新增的 <code>Supervisor</code> 配置文件放在 <code>/etc/supervisor</code> 目录下，并且以 <code>conf</code> 结尾。</p>
+<p>这时我们使用新的配置文件来启动 Supervisor：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">supervisord -c /etc/supervisord.conf</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果提示已经有进程在运行，那么先 kill 掉它。</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># supervisord -c /etc/supervisord.conf </span></span><br><span class="line">Error: Another program is already listening on a port that one of our HTTP servers is configured to <span class="keyword">use</span>.  <span class="title">Shut</span> <span class="title">this</span> <span class="title">program</span> <span class="title">down</span> <span class="title">first</span> <span class="title">before</span> <span class="title">starting</span> <span class="title">supervisord</span>.</span><br><span class="line"><span class="title">For</span> <span class="title">help</span>, <span class="title">use</span> /<span class="title">usr</span>/<span class="title">bin</span>/<span class="title">supervisord</span> -<span class="title">h</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>找到旧进程, kill掉</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># ps -ef | grep supervisord</span></span><br><span class="line">root       <span class="number">551</span> <span class="number">31716</span>  <span class="number">0</span> <span class="number">10</span>:<span class="number">53</span> pts/<span class="number">3</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> grep --color=auto supervisord</span><br><span class="line">root     <span class="number">32156</span>     <span class="number">1</span>  <span class="number">0</span> <span class="number">10</span>:<span class="number">18</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /usr/bin/python2 /usr/bin/supervisord -c ./supervisor/supervisord.conf</span><br><span class="line">[root@caoxl ~]<span class="comment"># kill -9 32156</span></span><br></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><blockquote>
+<p><code>Supervisor</code>管理<code>LaravelS</code>进程</p>
+</blockquote>
+<ul>
+<li>新增 <code>/etc/supervisor/supervisord.conf</code> 配置文件</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[program: laravel6]</span><br><span class="line">command=/usr/local/php/php72/bin/php /<span class="keyword">var</span>/www/laravel6/bin/laravels start -i</span><br><span class="line">directory=/<span class="keyword">var</span>/www/laravel6</span><br><span class="line">process_name=%(process_num)s</span><br><span class="line">autorestart=<span class="keyword">true</span></span><br><span class="line">autostart=<span class="keyword">true</span></span><br><span class="line">stderr_logfile=/<span class="keyword">var</span>/www/laravel6/storage/logs/supervisord-stderr.log</span><br><span class="line">stdout_logfile=/<span class="keyword">var</span>/www/laravel6/storage/logs/supervisord-stdout.log</span><br><span class="line">user=root</span><br><span class="line">numprocs=<span class="number">1</span></span><br><span class="line">startsecs=<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>说明</li>
+<li><code>command</code>: 运行程序的命令</li>
+<li><code>directory</code>: 命令执行的目录</li>
+<li><code>autorestart</code>: 程序意外退出是否自动重启</li>
+<li><code>autostart</code>: 是否自动启动</li>
+<li><code>stderr_logfile</code>: 错误日志文件</li>
+<li><code>stdout_logfile</code>: 输出日志文件</li>
+<li><code>user</code>: 进程执行的用户身份</li>
+<li><code>numprocs</code>: 进程数量</li>
+<li><code>startsecs</code>: 自动重启间隔</li>
+</ul>
+</blockquote>
+<p>一切就绪后，我们使用如下命令就可以启动进程的监听了：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# sudo supervisorctl reread</span><br><span class="line">laravel6: changed</span><br><span class="line"></span><br><span class="line">[root@caoxl ~]# sudo supervisorctl update</span><br><span class="line">laravel6: stopped</span><br><span class="line">laravel6: updated process group</span><br><span class="line"></span><br><span class="line">[root@caoxl ~]# sudo supervisorctl start laravel6:*</span><br></pre></td></tr></table></figure>
+<ul>
+<li>检查开启成功</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># ps -ef | grep laravels</span></span><br><span class="line">root      <span class="number">2258</span>   <span class="number">593</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">15</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /<span class="keyword">var</span>/www/laravel6 laravels: master process</span><br><span class="line">root      <span class="number">2269</span>  <span class="number">2258</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">15</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /<span class="keyword">var</span>/www/laravel6 laravels: manager process</span><br><span class="line">root      <span class="number">2275</span>  <span class="number">2269</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">15</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /<span class="keyword">var</span>/www/laravel6 laravels: task worker process <span class="number">4</span></span><br><span class="line">root      <span class="number">2276</span>  <span class="number">2269</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">15</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /<span class="keyword">var</span>/www/laravel6 laravels: task worker process <span class="number">5</span></span><br><span class="line">root      <span class="number">2277</span>  <span class="number">2269</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">15</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /<span class="keyword">var</span>/www/laravel6 laravels: task worker process <span class="number">6</span></span><br><span class="line">root      <span class="number">2278</span>  <span class="number">2269</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">15</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /<span class="keyword">var</span>/www/laravel6 laravels: task worker process <span class="number">7</span></span><br><span class="line">root      <span class="number">2279</span>  <span class="number">2269</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">15</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /<span class="keyword">var</span>/www/laravel6 laravels: worker process <span class="number">0</span></span><br><span class="line">root      <span class="number">2280</span>  <span class="number">2269</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">15</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /<span class="keyword">var</span>/www/laravel6 laravels: worker process <span class="number">1</span></span><br><span class="line">root      <span class="number">2281</span>  <span class="number">2269</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">15</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /<span class="keyword">var</span>/www/laravel6 laravels: worker process <span class="number">2</span></span><br><span class="line">root      <span class="number">2282</span>  <span class="number">2269</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">15</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /<span class="keyword">var</span>/www/laravel6 laravels: worker process <span class="number">3</span></span><br><span class="line">root      <span class="number">2337</span>  <span class="number">1412</span>  <span class="number">0</span> <span class="number">11</span>:<span class="number">16</span> pts/<span class="number">4</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> grep --color=auto laravels</span><br></pre></td></tr></table></figure>
+<ul>
+<li>检查LaravelS进程</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl laravel6]<span class="comment"># php bin/laravels info</span></span><br><span class="line"> _                               _  _____ </span><br><span class="line">| |                             | |/ ____|</span><br><span class="line">| |     __ _ _ __ __ ___   _____| | (___  </span><br><span class="line">| |    / _` | <span class="string">'__/ _` \ \ / / _ \ |\___ \ </span></span><br><span class="line"><span class="string">| |___| (_| | | | (_| |\ V /  __/ |____) |</span></span><br><span class="line"><span class="string">|______\__,_|_|  \__,_| \_/ \___|_|_____/ </span></span><br><span class="line"><span class="string">                                           </span></span><br><span class="line"><span class="string">Speed up your Laravel/Lumen</span></span><br><span class="line"><span class="string">&gt;&gt;&gt; Components</span></span><br><span class="line"><span class="string">+---------------------------+---------+</span></span><br><span class="line"><span class="string">| Component                 | Version |</span></span><br><span class="line"><span class="string">+---------------------------+---------+</span></span><br><span class="line"><span class="string">| PHP                       | 7.2.7   |</span></span><br><span class="line"><span class="string">| Swoole                    | 4.4.7   |</span></span><br><span class="line"><span class="string">| LaravelS                  | 3.5.12  |</span></span><br><span class="line"><span class="string">| Laravel Framework [local] | 6.4.1   |</span></span><br><span class="line"><span class="string">+---------------------------+---------+</span></span><br><span class="line"><span class="string">&gt;&gt;&gt; Protocols</span></span><br><span class="line"><span class="string">+------------------------+--------+-------------------------------+----------------+</span></span><br><span class="line"><span class="string">| Protocol               | Status | Handler                       | Listen At      |</span></span><br><span class="line"><span class="string">+------------------------+--------+-------------------------------+----------------+</span></span><br><span class="line"><span class="string">| Main HTTP              | On     | Laravel Framework             | 127.0.0.1:5200 |</span></span><br><span class="line"><span class="string">| Main WebSocket         | On     | App\Services\WebSocketService | 127.0.0.1:5200 |</span></span><br><span class="line"><span class="string">| Port#0 TCP IPV4 Socket | On     | App\Sockets\SwooleTcpSocket   | 127.0.0.1:5300 |</span></span><br><span class="line"><span class="string">| Port#1 UDP IPV4 Socket | On     | App\Sockets\SwooleUdpSocket   | 0.0.0.0:5301   |</span></span><br><span class="line"><span class="string">+------------------------+--------+-------------------------------+----------------+</span></span><br><span class="line"><span class="string">&gt;&gt;&gt; Feedback: https://github.com/hhxsv5/laravel-s</span></span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/11/06/Supervisor-For-Laravels/" target="_blank" title="使用Supervisor监管LaravelS">http://blog.caoxl.com/2019/11/06/Supervisor-For-Laravels/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LaravelS/">LaravelS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Supervisor/">Supervisor</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/11/07/Lumen57-Use-Email/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Lumen5.7 实现邮件发送
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/29/Linux-Testing-WebSocket/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Linux 命令行测试WebSocket</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置"><span class="nav-number">2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用"><span class="nav-number">3.</span> <span class="nav-text">使用</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

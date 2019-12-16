@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>http 协议入门 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="HTTPInternet">
+  
+  
+  
+  
+  <meta name="description" content="HTTP 协议是互联网的基础协议，也是网页开发的必备知识，最新版本 HTTP/2 更是让它成为技术热点。 本文介绍 HTTP 协议的历史演变和设计思路。">
+<meta name="keywords" content="HTTP,Internet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP 协议入门">
+<meta property="og:url" content="http://blog.caoxl.com/2018/02/03/HTTP-Protocol-Intro/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="HTTP 协议是互联网的基础协议，也是网页开发的必备知识，最新版本 HTTP/2 更是让它成为技术热点。 本文介绍 HTTP 协议的历史演变和设计思路。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016081901.jpg">
+<meta property="og:updated_time" content="2019-08-22T03:47:23.007Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP 协议入门">
+<meta name="twitter:description" content="HTTP 协议是互联网的基础协议，也是网页开发的必备知识，最新版本 HTTP/2 更是让它成为技术热点。 本文介绍 HTTP 协议的历史演变和设计思路。">
+<meta name="twitter:image" content="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016081901.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-HTTP-Protocol-Intro" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      HTTP 协议入门
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/02/03/HTTP-Protocol-Intro/" class="article-date">
+	  <time datetime="2018-02-03T07:43:59.000Z" itemprop="datePublished">2018-02-03</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>HTTP 协议是互联网的基础协议，也是网页开发的必备知识，最新版本 HTTP/2 更是让它成为技术热点。</p>
+<p>本文介绍 HTTP 协议的历史演变和设计思路。</p>
+<a id="more"></a>
+<blockquote>
+<p>原文地址: <a href="http://www.ruanyifeng.com/blog/2016/08/http.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2016/08/http.html</a></p>
+</blockquote>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2016/bg2016081901.jpg" alt></p>
+<h1 id="HTTP-0-9"><a href="#HTTP-0-9" class="headerlink" title="HTTP/0.9"></a>HTTP/0.9</h1><p>HTTP 是基于 TCP/IP 协议的 <u><a href="http://www.ruanyifeng.com/blog/2012/05/internet_protocol_suite_part_i.html" target="_blank" rel="noopener">应用层协议</a></u>。它不涉及数据包（packet）传输，主要规定了客户端和服务器之间的通信格式，默认使用80端口。</p>
+<p>最早版本是1991年发布的<code>0.9</code>版。该版本极其简单，只有一个命令<code>GET</code>。</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> /<span class="keyword">index</span>.html</span><br></pre></td></tr></table></figure>
+<p>上面命令表示，<code>TCP</code> 连接（connection）建立后，客户端向服务器请求（request）网页<code>index.html</code>。</p>
+<p>协议规定，服务器只能回应HTML格式的字符串，不能回应别的格式。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>服务器发送完毕，就关闭<code>TCP</code>连接。</p>
+<h1 id="HTTP-1-0"><a href="#HTTP-1-0" class="headerlink" title="HTTP/1.0"></a>HTTP/1.0</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>1996年5月，HTTP/1.0 版本发布，内容大大增加。</p>
+<p>首先，任何格式的内容都可以发送。这使得互联网不仅可以传输文字，还能传输图像、视频、二进制文件。这为互联网的大发展奠定了基础。</p>
+<p>其次，除了<code>GET</code>命令，还引入了<code>POST</code>命令和<code>HEAD</code>命令，丰富了浏览器与服务器的互动手段。</p>
+<p>再次，HTTP请求和回应的格式也变了。除了数据部分，每次通信都必须包括头信息（HTTP header），用来描述一些元数据。</p>
+<p>其他的新增功能还包括<code>状态码（status code）</code>、<code>多字符集支持</code>、<code>多部分发送（multi-part type）</code>、<code>权限（authorization）</code>、<code>缓存（cache）</code>、<code>内容编码（content encoding）</code>等。</p>
+<h2 id="请求格式"><a href="#请求格式" class="headerlink" title="请求格式"></a>请求格式</h2><p>下面是一个<code>1.0</code>版的HTTP请求的例子。</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/</span> HTTP/1.0</span><br><span class="line"><span class="attribute">User-Agent</span>: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5)</span><br><span class="line"><span class="attribute">Accept</span>: */*</span><br></pre></td></tr></table></figure>
+<p>可以看到，这个格式与0.9版有很大变化。</p>
+<p>第一行是请求命令，必须在尾部添加<code>协议版本</code>（HTTP/1.0）。后面就是多行头信息，描述客户端的情况。</p>
+<h2 id="回应格式"><a href="#回应格式" class="headerlink" title="回应格式"></a>回应格式</h2><p>服务器的回应如下。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">HTTP/<span class="number">1.0</span> <span class="number">200</span> OK </span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Length: <span class="number">137582</span></span><br><span class="line">Expires: Thu, <span class="number">05</span> Dec <span class="number">1997</span> <span class="number">16</span>:<span class="number">00</span>:<span class="number">00</span> GMT</span><br><span class="line">Last-Modified: Wed, <span class="number">5</span> August <span class="number">1996</span> <span class="number">15</span>:<span class="number">55</span>:<span class="number">28</span> GMT</span><br><span class="line">Server: Apache <span class="number">0.84</span></span><br><span class="line"></span><br><span class="line">&lt;html&gt;</span><br><span class="line">  &lt;body&gt;Hello World&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>回应的格式是 <strong>“头信息 + 一个空行（\r\n） + 数据”</strong>。<br>其中，<strong>第一行是”协议版本 + 状态码（status code） + 状态描述”</strong>。</p>
+<h2 id="Content-Type-字段"><a href="#Content-Type-字段" class="headerlink" title="Content-Type 字段"></a>Content-Type 字段</h2><p>关于字符的编码，1.0版规定，头信息必须是 <code>ASCII</code> 码，后面的数据可以是任何格式。因此，服务器回应的时候，必须告诉客户端，数据是什么格式，这就是<code>Content-Type</code> 字段的作用。</p>
+<ul>
+<li>下面是一些常见的<code>Content-Type</code>字段的值。</li>
+</ul>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">text</span>/plain</span><br><span class="line"><span class="built_in">text</span>/html</span><br><span class="line"><span class="built_in">text</span>/css</span><br><span class="line">image/jpeg</span><br><span class="line">image/png</span><br><span class="line">image/svg+xml</span><br><span class="line">audio/mp4</span><br><span class="line">video/mp4</span><br><span class="line"><span class="built_in">application</span>/javascript</span><br><span class="line"><span class="built_in">application</span>/pdf</span><br><span class="line"><span class="built_in">application</span>/zip</span><br><span class="line"><span class="built_in">application</span>/atom+xml</span><br></pre></td></tr></table></figure>
+<p>这些数据类型总称为<code>MIME type</code>，每个值包括<code>一级类型</code>和<code>二级类型</code>，之间用<code>斜杠</code>分隔。</p>
+<ul>
+<li>除了预定义的类型，厂商也可以自定义类型。</li>
+</ul>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">application/vnd.debian.<span class="built_in">binary</span>-<span class="keyword">package</span></span><br></pre></td></tr></table></figure>
+<p>上面的类型表明，发送的是<code>Debian</code>系统的二进制数据包。</p>
+<ul>
+<li><code>MIME type</code> 还可以在尾部使用<code>分号</code>，添加参数。</li>
+</ul>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-<span class="keyword">Type</span>: <span class="type">text</span>/html; charset=utf<span class="number">-8</span></span><br></pre></td></tr></table></figure>
+<p>上面的类型表明，<strong>发送的是网页，而且编码是<code>UTF-8</code></strong>。</p>
+<ul>
+<li>客户端请求的时候，可以使用<code>Accept</code>字段声明自己可以接受哪些数据格式。</li>
+</ul>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Accept</span>: */*</span><br></pre></td></tr></table></figure>
+<p>上面代码中，客户端声明自己可以接受任何格式的数据。</p>
+<ul>
+<li><code>MIME type</code>不仅用在HTTP协议，还可以用在其他地方，比如<code>HTML</code>网页。</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"Content-Type"</span> <span class="attr">content</span>=<span class="string">"text/html; charset=UTF-8"</span> /&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 等同于 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Content-Encoding-字段"><a href="#Content-Encoding-字段" class="headerlink" title="Content-Encoding 字段"></a>Content-Encoding 字段</h2><p>由于发送的数据可以是任何格式，因此可以把数据压缩后再发送。<code>Content-Encoding</code>字段说明数据的压缩方法。</p>
+<figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Encoding</span>: gzip</span><br><span class="line"><span class="attribute">Content-Encoding</span>: compress</span><br><span class="line"><span class="attribute">Content-Encoding</span>: deflate</span><br></pre></td></tr></table></figure>
+<p>客户端在请求时，用<code>Accept-Encoding</code>字段说明自己可以接受哪些压缩方法。</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Accept</span>-Encoding: gzip, deflate</span><br></pre></td></tr></table></figure>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><p><code>HTTP/1.0</code> 版的主要缺点是，<strong>每个TCP连接只能发送一个请求</strong>。发送数据完毕，连接就关闭，如果还要请求其他资源，就必须再新建一个连接。</p>
+<p>TCP连接的新建成本很高，因为<strong>需要客户端和服务器三次握手</strong>，并且开始时发送速率较慢（slow start）。所以，HTTP 1.0版本的性能比较差。随着网页加载的外部资源越来越多，这个问题就愈发突出了。</p>
+<p>为了解决这个问题，有些浏览器在请求时，用了一个非标准的<code>Connection</code>字段。</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">Connection</span>: <span class="meta">keep</span>-alive</span><br></pre></td></tr></table></figure>
+<p>一个可以复用的TCP连接就建立了，直到客户端或服务器主动关闭连接。但是，这不是标准字段，不同实现的行为可能不一致，因此不是根本的解决办法。</p>
+<h1 id="HTTP-1-1"><a href="#HTTP-1-1" class="headerlink" title="HTTP/1.1"></a>HTTP/1.1</h1><p>1997年1月，<code>HTTP/1.1</code> 版本发布，只比 <code>1.0</code> 版本晚了半年。它进一步完善了 HTTP 协议，一直用到了20年后的今天，直到现在还是最流行的版本。</p>
+<h2 id="持久连接"><a href="#持久连接" class="headerlink" title="持久连接"></a>持久连接</h2><p>1.1 版的最大变化，就是引入了<code>持久连接</code>（persistent connection），即<strong>TCP连接默认不关闭，可以被多个请求复用，不用声明 <code>Connection: keep-alive</code></strong>。</p>
+<p>客户端和服务器发现对方一段时间没有活动，就可以主动关闭连接。不过，规范的做法是，客户端在最后一个请求时，发送<code>Connection: close</code>，明确要求服务器关闭TCP连接。</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Connection</span>: <span class="keyword">close</span></span><br></pre></td></tr></table></figure>
+<p>目前，对于同一个域名，大多数浏览器允许同时建立6个持久连接。</p>
+<h2 id="管道机制"><a href="#管道机制" class="headerlink" title="管道机制"></a>管道机制</h2><p>1.1 版还引入了<code>管道机制</code>（pipelining），即<strong>在同一个TCP连接里面，客户端可以同时发送多个请求</strong>。这样就进一步改进了HTTP协议的效率。</p>
+<p>举例来说，客户端需要请求两个资源。以前的做法是，在同一个TCP连接里面，先发送A请求，然后等待服务器做出回应，收到后再发出B请求。<strong>管道机制则是允许浏览器同时发出A请求和B请求，但是服务器还是按照顺序，先回应A请求，完成后再回应B请求</strong></p>
+<h2 id="Content-Length-字段"><a href="#Content-Length-字段" class="headerlink" title="Content-Length 字段"></a>Content-Length 字段</h2><p>一个TCP连接现在可以传送多个回应，势必就要有一种机制，区分数据包是属于哪一个回应的。这就是<code>Content-length</code>字段的作用，<strong>声明本次回应的数据长度</strong>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">Content-Length:</span> <span class="number">3495</span></span><br></pre></td></tr></table></figure>
+<p>上面代码告诉浏览器，本次回应的长度是3495个字节，后面的字节就属于下一个回应了。</p>
+<p>在1.0版中，<code>Content-Length</code>字段不是必需的，因为浏览器发现服务器关闭了TCP连接，就表明收到的数据包已经全了。</p>
+<h2 id="分块传输编码"><a href="#分块传输编码" class="headerlink" title="分块传输编码"></a>分块传输编码</h2><p>使用<code>Content-Length</code>字段的前提条件是，服务器发送回应之前，必须知道回应的数据长度。</p>
+<p>对于一些很耗时的动态操作来说，这意味着，服务器要等到所有操作完成，才能发送数据，显然这样的效率不高。更好的处理方法是，产生一块数据，就发送一块，采用<code>&quot;流模式&quot;</code>（stream）取代 <code>&quot;缓存模式&quot;</code>（buffer）。</p>
+<p>因此，1.1版规定可以不使用<code>Content-Length</code>字段，而使用<u><a href="https://zh.wikipedia.org/wiki/%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93%E7%BC%96%E7%A0%81" target="_blank" rel="noopener">“分块传输编码”</a></u>（chunked transfer encoding）。只要请求或回应的头信息有<code>Transfer-Encoding</code>字段，就表明回应将由数量未定的数据块组成。</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Transfer</span>-Encoding: chunked</span><br></pre></td></tr></table></figure>
+<p>每个非空的数据块之前，会有一个16进制的数值，表示这个块的长度。最后是一个大小为0的块，就表示本次回应的数据发送完了。下面是一个例子。</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span>: text/plain</span><br><span class="line"><span class="attribute">Transfer-Encoding</span>: chunked</span><br><span class="line"></span><br><span class="line"><span class="attribute">25</span></span><br><span class="line">This is the data in the first chunk</span><br><span class="line"></span><br><span class="line"><span class="attribute">1C</span></span><br><span class="line">and this is the second one</span><br><span class="line"></span><br><span class="line"><span class="attribute">3</span></span><br><span class="line"><span class="attribute">con</span></span><br><span class="line"><span class="attribute"></span></span><br><span class="line"><span class="attribute">8</span></span><br><span class="line"><span class="attribute">sequence</span></span><br><span class="line"><span class="attribute"></span></span><br><span class="line"><span class="attribute">0</span></span><br></pre></td></tr></table></figure>
+<h2 id="其他功能"><a href="#其他功能" class="headerlink" title="其他功能"></a>其他功能</h2><p>1.1版还新增了许多动词方法：<code>PUT</code>、<code>PATCH</code>、<code>HEAD</code>、 <code>OPTIONS</code>、<code>DELETE</code>。</p>
+<p>另外，客户端请求的头信息新增了<code>Host</code>字段，用来指定服务器的域名。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">Host</span>: <span class="selector-tag">www</span><span class="selector-class">.example</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+<p>有了<code>Host</code>字段，就可以将请求发往同一台服务器上的不同网站，为虚拟主机的兴起打下了基础。</p>
+<h2 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h2><p>虽然1.1版允许复用TCP连接，但是同一个TCP连接里面，所有的数据通信是按次序进行的。服务器只有处理完一个回应，才会进行下一个回应。要是前面的回应特别慢，后面就会有许多请求排队等着。这称为<u><a href="https://zh.wikipedia.org/wiki/%E9%98%9F%E5%A4%B4%E9%98%BB%E5%A1%9E" target="_blank" rel="noopener">“队头堵塞”</a></u>（Head-of-line blocking）。</p>
+<p>为了避免这个问题，只有两种方法：<strong>一是减少请求数，二是同时多开持久连接</strong>。这导致了很多的网页优化技巧，比如合并脚本和样式表、将图片嵌入CSS代码、域名分片（domain sharding）等等。如果HTTP协议设计得更好一些，这些额外的工作是可以避免的。</p>
+<h1 id="SPDY-协议"><a href="#SPDY-协议" class="headerlink" title="SPDY 协议"></a>SPDY 协议</h1><p>2009年，谷歌公开了自行研发的 SPDY 协议，主要解决 HTTP/1.1 效率不高的问题。</p>
+<p>这个协议在Chrome浏览器上证明可行以后，就被当作 <code>HTTP/2</code> 的基础，主要特性都在 <code>HTTP/2</code> 之中得到继承。</p>
+<h1 id="HTTP-2"><a href="#HTTP-2" class="headerlink" title="HTTP/2"></a>HTTP/2</h1><p>2015年，<code>HTTP/2</code> 发布。它不叫 <code>HTTP/2.0</code>，是因为标准委员会不打算再发布子版本了，下一个新版本将是 <code>HTTP/3</code>。</p>
+<h2 id="二进制协议"><a href="#二进制协议" class="headerlink" title="二进制协议"></a>二进制协议</h2><p>HTTP/1.1 版的头信息肯定是文本（ASCII编码），数据体可以是文本，也可以是二进制。HTTP/2 则是一个彻底的二进制协议，头信息和数据体都是二进制，并且统称为”帧”（frame）：头信息帧和数据帧。</p>
+<p>二进制协议的一个好处是，可以定义额外的帧。HTTP/2 定义了近十种帧，为将来的高级应用打好了基础。如果使用文本实现这种功能，解析数据将会变得非常麻烦，二进制解析则方便得多。</p>
+<h2 id="多工"><a href="#多工" class="headerlink" title="多工"></a>多工</h2><p>HTTP/2 复用TCP连接，在一个连接里，客户端和浏览器都可以同时发送多个请求或回应，而且不用按照顺序一一对应，这样就避免了”队头堵塞”。</p>
+<p>举例来说，在一个TCP连接里面，服务器同时收到了A请求和B请求，于是先回应A请求，结果发现处理过程非常耗时，于是就发送A请求已经处理好的部分， 接着回应B请求，完成后，再发送A请求剩下的部分。</p>
+<p>这样双向的、实时的通信，就叫做多工（Multiplexing）。</p>
+<h2 id="数据流"><a href="#数据流" class="headerlink" title="数据流"></a>数据流</h2><p>因为 HTTP/2 的数据包是不按顺序发送的，同一个连接里面连续的数据包，可能属于不同的回应。因此，必须要对数据包做标记，指出它属于哪个回应。</p>
+<p><strong>HTTP/2 将每个请求或回应的所有数据包</strong>，称为一个<strong>数据流</strong>（stream）。每个数据流都有一个独一无二的编号。数据包发送的时候，都必须标记数据流ID，用来区分它属于哪个数据流。另外还规定，<strong>客户端发出的数据流，ID一律为奇数</strong>，<strong>服务器发出的，ID为偶数</strong>。</p>
+<p>数据流发送到一半的时候，客户端和服务器都可以发送信号（<code>RST_STREAM</code>帧），取消这个数据流。1.1版取消数据流的唯一方法，就是<strong>关闭TCP连接</strong>。这就是说，HTTP/2 可以<strong>取消某一次请求</strong>，同时保证TCP连接还打开着，可以被其他请求使用。</p>
+<p>客户端还可以指定数据流的优先级。<strong>优先级越高，服务器就会越早回应</strong>。</p>
+<h2 id="头信息压缩"><a href="#头信息压缩" class="headerlink" title="头信息压缩"></a>头信息压缩</h2><p>HTTP 协议不带有状态，每次请求都必须附上所有信息。所以，请求的很多字段都是重复的，比如<code>Cookie</code>和<code>User Agent</code>，一模一样的内容，每次请求都必须附带，这会浪费很多带宽，也影响速度。</p>
+<p>HTTP/2 对这一点做了优化，引入了<strong>头信息压缩机制</strong>（header compression）。一方面，头信息使用<code>gzip</code>或<code>compress</code>压缩后再发送；另一方面，客户端和服务器同时维护一张头信息表，所有字段都会存入这个表，生成一个索引号，以后就不发送同样字段了，只发送索引号，这样就提高速度了。</p>
+<h2 id="服务器推送"><a href="#服务器推送" class="headerlink" title="服务器推送"></a>服务器推送</h2><p>HTTP/2 允许服务器未经请求，主动向客户端发送资源，这叫做<strong>服务器推送</strong>（server push）。</p>
+<p>常见场景是客户端请求一个网页，这个网页里面包含很多静态资源。正常情况下，客户端必须收到网页后，解析HTML源码，发现有静态资源，再发出静态资源请求。其实，服务器可以预期到客户端请求网页后，很可能会再请求静态资源，所以就主动把这些静态资源随着网页一起发给客户端了。</p>
+<h1 id="本网页"><a href="#本网页" class="headerlink" title="本网页"></a>本网页</h1><ul>
+<li><code>General</code></li>
+</ul>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Request URL:http:<span class="comment">//blog.caoxl.com/2018/02/03/HTTP-Intro/</span></span><br><span class="line">Request <span class="function"><span class="keyword">Method</span>:</span>GET</span><br><span class="line">Status Code:<span class="number">304</span> <span class="keyword">Not</span> Modified</span><br><span class="line">Remote Address:<span class="number">151.101</span>.<span class="number">229.147</span>:<span class="number">80</span></span><br><span class="line">Referrer Policy:no-referrer-when-downgrade</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>Response Headers</code></li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"># view parsed</span><br><span class="line">Age:<span class="number">5</span></span><br><span class="line">Cache-Control:max-age=<span class="number">600</span></span><br><span class="line">Connection:keep-alive</span><br><span class="line">Date:Sat, <span class="number">03</span> Feb <span class="number">2018</span> <span class="number">08</span>:<span class="number">33</span>:<span class="number">03</span> GMT</span><br><span class="line">Expires:Sat, <span class="number">03</span> Feb <span class="number">2018</span> <span class="number">08</span>:<span class="number">42</span>:<span class="number">58</span> GMT</span><br><span class="line">Vary:Accept-Encoding</span><br><span class="line">Via:<span class="number">1.1</span> varnish</span><br><span class="line">X-Cache:HIT</span><br><span class="line">X-Cache-Hits:<span class="number">1</span></span><br><span class="line">X-Fastly-Request-ID:b770852001fc1f36ee2b4c9fab1904a373276975</span><br><span class="line">X-Served-By:cache-hnd18734-HND</span><br><span class="line">X-Timer:S1517646784<span class="number">.873803</span>,VS0,VE0</span><br><span class="line"></span><br><span class="line"># view source</span><br><span class="line">HTTP/<span class="number">1.1</span> <span class="number">304</span> Not Modified</span><br><span class="line">Date: Sat, <span class="number">03</span> Feb <span class="number">2018</span> <span class="number">08</span>:<span class="number">33</span>:<span class="number">03</span> GMT</span><br><span class="line">Via: <span class="number">1.1</span> varnish</span><br><span class="line">Cache-Control: max-age=<span class="number">600</span></span><br><span class="line">Expires: Sat, <span class="number">03</span> Feb <span class="number">2018</span> <span class="number">08</span>:<span class="number">42</span>:<span class="number">58</span> GMT</span><br><span class="line">Age: <span class="number">5</span></span><br><span class="line">Connection: keep-alive</span><br><span class="line">X-Served-By: cache-hnd18734-HND</span><br><span class="line">X-Cache: HIT</span><br><span class="line">X-Cache-Hits: <span class="number">1</span></span><br><span class="line">X-Timer: S1517646784<span class="number">.873803</span>,VS0,VE0</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">X-Fastly-Request-ID: b770852001fc1f36ee2b4c9fab1904a373276975</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>Request Headers</code></li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># view parsed</span><br><span class="line">Accept:text/html,application/xhtml+xml,application/xml;q=<span class="number">0.9</span>,image/webp,image/apng,*<span class="comment">/*;q=0.8</span></span><br><span class="line"><span class="comment">Accept-Encoding:gzip, deflate</span></span><br><span class="line"><span class="comment">Accept-Language:zh-CN,zh;q=0.9</span></span><br><span class="line"><span class="comment">Cache-Control:max-age=0</span></span><br><span class="line"><span class="comment">Connection:keep-alive</span></span><br><span class="line"><span class="comment">Cookie:UM_distinctid=160b6164b84670-0374eeda1906ff-7b1030-1fa400-160b6164b8580c; CNZZDATA1266840871=1026085704-1517393344-null%7C1517393344; CNZZDATA1260716016=1583935213-1514879926-%7C1517642812</span></span><br><span class="line"><span class="comment">Host:blog.caoxl.com</span></span><br><span class="line"><span class="comment">If-Modified-Since:Sat, 03 Feb 2018 08:32:32 GMT</span></span><br><span class="line"><span class="comment">Referer:http://blog.caoxl.com/archives/</span></span><br><span class="line"><span class="comment">Upgrade-Insecure-Requests:1</span></span><br><span class="line"><span class="comment">User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"># view source</span></span><br><span class="line"><span class="comment">GET /2018/02/03/HTTP-Intro/ HTTP/1.1</span></span><br><span class="line"><span class="comment">Host: blog.caoxl.com</span></span><br><span class="line"><span class="comment">Connection: keep-alive</span></span><br><span class="line"><span class="comment">Cache-Control: max-age=0</span></span><br><span class="line"><span class="comment">Upgrade-Insecure-Requests: 1</span></span><br><span class="line"><span class="comment">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36</span></span><br><span class="line"><span class="comment">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/</span>*;q=<span class="number">0.8</span></span><br><span class="line">Referer: http:<span class="comment">//blog.caoxl.com/archives/</span></span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=<span class="number">0.9</span></span><br><span class="line">Cookie: UM_distinctid=<span class="number">160</span>b6164b84670<span class="number">-0374</span>eeda1906ff<span class="number">-7</span>b1030<span class="number">-1f</span>a400<span class="number">-160</span>b6164b8580c; CNZZDATA1266840871=<span class="number">1026085704</span><span class="number">-1517393344</span>-<span class="literal">null</span>%<span class="number">7</span>C1517393344; CNZZDATA1260716016=<span class="number">1583935213</span><span class="number">-1514879926</span>-%<span class="number">7</span>C1517642812</span><br><span class="line">If-Modified-Since: Sat, <span class="number">03</span> Feb <span class="number">2018</span> <span class="number">08</span>:<span class="number">32</span>:<span class="number">32</span> GMT</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://www.ruanyifeng.com/blog/2016/08/http.html" target="_blank" rel="noopener">HTTP 协议入门</a></li>
+<li><a href="http://kamranahmed.info/blog/2016/08/13/http-in-depth/" target="_blank" rel="noopener">Journey to HTTP/2</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol" target="_blank" rel="noopener">Hypertext Transfer Protocol</a></li>
+<li><a href="https://tools.ietf.org/html/rfc1945" target="_blank" rel="noopener">HTTP/1.0 Specification</a></li>
+<li><a href="https://http2.github.io/http2-spec/" target="_blank" rel="noopener">HTTP/2 Specification</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/02/03/HTTP-Protocol-Intro/" target="_blank" title="HTTP 协议入门">http://blog.caoxl.com/2018/02/03/HTTP-Protocol-Intro/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/">Internet</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/03/Internet-Protocol-Intro-1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          互联网协议入门（一）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/02/cURL-Notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">cURL 「使用笔记」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-0-9"><span class="nav-number">1.</span> <span class="nav-text">HTTP/0.9</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-1-0"><span class="nav-number">2.</span> <span class="nav-text">HTTP/1.0</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">2.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求格式"><span class="nav-number">2.2.</span> <span class="nav-text">请求格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回应格式"><span class="nav-number">2.3.</span> <span class="nav-text">回应格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Content-Type-字段"><span class="nav-number">2.4.</span> <span class="nav-text">Content-Type 字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Content-Encoding-字段"><span class="nav-number">2.5.</span> <span class="nav-text">Content-Encoding 字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">2.6.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-1-1"><span class="nav-number">3.</span> <span class="nav-text">HTTP/1.1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#持久连接"><span class="nav-number">3.1.</span> <span class="nav-text">持久连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管道机制"><span class="nav-number">3.2.</span> <span class="nav-text">管道机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Content-Length-字段"><span class="nav-number">3.3.</span> <span class="nav-text">Content-Length 字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分块传输编码"><span class="nav-number">3.4.</span> <span class="nav-text">分块传输编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他功能"><span class="nav-number">3.5.</span> <span class="nav-text">其他功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点-1"><span class="nav-number">3.6.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SPDY-协议"><span class="nav-number">4.</span> <span class="nav-text">SPDY 协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-2"><span class="nav-number">5.</span> <span class="nav-text">HTTP/2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#二进制协议"><span class="nav-number">5.1.</span> <span class="nav-text">二进制协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多工"><span class="nav-number">5.2.</span> <span class="nav-text">多工</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据流"><span class="nav-number">5.3.</span> <span class="nav-text">数据流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#头信息压缩"><span class="nav-number">5.4.</span> <span class="nav-text">头信息压缩</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器推送"><span class="nav-number">5.5.</span> <span class="nav-text">服务器推送</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#本网页"><span class="nav-number">6.</span> <span class="nav-text">本网页</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

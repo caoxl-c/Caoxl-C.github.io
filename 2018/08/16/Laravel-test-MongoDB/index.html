@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>基于laravel mongodb的部分实践 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LaravelMongoDB">
+  
+  
+  
+  
+  <meta name="description" content="原文请看我的好朋友葉蕓榕的博客: laravel与MongoDB 的部分实践">
+<meta name="keywords" content="Laravel,MongoDB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Laravel MongoDB的部分实践">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/16/Laravel-test-MongoDB/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="原文请看我的好朋友葉蕓榕的博客: laravel与MongoDB 的部分实践">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-09-06T03:50:38.506Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于Laravel MongoDB的部分实践">
+<meta name="twitter:description" content="原文请看我的好朋友葉蕓榕的博客: laravel与MongoDB 的部分实践">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Laravel-test-MongoDB" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      基于Laravel MongoDB的部分实践
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/16/Laravel-test-MongoDB/" class="article-date">
+	  <time datetime="2018-08-16T03:26:02.000Z" itemprop="datePublished">2018-08-16</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>原文请看我的好朋友葉蕓榕的博客: <a href="http://yeyunrong.com/2018/04/02/laravel%E4%B8%8EMongoDB-%E7%9A%84%E9%83%A8%E5%88%86%E5%AE%9E%E8%B7%B5/" target="_blank" rel="noopener">laravel与MongoDB 的部分实践</a></p>
+</blockquote>
+<a id="more"></a>
+<h1 id="MongoDB客户端安装"><a href="#MongoDB客户端安装" class="headerlink" title="MongoDB客户端安装"></a>MongoDB客户端安装</h1><blockquote>
+<p><a href="http://www.runoob.com/mongodb/mongodb-window-install.html" target="_blank" rel="noopener">Windows 平台安装 MongoDB</a></p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">PS</span> <span class="string">C:\Program</span> <span class="string">Files\MongoDB\Server\4.0\bin&gt;</span> <span class="string">./mongo</span></span><br><span class="line"><span class="string">MongoDB</span> <span class="string">shell</span> <span class="string">version</span> <span class="string">v4.0.1</span></span><br><span class="line"><span class="attr">connecting to:</span> <span class="string">mongodb://127.0.0.1:27017</span></span><br><span class="line"><span class="attr">MongoDB server version:</span> <span class="number">4.0</span><span class="number">.1</span></span><br><span class="line"><span class="string">Welcome</span> <span class="string">to</span> <span class="string">the</span> <span class="string">MongoDB</span> <span class="string">shell.</span></span><br><span class="line"><span class="string">For</span> <span class="string">interactive</span> <span class="string">help,</span> <span class="string">type</span> <span class="string">"help"</span><span class="string">.</span></span><br><span class="line"><span class="string">For</span> <span class="string">more</span> <span class="string">comprehensive</span> <span class="string">documentation,</span> <span class="string">see</span></span><br><span class="line">        <span class="string">http://docs.mongodb.org/</span></span><br><span class="line"><span class="string">Questions?</span> <span class="string">Try</span> <span class="string">the</span> <span class="string">support</span> <span class="string">group</span></span><br><span class="line">        <span class="string">http://groups.google.com/group/mongodb-user</span></span><br><span class="line"><span class="attr">Server has startup warnings:</span></span><br><span class="line"><span class="number">2018</span><span class="number">-08</span><span class="string">-16T14:36:30.219+0800</span> <span class="string">I</span> <span class="string">CONTROL</span>  <span class="string">[initandlisten]</span></span><br><span class="line"><span class="number">2018</span><span class="number">-08</span><span class="string">-16T14:36:30.219+0800</span> <span class="string">I</span> <span class="string">CONTROL</span>  <span class="string">[initandlisten]</span> <span class="string">**</span> <span class="attr">WARNING:</span> <span class="string">Access</span> <span class="string">control</span> <span class="string">is</span> <span class="string">not</span> <span class="string">enabled</span> <span class="string">for</span> <span class="string">the</span> <span class="string">database.</span></span><br><span class="line"><span class="number">2018</span><span class="number">-08</span><span class="string">-16T14:36:30.220+0800</span> <span class="string">I</span> <span class="string">CONTROL</span>  <span class="string">[initandlisten]</span> <span class="string">**</span>          <span class="string">Read</span> <span class="string">and</span> <span class="string">write</span> <span class="string">access</span> <span class="string">to</span> <span class="string">data</span> <span class="string">and</span> <span class="string">configuration</span> <span class="string">is</span> <span class="string">unrestricted.</span></span><br><span class="line"><span class="number">2018</span><span class="number">-08</span><span class="string">-16T14:36:30.220+0800</span> <span class="string">I</span> <span class="string">CONTROL</span>  <span class="string">[initandlisten]</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">Enable</span> <span class="string">MongoDB's</span> <span class="string">free</span> <span class="string">cloud-based</span> <span class="string">monitoring</span> <span class="string">service,</span> <span class="string">which</span> <span class="string">will</span> <span class="string">then</span> <span class="string">receive</span> <span class="string">and</span> <span class="string">display</span></span><br><span class="line"><span class="string">metrics</span> <span class="string">about</span> <span class="string">your</span> <span class="string">deployment</span> <span class="string">(disk</span> <span class="string">utilization,</span> <span class="string">CPU,</span> <span class="string">operation</span> <span class="string">statistics,</span> <span class="string">etc).</span></span><br><span class="line"></span><br><span class="line"><span class="string">The</span> <span class="string">monitoring</span> <span class="string">data</span> <span class="string">will</span> <span class="string">be</span> <span class="string">available</span> <span class="string">on</span> <span class="string">a</span> <span class="string">MongoDB</span> <span class="string">website</span> <span class="string">with</span> <span class="string">a</span> <span class="string">unique</span> <span class="string">URL</span> <span class="string">accessible</span> <span class="string">to</span> <span class="string">you</span></span><br><span class="line"><span class="string">and</span> <span class="string">anyone</span> <span class="string">you</span> <span class="string">share</span> <span class="string">the</span> <span class="string">URL</span> <span class="string">with.</span> <span class="string">MongoDB</span> <span class="string">may</span> <span class="string">use</span> <span class="string">this</span> <span class="string">information</span> <span class="string">to</span> <span class="string">make</span> <span class="string">product</span></span><br><span class="line"><span class="string">improvements</span> <span class="string">and</span> <span class="string">to</span> <span class="string">suggest</span> <span class="string">MongoDB</span> <span class="string">products</span> <span class="string">and</span> <span class="string">deployment</span> <span class="string">options</span> <span class="string">to</span> <span class="string">you.</span></span><br><span class="line"></span><br><span class="line"><span class="string">To</span> <span class="string">enable</span> <span class="string">free</span> <span class="string">monitoring,</span> <span class="attr">run the following command:</span> <span class="string">db.enableFreeMonitoring()</span></span><br><span class="line"><span class="string">To</span> <span class="string">permanently</span> <span class="string">disable</span> <span class="string">this</span> <span class="string">reminder,</span> <span class="attr">run the following command:</span> <span class="string">db.disableFreeMonitoring()</span></span><br></pre></td></tr></table></figure>
+<h1 id="MongoDB扩展安装"><a href="#MongoDB扩展安装" class="headerlink" title="MongoDB扩展安装"></a>MongoDB扩展安装</h1><p>这里做下补充, 在windows环境下开发需要安装<code>mongodb</code>的扩展</p>
+<ul>
+<li><p>首先, <code>php -m</code> 查看是否已有<code>mongodb</code>的扩展</p>
+</li>
+<li><p>其次, <code>php -v</code> 查看环境的版本</p>
+</li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ php -v</span><br><span class="line">PHP <span class="number">7.2</span><span class="number">.1</span> (cli) (built: Jan  <span class="number">4</span> <span class="number">2018</span> <span class="number">04</span>:<span class="number">28</span>:<span class="number">54</span>) ( NTS MSVC15 (Visual C++ <span class="number">2017</span>) x86</span><br><span class="line"> )</span><br><span class="line">Copyright (c) <span class="number">1997</span><span class="number">-2017</span> The PHP Group</span><br><span class="line">Zend Engine v3<span class="number">.2</span><span class="number">.0</span>, Copyright (c) <span class="number">1998</span><span class="number">-2017</span> Zend Technologies</span><br></pre></td></tr></table></figure>
+<ul>
+<li>下载对应版本的<code>mongodb</code>扩展</li>
+</ul>
+<blockquote>
+<p><a href="https://pecl.php.net/package/mongodb/1.5.2/windows" target="_blank" rel="noopener">https://pecl.php.net/package/mongodb/1.5.2/windows</a></p>
+</blockquote>
+<h1 id="Laravel链接MongoDB"><a href="#Laravel链接MongoDB" class="headerlink" title="Laravel链接MongoDB"></a><code>Laravel</code>链接<code>MongoDB</code></h1><ul>
+<li>先在项目目录下运行如下代码</li>
+</ul>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">composer</span> <span class="meta">require</span> jenssegers/mongodb</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>在配置信息中添加如下信息:</p>
+<ul>
+<li><p><code>config.php/app.php</code> 下的 <code>providers</code> 添加:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Jenssegers\Mongodb\MongodbServiceProvider::<span class="class"><span class="keyword">class</span>,</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>config.php/app.php</code> 下的 <code>aliases</code> 添加:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'Mongo'</span> =&gt; Jenssegers\Mongodb\MongodbServiceProvider::<span class="keyword">class</span>,</span><br><span class="line">'<span class="symbol">MoEloquent</span>' =&gt; <span class="symbol">Jenssegers</span>\<span class="symbol">Mongodb</span>\<span class="symbol">Eloquent</span>\<span class="symbol">Model::<span class="symbol">class</span>,</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>config.php/database.php</code> 中的 <code>connections</code> 添加:</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'mongodb'</span> =&gt; [</span><br><span class="line">    <span class="string">'driver'</span>   =&gt; <span class="string">'mongodb'</span>,</span><br><span class="line">    <span class="string">'host'</span>     =&gt; env(<span class="string">'MONGO_HOST'</span>, <span class="string">'localhost'</span>),</span><br><span class="line">    <span class="string">'port'</span>     =&gt; env(<span class="string">'MONGO_PORT'</span>, <span class="string">'27017'</span>),</span><br><span class="line">    <span class="string">'database'</span> =&gt; env(<span class="string">'MONGO_DATABASE'</span>, <span class="string">'test_mongo'</span>),</span><br><span class="line">    <span class="string">'username'</span> =&gt; env(<span class="string">'MONGO_USERNAME'</span>, <span class="string">'root'</span>),</span><br><span class="line">    <span class="string">'password'</span> =&gt; env(<span class="string">'MONGO_PASSWORD'</span>, <span class="string">'root'</span>),</span><br><span class="line">    <span class="string">'strict'</span>   =&gt; <span class="keyword">false</span>,</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在 <code>.env</code>中添加:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">MONGO_HOST</span>=<span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">MONGO_PORT</span>=<span class="number">27017</span></span><br><span class="line"><span class="attr">MONGO_database</span>=test_mongo</span><br><span class="line"><span class="attr">MONGO_USERNAME</span>=</span><br><span class="line"><span class="attr">MONGO_PASSWORD</span>=</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="添加测试路由"><a href="#添加测试路由" class="headerlink" title="添加测试路由"></a>添加测试路由</h1><ul>
+<li>在 <code>routes/web.php</code> 中添加:</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Route::<span class="builtin-name">get</span>(<span class="string">'/test_mongo'</span>,<span class="string">'TestMongoDBController@testMongo'</span>);</span><br></pre></td></tr></table></figure>
+<h1 id="添加测试Model"><a href="#添加测试Model" class="headerlink" title="添加测试Model"></a>添加测试Model</h1><ul>
+<li><code>app\Models\MongoDB.php</code></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Models</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment"># 已经在aliases添加即可不用下面这么</span></span></span><br><span class="line"><span class="php"><span class="comment"># use Jenssegers\Mongodb\Eloquent\Model as MoEloquent;</span></span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">DB</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">MongoDB</span> <span class="keyword">extends</span> <span class="title">MoEloquent</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">protected</span> $connection = <span class="string">"mongodb"</span>;</span></span><br><span class="line"><span class="php">    <span class="keyword">protected</span> $collection = <span class="string">"test_mongo"</span>;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<h1 id="添加测试控制器"><a href="#添加测试控制器" class="headerlink" title="添加测试控制器"></a>添加测试控制器</h1><ul>
+<li><code>app\Http\Controllers\TestMongoDBController</code></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Controllers</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Models</span>\<span class="title">MongoDB</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">TestMongoDBController</span> <span class="keyword">extends</span> <span class="title">Controller</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testMongo</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        dd(<span class="keyword">$this</span>-&gt;testUpdate());</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testAdd</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $mongo = <span class="keyword">new</span> MongoDB();</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $mongo-&gt;name = <span class="string">'test_name_1'</span>;</span></span><br><span class="line"><span class="php">        $mongo-&gt;info = <span class="string">'test_info_1'</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $res = $mongo-&gt;save();</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">return</span> $res ? <span class="string">'插入成功'</span> : <span class="string">'插入失败'</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testDel</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// 删除指定id</span></span></span><br><span class="line"><span class="php">        $res = MongoDB::destroy(<span class="string">'5b75205aa8ce413058001c42'</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">return</span> $res ? <span class="string">'删除成功'</span> : <span class="string">'删除失败'</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testUpdate</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $info = MongoDB::where(<span class="string">'_id'</span>, <span class="string">'='</span>, <span class="string">'5b752088a8ce413058001c43'</span>)-&gt;first();</span></span><br><span class="line"><span class="php">        $info-&gt;info = <span class="string">'更新后的信息'</span>;</span></span><br><span class="line"><span class="php">        $res = $info-&gt;save();</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">return</span> $res ? <span class="string">'更新成功'</span> : <span class="string">'更新失败'</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://github.com/jenssegers/laravel-mongodb" target="_blank" rel="noopener">Laravel MongoDB–jenssegers/laravel-mongodb</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/16/Laravel-test-MongoDB/" target="_blank" title="基于Laravel MongoDB的部分实践">http://blog.caoxl.com/2018/08/16/Laravel-test-MongoDB/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MongoDB/">MongoDB</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/16/MongoDB-Compass-DBA-must-know/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          MongoDB 可视化管理工具
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/15/CodeReuse-trade-number/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">「代码复用」 生成订单编号</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB客户端安装"><span class="nav-number">1.</span> <span class="nav-text">MongoDB客户端安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MongoDB扩展安装"><span class="nav-number">2.</span> <span class="nav-text">MongoDB扩展安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Laravel链接MongoDB"><span class="nav-number">3.</span> <span class="nav-text">Laravel链接MongoDB</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#添加测试路由"><span class="nav-number">4.</span> <span class="nav-text">添加测试路由</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#添加测试Model"><span class="nav-number">5.</span> <span class="nav-text">添加测试Model</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#添加测试控制器"><span class="nav-number">6.</span> <span class="nav-text">添加测试控制器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

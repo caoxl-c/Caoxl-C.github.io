@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php http客户端-guzzle原理解析 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHPHTTPClientGuzzle">
+  
+  
+  
+  
+  <meta name="description" content="本文适合寻找PHP HTTP客户端库，或者对于Guzzle的使用和实现原理比较感兴趣的同学阅读，需要具备一定的PHP基础知识。  Guzzle是一个PHP的HTTP客户端，用来轻而易举地发送请求，并集成到我们的WEB服务上。">
+<meta name="keywords" content="PHP,HTTP,Client,Guzzle">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP HTTP客户端-Guzzle原理解析">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/31/PHP-HTTP-Client-Guzzle/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="本文适合寻找PHP HTTP客户端库，或者对于Guzzle的使用和实现原理比较感兴趣的同学阅读，需要具备一定的PHP基础知识。  Guzzle是一个PHP的HTTP客户端，用来轻而易举地发送请求，并集成到我们的WEB服务上。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://mmbiz.qpic.cn/mmbiz_png/Izj5340ib4qMJZfUdFvgicNGAMYhiccsYPv85otsPMkB0Gic6chnv4MMyMrfFZ10pDv9gpRFK9IznmeScvbdJhueZA/0?wx_fmt=png">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP HTTP客户端-Guzzle原理解析">
+<meta name="twitter:description" content="本文适合寻找PHP HTTP客户端库，或者对于Guzzle的使用和实现原理比较感兴趣的同学阅读，需要具备一定的PHP基础知识。  Guzzle是一个PHP的HTTP客户端，用来轻而易举地发送请求，并集成到我们的WEB服务上。">
+<meta name="twitter:image" content="http://mmbiz.qpic.cn/mmbiz_png/Izj5340ib4qMJZfUdFvgicNGAMYhiccsYPv85otsPMkB0Gic6chnv4MMyMrfFZ10pDv9gpRFK9IznmeScvbdJhueZA/0?wx_fmt=png">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-HTTP-Client-Guzzle" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP HTTP客户端-Guzzle原理解析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/31/PHP-HTTP-Client-Guzzle/" class="article-date">
+	  <time datetime="2018-01-31T09:33:51.000Z" itemprop="datePublished">2018-01-31</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>本文适合寻找PHP HTTP客户端库，或者对于Guzzle的使用和实现原理比较感兴趣的同学阅读，需要具备一定的PHP基础知识。</p>
+<blockquote>
+<p>Guzzle是一个PHP的HTTP客户端，用来轻而易举地发送请求，并集成到我们的WEB服务上。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在PHP后台开发过程中，经常会遇到模块间需要通过HTTP通信的情形。PHP语言本身只提供了<code>socket</code>操作的接口，并未提供HTTP相关操作的接口。许多现有的实现采用curl扩展充当 <code>HTTP Client</code> 与 <code>HTTP Server</code> 通信，但仍需自己封装curl的接口。有鉴于此，本文介绍一款流行的 PHP HTTP Client客户端—<u><a href="https://github.com/guzzle/guzzle/" target="_blank" rel="noopener">Guzzle</a></u>的用法，深入分析其底层实现原理。</p>
+<h1 id="Guzzle基础"><a href="#Guzzle基础" class="headerlink" title="Guzzle基础"></a><code>Guzzle</code>基础</h1><h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><ul>
+<li>PHP 5.5.0+</li>
+<li>使用PHP的流， <code>allow_url_fopen</code> 必须在<strong>php.ini</strong>中启用。</li>
+<li>要使用cURL，你必须已经有版本 <code>cURL &gt;= 7.19.4</code>，并且编译了 <code>OpenSSL</code> 与 <code>zlib</code></li>
+</ul>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>你可以使用composer.phar客户端将Guzzle作为依赖添加到项目：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php composer.phar require guzzlehttp/guzzle:~<span class="number">6.0</span></span><br></pre></td></tr></table></figure>
+<p>或者，你可以编辑项目中已存在的composer.json文件，添加Guzzle作为依赖：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   <span class="attr">"require"</span>: &#123;</span><br><span class="line">      <span class="attr">"guzzlehttp/guzzle"</span>: <span class="string">"~6.0"</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>安装完毕后，你需要引入Composer的自动加载文件：</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span> <span class="string">'vendor/autoload.php'</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https:<span class="string">//github.com/guzzle/guzzle.git</span></span><br><span class="line"><span class="keyword">cd</span> guzzle &amp;&amp; curl -s http:<span class="string">//getcomposer.org/installer</span> | php &amp;&amp; <span class="string">./composer.phar</span> install <span class="params">--dev</span></span><br></pre></td></tr></table></figure>
+<p>Guzzle is unit tested with PHPUnit. Run the tests using the Makefile:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<h1 id="Guzzle用法"><a href="#Guzzle用法" class="headerlink" title="Guzzle用法"></a><code>Guzzle</code>用法</h1><p>例如使用Guzzle访问 <code>http://www.baidu.com</code> 的代码：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php">$client = <span class="keyword">new</span> \GuzzleHttp\Client();</span></span><br><span class="line"></span><br><span class="line"><span class="php">$response = $client-&gt;request(<span class="string">'GET'</span>, <span class="string">'http://www.baidu.com'</span>, [</span></span><br><span class="line"><span class="php">    <span class="string">"timeout"</span> =&gt; <span class="number">3000</span></span></span><br><span class="line"><span class="php">]);</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">echo</span> $response-&gt;getStatusCode(), <span class="string">"\n"</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">echo</span> $response-&gt;getBody();</span></span><br></pre></td></tr></table></figure>
+<p>接口封装是不是十分简单？只需要关心请求方法，目标url和请求的选项即可快速上手。同时，<code>Guzzle</code>还支持异步请求方式：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">GuzzleHttp</span>\<span class="title">Exception</span>\<span class="title">RequestException</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Psr</span>\<span class="title">Http</span>\<span class="title">Message</span>\<span class="title">ResponseInterface</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$client = <span class="keyword">new</span> \GuzzleHttp\Client();</span></span><br><span class="line"><span class="php">$promise = $client-&gt;requestAsync(<span class="string">'GET'</span>, <span class="string">'http://www.baidu.com'</span>);</span></span><br><span class="line"><span class="php">$promise-&gt;then(</span></span><br><span class="line"><span class="php">    <span class="function"><span class="keyword">function</span> <span class="params">(ResponseInterface $res)</span> </span>&#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> $res-&gt;getStatusCode() . <span class="string">"\n"</span>;</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> $res-&gt;getBody();</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> $res;</span></span><br><span class="line"><span class="php">    &#125;,</span></span><br><span class="line"><span class="php">    <span class="function"><span class="keyword">function</span> <span class="params">(RequestException $e)</span> </span>&#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> $e-&gt;getMessage() . <span class="string">"\n"</span>;</span></span><br><span class="line"><span class="php">        <span class="keyword">echo</span> $e-&gt;getRequest()-&gt;getMethod();</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">)-&gt;wait();</span></span><br></pre></td></tr></table></figure>
+<p>基于异步请求，Guzzle还实现了并发请求，关于Guzzle的具体使用方法可以参考其 <u><a href="http://guzzle-cn.readthedocs.io/zh_CN/latest/index.html" target="_blank" rel="noopener">Guzzle中文文档</a></u></p>
+<h1 id="Guzzle实现原理"><a href="#Guzzle实现原理" class="headerlink" title="Guzzle实现原理"></a><code>Guzzle</code>实现原理</h1><h2 id="1-client构造"><a href="#1-client构造" class="headerlink" title="1.client构造"></a>1.client构造</h2><p><code>GuzzleHttp\Client</code>类构造函数声明为：</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> __<span class="title">construct</span><span class="params">(<span class="keyword">array</span> $config = [])</span></span></span><br></pre></td></tr></table></figure>
+<p><code>$config</code>配置使得用户可以根据需要配置一切可以配置的选项，包括<code>allowredirects</code>、<code>auth</code>、<code>connecttimeout</code>、<code>proxy</code>等。除此之外，还可以自定义请求的处理函数<code>handler</code>，方便应用程序扩展，<code>handler</code>接口规范为：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">function handler($request,<span class="built_in"> array </span>$options);</span><br></pre></td></tr></table></figure>
+<p>处理成功时，接口返回 <code>Psr\Http\Message\ResponseInterface</code>；<br>失败时返回 <code>GuzzleHttp\Exception\RequestException</code>异常。</p>
+<p>默认情形下，<code>GuzzleHttp\HandlerStack::create</code>会创建请求处理函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">create</span><span class="params">(callable $handler = null)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $stack = <span class="keyword">new</span> <span class="keyword">self</span>($handler ?: choose_handler());</span><br><span class="line">    $stack-&gt;push(Middleware::httpErrors(), <span class="string">'http_errors'</span>);</span><br><span class="line">    $stack-&gt;push(Middleware::redirect(), <span class="string">'allow_redirects'</span>);</span><br><span class="line">    $stack-&gt;push(Middleware::cookies(), <span class="string">'cookies'</span>);</span><br><span class="line">    $stack-&gt;push(Middleware::prepareBody(), <span class="string">'prepare_body'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $stack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>create</code>函数以堆栈的形式创建了一系列的处理函数，包括 <strong>http异常</strong>、<strong>重定向</strong>、<strong>cookie</strong>和<strong>prepare_body</strong>。处理函数返回的函数闭包为：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="params">(callable $handler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="params">($request, array $options)</span> <span class="title">use</span> <span class="params">($handler)</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>函数入参为<code>handler</code>，返回一个新的<code>handler</code>，这样可以将所有的处理函数链接在一起，最终生成一个符合<code>handler</code>接口规范的函数.</p>
+<p><code>choose_handler</code>函数选择<code>stack</code>中的起始<code>handler</code>，选择策略为：</p>
+<ul>
+<li><p>扩展自带<code>curl_multi_exec</code>和<code>curl_exec</code>函数则根据<code>$options</code>中的<code>synchronous</code>选项决定，<code>empty(synchronous)</code>为 <code>false</code>则使用<code>CurlHandler</code>，否则使用<code>CurlMultiHandler</code></p>
+</li>
+<li><p>扩展只有<code>curl_exec</code>函数则使用<code>CurlHandler</code></p>
+</li>
+<li><p>扩展只有<code>curl_multi_exec</code>函数则使用<code>CurlMultiHandler</code></p>
+</li>
+</ul>
+<p>最后，如果 <strong>php.ini</strong> 中开启了<code>allow_url_fopen</code>，则根据<code>$options</code>中的<code>stream</code>选项决定，<code>empty(stream)</code>为<code>false</code>则使用<code>StreamHandler</code></p>
+<h2 id="2-client调用request方法"><a href="#2-client调用request方法" class="headerlink" title="2.client调用request方法"></a>2.client调用request方法</h2><p>request方法实现为：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">request</span><span class="params">($method, $uri = <span class="string">''</span>, array $options = [])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $options[RequestOptions::SYNCHRONOUS] = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;requestAsync($method, $uri, $options)-&gt;wait();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由此可见，<strong>request事实上是采用了requestAsync异步方法+wait来完成的，也就是异步转同步</strong>。</p>
+<h3 id="requestAsync"><a href="#requestAsync" class="headerlink" title="requestAsync"></a>requestAsync</h3><p><code>requestAsync</code>将请求信息包装成 <code>Psr7\Request</code> 对象，然后调用</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">transfer(RequestInterface $request,<span class="built_in"> array </span>$options)</span><br></pre></td></tr></table></figure>
+<p><code>transfer</code>函数最终返回<code>Promise\promise_for($handler($request, $options))</code>; 其中<code>$handler</code>即为构造函数中所设置的<code>stack</code>，<code>stack</code>中存放一系列的请求处理函数。 <code>HandlerStack</code>的处理函数为:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__invoke</span><span class="params">(RequestInterface $request, array $options)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $handler = <span class="keyword">$this</span>-&gt;resolve();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $handler($request, $options);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>resolve</code>方法解析整个<code>stack</code>，返回一个包装后的<code>handler</code>，包装策略为按照出栈顺序包装，也就是</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span> (array_reverse(<span class="keyword">$this</span>-&gt;stack) <span class="keyword">as</span> $fn) &#123;</span><br><span class="line">    $prev = $fn[<span class="number">0</span>]($prev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://mmbiz.qpic.cn/mmbiz_png/Izj5340ib4qMJZfUdFvgicNGAMYhiccsYPv85otsPMkB0Gic6chnv4MMyMrfFZ10pDv9gpRFK9IznmeScvbdJhueZA/0?wx_fmt=png" alt="中间件模型"></p>
+<p>典型的中间件模型，所有的处理函数串接在一起了。请求经由<code>http_errors</code>、<code>allow_redirects</code>等处理之后到达<code>Curl</code>，执行真正的网络交互。</p>
+<ul>
+<li><p>对于<strong>同步</strong>的<code>handler</code>如<code>CurlHandler</code>，在此处会执行<code>curl_exec</code>发起请求，最终返回的是<code>FulfilledPromise对象</code>或<code>RejectedPromise对象</code>，代表请求已经处理完毕。</p>
+</li>
+<li><p>对于<strong>异步</strong>的<code>handler</code>比如<code>CurlMultiHandler</code>，在此处并不会执行<code>curl_multi_exec</code>，而是返回一个<code>promise</code>对象，里面注册了需要等待执行的<code>curl_multi_exec</code>。</p>
+</li>
+</ul>
+<h3 id="wait"><a href="#wait" class="headerlink" title="wait"></a>wait</h3><p>请求发送完毕，进入<code>promise</code>的<code>wait</code>操作，最终会执行<code>promise</code>的<code>$waitFn</code>函数。</p>
+<ul>
+<li><p>对于<code>CurlMultiHandler</code>，<code>$waitFn</code>即执行<code>curl_multi_exec</code>进行网络交互，然后调用<code>resolve</code>方法将<code>response对象</code>传递到<code>then</code>方法的<code>$onFulfilled</code>函数。</p>
+</li>
+<li><p>对于<code>CurlHandler</code>，直接利用<code>resolve</code>将<code>response</code>对象传递到<code>$onFulfilled</code>函数。</p>
+</li>
+</ul>
+<p>这样，异步的<code>then</code>方法设置的回调就可以接收到<code>response</code>了。 <strong>then方法最终返回response，这个对象又可以作为返回值返回，这样同步的wait就可以通过返回值来获取response对象了</strong>。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文重点介绍了 <code>Guzzle</code> <strong>同步</strong>和<strong>异步</strong>请求的实现原理，除此之外，Guzzle还提供了<strong>并行请求</strong>，<strong>请求pool</strong>等实现，读者可以在此基础上继续深入。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><p><a href="http://guzzle-cn.readthedocs.io/zh_CN/latest/index.html" target="_blank" rel="noopener">Guzzle中文文档</a></p>
+</li>
+<li><p><a href="https://github.com/guzzle/guzzle/" target="_blank" rel="noopener">Guzzle, PHP HTTP client</a></p>
+</li>
+<li><p><a href="http://guzzle-cn.readthedocs.io/zh_CN/latest/quickstart.html" target="_blank" rel="noopener">Guzzle 快速入门</a></p>
+</li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/31/PHP-HTTP-Client-Guzzle/" target="_blank" title="PHP HTTP客户端-Guzzle原理解析">http://blog.caoxl.com/2018/01/31/PHP-HTTP-Client-Guzzle/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Client/">Client</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Guzzle/">Guzzle</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP/">HTTP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/01/CentOS-7-Operation-Log/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          CentOS7 「操作日志」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/31/Hexo-Set-Article-Top/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Hexo 文章置顶功能</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Guzzle基础"><span class="nav-number">2.</span> <span class="nav-text">Guzzle基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#需求"><span class="nav-number">2.1.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">2.3.</span> <span class="nav-text">测试</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Guzzle用法"><span class="nav-number">3.</span> <span class="nav-text">Guzzle用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Guzzle实现原理"><span class="nav-number">4.</span> <span class="nav-text">Guzzle实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-client构造"><span class="nav-number">4.1.</span> <span class="nav-text">1.client构造</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-client调用request方法"><span class="nav-number">4.2.</span> <span class="nav-text">2.client调用request方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#requestAsync"><span class="nav-number">4.2.1.</span> <span class="nav-text">requestAsync</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wait"><span class="nav-number">4.2.2.</span> <span class="nav-text">wait</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

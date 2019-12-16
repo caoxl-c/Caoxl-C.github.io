@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>elasticsearch 使用记录 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="ElasticSearchKibanaIKGo-MySQL-ES">
+  
+  
+  
+  
+  <meta name="description" content="全文搜索分析引擎 Elasticsearch Elasticsearch 是一个分布式的搜索和分析引擎，可以用于全文检索、结构化检索和分析，并能将这三者结合起来。">
+<meta name="keywords" content="ElasticSearch,Kibana,IK,Go-MySQL-ES">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Elasticsearch 使用记录">
+<meta property="og:url" content="http://blog.caoxl.com/2019/07/03/Elasticsearch-Go-MySQL-IK-Kibana/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="全文搜索分析引擎 Elasticsearch Elasticsearch 是一个分布式的搜索和分析引擎，可以用于全文检索、结构化检索和分析，并能将这三者结合起来。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:35:23.788Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Elasticsearch 使用记录">
+<meta name="twitter:description" content="全文搜索分析引擎 Elasticsearch Elasticsearch 是一个分布式的搜索和分析引擎，可以用于全文检索、结构化检索和分析，并能将这三者结合起来。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Elasticsearch-Go-MySQL-IK-Kibana" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Elasticsearch 使用记录
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/07/03/Elasticsearch-Go-MySQL-IK-Kibana/" class="article-date">
+	  <time datetime="2019-07-03T07:17:40.000Z" itemprop="datePublished">2019-07-03</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h2 id="全文搜索分析引擎-Elasticsearch"><a href="#全文搜索分析引擎-Elasticsearch" class="headerlink" title="全文搜索分析引擎 Elasticsearch"></a>全文搜索分析引擎 <code>Elasticsearch</code></h2><blockquote>
+<p>Elasticsearch 是一个分布式的搜索和分析引擎，可以用于全文检索、结构化检索和分析，并能将这三者结合起来。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="安装环境"><a href="#安装环境" class="headerlink" title="安装环境"></a>安装环境</h2><ul>
+<li>安装/使用ElasticSearch</li>
+</ul>
+<blockquote>
+<p><u><a href="https://www.elastic.co/cn/downloads/elasticsearch" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/elasticsearch</a></u></p>
+</blockquote>
+<ul>
+<li>安装/使用Kibana</li>
+</ul>
+<blockquote>
+<p><u><a href="https://www.elastic.co/cn/downloads/kibana" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/kibana</a></u><br>Kibana: 可视化管理ElasticSearch工具</p>
+</blockquote>
+<ul>
+<li>安装/使用IK中文分词</li>
+</ul>
+<blockquote>
+<p><u><a href="https://github.com/medcl/elasticsearch-analysis-ik" target="_blank" rel="noopener">https://github.com/medcl/elasticsearch-analysis-ik</a></u></p>
+</blockquote>
+<ul>
+<li>安装Go-MySQL-ElasticSearch</li>
+</ul>
+<blockquote>
+<p><u><a href="https://github.com/siddontang/go-mysql-elasticsearch" target="_blank" rel="noopener">https://github.com/siddontang/go-mysql-elasticsearch</a></u></p>
+</blockquote>
+<h2 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h2><h3 id="安装客户端"><a href="#安装客户端" class="headerlink" title="安装客户端"></a>安装客户端</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer <span class="string">"elasticsearch/elasticsearch:^6.7"</span> <span class="comment"># 这里以V6.7.1</span></span><br></pre></td></tr></table></figure>
+<h3 id="实例化客户端"><a href="#实例化客户端" class="headerlink" title="实例化客户端"></a>实例化客户端</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$client = ClientBuilder::create()</span><br><span class="line">    -&gt;setHosts([<span class="string">"localhost:9200"</span>])</span><br><span class="line">    -&gt;setRetries(<span class="number">0</span>)</span><br><span class="line">    -&gt;build();</span><br></pre></td></tr></table></figure>
+<h3 id="索引一个文档"><a href="#索引一个文档" class="headerlink" title="索引一个文档"></a>索引一个文档</h3><blockquote>
+<p>索引一个文档: 写 document 到 ElasticSearch 中，如果不存在，就创建，如果存在，就用新的取代旧的。</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$params = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'type'</span>  =&gt; <span class="string">'test_type_1'</span>,</span><br><span class="line">    <span class="string">'id'</span>    =&gt; <span class="string">'test_id_1'</span>,</span><br><span class="line">    <span class="string">'body'</span>  =&gt; [</span><br><span class="line">        <span class="string">'testField'</span>  =&gt; <span class="string">'abc'</span>,</span><br><span class="line">        <span class="string">'testField2'</span> =&gt; <span class="string">'caoxl'</span>,</span><br><span class="line">        <span class="string">'testField3'</span> =&gt; <span class="string">'caoxl_123'</span></span><br><span class="line">    ],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$response = $client-&gt;index($params);</span><br><span class="line">dd($response);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 新增</span></span><br><span class="line"><span class="keyword">array</span>:<span class="number">8</span> [</span><br><span class="line">    <span class="string">"_index"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">    <span class="string">"_type"</span> =&gt; <span class="string">"test_type_1"</span></span><br><span class="line">    <span class="string">"_id"</span> =&gt; <span class="string">"test_id_1"</span></span><br><span class="line">    <span class="string">"_version"</span> =&gt; <span class="number">1</span></span><br><span class="line">    <span class="string">"result"</span> =&gt; <span class="string">"created"</span></span><br><span class="line">    <span class="string">"_shards"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">        <span class="string">"total"</span> =&gt; <span class="number">2</span></span><br><span class="line">        <span class="string">"successful"</span> =&gt; <span class="number">1</span></span><br><span class="line">        <span class="string">"failed"</span> =&gt; <span class="number">0</span></span><br><span class="line">    ]</span><br><span class="line">    <span class="string">"_seq_no"</span> =&gt; <span class="number">0</span></span><br><span class="line">    <span class="string">"_primary_term"</span> =&gt; <span class="number">1</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更新</span></span><br><span class="line"><span class="keyword">array</span>:<span class="number">8</span> [</span><br><span class="line">  <span class="string">"_index"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">  <span class="string">"_type"</span> =&gt; <span class="string">"test_type_1"</span></span><br><span class="line">  <span class="string">"_id"</span> =&gt; <span class="string">"test_id_1"</span></span><br><span class="line">  <span class="string">"_version"</span> =&gt; <span class="number">2</span></span><br><span class="line">  <span class="string">"result"</span> =&gt; <span class="string">"updated"</span></span><br><span class="line">  <span class="string">"_shards"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="number">1</span></span><br><span class="line">    <span class="string">"successful"</span> =&gt; <span class="number">1</span></span><br><span class="line">    <span class="string">"failed"</span> =&gt; <span class="number">0</span></span><br><span class="line">  ]</span><br><span class="line">  <span class="string">"_seq_no"</span> =&gt; <span class="number">1</span></span><br><span class="line">  <span class="string">"_primary_term"</span> =&gt; <span class="number">6</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="获取一个文档"><a href="#获取一个文档" class="headerlink" title="获取一个文档"></a>获取一个文档</h3><blockquote>
+<p>现在获取刚才索引的文档:</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$_params = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'type'</span>  =&gt; <span class="string">'test_type_1'</span>,</span><br><span class="line">    <span class="string">'id'</span>    =&gt; <span class="string">'test_id_1'</span>,</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$_response = $client-&gt;get($_params);</span><br><span class="line">dd($_response);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">8</span> [</span><br><span class="line">  <span class="string">"_index"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">  <span class="string">"_type"</span> =&gt; <span class="string">"test_type_1"</span></span><br><span class="line">  <span class="string">"_id"</span> =&gt; <span class="string">"test_id_1"</span></span><br><span class="line">  <span class="string">"_version"</span> =&gt; <span class="number">2</span></span><br><span class="line">  <span class="string">"_seq_no"</span> =&gt; <span class="number">1</span></span><br><span class="line">  <span class="string">"_primary_term"</span> =&gt; <span class="number">6</span></span><br><span class="line">  <span class="string">"found"</span> =&gt; <span class="keyword">true</span></span><br><span class="line">  <span class="string">"_source"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">    <span class="string">"testField"</span> =&gt; <span class="string">"abc"</span></span><br><span class="line">    <span class="string">"testField2"</span> =&gt; <span class="string">"caoxl"</span></span><br><span class="line">    <span class="string">"testField3"</span> =&gt; <span class="string">"caoxl_123"</span></span><br><span class="line">  ]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="搜索一个文档"><a href="#搜索一个文档" class="headerlink" title="搜索一个文档"></a>搜索一个文档</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$_params_1 = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'type'</span>  =&gt; <span class="string">'test_type_1'</span>,</span><br><span class="line">    <span class="string">'body'</span>  =&gt; [</span><br><span class="line">        <span class="string">'query'</span> =&gt; [</span><br><span class="line">            <span class="string">'match'</span> =&gt; [</span><br><span class="line">                <span class="string">'testField'</span> =&gt; <span class="string">'abc'</span></span><br><span class="line">            ]</span><br><span class="line">        ]</span><br><span class="line">    ],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$_response_1 = $client-&gt;search($_params_1);</span><br><span class="line">dd($_response_1);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">4</span> [</span><br><span class="line">  <span class="string">"took"</span> =&gt; <span class="number">25</span></span><br><span class="line">  <span class="string">"timed_out"</span> =&gt; <span class="keyword">false</span></span><br><span class="line">  <span class="string">"_shards"</span> =&gt; <span class="keyword">array</span>:<span class="number">4</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="number">2</span></span><br><span class="line">    <span class="string">"successful"</span> =&gt; <span class="number">2</span></span><br><span class="line">    <span class="string">"skipped"</span> =&gt; <span class="number">0</span></span><br><span class="line">    <span class="string">"failed"</span> =&gt; <span class="number">0</span></span><br><span class="line">  ]</span><br><span class="line">  <span class="string">"hits"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">      <span class="string">"value"</span> =&gt; <span class="number">1</span></span><br><span class="line">      <span class="string">"relation"</span> =&gt; <span class="string">"eq"</span></span><br><span class="line">    ]</span><br><span class="line">    <span class="string">"max_score"</span> =&gt; <span class="number">0.2876821</span></span><br><span class="line">    <span class="string">"hits"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">      <span class="number">0</span> =&gt; <span class="keyword">array</span>:<span class="number">5</span> [</span><br><span class="line">        <span class="string">"_index"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">        <span class="string">"_type"</span> =&gt; <span class="string">"test_type_1"</span></span><br><span class="line">        <span class="string">"_id"</span> =&gt; <span class="string">"test_id_1"</span></span><br><span class="line">        <span class="string">"_score"</span> =&gt; <span class="number">0.2876821</span></span><br><span class="line">        <span class="string">"_source"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">          <span class="string">"testField"</span> =&gt; <span class="string">"abc"</span></span><br><span class="line">          <span class="string">"testField2"</span> =&gt; <span class="string">"caoxl"</span></span><br><span class="line">          <span class="string">"testField3"</span> =&gt; <span class="string">"caoxl_123"</span></span><br><span class="line">        ]</span><br><span class="line">      ]</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h4 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h4><ul>
+<li><code>match_all</code> - 表示取出所有documents，在与filter结合使用时，会经常使用match_all。</li>
+<li><code>match</code> - 一般在全文检索时使用，首先利用analyzer 对具体查询字符串进行分析，然后进行查询；</li>
+<li><code>term</code> - 用于精确查找，可用于数值、date、boolean值或not_analyzed string，当使用term时，不会对查询字符串进行分析，进行的是精确查找。</li>
+<li><code>terms</code> - terms 和 term 类似，但是，terms 里可以指定多个值，只要doc满足terms 里的任意值，就是满足查询条件的。与term 相同，terms 也是用于精确查找。</li>
+<li><code>range</code> - 类比数据库查找的范围查找</li>
+<li><code>exists</code> - 用于查找字段含有一个或多个值的document</li>
+<li><code>missing</code> - 用于查找某字段不存在值的document，可类比关系数据库里的 is not null (exists) 和 is null (missing).</li>
+<li><code>bool</code> - ElasticSearch 使用bool 子句来将各种子查询关联起来，组成布尔表达式，bool 子句可以随意组合、嵌套。</li>
+</ul>
+<h3 id="删除一个文档"><a href="#删除一个文档" class="headerlink" title="删除一个文档"></a>删除一个文档</h3><blockquote>
+<p>删除document。ElasticSearch 会标记删除document，然后，在Lucene 底层进行merge时，会删除标记删除的document。</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$_params_2 = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'type'</span>  =&gt; <span class="string">'test_type_1'</span>,</span><br><span class="line">    <span class="string">'id'</span>    =&gt; <span class="string">'test_id_1'</span></span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$_response_2 = $client-&gt;delete($_params_2);</span><br><span class="line">dd($_response_2);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">8</span> [</span><br><span class="line">  <span class="string">"_index"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">  <span class="string">"_type"</span> =&gt; <span class="string">"test_type_1"</span></span><br><span class="line">  <span class="string">"_id"</span> =&gt; <span class="string">"test_id_1"</span></span><br><span class="line">  <span class="string">"_version"</span> =&gt; <span class="number">3</span></span><br><span class="line">  <span class="string">"result"</span> =&gt; <span class="string">"deleted"</span></span><br><span class="line">  <span class="string">"_shards"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="number">1</span></span><br><span class="line">    <span class="string">"successful"</span> =&gt; <span class="number">1</span></span><br><span class="line">    <span class="string">"failed"</span> =&gt; <span class="number">0</span></span><br><span class="line">  ]</span><br><span class="line">  <span class="string">"_seq_no"</span> =&gt; <span class="number">2</span></span><br><span class="line">  <span class="string">"_primary_term"</span> =&gt; <span class="number">6</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 删除索引</span></span><br><span class="line">$delete_index = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span></span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$response_delete = $client-&gt;indices()-&gt;delete($delete_index);</span><br><span class="line">dd($response_delete);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">  <span class="string">"acknowledged"</span> =&gt; <span class="keyword">true</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$create_index = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'body'</span>  =&gt; [</span><br><span class="line">        <span class="string">'settings'</span> =&gt; [</span><br><span class="line">            <span class="string">'number_of_shards'</span>   =&gt; <span class="number">2</span>,</span><br><span class="line">            <span class="string">'number_of_replicas'</span> =&gt; <span class="number">0</span></span><br><span class="line">        ]</span><br><span class="line">    ],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 写 document 到 ElasticSearch 中，与 index 不同的是，如果存在，就抛出异常DocumentAlreadyExistException。</span></span><br><span class="line">$_response_create = $client-&gt;indices()-&gt;create($create_index);</span><br><span class="line">dd($_response_create);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">  <span class="string">"acknowledged"</span> =&gt; <span class="keyword">true</span></span><br><span class="line">  <span class="string">"shards_acknowledged"</span> =&gt; <span class="keyword">true</span></span><br><span class="line">  <span class="string">"index"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h2 id="管理索引"><a href="#管理索引" class="headerlink" title="管理索引"></a>管理索引</h2><h3 id="设置API"><a href="#设置API" class="headerlink" title="设置API"></a>设置API</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$set_api = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'body'</span>  =&gt; [</span><br><span class="line">        <span class="string">'settings'</span> =&gt; [</span><br><span class="line">            <span class="string">'number_of_replicas'</span> =&gt; <span class="number">0</span>,</span><br><span class="line">            <span class="string">'refresh_interval'</span>   =&gt; <span class="number">-1</span>,</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$response_api = $client-&gt;indices()-&gt;putSettings($set_api);</span><br><span class="line">dd($response_api);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">  <span class="string">"acknowledged"</span> =&gt; <span class="keyword">true</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="获取设置API"><a href="#获取设置API" class="headerlink" title="获取设置API"></a>获取设置API</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取一个索引的配置信息</span></span><br><span class="line">$get_api = [<span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>];</span><br><span class="line"><span class="comment">// 获取多个索引的配置信息</span></span><br><span class="line">$get_api_2 = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; [<span class="string">'test_index_1'</span>, <span class="string">'index_help'</span>]</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$response_api = $client-&gt;indices()-&gt;getSettings($get_api_2);</span><br><span class="line">dd($response_api);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">  <span class="string">"index_help"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">    <span class="string">"settings"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">      <span class="string">"index"</span> =&gt; <span class="keyword">array</span>:<span class="number">6</span> [</span><br><span class="line">        <span class="string">"creation_date"</span> =&gt; <span class="string">"1562135548539"</span></span><br><span class="line">        <span class="string">"number_of_shards"</span> =&gt; <span class="string">"1"</span></span><br><span class="line">        <span class="string">"number_of_replicas"</span> =&gt; <span class="string">"1"</span></span><br><span class="line">        <span class="string">"uuid"</span> =&gt; <span class="string">"eZ_xGOcOTCmqvozVLMUNDA"</span></span><br><span class="line">        <span class="string">"version"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">          <span class="string">"created"</span> =&gt; <span class="string">"7010199"</span></span><br><span class="line">        ]</span><br><span class="line">        <span class="string">"provided_name"</span> =&gt; <span class="string">"index_help"</span></span><br><span class="line">      ]</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">  <span class="string">"test_index_1"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">    <span class="string">"settings"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">      <span class="string">"index"</span> =&gt; <span class="keyword">array</span>:<span class="number">7</span> [</span><br><span class="line">        <span class="string">"refresh_interval"</span> =&gt; <span class="string">"-1"</span></span><br><span class="line">        <span class="string">"number_of_shards"</span> =&gt; <span class="string">"2"</span></span><br><span class="line">        <span class="string">"provided_name"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">        <span class="string">"creation_date"</span> =&gt; <span class="string">"1562643744343"</span></span><br><span class="line">        <span class="string">"number_of_replicas"</span> =&gt; <span class="string">"0"</span></span><br><span class="line">        <span class="string">"uuid"</span> =&gt; <span class="string">"HUyT8pFISH6n1yf9cSgbrQ"</span></span><br><span class="line">        <span class="string">"version"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">          <span class="string">"created"</span> =&gt; <span class="string">"7010199"</span></span><br><span class="line">        ]</span><br><span class="line">      ]</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="映射API"><a href="#映射API" class="headerlink" title="映射API"></a>映射API</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置索引和类型</span></span><br><span class="line">$mapping_params = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'type'</span>  =&gt; <span class="string">'test_type_1'</span>,</span><br><span class="line">    <span class="string">'body'</span>  =&gt; [</span><br><span class="line">        <span class="string">'test_type_1'</span> =&gt; [</span><br><span class="line">            <span class="string">'_source'</span> =&gt; [</span><br><span class="line">                <span class="string">'enabled'</span> =&gt; <span class="keyword">true</span></span><br><span class="line">            ],</span><br><span class="line">            <span class="string">'properties'</span> =&gt; [</span><br><span class="line">                <span class="string">'testField'</span> =&gt; [</span><br><span class="line">                    <span class="string">'type'</span> =&gt; <span class="string">'text'</span>,</span><br><span class="line">                    <span class="comment">//'analyzer' =&gt; 'standard'</span></span><br><span class="line">                ],</span><br><span class="line">                <span class="string">'testField2'</span> =&gt; [</span><br><span class="line">                    <span class="string">'type'</span> =&gt; <span class="string">'text'</span></span><br><span class="line">                ],</span><br><span class="line">                <span class="string">'testField3'</span> =&gt; [</span><br><span class="line">                    <span class="string">'type'</span> =&gt; <span class="string">'text'</span></span><br><span class="line">                ]</span><br><span class="line">            ]</span><br><span class="line">        ]</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">'custom'</span> =&gt; [</span><br><span class="line">        <span class="string">'include_type_name'</span> =&gt; <span class="keyword">true</span></span><br><span class="line">    ]</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更新索引映射</span></span><br><span class="line">$response_map = $client-&gt;indices()-&gt;putMapping($mapping_params);</span><br><span class="line">dd($response_map);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">  <span class="string">"acknowledged"</span> =&gt; <span class="keyword">true</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="获取映射API"><a href="#获取映射API" class="headerlink" title="获取映射API"></a>获取映射API</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取所有索引和类型的映射</span></span><br><span class="line">$response_map = $client-&gt;indices()-&gt;getMapping();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取'test_index_1'中所有类型的映射</span></span><br><span class="line">$map_index = [<span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>];</span><br><span class="line">$response_map = $client-&gt;indices()-&gt;getMapping($map_index);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取所有'test_type_1'的类型映射,而不考虑索引</span></span><br><span class="line">$map_type = [</span><br><span class="line">    <span class="string">'type'</span> =&gt; <span class="string">'test_type_1'</span>,</span><br><span class="line">    <span class="string">'custom'</span> =&gt; [</span><br><span class="line">        <span class="string">'include_type_name'</span> =&gt; <span class="keyword">true</span></span><br><span class="line">    ]</span><br><span class="line">];</span><br><span class="line">$response_map = $client-&gt;indices()-&gt;getMapping($map_type);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取 'test_index_1' 中的'test_type_1'的映射</span></span><br><span class="line">$map_params = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'type'</span>  =&gt; <span class="string">'test_type_1'</span>,</span><br><span class="line">    <span class="string">'custom'</span> =&gt; [</span><br><span class="line">        <span class="string">'include_type_name'</span> =&gt; <span class="keyword">true</span></span><br><span class="line">    ]</span><br><span class="line">];</span><br><span class="line">$response_map = $client-&gt;indices()-&gt;getMapping($map_params);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取两个索引的映射</span></span><br><span class="line">$map_2index = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; [<span class="string">'test_index_1'</span>, <span class="string">'index_help'</span>, <span class="string">'index_app'</span>]</span><br><span class="line">];</span><br><span class="line"><span class="comment">//$response_map = $client-&gt;indices()-&gt;getMapping($map_2index);</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//dd($response_map);</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">  <span class="string">"test_index_1"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">    <span class="string">"mappings"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">      <span class="string">"test_type_1"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">        <span class="string">"properties"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">          <span class="string">"testField"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">            <span class="string">"type"</span> =&gt; <span class="string">"text"</span></span><br><span class="line">            <span class="string">"fields"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">              <span class="string">"keyword"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">                <span class="string">"type"</span> =&gt; <span class="string">"keyword"</span></span><br><span class="line">                <span class="string">"ignore_above"</span> =&gt; <span class="number">256</span></span><br><span class="line">              ]</span><br><span class="line">            ]</span><br><span class="line">          ]</span><br><span class="line">          <span class="string">"testField2"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">            <span class="string">"type"</span> =&gt; <span class="string">"text"</span></span><br><span class="line">            <span class="string">"fields"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">              <span class="string">"keyword"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">                <span class="string">"type"</span> =&gt; <span class="string">"keyword"</span></span><br><span class="line">                <span class="string">"ignore_above"</span> =&gt; <span class="number">256</span></span><br><span class="line">              ]</span><br><span class="line">            ]</span><br><span class="line">          ]</span><br><span class="line">          <span class="string">"testField3"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">            <span class="string">"type"</span> =&gt; <span class="string">"text"</span></span><br><span class="line">            <span class="string">"fields"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">              <span class="string">"keyword"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">                <span class="string">"type"</span> =&gt; <span class="string">"keyword"</span></span><br><span class="line">                <span class="string">"ignore_above"</span> =&gt; <span class="number">256</span></span><br><span class="line">              ]</span><br><span class="line">            ]</span><br><span class="line">          ]</span><br><span class="line">        ]</span><br><span class="line">      ]</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h2 id="执行搜索"><a href="#执行搜索" class="headerlink" title="执行搜索"></a>执行搜索</h2><h3 id="Match-查询"><a href="#Match-查询" class="headerlink" title="Match 查询"></a>Match 查询</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$search_params = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'type'</span>  =&gt; <span class="string">'test_type_1'</span>,</span><br><span class="line">    <span class="string">'body'</span>  =&gt; [</span><br><span class="line">        <span class="string">'query'</span> =&gt; [</span><br><span class="line">            <span class="string">'match'</span> =&gt; [</span><br><span class="line">                <span class="string">'testField'</span> =&gt; <span class="string">'caoxl'</span>,</span><br><span class="line">            ],</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$response_search = $client-&gt;search($search_params);</span><br><span class="line">dd($response_search);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">4</span> [</span><br><span class="line">  <span class="string">"took"</span> =&gt; <span class="number">79</span></span><br><span class="line">  <span class="string">"timed_out"</span> =&gt; <span class="keyword">false</span></span><br><span class="line">  <span class="string">"_shards"</span> =&gt; <span class="keyword">array</span>:<span class="number">4</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="number">2</span></span><br><span class="line">    <span class="string">"successful"</span> =&gt; <span class="number">2</span></span><br><span class="line">    <span class="string">"skipped"</span> =&gt; <span class="number">0</span></span><br><span class="line">    <span class="string">"failed"</span> =&gt; <span class="number">0</span></span><br><span class="line">  ]</span><br><span class="line">  <span class="string">"hits"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">      <span class="string">"value"</span> =&gt; <span class="number">1</span></span><br><span class="line">      <span class="string">"relation"</span> =&gt; <span class="string">"eq"</span></span><br><span class="line">    ]</span><br><span class="line">    <span class="string">"max_score"</span> =&gt; <span class="number">0.2876821</span></span><br><span class="line">    <span class="string">"hits"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">      <span class="number">0</span> =&gt; <span class="keyword">array</span>:<span class="number">5</span> [</span><br><span class="line">        <span class="string">"_index"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">        <span class="string">"_type"</span> =&gt; <span class="string">"test_type_1"</span></span><br><span class="line">        <span class="string">"_id"</span> =&gt; <span class="string">"test_id_1"</span></span><br><span class="line">        <span class="string">"_score"</span> =&gt; <span class="number">0.2876821</span></span><br><span class="line">        <span class="string">"_source"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">          <span class="string">"testField"</span> =&gt; <span class="string">"caoxl"</span></span><br><span class="line">          <span class="string">"testField2"</span> =&gt; <span class="string">"caoxl2"</span></span><br><span class="line">          <span class="string">"testField3"</span> =&gt; <span class="string">"caoxl3"</span></span><br><span class="line">        ]</span><br><span class="line">      ]</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="Bool查询"><a href="#Bool查询" class="headerlink" title="Bool查询"></a>Bool查询</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$search_params = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'type'</span>  =&gt; <span class="string">'test_type_1'</span>,</span><br><span class="line">    <span class="string">'body'</span>  =&gt; [</span><br><span class="line">        <span class="string">'query'</span> =&gt; [</span><br><span class="line">            <span class="string">'bool'</span> =&gt; [</span><br><span class="line">                <span class="string">'must'</span> =&gt; [</span><br><span class="line">                    [<span class="string">'match'</span> =&gt; [<span class="string">'testField'</span> =&gt; <span class="string">'caoxl'</span>]],</span><br><span class="line">                    [<span class="string">'match'</span> =&gt; [<span class="string">'testField2'</span> =&gt; <span class="string">'caoxl2'</span>]],</span><br><span class="line">                ],</span><br><span class="line">            ],</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$response_search = $client-&gt;search($search_params);</span><br><span class="line">dd($response_search);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">4</span> [</span><br><span class="line">  <span class="string">"took"</span> =&gt; <span class="number">191</span></span><br><span class="line">  <span class="string">"timed_out"</span> =&gt; <span class="keyword">false</span></span><br><span class="line">  <span class="string">"_shards"</span> =&gt; <span class="keyword">array</span>:<span class="number">4</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="number">2</span></span><br><span class="line">    <span class="string">"successful"</span> =&gt; <span class="number">2</span></span><br><span class="line">    <span class="string">"skipped"</span> =&gt; <span class="number">0</span></span><br><span class="line">    <span class="string">"failed"</span> =&gt; <span class="number">0</span></span><br><span class="line">  ]</span><br><span class="line">  <span class="string">"hits"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">      <span class="string">"value"</span> =&gt; <span class="number">1</span></span><br><span class="line">      <span class="string">"relation"</span> =&gt; <span class="string">"eq"</span></span><br><span class="line">    ]</span><br><span class="line">    <span class="string">"max_score"</span> =&gt; <span class="number">0.5753642</span></span><br><span class="line">    <span class="string">"hits"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">      <span class="number">0</span> =&gt; <span class="keyword">array</span>:<span class="number">5</span> [</span><br><span class="line">        <span class="string">"_index"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">        <span class="string">"_type"</span> =&gt; <span class="string">"test_type_1"</span></span><br><span class="line">        <span class="string">"_id"</span> =&gt; <span class="string">"test_id_1"</span></span><br><span class="line">        <span class="string">"_score"</span> =&gt; <span class="number">0.5753642</span></span><br><span class="line">        <span class="string">"_source"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">          <span class="string">"testField"</span> =&gt; <span class="string">"caoxl"</span></span><br><span class="line">          <span class="string">"testField2"</span> =&gt; <span class="string">"caoxl2"</span></span><br><span class="line">          <span class="string">"testField3"</span> =&gt; <span class="string">"caoxl3"</span></span><br><span class="line">        ]</span><br><span class="line">      ]</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>更复杂的示例</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$search_params = [</span><br><span class="line">    <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'type'</span>  =&gt; <span class="string">'test_type_1'</span>,</span><br><span class="line">    <span class="string">'body'</span>  =&gt; [</span><br><span class="line">        <span class="string">'query'</span> =&gt; [</span><br><span class="line">            <span class="string">'bool'</span> =&gt; [</span><br><span class="line">                <span class="string">'filter'</span> =&gt; [</span><br><span class="line">                    <span class="string">'term'</span> =&gt; [<span class="string">'testField'</span> =&gt; <span class="string">'caoxl'</span>]</span><br><span class="line">                ],</span><br><span class="line">                <span class="string">'should'</span> =&gt; [</span><br><span class="line">                    <span class="string">'match'</span> =&gt; [<span class="string">'testField2'</span> =&gt; <span class="string">'caoxl2'</span>]</span><br><span class="line">                ],</span><br><span class="line">            ]</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$response_search = $client-&gt;search($search_params);</span><br><span class="line">dd($response_search);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">4</span> [</span><br><span class="line">  <span class="string">"took"</span> =&gt; <span class="number">1</span></span><br><span class="line">  <span class="string">"timed_out"</span> =&gt; <span class="keyword">false</span></span><br><span class="line">  <span class="string">"_shards"</span> =&gt; <span class="keyword">array</span>:<span class="number">4</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="number">2</span></span><br><span class="line">    <span class="string">"successful"</span> =&gt; <span class="number">2</span></span><br><span class="line">    <span class="string">"skipped"</span> =&gt; <span class="number">0</span></span><br><span class="line">    <span class="string">"failed"</span> =&gt; <span class="number">0</span></span><br><span class="line">  ]</span><br><span class="line">  <span class="string">"hits"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">      <span class="string">"value"</span> =&gt; <span class="number">1</span></span><br><span class="line">      <span class="string">"relation"</span> =&gt; <span class="string">"eq"</span></span><br><span class="line">    ]</span><br><span class="line">    <span class="string">"max_score"</span> =&gt; <span class="number">0.2876821</span></span><br><span class="line">    <span class="string">"hits"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">      <span class="number">0</span> =&gt; <span class="keyword">array</span>:<span class="number">5</span> [</span><br><span class="line">        <span class="string">"_index"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">        <span class="string">"_type"</span> =&gt; <span class="string">"test_type_1"</span></span><br><span class="line">        <span class="string">"_id"</span> =&gt; <span class="string">"test_id_1"</span></span><br><span class="line">        <span class="string">"_score"</span> =&gt; <span class="number">0.2876821</span></span><br><span class="line">        <span class="string">"_source"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">          <span class="string">"testField"</span> =&gt; <span class="string">"caoxl"</span></span><br><span class="line">          <span class="string">"testField2"</span> =&gt; <span class="string">"caoxl2"</span></span><br><span class="line">          <span class="string">"testField3"</span> =&gt; <span class="string">"caoxl3"</span></span><br><span class="line">        ]</span><br><span class="line">      ]</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h3 id="Scrolling-游标-查询"><a href="#Scrolling-游标-查询" class="headerlink" title="Scrolling(游标) 查询"></a>Scrolling(游标) 查询</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$search_params = [</span><br><span class="line">    <span class="string">'scroll'</span> =&gt; <span class="string">'30s'</span>,</span><br><span class="line">    <span class="string">'size'</span>   =&gt; <span class="number">50</span>,</span><br><span class="line">    <span class="string">'index'</span>  =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">    <span class="string">'body'</span>   =&gt; [</span><br><span class="line">        <span class="string">'query'</span> =&gt; [</span><br><span class="line">            <span class="string">'match_all'</span> =&gt; <span class="keyword">new</span> \stdClass()</span><br><span class="line">        ],</span><br><span class="line">    ],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$response_search = $client-&gt;search($search_params);</span><br><span class="line">dd($response_search);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将所有数据循环出来</span></span><br><span class="line"><span class="keyword">while</span>(<span class="keyword">isset</span>($response_search[<span class="string">'hits'</span>][<span class="string">'hits'</span>]) &amp;&amp;</span><br><span class="line">    count($response_search[<span class="string">'hits'</span>][<span class="string">'hits'</span>]) &gt; <span class="number">0</span></span><br><span class="line">) &#123;</span><br><span class="line">    $scroll_id = $response_search[<span class="string">'_scroll_id'</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 执行下一个游标请求</span></span><br><span class="line">    $response_search = $client-&gt;scroll([</span><br><span class="line">        <span class="string">'scroll_id'</span> =&gt; $scroll_id,</span><br><span class="line">        <span class="string">'scroll'</span>    =&gt; <span class="string">'30s'</span></span><br><span class="line">    ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">5</span> [</span><br><span class="line">  <span class="string">"_scroll_id"</span> =&gt; <span class="string">"DnF1ZXJ5VGhlbkZldGNoAgAAAAAAAAAVFlJxaEFQVFFEVDd5RVVqUFVvRTB4V1EAAAAAAAAAFhZScWhBUFRRRFQ3eUVValBVb0UweFdR"</span></span><br><span class="line">  <span class="string">"took"</span> =&gt; <span class="number">39</span></span><br><span class="line">  <span class="string">"timed_out"</span> =&gt; <span class="keyword">false</span></span><br><span class="line">  <span class="string">"_shards"</span> =&gt; <span class="keyword">array</span>:<span class="number">4</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="number">2</span></span><br><span class="line">    <span class="string">"successful"</span> =&gt; <span class="number">2</span></span><br><span class="line">    <span class="string">"skipped"</span> =&gt; <span class="number">0</span></span><br><span class="line">    <span class="string">"failed"</span> =&gt; <span class="number">0</span></span><br><span class="line">  ]</span><br><span class="line">  <span class="string">"hits"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">    <span class="string">"total"</span> =&gt; <span class="keyword">array</span>:<span class="number">2</span> [</span><br><span class="line">      <span class="string">"value"</span> =&gt; <span class="number">1</span></span><br><span class="line">      <span class="string">"relation"</span> =&gt; <span class="string">"eq"</span></span><br><span class="line">    ]</span><br><span class="line">    <span class="string">"max_score"</span> =&gt; <span class="number">1.0</span></span><br><span class="line">    <span class="string">"hits"</span> =&gt; <span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">      <span class="number">0</span> =&gt; <span class="keyword">array</span>:<span class="number">5</span> [</span><br><span class="line">        <span class="string">"_index"</span> =&gt; <span class="string">"test_index_1"</span></span><br><span class="line">        <span class="string">"_type"</span> =&gt; <span class="string">"test_type_1"</span></span><br><span class="line">        <span class="string">"_id"</span> =&gt; <span class="string">"test_id_1"</span></span><br><span class="line">        <span class="string">"_score"</span> =&gt; <span class="number">1.0</span></span><br><span class="line">        <span class="string">"_source"</span> =&gt; <span class="keyword">array</span>:<span class="number">3</span> [</span><br><span class="line">          <span class="string">"testField"</span> =&gt; <span class="string">"caoxl"</span></span><br><span class="line">          <span class="string">"testField2"</span> =&gt; <span class="string">"caoxl2"</span></span><br><span class="line">          <span class="string">"testField3"</span> =&gt; <span class="string">"caoxl3"</span></span><br><span class="line">        ]</span><br><span class="line">      ]</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h2 id="Go-MySQL-Elasticsearch"><a href="#Go-MySQL-Elasticsearch" class="headerlink" title="Go-MySQL-Elasticsearch"></a>Go-MySQL-Elasticsearch</h2><blockquote>
+<p>参考: <a href="https://blog.fleeto.us/post/from-mysql-to-es/" target="_blank" rel="noopener">使用 go-mysql-elasticsearch 把 MySQL 中的业务日志导入 Elasticsearch</a></p>
+</blockquote>
+<p><strong>注意: 需要把binlog模式修改成ROW</strong></p>
+<h2 id="其他操作"><a href="#其他操作" class="headerlink" title="其他操作"></a>其他操作</h2><ul>
+<li>给现有索引添加别名</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$alias_params[<span class="string">'body'</span>] = [</span><br><span class="line">    <span class="string">'actions'</span> =&gt; [</span><br><span class="line">        [</span><br><span class="line">            <span class="string">'add'</span> =&gt; [</span><br><span class="line">                <span class="string">'index'</span> =&gt; <span class="string">'test_index_1'</span>,</span><br><span class="line">                <span class="string">'alias'</span> =&gt; <span class="string">'alias_index_1'</span></span><br><span class="line">            ]</span><br><span class="line">        ]</span><br><span class="line">    ],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">$response_alias = $client-&gt;indices()-&gt;updateAliases($alias_params);</span><br><span class="line">dd($response_alias);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>返回结果</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>:<span class="number">1</span> [</span><br><span class="line">  <span class="string">"acknowledged"</span> =&gt; <span class="keyword">true</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><ul>
+<li><code>Types cannot be provided in put mapping requests, unless the include_type_name parameter is set to true</code></li>
+</ul>
+<p>参考上面映射API&amp;&amp;获取映射API中加入如下参数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'custom'</span> =&gt; [</span><br><span class="line">    <span class="string">'include_type_name'</span> =&gt; <span class="keyword">true</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://learnku.com/docs/elasticsearch-php/6.0/about/2015" target="_blank" rel="noopener">Elasticsearch-PHP 中文文档</a></li>
+<li><a href="https://es.xiaoleilu.com/010_Intro/05_What_is_it.html" target="_blank" rel="noopener">Elasticsearch 权威指南(中文版)</a></li>
+<li><a href="https://github.com/medcl/elasticsearch-analysis-ik" target="_blank" rel="noopener">elasticsearch-analysis-ik</a></li>
+<li><a href="https://github.com/siddontang/go-mysql-elasticsearch" target="_blank" rel="noopener">go-mysql-elasticsearch</a></li>
+<li><a href="https://www.elastic.co/cn/downloads/elasticsearch" target="_blank" rel="noopener">Download Elasticsearch</a></li>
+<li><a href="https://www.elastic.co/cn/downloads/kibana" target="_blank" rel="noopener">Download Kibana</a></li>
+<li><a href="https://blog.csdn.net/vbirdbest/article/details/79228852" target="_blank" rel="noopener">Elasticsearch入门教程(五)：Elasticsearch查询(一)</a></li>
+<li><a href="https://blog.csdn.net/vbirdbest/article/details/79237950" target="_blank" rel="noopener">Elasticsearch入门教程(六)：Elasticsearch查询(二)</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/07/03/Elasticsearch-Go-MySQL-IK-Kibana/" target="_blank" title="Elasticsearch 使用记录">http://blog.caoxl.com/2019/07/03/Elasticsearch-Go-MySQL-IK-Kibana/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ElasticSearch/">ElasticSearch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go-MySQL-ES/">Go-MySQL-ES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IK/">IK</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kibana/">Kibana</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/07/09/Laravel-ElasticSearch/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          基于Laravel使用ElasticSearch
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/06/25/Laravel-Eloquent-CreateAt-UpdateAt/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Laravel 时间字段</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#全文搜索分析引擎-Elasticsearch"><span class="nav-number">1.</span> <span class="nav-text">全文搜索分析引擎 Elasticsearch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装环境"><span class="nav-number">2.</span> <span class="nav-text">安装环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速上手"><span class="nav-number">3.</span> <span class="nav-text">快速上手</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装客户端"><span class="nav-number">3.1.</span> <span class="nav-text">安装客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例化客户端"><span class="nav-number">3.2.</span> <span class="nav-text">实例化客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引一个文档"><span class="nav-number">3.3.</span> <span class="nav-text">索引一个文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取一个文档"><span class="nav-number">3.4.</span> <span class="nav-text">获取一个文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搜索一个文档"><span class="nav-number">3.5.</span> <span class="nav-text">搜索一个文档</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参数说明"><span class="nav-number">3.5.1.</span> <span class="nav-text">参数说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除一个文档"><span class="nav-number">3.6.</span> <span class="nav-text">删除一个文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除索引"><span class="nav-number">3.7.</span> <span class="nav-text">删除索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建索引"><span class="nav-number">3.8.</span> <span class="nav-text">创建索引</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管理索引"><span class="nav-number">4.</span> <span class="nav-text">管理索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#设置API"><span class="nav-number">4.1.</span> <span class="nav-text">设置API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取设置API"><span class="nav-number">4.2.</span> <span class="nav-text">获取设置API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#映射API"><span class="nav-number">4.3.</span> <span class="nav-text">映射API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取映射API"><span class="nav-number">4.4.</span> <span class="nav-text">获取映射API</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行搜索"><span class="nav-number">5.</span> <span class="nav-text">执行搜索</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Match-查询"><span class="nav-number">5.1.</span> <span class="nav-text">Match 查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bool查询"><span class="nav-number">5.2.</span> <span class="nav-text">Bool查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scrolling-游标-查询"><span class="nav-number">5.3.</span> <span class="nav-text">Scrolling(游标) 查询</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-MySQL-Elasticsearch"><span class="nav-number">6.</span> <span class="nav-text">Go-MySQL-Elasticsearch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他操作"><span class="nav-number">7.</span> <span class="nav-text">其他操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见问题"><span class="nav-number">8.</span> <span class="nav-text">常见问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

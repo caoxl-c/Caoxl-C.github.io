@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php 设计模式 简介 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHP设计模式">
+  
+  
+  
+  
+  <meta name="description" content="简单记录下关于设计模式第一篇学习笔记。  设计模式的学习需要在工程中实践并思考，只看概念是永远不会懂的。    但是，学习设计模式，并不意味着迷信模式，照葫芦画瓢，而是要学习每种设计模式解决的问题，以及为什么这样要这样设计，以及这样设计的好与坏。现有设计模式不可能是所有问题的最优解，但至少能提供思路。 要学习的其实在遇到问题时，如何设计软件解决问题。  预备知识 OOP： 类与对象，魔术方法，链式">
+<meta name="keywords" content="PHP,设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP 设计模式 简介">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/22/PHP-Design-Pattern-Intro/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="简单记录下关于设计模式第一篇学习笔记。  设计模式的学习需要在工程中实践并思考，只看概念是永远不会懂的。    但是，学习设计模式，并不意味着迷信模式，照葫芦画瓢，而是要学习每种设计模式解决的问题，以及为什么这样要这样设计，以及这样设计的好与坏。现有设计模式不可能是所有问题的最优解，但至少能提供思路。 要学习的其实在遇到问题时，如何设计软件解决问题。  预备知识 OOP： 类与对象，魔术方法，链式">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP 设计模式 简介">
+<meta name="twitter:description" content="简单记录下关于设计模式第一篇学习笔记。  设计模式的学习需要在工程中实践并思考，只看概念是永远不会懂的。    但是，学习设计模式，并不意味着迷信模式，照葫芦画瓢，而是要学习每种设计模式解决的问题，以及为什么这样要这样设计，以及这样设计的好与坏。现有设计模式不可能是所有问题的最优解，但至少能提供思路。 要学习的其实在遇到问题时，如何设计软件解决问题。  预备知识 OOP： 类与对象，魔术方法，链式">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-Design-Pattern-Intro" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP 设计模式 简介
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/22/PHP-Design-Pattern-Intro/" class="article-date">
+	  <time datetime="2018-01-22T09:06:09.000Z" itemprop="datePublished">2018-01-22</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>简单记录下关于设计模式第一篇学习笔记。</p>
+<blockquote>
+<p>设计模式的学习需要在工程中实践并思考，只看概念是永远不会懂的。</p>
+<p>   但是，学习设计模式，并不意味着迷信模式，照葫芦画瓢，而是要学习每种设计模式解决的问题，以及为什么这样要这样设计，以及这样设计的好与坏。现有设计模式不可能是所有问题的最优解，但至少能提供思路。</p>
+<p>要学习的其实在遇到问题时，如何设计软件解决问题。</p>
+</blockquote>
+<h1 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h1><ul>
+<li><strong>OOP：</strong> 类与对象，魔术方法，链式操作等。</li>
+<li><strong>PSR 规范：</strong> 命名空间，自动载入类，单入口等等。</li>
+</ul>
+<blockquote>
+<p>PHP 中可以使用 <code>ArrayAccess</code> 实现配置文件的加载。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="三种基本设计模式"><a href="#三种基本设计模式" class="headerlink" title="三种基本设计模式"></a>三种基本设计模式</h1><h2 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h2><p>由工厂方法（专门的类）生成对象，而不是直接在代码中 new。</p>
+<p>常见使用场景有：在工厂方法中读取配置，生成可配置化的对象。</p>
+<h2 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h2><p>某个类的对象，在一次生命周期中，只允许创建一个。（比如数据库操作对象）</p>
+<h2 id="注册模式"><a href="#注册模式" class="headerlink" title="注册模式"></a>注册模式</h2><p>全局共享和交换对象。</p>
+<h1 id="OOP-基本原则"><a href="#OOP-基本原则" class="headerlink" title="OOP 基本原则"></a>OOP 基本原则</h1><h2 id="单一职责"><a href="#单一职责" class="headerlink" title="单一职责"></a>单一职责</h2><p>一个类，只需要做好一件事。</p>
+<h2 id="开放封闭"><a href="#开放封闭" class="headerlink" title="开放封闭"></a>开放封闭</h2><p>一个类，应该是可以被扩展的，但不可以被外界轻易修改的。</p>
+<h2 id="依赖倒置"><a href="#依赖倒置" class="headerlink" title="依赖倒置"></a>依赖倒置</h2><p>一个类，不应该强依赖另一个类，每个类对另一个类的依赖都是可替换的。</p>
+<p>具有依赖关系的两个类之间需要通过<strong>依赖注入</strong>的方式去实现，而不要直接在类里面使用另一个类。</p>
+<h2 id="可配置化"><a href="#可配置化" class="headerlink" title="可配置化"></a>可配置化</h2><p>尽可能地使用配置，而不是硬编码。即，<strong>类与类之间的依赖关系最好是写到配置文件当中去，而不要在具体的类中定义或者引入</strong>。</p>
+<h2 id="面向接口编程"><a href="#面向接口编程" class="headerlink" title="面向接口编程"></a>面向接口编程</h2><p>只需要关心接口，不需要关心实现。</p>
+<h1 id="MVC-设计结构"><a href="#MVC-设计结构" class="headerlink" title="MVC 设计结构"></a>MVC 设计结构</h1><p>模型-视图-控制器，一种 <code>C/S</code>，<code>B/S</code> 软件工程的组织方式。</p>
+<h2 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h2><p>数据和存储的封装。</p>
+<h2 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h2><p>展现层的封装。（如模版文件）</p>
+<h2 id="控制器"><a href="#控制器" class="headerlink" title="控制器"></a>控制器</h2><p>逻辑层的封装。</p>
+<h1 id="常用设计模式"><a href="#常用设计模式" class="headerlink" title="常用设计模式"></a>常用设计模式</h1><h2 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h2><p>可以将截然不同的函数接口封装成统一的 API。</p>
+<ul>
+<li><p><strong>常见使用场景有：</strong></p>
+<ul>
+<li>PHP 的数据库操作扩展有 <code>mysql</code>, <code>mysqli</code>, <code>pdo</code> 3 种，可以用适配器模式统一成一致调用。</li>
+<li>将 <code>memcache</code>, <code>redis</code>, <code>file</code>, <code>apc</code> 等不同的缓存函数，统一成一致调用。</li>
+</ul>
+</li>
+</ul>
+<h2 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h2><p>将一组特定的行为和算法封装成类，以适应某些特定的上下文环境。</p>
+<ul>
+<li>常见使用场景有：有一个电商网站，针对男女性用户各自跳转到不同的商品类目，并为其展示不同的广告。</li>
+</ul>
+<p>使用策略模式可以实现 IoC，DI。</p>
+<h2 id="数据对象映射模式"><a href="#数据对象映射模式" class="headerlink" title="数据对象映射模式"></a>数据对象映射模式</h2><blockquote>
+<p>是指将<code>对象和数据存储映射起来，对一个对象的操作会映射为对数据存储的操作</code>。</p>
+</blockquote>
+<p>在代码中常见的应用场景比如，实现一个 <code>ORM</code> 类，将复杂的 <code>SQL</code> 语句映射成对象属性的操作。</p>
+<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><blockquote>
+<p>是指当一个对象状态发生改变时，依赖它的对象全部回收到通知，并自动更新。</p>
+</blockquote>
+<p>要实现一个事件发生后，要执行一连串的更新操作，传统的编程方式，就是在事件的代码后面直接加入处理逻辑。当更新的逻辑增多后，代码就变得难以维护。</p>
+<p>这种方式是耦合的，侵入式的，增加新的逻辑需要修改事件主体的代码。</p>
+<p><strong>使用观察者模式后，可以实现低耦合，非侵入式的通知与更新机制</strong>。</p>
+<ul>
+<li><strong>常见使用场景有：</strong> 在观察者类中实现数据更新事件的一系列更新操作。</li>
+</ul>
+<h2 id="装饰器模式"><a href="#装饰器模式" class="headerlink" title="装饰器模式"></a>装饰器模式</h2><blockquote>
+<p>指的是，可以动态地添加修改类的功能。</p>
+</blockquote>
+<p>一个类提供了一项功能，如果要在修改并添加额外的功能，传统的编程模式，需要写一个子类继承它，并重新实现类的方法。</p>
+<p><strong>使用装饰器模式，仅需要在运行时添加一个装饰器对象即可实现，可以实现最大的灵活性。</strong></p>
+<ul>
+<li><strong>常见使用场景有：</strong> 在装饰器中实现权限验证，模版渲染，JSON 串化等。</li>
+</ul>
+<h2 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h2><blockquote>
+<p>指的是，在不需要了解内部实现的前提下，遍历一个聚合对象的内部元素。</p>
+</blockquote>
+<p>相比于传统的编程模式，迭代器模式可以隐藏遍历元素所需要的操作。</p>
+<h2 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h2><blockquote>
+<p>指的是，在客户端与实体之间，建立一个代理对象，客户端对实体进行操作全部委派给代理对象，隐藏实体的具体实现细节。所谓的实体指的是，数据库中的实体数据。</p>
+</blockquote>
+<p><code>Proxy</code> 还可以与业务代码分离，部署到另外的服务器。业务代码中通过 RPC 来委派任务。</p>
+<ul>
+<li><strong>常见使用场景有：</strong> 实现数据库的主从自动切换。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://github.com/ckwongloy/lbd/tree/master/design-pattern" target="_blank" rel="noopener">Github 示例代码</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/22/PHP-Design-Pattern-Intro/" target="_blank" title="PHP 设计模式 简介">http://blog.caoxl.com/2018/01/22/PHP-Design-Pattern-Intro/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/设计模式/">设计模式</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/22/MongoDB-Intro/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          MongoDB 简介
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/22/PHP-SPL-Intro/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">PHP SPL 简介</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#预备知识"><span class="nav-number">1.</span> <span class="nav-text">预备知识</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三种基本设计模式"><span class="nav-number">2.</span> <span class="nav-text">三种基本设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#工厂模式"><span class="nav-number">2.1.</span> <span class="nav-text">工厂模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单例模式"><span class="nav-number">2.2.</span> <span class="nav-text">单例模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注册模式"><span class="nav-number">2.3.</span> <span class="nav-text">注册模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OOP-基本原则"><span class="nav-number">3.</span> <span class="nav-text">OOP 基本原则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单一职责"><span class="nav-number">3.1.</span> <span class="nav-text">单一职责</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开放封闭"><span class="nav-number">3.2.</span> <span class="nav-text">开放封闭</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#依赖倒置"><span class="nav-number">3.3.</span> <span class="nav-text">依赖倒置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可配置化"><span class="nav-number">3.4.</span> <span class="nav-text">可配置化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#面向接口编程"><span class="nav-number">3.5.</span> <span class="nav-text">面向接口编程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MVC-设计结构"><span class="nav-number">4.</span> <span class="nav-text">MVC 设计结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#模型"><span class="nav-number">4.1.</span> <span class="nav-text">模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#视图"><span class="nav-number">4.2.</span> <span class="nav-text">视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制器"><span class="nav-number">4.3.</span> <span class="nav-text">控制器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用设计模式"><span class="nav-number">5.</span> <span class="nav-text">常用设计模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#适配器模式"><span class="nav-number">5.1.</span> <span class="nav-text">适配器模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#策略模式"><span class="nav-number">5.2.</span> <span class="nav-text">策略模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据对象映射模式"><span class="nav-number">5.3.</span> <span class="nav-text">数据对象映射模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#观察者模式"><span class="nav-number">5.4.</span> <span class="nav-text">观察者模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#装饰器模式"><span class="nav-number">5.5.</span> <span class="nav-text">装饰器模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代器模式"><span class="nav-number">5.6.</span> <span class="nav-text">迭代器模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代理模式"><span class="nav-number">5.7.</span> <span class="nav-text">代理模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

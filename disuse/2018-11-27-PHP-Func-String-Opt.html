@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+  
+  <meta name="description" content="如果说PHP是一本武功秘籍, 那么字符串函数,就是里面的基本招式直接查看手册吧:http://php.net/manual/zh/ref.strings.php这里是我自己写给自己看的.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Keep It Simple And Stupid">
+<meta property="og:url" content="http://blog.caoxl.com/disuse/2018-11-27-PHP-Func-String-Opt.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="如果说PHP是一本武功秘籍, 那么字符串函数,就是里面的基本招式直接查看手册吧:http://php.net/manual/zh/ref.strings.php这里是我自己写给自己看的.">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T07:33:58.790Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Keep It Simple And Stupid">
+<meta name="twitter:description" content="如果说PHP是一本武功秘籍, 那么字符串函数,就是里面的基本招式直接查看手册吧:http://php.net/manual/zh/ref.strings.php这里是我自己写给自己看的.">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+    <link rel="stylesheet" href="/css/archive.css">
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body>
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                 >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="page-"  class="article article-type-page" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+    <div class="article-meta">
+      
+	<a href="/disuse/2018-11-27-PHP-Func-String-Opt.html" class="article-date">
+	  <time datetime="2019-12-12T08:07:54.982Z" itemprop="datePublished">2019-12-12</time>
+	</a>
+
+      
+      
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>如果说PHP是一本武功秘籍, 那么字符串函数,就是里面的基本招式<br>直接查看手册吧:<a href="http://php.net/manual/zh/ref.strings.php" target="_blank" rel="noopener">http://php.net/manual/zh/ref.strings.php</a><br>这里是我自己写给自己看的.</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="字符串替换"><a href="#字符串替换" class="headerlink" title="字符串替换"></a>字符串替换</h1><ul>
+<li><code>str_replace</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> str_replace(<span class="string">"Java"</span>, <span class="string">'PHP'</span>, <span class="string">'Java is the best language in the world'</span>);</span><br></pre></td></tr></table></figure>
+<h1 id="字符串截取"><a href="#字符串截取" class="headerlink" title="字符串截取"></a>字符串截取</h1><ul>
+<li><code>substr</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$str = <span class="string">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>;</span><br><span class="line"><span class="keyword">echo</span> substr($str, <span class="number">5</span>);      <span class="comment">// 从第5个字符开始取至最后</span></span><br><span class="line"><span class="keyword">echo</span> substr($str, <span class="number">9</span>, <span class="number">4</span>);   <span class="comment">// 从第9个字符开始取4个字符</span></span><br><span class="line"><span class="keyword">echo</span> substr($str, <span class="number">-5</span>);     <span class="comment">// 取倒数5个字符</span></span><br><span class="line"><span class="keyword">echo</span> substr($str, <span class="number">-8</span>, <span class="number">4</span>);  <span class="comment">// 从倒数第8个字符开始向后取4个字符</span></span><br><span class="line"><span class="keyword">echo</span> substr($str, <span class="number">-8</span>, <span class="number">-2</span>); <span class="comment">// 从倒数第8个字符开始取到倒数第2个字符为止</span></span><br></pre></td></tr></table></figure>
+<h1 id="字符串查找"><a href="#字符串查找" class="headerlink" title="字符串查找"></a>字符串查找</h1><ul>
+<li><code>stripos</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查找字符串首次出现的位置,不区分大小写</span></span><br><span class="line">$findme    = <span class="string">'a'</span>;</span><br><span class="line">$mystring1 = <span class="string">'xyz'</span>;</span><br><span class="line">$mystring2 = <span class="string">'ABC'</span>;</span><br><span class="line"></span><br><span class="line">$pos1 = stripos($mystring1, $findme);</span><br><span class="line">$pos2 = stripos($mystring2, $findme);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>strpos</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查找字符串首次出现的位置</span></span><br><span class="line">$findme   = <span class="string">'a'</span>;</span><br><span class="line">$mystring = <span class="string">'abc'</span>;</span><br><span class="line">$pos = strpos($mystring, $findme);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>strrchr</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查找指定字符在字符串中的最后一次出现</span></span><br><span class="line"><span class="comment">// 获取 $PATH 中不含磁盘符号的目录</span></span><br><span class="line">$dir = substr(strrchr($PATH, <span class="string">":"</span>), <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取最后一行内容</span></span><br><span class="line">$text = <span class="string">"Line 1\nLine 2\nLine 3"</span>;</span><br><span class="line">$last = substr(strrchr($text, <span class="number">10</span>), <span class="number">1</span> );</span><br><span class="line"></span><br><span class="line">$path = <span class="string">'/www/public/index.html'</span>;</span><br><span class="line">$filename = substr(strrchr($path, <span class="string">"/"</span>), <span class="number">1</span>);</span><br><span class="line"><span class="keyword">echo</span> $filename;</span><br><span class="line"><span class="comment">// "index.html"</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>strstr</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查找字符串的首次出现,该函数区分大小写</span></span><br><span class="line">$email  = <span class="string">'name@example.com'</span>;</span><br><span class="line">$domain = strstr($email, <span class="string">'@'</span>);</span><br><span class="line"><span class="keyword">echo</span> $domain; <span class="comment">// 打印 @example.com</span></span><br><span class="line"></span><br><span class="line">$user = strstr($email, <span class="string">'@'</span>, <span class="keyword">true</span>); <span class="comment">// 从 PHP 5.3.0 起</span></span><br><span class="line"><span class="keyword">echo</span> $user; <span class="comment">// 打印 name</span></span><br></pre></td></tr></table></figure>
+<h1 id="字符串格式化"><a href="#字符串格式化" class="headerlink" title="字符串格式化"></a>字符串格式化</h1><ul>
+<li><code>sprintf</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回格式化的字符串</span></span><br><span class="line">$number = <span class="number">9999</span>;</span><br><span class="line">sprintf(<span class="string">"%.1f"</span>, substr(sprintf(<span class="string">"%.3f"</span>, $number/<span class="number">1000</span>), <span class="number">0</span>, <span class="number">-2</span>)) . <span class="string">'k'</span>;</span><br><span class="line">sprintf(<span class="string">"%.1f"</span>, substr(sprintf(<span class="string">"%.4f"</span>, $number/<span class="number">10000</span>), <span class="number">0</span>, <span class="number">-3</span>)) . <span class="string">'w'</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>vprintf</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 输出格式化字符串</span></span><br><span class="line">vprintf(<span class="string">"%04d-%02d-%02d"</span>, explode(<span class="string">'-'</span>, <span class="string">'1988-8-1'</span>)); <span class="comment">// 1988-08-01</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>vsprintf</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">`   <span class="comment">//  返回格式化字符串</span></span><br><span class="line">    <span class="keyword">print</span> vsprintf(<span class="string">"%04d-%02d-%02d"</span>, explode(<span class="string">'-'</span>, <span class="string">'1988-8-1'</span>)); <span class="comment">// 1988-08-01</span></span><br></pre></td></tr></table></figure>
+<h1 id="字符串填充"><a href="#字符串填充" class="headerlink" title="字符串填充"></a>字符串填充</h1><ul>
+<li><code>str_pad</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> str_pad(<span class="string">"input"</span>, <span class="number">10</span>, <span class="string">"pp"</span>, STR_PAD_BOTH ); <span class="comment">// ppinputppp</span></span><br><span class="line"><span class="keyword">echo</span> str_pad(<span class="string">"input"</span>, <span class="number">6</span>, <span class="string">"p"</span>, STR_PAD_BOTH ); <span class="comment">// inputp</span></span><br><span class="line"><span class="keyword">echo</span> str_pad(<span class="string">"input"</span>, <span class="number">8</span>, <span class="string">"p"</span>, STR_PAD_BOTH ); <span class="comment">//pinputpp</span></span><br></pre></td></tr></table></figure>
+<h1 id="字符串分割"><a href="#字符串分割" class="headerlink" title="字符串分割"></a>字符串分割</h1><ul>
+<li><code>explode</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$string = <span class="string">"hello,world"</span>;</span><br><span class="line">var_dump(explode( <span class="string">','</span>, $string));</span><br></pre></td></tr></table></figure>
+<h1 id="字符串拼接"><a href="#字符串拼接" class="headerlink" title="字符串拼接"></a>字符串拼接</h1><ul>
+<li><code>implode</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$array = <span class="keyword">array</span>(<span class="string">'lastname'</span>, <span class="string">'email'</span>, <span class="string">'phone'</span>);</span><br><span class="line">$comma_separated = implode(<span class="string">","</span>, $array);</span><br></pre></td></tr></table></figure>
+<h1 id="字符串转数组"><a href="#字符串转数组" class="headerlink" title="字符串转数组"></a>字符串转数组</h1><ul>
+<li><code>str_split</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$str = <span class="string">"Hello Friend"</span>;</span><br><span class="line"></span><br><span class="line">$arr1 = str_split($str);</span><br><span class="line">$arr2 = str_split($str, <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">print_r($arr1);</span><br><span class="line">print_r($arr2);</span><br></pre></td></tr></table></figure>
+<h1 id="字符串重复"><a href="#字符串重复" class="headerlink" title="字符串重复"></a>字符串重复</h1><ul>
+<li><code>str_repeat</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> str_repeat(<span class="string">"php"</span>, <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+<h1 id="字符串打乱"><a href="#字符串打乱" class="headerlink" title="字符串打乱"></a>字符串打乱</h1><ul>
+<li><code>str_shuffle</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$str = <span class="string">'abcdef'</span>;</span><br><span class="line">$shuffled = str_shuffle($str);</span><br></pre></td></tr></table></figure>
+<h1 id="字符串反转"><a href="#字符串反转" class="headerlink" title="字符串反转"></a>字符串反转</h1><ul>
+<li><code>strrev</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> strrev(<span class="string">"Hello world!"</span>); <span class="comment">// 输出 "!dlrow olleH"</span></span><br></pre></td></tr></table></figure>
+<h1 id="字符串大小写转化"><a href="#字符串大小写转化" class="headerlink" title="字符串大小写转化"></a>字符串大小写转化</h1><ul>
+<li><code>strtolower</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$str = <span class="string">"Mary Had A Little Lamb and She LOVED It So"</span>;</span><br><span class="line">$str = strtolower($str);</span><br><span class="line"><span class="keyword">echo</span> $str; <span class="comment">// 打印 mary had a little lamb and she loved it so</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>strtoupper</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$str = <span class="string">"Mary Had A Little Lamb and She LOVED It So"</span>;</span><br><span class="line">$str = strtoupper($str);</span><br><span class="line"><span class="keyword">echo</span> $str; <span class="comment">// 打印 MARY HAD A LITTLE LAMB AND SHE LOVED IT SO</span></span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/disuse/2018-11-27-PHP-Func-String-Opt.html" target="_blank" title="">http://blog.caoxl.com/disuse/2018-11-27-PHP-Func-String-Opt.html</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+      
+
+    </footer>
+  </div>
+  
+    
+  
+</article>
+
+<!-- Table of Contents -->
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+</body>
+</html>

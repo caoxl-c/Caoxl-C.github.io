@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+  
+  <meta name="description" content="关于 PHP 浮点数运算，特别是金融行业、电子商务订单管理、数据报表等相关业务，利用浮点数进行加减乘除时，稍不留神运算结果就会出现偏差，轻则损失几十万，重则会有信誉损失，甚至吃上官司，我们一定要引起高度重视！">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Keep It Simple And Stupid">
+<meta property="og:url" content="http://blog.caoxl.com/disuse/2019-03-19-PHP-Func-BC-Math.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="关于 PHP 浮点数运算，特别是金融行业、电子商务订单管理、数据报表等相关业务，利用浮点数进行加减乘除时，稍不留神运算结果就会出现偏差，轻则损失几十万，重则会有信誉损失，甚至吃上官司，我们一定要引起高度重视！">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T07:33:34.776Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Keep It Simple And Stupid">
+<meta name="twitter:description" content="关于 PHP 浮点数运算，特别是金融行业、电子商务订单管理、数据报表等相关业务，利用浮点数进行加减乘除时，稍不留神运算结果就会出现偏差，轻则损失几十万，重则会有信誉损失，甚至吃上官司，我们一定要引起高度重视！">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+    <link rel="stylesheet" href="/css/archive.css">
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body>
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                 >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="page-"  class="article article-type-page" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+    <div class="article-meta">
+      
+	<a href="/disuse/2019-03-19-PHP-Func-BC-Math.html" class="article-date">
+	  <time datetime="2019-12-12T08:07:54.989Z" itemprop="datePublished">2019-12-12</time>
+	</a>
+
+      
+      
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>关于 PHP 浮点数运算，特别是金融行业、电子商务订单管理、数据报表等相关业务，<br>利用浮点数进行加减乘除时，稍不留神运算结果就会出现偏差，轻则损失几十万，重则会有信誉损失，甚至吃上官司，我们一定要引起高度重视！</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="浮点数运算的“锅”"><a href="#浮点数运算的“锅”" class="headerlink" title="浮点数运算的“锅”"></a>浮点数运算的“锅”</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 加</span></span><br><span class="line">$a = <span class="number">0.1</span>;</span><br><span class="line">$b = <span class="number">0.7</span>;</span><br><span class="line"></span><br><span class="line">$c = intval(($a + $b) * <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $c.<span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"><span class="comment">//输出：7</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 减</span></span><br><span class="line"></span><br><span class="line">$a = <span class="number">100</span>;</span><br><span class="line">$b = <span class="number">99.98</span>;</span><br><span class="line"></span><br><span class="line">$c = $a - $b;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $c.<span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"><span class="comment">//输出：0.019999999999996</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 乘</span></span><br><span class="line"></span><br><span class="line">$a = <span class="number">0.58</span>;</span><br><span class="line">$b = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">$c = intval($a * $b);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $c.<span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"><span class="comment">//输出：57</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 除</span></span><br><span class="line"></span><br><span class="line">$a = <span class="number">0.7</span>;</span><br><span class="line">$b = <span class="number">0.1</span>;</span><br><span class="line"></span><br><span class="line">$c = intval($a / $b);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $c.<span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"><span class="comment">//输出：6</span></span><br></pre></td></tr></table></figure>
+<p><strong>上面的结果，显然不是我们想要的!</strong></p>
+<p>PHP 官方手册解释如下：</p>
+<blockquote>
+<p>浮点数的精度有限。尽管取决于系统，PHP 通常使用 IEEE 754 双精度格式，则由于取整而导致的最大相对误差为 1.11e-16。非基本数学运算可能会给出更大误差，并且要考虑到进行复合运算时的误差传递。永远不要相信浮点数结果精确到了最后一位，也永远不要比较两个浮点数是否相等。如果确实需要更高的精度，应该使用 <strong>任意精度数学函数</strong> 或者 <strong>gmp函数</strong>。</p>
+</blockquote>
+<h1 id="BC-数学函数-任意精度数学函数"><a href="#BC-数学函数-任意精度数学函数" class="headerlink" title="BC 数学函数(任意精度数学函数)"></a>BC 数学函数(任意精度数学函数)</h1><blockquote>
+<p>BCMath：BC 是 Binary Calculator 的缩写。<br>官方手册：<a href="http://php.net/manual/zh/book.bc.php" target="_blank" rel="noopener">http://php.net/manual/zh/book.bc.php</a></p>
+</blockquote>
+<p>大家在使用前，请先确认是否已安装 <code>bcmath</code>。</p>
+<h2 id="bcadd-2个任意精度数字的加法计算"><a href="#bcadd-2个任意精度数字的加法计算" class="headerlink" title="bcadd - 2个任意精度数字的加法计算"></a><code>bcadd</code> - 2个任意精度数字的加法计算</h2><blockquote>
+<p>此可选参数用于设置结果中小数点后的小数位数。也可通过使用 <code>bcscale()</code> 来设置全局默认的小数位数，用于所有函数。</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$a = <span class="string">'1.234'</span>;</span><br><span class="line">$b = <span class="string">'5'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> bcadd($a, $b);     <span class="comment">// 6</span></span><br><span class="line"><span class="keyword">echo</span> bcadd($a, $b, <span class="number">4</span>);  <span class="comment">// 6.2340</span></span><br></pre></td></tr></table></figure>
+<h2 id="bcsub-2个任意精度数字的减法"><a href="#bcsub-2个任意精度数字的减法" class="headerlink" title="bcsub - 2个任意精度数字的减法"></a><code>bcsub</code> - 2个任意精度数字的减法</h2><blockquote>
+<p>此可选参数用于设置结果中小数点后的小数位数。也可通过使用 <code>bcscale()</code> 来设置全局默认的小数位数，用于所有函数。</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">$a = <span class="string">'1.234'</span>;</span><br><span class="line">$b = <span class="string">'5'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> bcsub($a, $b);     <span class="comment">// -3</span></span><br><span class="line"><span class="keyword">echo</span> bcsub($a, $b, <span class="number">4</span>);  <span class="comment">// -3.7660</span></span><br></pre></td></tr></table></figure>
+<h2 id="bcmul-2个任意精度数字乘法计算"><a href="#bcmul-2个任意精度数字乘法计算" class="headerlink" title="bcmul - 2个任意精度数字乘法计算"></a><code>bcmul</code> - 2个任意精度数字乘法计算</h2><blockquote>
+<p>此可选参数用于设置结果中小数点后的小数位数。也可通过使用 <code>bcscale()</code> 来设置全局默认的小数位数，用于所有函数。</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> bcmul(<span class="string">'1.34747474747'</span>, <span class="string">'35'</span>, <span class="number">3</span>); <span class="comment">// 47.161</span></span><br><span class="line"><span class="keyword">echo</span> bcmul(<span class="string">'2'</span>, <span class="string">'4'</span>); <span class="comment">// 8</span></span><br></pre></td></tr></table></figure>
+<h2 id="bcdiv-2个任意精度的数字除法计算"><a href="#bcdiv-2个任意精度的数字除法计算" class="headerlink" title="bcdiv - 2个任意精度的数字除法计算"></a><code>bcdiv</code> - 2个任意精度的数字除法计算</h2><blockquote>
+<p>此可选参数用于设置结果中小数点后的小数位数。也可通过使用 <code>bcscale()</code> 来设置全局默认的小数位数，用于所有函数。</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> bcdiv(<span class="string">'105'</span>, <span class="string">'6.55957'</span>, <span class="number">3</span>);  <span class="comment">// 16.007</span></span><br></pre></td></tr></table></figure>
+<h2 id="bccomp-比较两个任意精度的数字"><a href="#bccomp-比较两个任意精度的数字" class="headerlink" title="bccomp - 比较两个任意精度的数字"></a><code>bccomp</code> - 比较两个任意精度的数字</h2><blockquote>
+<p>如果两个数相等返回0, 左边的数<code>left_operand</code>比较右边的数<code>right_operand</code>大返回1, 否则返回-1.</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> bccomp(<span class="string">'1'</span>, <span class="string">'2'</span>) . <span class="string">"\n"</span>;   <span class="comment">// -1</span></span><br><span class="line"><span class="keyword">echo</span> bccomp(<span class="string">'1.00001'</span>, <span class="string">'1'</span>, <span class="number">3</span>); <span class="comment">// 0</span></span><br><span class="line"><span class="keyword">echo</span> bccomp(<span class="string">'1.00001'</span>, <span class="string">'1'</span>, <span class="number">5</span>); <span class="comment">// 1</span></span><br></pre></td></tr></table></figure>
+<h2 id="bcmod-对一个任意精度数字取模"><a href="#bcmod-对一个任意精度数字取模" class="headerlink" title="bcmod - 对一个任意精度数字取模"></a><code>bcmod</code> - 对一个任意精度数字取模</h2><blockquote>
+<p>返回字符串类型取模后结果，如果系数为0则返回null</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> bcmod(<span class="string">'4'</span>, <span class="string">'2'</span>); <span class="comment">// 0</span></span><br><span class="line"><span class="keyword">echo</span> bcmod(<span class="string">'2'</span>, <span class="string">'4'</span>); <span class="comment">// 2</span></span><br></pre></td></tr></table></figure>
+<h2 id="bcpow-任意精度数字的乘方"><a href="#bcpow-任意精度数字的乘方" class="headerlink" title="bcpow - 任意精度数字的乘方"></a><code>bcpow</code> - 任意精度数字的乘方</h2><blockquote>
+<p>此可选参数用于设置结果中小数点后的小数位数。也可通过使用 <code>bcscale()</code> 来设置全局默认的小数位数，用于所有函数。</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> bcpow(<span class="string">'4.2'</span>, <span class="string">'3'</span>, <span class="number">2</span>); <span class="comment">// 74.08</span></span><br></pre></td></tr></table></figure>
+<h2 id="bcscale-设置所有bc数学函数的默认小数点保留位数"><a href="#bcscale-设置所有bc数学函数的默认小数点保留位数" class="headerlink" title="bcscale - 设置所有bc数学函数的默认小数点保留位数"></a><code>bcscale</code> - 设置所有bc数学函数的默认小数点保留位数</h2><blockquote>
+<p>成功时返回 TRUE， 或者在失败时返回 FALSE。</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// default scale : 3</span></span><br><span class="line">bcscale(<span class="number">3</span>);</span><br><span class="line"><span class="keyword">echo</span> bcdiv(<span class="string">'105'</span>, <span class="string">'6.55957'</span>); <span class="comment">// 16.007</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// this is the same without bcscale()</span></span><br><span class="line"><span class="keyword">echo</span> bcdiv(<span class="string">'105'</span>, <span class="string">'6.55957'</span>, <span class="number">3</span>); <span class="comment">// 16.007</span></span><br></pre></td></tr></table></figure>
+<h2 id="bcsqrt-任意精度数字的二次方根"><a href="#bcsqrt-任意精度数字的二次方根" class="headerlink" title="bcsqrt - 任意精度数字的二次方根"></a><code>bcsqrt</code> - 任意精度数字的二次方根</h2><blockquote>
+<p>返回二次方根的结果为字符串类型，如果操作数是负数则返回null.</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> bcsqrt(<span class="string">'2'</span>, <span class="number">3</span>); <span class="comment">// 1.414</span></span><br></pre></td></tr></table></figure>
+<h1 id="使用BcMath避免锅"><a href="#使用BcMath避免锅" class="headerlink" title="使用BcMath避免锅"></a>使用<code>BcMath</code>避免锅</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 加</span></span><br><span class="line"></span><br><span class="line">$a = <span class="number">0.1</span>;</span><br><span class="line">$b = <span class="number">0.7</span>;</span><br><span class="line"></span><br><span class="line">$c = intval(bcadd($a, $b, <span class="number">1</span>) * <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $c.<span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"><span class="comment">//输出：8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 减</span></span><br><span class="line"></span><br><span class="line">$a = <span class="number">100</span>;</span><br><span class="line">$b = <span class="number">99.98</span>;</span><br><span class="line"></span><br><span class="line">$c = bcsub($a, $b, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $c.<span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"><span class="comment">//输出：0.02</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 乘</span></span><br><span class="line"></span><br><span class="line">$a = <span class="number">0.58</span>;</span><br><span class="line">$b = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">$c = intval(bcmul($a, $b));</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $c.<span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"><span class="comment">//输出：58</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 除</span></span><br><span class="line"></span><br><span class="line">$a = <span class="number">0.7</span>;</span><br><span class="line">$b = <span class="number">0.1</span>;</span><br><span class="line"></span><br><span class="line">$c = intval(bcdiv($a, $b));</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> $c.<span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"><span class="comment">//输出：7</span></span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/disuse/2019-03-19-PHP-Func-BC-Math.html" target="_blank" title="">http://blog.caoxl.com/disuse/2019-03-19-PHP-Func-BC-Math.html</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+      
+
+    </footer>
+  </div>
+  
+    
+  
+</article>
+
+<!-- Table of Contents -->
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+</body>
+</html>

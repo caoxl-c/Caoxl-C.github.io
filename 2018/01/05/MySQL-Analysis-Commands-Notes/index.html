@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mysql 分析命令总结 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MySQLDatabase">
+  
+  
+  
+  
+  <meta name="description" content="MySQL 分析命令总结站在 MySQL Parser 的角度，describe, desc, explain 是完全等价的（synonym）。 只是通常情况，DESCRIBE/DESC 被用分析表结构，而 EXPLIAN 被用于分析 SQL 查询执行计划（how MySQL would execute a query）而已。 其中，DESCRIBE 又是 SHOW COLUMNS/SHOW FI">
+<meta name="keywords" content="MySQL,Database">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 分析命令总结">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/05/MySQL-Analysis-Commands-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="MySQL 分析命令总结站在 MySQL Parser 的角度，describe, desc, explain 是完全等价的（synonym）。 只是通常情况，DESCRIBE/DESC 被用分析表结构，而 EXPLIAN 被用于分析 SQL 查询执行计划（how MySQL would execute a query）而已。 其中，DESCRIBE 又是 SHOW COLUMNS/SHOW FI">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:29:52.699Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL 分析命令总结">
+<meta name="twitter:description" content="MySQL 分析命令总结站在 MySQL Parser 的角度，describe, desc, explain 是完全等价的（synonym）。 只是通常情况，DESCRIBE/DESC 被用分析表结构，而 EXPLIAN 被用于分析 SQL 查询执行计划（how MySQL would execute a query）而已。 其中，DESCRIBE 又是 SHOW COLUMNS/SHOW FI">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MySQL-Analysis-Commands-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MySQL 分析命令总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/05/MySQL-Analysis-Commands-Notes/" class="article-date">
+	  <time datetime="2018-01-05T10:32:41.000Z" itemprop="datePublished">2018-01-05</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h1 id="MySQL-分析命令总结"><a href="#MySQL-分析命令总结" class="headerlink" title="MySQL 分析命令总结"></a>MySQL 分析命令总结</h1><p>站在 MySQL Parser 的角度，describe, desc, explain 是完全等价的（synonym）。</p>
+<p>只是通常情况，DESCRIBE/DESC 被用分析表结构，而 EXPLIAN 被用于分析 SQL 查询执行计划（how MySQL would execute a query）而已。</p>
+<p>其中，<code>DESCRIBE</code> 又是 <code>SHOW COLUMNS</code>/<code>SHOW FIELDS</code> 的别名。</p>
+<p>为了简单，下面涉及到上面 3 个命令的都在 MySQL 5.6 下以 DESC 进行示例。</p>
+<a id="more"></a>
+<h1 id="获取表结构信息"><a href="#获取表结构信息" class="headerlink" title="获取表结构信息"></a>获取表结构信息</h1><p>获取表结构的语法为：</p>
+<ul>
+<li>desc</li>
+</ul>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;EXPLAIN | <span class="type">DESCRIBE</span> | <span class="type">DESC</span>&#125; tbl_name [col_name | <span class="type">wild</span>]</span><br></pre></td></tr></table></figure>
+<p>其中 <code>col_name</code> 代表列名，<code>wild</code> 代表通配符。</p>
+<ul>
+<li>show</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> [<span class="keyword">FULL</span>] &#123;<span class="keyword">COLUMNS</span> | <span class="keyword">FIELDS</span>&#125; &#123;<span class="keyword">FROM</span> | <span class="keyword">IN</span>&#125; tbl_name</span><br><span class="line">[&#123;<span class="keyword">FROM</span> | <span class="keyword">IN</span>&#125; db_name]</span><br><span class="line">[<span class="keyword">LIKE</span> <span class="string">'pattern'</span> | <span class="keyword">WHERE</span> expr]</span><br></pre></td></tr></table></figure>
+<p><strong>举例说明：</strong></p>
+<h2 id="获取完整表结构"><a href="#获取完整表结构" class="headerlink" title="获取完整表结构"></a>获取完整表结构</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DESC $tb_name;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">COLUMNS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FULL</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">WHERE</span> <span class="number">1</span>;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">LIKE</span> <span class="string">'%'</span>;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> $db_name.$tb_name;</span><br></pre></td></tr></table></figure>
+<h2 id="获取某个字段结构"><a href="#获取某个字段结构" class="headerlink" title="获取某个字段结构"></a>获取某个字段结构</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DESC $tb_name $col_name;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">WHERE</span> <span class="string">`Field`</span> = $col_name;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FULL</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">IN</span> $db_name <span class="keyword">WHERE</span> <span class="string">`Field`</span> = $col_name;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取主键字段的结构</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">WHERE</span> <span class="string">`Key`</span> = <span class="string">'PRI'</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="获取若干字段结构"><a href="#获取若干字段结构" class="headerlink" title="获取若干字段结构"></a>获取若干字段结构</h2><p>可以使用通配符 <code>%</code> 和 <code>_</code> 。比如：</p>
+<ul>
+<li>获取所有以 <code>a</code> 开头的字段结构</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DESC $tb_name 'a%';</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">WHERE</span> <span class="string">`Field`</span> <span class="keyword">LIKE</span> <span class="string">'a%'</span>;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">LIKE</span> <span class="string">'a%'</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取包含 <code>a</code> 的字段结构</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DESC $tb_name '%a%'</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">WHERE</span> <span class="string">`Field`</span> <span class="keyword">LIKE</span> <span class="string">'%a%'</span>;</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">LIKE</span> <span class="string">'%a%'</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取包含 <code>a</code>，且字段名只有 <code>3</code> 个字符的字段结构</li>
+</ul>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">DESC</span> <span class="variable">$tb_name</span> <span class="string">'a__'</span>;</span><br><span class="line"><span class="attribute">DESC</span> <span class="variable">$tb_name</span> <span class="string">'_a_'</span>;</span><br><span class="line"><span class="attribute">DESC</span> <span class="variable">$tb_name</span> <span class="string">'a__'</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取属性值唯一的字段结构</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">WHERE</span> <span class="string">`Key`</span> = <span class="string">'UNI'</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取类型为 <code>int(11)</code> 的字段结构</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">WHERE</span> <span class="string">`Type`</span> = <span class="string">'int(11)'</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获取为可以为 NULL 的字段结构</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">FIELDS</span> <span class="keyword">FROM</span> $tb_name <span class="keyword">FROM</span> $db_name <span class="keyword">WHERE</span> <span class="string">`Null`</span> = <span class="string">'YES'</span>;</span><br></pre></td></tr></table></figure>
+<h1 id="分析查询计划"><a href="#分析查询计划" class="headerlink" title="分析查询计划"></a>分析查询计划</h1><p>分析 SQL 查询计划的语法为：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="keyword">EXPLAIN</span> | DESCRIBE | <span class="keyword">DESC</span>&#125;</span><br><span class="line">	[explain_type]</span><br><span class="line">    explainable_stmt</span><br><span class="line">    </span><br><span class="line">explain_type: &#123;</span><br><span class="line">	EXTENDED</span><br><span class="line">	| PARTITIONS</span><br><span class="line">	| <span class="keyword">FORMAT</span> = format_name</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">format_name: &#123;</span><br><span class="line">	TRADITIONAL</span><br><span class="line">	| <span class="type">JSON</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">explainable_stmt: &#123;</span><br><span class="line">	<span class="keyword">SELECT</span> <span class="keyword">statement</span></span><br><span class="line">	| <span class="keyword">DELETE</span> <span class="keyword">statement</span></span><br><span class="line">	| <span class="keyword">INSERT</span> <span class="keyword">statement</span></span><br><span class="line">	| REPLACE <span class="keyword">statement</span></span><br><span class="line">	| <span class="keyword">UPDATE</span> <span class="keyword">statement</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>explain_type</code> 可以不指定，但同时只能选择一次。<code>format_name</code> 默认为 <code>TRADITIONAL</code>。</p>
+<p><strong>举例说明：</strong></p>
+<h2 id="分析-SELECT"><a href="#分析-SELECT" class="headerlink" title="分析 SELECT"></a>分析 SELECT</h2><h3 id="不指定-explain-type"><a href="#不指定-explain-type" class="headerlink" title="不指定 explain_type"></a>不指定 explain_type</h3><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DESC SELECT * FROM $tb_name;</span><br><span class="line">--&gt; 输出示例：</span><br><span class="line">+<span class="params">----</span>+<span class="params">-------------</span>+<span class="params">-----------</span>+<span class="params">------</span>+<span class="params">---------------</span>+<span class="params">------</span>+<span class="params">---------</span>+<span class="params">------</span>+<span class="params">------</span>+<span class="params">-------</span>+</span><br><span class="line">| id | select_type | table     | type | possible_keys | key  | key_len | ref  | rows | Extra |</span><br><span class="line">+<span class="params">----</span>+<span class="params">-------------</span>+<span class="params">-----------</span>+<span class="params">------</span>+<span class="params">---------------</span>+<span class="params">------</span>+<span class="params">---------</span>+<span class="params">------</span>+<span class="params">------</span>+<span class="params">-------</span>+</span><br><span class="line">| 1  | SIMPLE      | $tb_name  | ALL  | NULL          | NULL | NULL    | NULL | 45   | NULL  |</span><br><span class="line">+<span class="params">----</span>+<span class="params">-------------</span>+<span class="params">-----------</span>+<span class="params">------</span>+<span class="params">---------------</span>+<span class="params">------</span>+<span class="params">---------</span>+<span class="params">------</span>+<span class="params">------</span>+<span class="params">-------</span>+</span><br></pre></td></tr></table></figure>
+<p>不指定 <code>explain_type</code> 或者指定为 <code>FORMAT = TRADITIONAL</code> 效果一样。</p>
+<h3 id="指定-explain-type"><a href="#指定-explain-type" class="headerlink" title="指定 explain_type"></a>指定 <code>explain_type</code></h3><ul>
+<li><code>EXTENDED</code></li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">DESC extended SELECT * <span class="keyword">FROM</span> <span class="variable">$tb_name</span>\G</span><br><span class="line"></span><br><span class="line">--&gt; 输出示例：</span><br><span class="line"></span><br><span class="line">id           : 1</span><br><span class="line">select_type  : SIMPLE</span><br><span class="line">table        : <span class="variable">$tb_name</span></span><br><span class="line">type         : ALL</span><br><span class="line">possible_keys: <span class="literal">NULL</span></span><br><span class="line">key          : <span class="literal">NULL</span></span><br><span class="line">key_len      : <span class="literal">NULL</span></span><br><span class="line">ref          : <span class="literal">NULL</span></span><br><span class="line">rows         : 45</span><br><span class="line">filtered     : 100.00</span><br><span class="line">Extra        : <span class="literal">NULL</span></span><br></pre></td></tr></table></figure>
+<p>可见，<code>explain_type</code> 为 <code>extended</code> 时，会多返回一个 <code>filtered</code> 属性值。</p>
+<p>此外，当指定了 <code>extended</code> 参数时，<code>DESC</code> 会生成额外的提示信息，可以紧接着通过 <code>SHOW WARNINGS</code> 查看。</p>
+<ul>
+<li><code>FORMAT = json</code></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">DESC format = json <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> $tb_name\G</span><br><span class="line"></span><br><span class="line"><span class="comment">--&gt; 输出示例：</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPLAIN</span>: &#123;</span><br><span class="line">  <span class="string">"query_block"</span>: &#123;</span><br><span class="line">    <span class="string">"select_id"</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">"table"</span>: &#123;</span><br><span class="line">      <span class="string">"table_name"</span>: <span class="string">"$tb_name"</span>,</span><br><span class="line">      <span class="string">"access_type"</span>: <span class="string">"ALL"</span>,</span><br><span class="line">      <span class="string">"rows"</span>: <span class="number">45</span>,</span><br><span class="line">      <span class="string">"filtered"</span>: <span class="number">100</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意，<code>explain_type</code> 为 <code>format = json</code> 时，<code>DESC</code> 的输出已经自动地输出了 <code>expain_type</code> 既为 <code>extened</code>，又为 <code>partition</code> 的信息，可以看到，这里也返回了一个 <code>filtered</code> 属性值。（<code>expain_type</code> 为 <code>extened</code> 的输出）</p>
+<h2 id="explain-输出解释"><a href="#explain-输出解释" class="headerlink" title="explain 输出解释"></a>explain 输出解释</h2><p>下面以 <strong>列名/JSON NAME：</strong> 对应含义 的格式进行说明。<code>JSON_NAME</code> 指 <code>format = json</code> 时的输出字段名。</p>
+<ul>
+<li><code>id</code>/<code>select_id</code></li>
+</ul>
+<p>本次 SELECT 查询的序列号。</p>
+<p>当本次查询为 <code>UNION</code> 类型时，可以为 <code>NULL</code> 。此时的 <code>table</code> 将显示 <code>&lt;unionM,N,Q&gt;</code>，<code>select_type</code> 将显示 <code>UNION RESULT，M、N、Q</code> 分别代表 <code>UNION</code> 中所有查询的序列号。</p>
+<ul>
+<li><code>select_type/none</code></li>
+</ul>
+<p>SELECT 的类型</p>
+<ul>
+<li><code>table</code>/<code>table_name</code>：SELECT 的表名。​</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://dev.mysql.com/doc/refman/5.6/en/sql-syntax-utility.html" target="_blank" rel="noopener">MySQL :: MySQL 5.6 Reference Manual :: 13.8 Utility Statements</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/05/MySQL-Analysis-Commands-Notes/" target="_blank" title="MySQL 分析命令总结">http://blog.caoxl.com/2018/01/05/MySQL-Analysis-Commands-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Database/">Database</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/15/Macbook-Pro-First-Meeting/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          MacBook Pro 初见
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/05/Docker-First-Try/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Docker 初见</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL-分析命令总结"><span class="nav-number">1.</span> <span class="nav-text">MySQL 分析命令总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#获取表结构信息"><span class="nav-number">2.</span> <span class="nav-text">获取表结构信息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#获取完整表结构"><span class="nav-number">2.1.</span> <span class="nav-text">获取完整表结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取某个字段结构"><span class="nav-number">2.2.</span> <span class="nav-text">获取某个字段结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取若干字段结构"><span class="nav-number">2.3.</span> <span class="nav-text">获取若干字段结构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分析查询计划"><span class="nav-number">3.</span> <span class="nav-text">分析查询计划</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分析-SELECT"><span class="nav-number">3.1.</span> <span class="nav-text">分析 SELECT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#不指定-explain-type"><span class="nav-number">3.1.1.</span> <span class="nav-text">不指定 explain_type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指定-explain-type"><span class="nav-number">3.1.2.</span> <span class="nav-text">指定 explain_type</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#explain-输出解释"><span class="nav-number">3.2.</span> <span class="nav-text">explain 输出解释</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

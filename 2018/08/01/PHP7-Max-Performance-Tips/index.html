@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>让php7达到最高性能的几个tips | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHPPHP7">
+  
+  
+  
+  
+  <meta name="description" content="原文地址: http://www.laruence.com/2015/12/04/3086.html">
+<meta name="keywords" content="PHP,PHP7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="让PHP7达到最高性能的几个Tips">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/01/PHP7-Max-Performance-Tips/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="原文地址: http://www.laruence.com/2015/12/04/3086.html">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:01:05.658Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="让PHP7达到最高性能的几个Tips">
+<meta name="twitter:description" content="原文地址: http://www.laruence.com/2015/12/04/3086.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP7-Max-Performance-Tips" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      让PHP7达到最高性能的几个Tips
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/01/PHP7-Max-Performance-Tips/" class="article-date">
+	  <time datetime="2018-08-01T02:46:59.000Z" itemprop="datePublished">2018-08-01</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>原文地址: <code>http://www.laruence.com/2015/12/04/3086.html</code></p>
+</blockquote>
+<a id="more"></a>
+<p>这里只做博客的搬运工, 方便自己查找查看.</p>
+<h1 id="1-Opcache"><a href="#1-Opcache" class="headerlink" title="1. Opcache"></a>1. <code>Opcache</code></h1><p>记得启用<code>Zend Opcache</code>, 因为<code>PHP7</code>即使不启用<code>Opcache</code>速度也比<code>PHP-5.6</code>启用了<code>Opcache</code>快, 所以之前测试时期就发生了有人一直没有启用<code>Opcache</code>的事情. 启用<code>Opcache</code>非常简单, 在<code>php.ini</code>配置文件中加入:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">zend_extension</span>=opcache.so</span><br><span class="line">opcache.<span class="attribute">enable</span>=1</span><br><span class="line">opcache.<span class="attribute">enable_cli</span>=1"</span><br></pre></td></tr></table></figure>
+<h1 id="2-使用新的编译器"><a href="#2-使用新的编译器" class="headerlink" title="2. 使用新的编译器"></a>2. 使用新的编译器</h1><p>使用新一点的编译器, 推荐<code>GCC 4.8</code>以上, 因为只有<code>GCC 4.8</code>以上PHP才会开启<code>Global Register for opline and execute_data</code>支持, 这个会带来<code>5%</code>左右的性能提升(<code>Wordpres</code>的<code>QPS</code>角度衡量)</p>
+<p>其实<code>GCC 4.8</code>以前的版本也支持, 但是我们发现它支持的有<code>Bug</code>, 所以必须是<code>4.8</code>以上的版本才会开启这个特性.</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxianliang ~]# gcc -v</span><br><span class="line">Using built-in specs.</span><br><span class="line"><span class="attribute">COLLECT_GCC</span>=gcc</span><br><span class="line"><span class="attribute">COLLECT_LTO_WRAPPER</span>=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/lto-wrapper</span><br><span class="line">Target: x86_64-redhat-linux</span><br><span class="line">Configured with: <span class="built_in">..</span>/configure <span class="attribute">--prefix</span>=/usr <span class="attribute">--mandir</span>=/usr/share/man <span class="attribute">--infodir</span>=/usr/share/info <span class="attribute">--with-bugurl</span>=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared <span class="attribute">--enable-threads</span>=posix <span class="attribute">--enable-checking</span>=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id <span class="attribute">--with-linker-hash-style</span>=gnu <span class="attribute">--enable-languages</span>=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-plugin --enable-initfini-array --disable-libgcj <span class="attribute">--with-isl</span>=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/isl-install <span class="attribute">--with-cloog</span>=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/cloog-install --enable-gnu-indirect-function <span class="attribute">--with-tune</span>=generic <span class="attribute">--with-arch_32</span>=x86-64 <span class="attribute">--build</span>=x86_64-redhat-linux</span><br><span class="line">Thread model: posix</span><br><span class="line">gcc version 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC)</span><br></pre></td></tr></table></figure>
+<h1 id="3-HugePage"><a href="#3-HugePage" class="headerlink" title="3. HugePage"></a>3. <code>HugePage</code></h1><p>我之前的文章也介绍过: <a href="http://www.laruence.com/2015/10/02/3069.html" target="_blank" rel="noopener">让你的PHP7更快之Hugepage</a> , 首先在系统中开启<code>HugePages</code>, 然后开启<code>Opcache</code>的<code>huge_code_pages</code>.</p>
+<p>以我的<code>CentOS 6.5</code>为例, 通过:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[root@caoxianliang ~]</span><span class="comment"># sudo sysctl vm.nr_hugepages=512</span></span><br><span class="line"><span class="attr">vm.nr_hugepages</span> = <span class="number">512</span></span><br></pre></td></tr></table></figure>
+<p>分配<code>512</code>个预留的大页内存:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@caoxianliang</span> <span class="string">~]#</span> <span class="string">cat</span> <span class="string">/proc/meminfo</span> <span class="string">|</span> <span class="string">grep</span> <span class="string">Huge</span></span><br><span class="line"><span class="attr">AnonHugePages:</span>     <span class="number">59392</span> <span class="string">kB</span></span><br><span class="line"><span class="attr">HugePages_Total:</span>      <span class="number">512</span></span><br><span class="line"><span class="attr">HugePages_Free:</span>       <span class="number">37</span></span><br><span class="line"><span class="attr">HugePages_Rsvd:</span>        <span class="number">0</span></span><br><span class="line"><span class="attr">HugePages_Surp:</span>        <span class="number">0</span></span><br><span class="line"><span class="attr">Hugepagesize:</span>       <span class="number">2048</span> <span class="string">kB</span></span><br></pre></td></tr></table></figure>
+<p>然后再<code>php.ini</code>中加入:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">opcache.huge_code_pages</span>=<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这样一来, <code>PHP</code>会把自身的<code>text</code>段, 以及内存分配中的<code>huge</code>都采用大内存页来保存, 减少<code>TLB miss</code>, 从而提高性能.</p>
+</blockquote>
+<h1 id="4-Opcache-file-cache"><a href="#4-Opcache-file-cache" class="headerlink" title="4. Opcache file cache"></a>4. <code>Opcache file cache</code></h1><p>开启<code>Opcache File Cache</code>(实验性), 通过开启这个, 我们可以让<code>Opcache</code>把<code>opcode</code>缓存缓存到外部文件中, 对于一些脚本, 会有很明显的性能提升.</p>
+<ul>
+<li>在<code>php.ini</code>中加入:</li>
+</ul>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">opcache.file_cache</span>=/tmp</span><br></pre></td></tr></table></figure>
+<p>这样<code>PHP</code>就会在<code>/tmp</code>目录下<code>Cache</code>一些<code>Opcode</code>的二进制导出文件, 可以跨<code>PHP</code>生命周期存在.</p>
+<h1 id="PGO"><a href="#PGO" class="headerlink" title="PGO"></a><code>PGO</code></h1><p>我之前的文章: <a href="http://www.laruence.com/2015/06/19/3063.html" target="_blank" rel="noopener">让你的PHP7更快(GCC PGO)</a> 也介绍过, 如果你的<code>PHP</code>是专门为一个项目服务, 比如只是为你的<code>Wordpress</code>, 或者<code>drupal</code>, 或者其他什么, 那么你就可以尝试通过<code>PGO</code>, 来提升<code>PHP</code>, 专门为你的这个项目提高性能.</p>
+<p>具体的, 以<code>wordpress 4.1</code>为优化场景.. 首先在编译<code>PHP</code>的时候首先:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">make</span> <span class="keyword">prof</span>-gen</span><br></pre></td></tr></table></figure>
+<p>然后用你的项目训练<code>PHP</code>, 比如对于<code>Wordpress</code>:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sapi<span class="regexp">/cgi/</span>php-cgi -T <span class="number">100</span> <span class="regexp">/home/</span>huixinchen<span class="regexp">/local/</span>www<span class="regexp">/htdocs/</span>wordpress<span class="regexp">/index.php &gt;/</span>dev/<span class="literal">null</span></span><br></pre></td></tr></table></figure>
+<p>也就是让<code>php-cgi</code>跑<code>100</code>遍<code>wordpress</code>的首页, 从而生成一些在这个过程中的<code>profile</code>信息.</p>
+<p>最后:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">make</span> <span class="keyword">prof</span>-clean</span><br><span class="line"><span class="keyword">make</span> <span class="keyword">prof</span>-use &amp;&amp; <span class="keyword">make</span> install</span><br></pre></td></tr></table></figure>
+<p>这个时候你编译得到的<code>PHP7</code>就是为你的项目量身打造的最高性能的编译版本.</p>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/01/PHP7-Max-Performance-Tips/" target="_blank" title="让PHP7达到最高性能的几个Tips">http://blog.caoxl.com/2018/08/01/PHP7-Max-Performance-Tips/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP7/">PHP7</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/01/Juhe-Real-Name-Certification/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          实名认证 「聚合数据」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/31/Laravel-Symfony-Zend-Performance-Compare/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Laravel之父--让Laravel、Symfony、Zend来一场公平的性能测试</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Opcache"><span class="nav-number">1.</span> <span class="nav-text">1. Opcache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-使用新的编译器"><span class="nav-number">2.</span> <span class="nav-text">2. 使用新的编译器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-HugePage"><span class="nav-number">3.</span> <span class="nav-text">3. HugePage</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Opcache-file-cache"><span class="nav-number">4.</span> <span class="nav-text">4. Opcache file cache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PGO"><span class="nav-number">5.</span> <span class="nav-text">PGO</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

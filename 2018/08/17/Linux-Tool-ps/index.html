@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>linux ps 进程查看器 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Linuxps">
+  
+  
+  
+  
+  <meta name="description" content="已经有Linux cmd分类, 为何要新开一个Linux tool分类呢?  因为学习理论是第一位, 但是实际操作更重要, 这个分类将讲Linux下一些工具命令">
+<meta name="keywords" content="Linux,ps">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux ps 进程查看器">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/17/Linux-Tool-ps/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="已经有Linux cmd分类, 为何要新开一个Linux tool分类呢?  因为学习理论是第一位, 但是实际操作更重要, 这个分类将讲Linux下一些工具命令">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:49:53.968Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux ps 进程查看器">
+<meta name="twitter:description" content="已经有Linux cmd分类, 为何要新开一个Linux tool分类呢?  因为学习理论是第一位, 但是实际操作更重要, 这个分类将讲Linux下一些工具命令">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Linux-Tool-ps" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Linux ps 进程查看器
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/17/Linux-Tool-ps/" class="article-date">
+	  <time datetime="2018-08-17T09:46:55.000Z" itemprop="datePublished">2018-08-17</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>已经有Linux cmd分类, 为何要新开一个Linux tool分类呢?</p>
+<blockquote>
+<p>因为学习理论是第一位, 但是实际操作更重要, 这个分类将讲Linux下一些工具命令</p>
+</blockquote>
+</blockquote>
+<a id="more"></a>
+<p>Linux中的<code>ps</code>命令是<code>Process Status</code>的缩写。<code>ps</code>命令用来列出系统中当前运行的那些进程。<code>ps</code>命令列出的是当前那些进程的快照，就是执行<code>ps</code>命令的那个时刻的那些进程，如果想要动态的显示进程信息，就可以使用<code>top</code>命令。</p>
+<p>要对进程进行监测和控制，首先必须要了解当前进程的情况，也就是需要查看当前进程，而 ps 命令就是最基本同时也是非常强大的进程查看命令。使用该命令可以确定有<strong>哪些进程正在运行和运行的状态、进程是否结束、进程有没有僵死、哪些进程占用了过多的资源</strong>等等。总之大部分信息都是可以通过执行该命令得到的。</p>
+<p>ps 为我们提供了进程的一次性的查看，它所提供的查看结果并不动态连续的；如果想对进程时间监控，应该用 [top linux下的任务管理器] 工具。</p>
+<h1 id="Linux上进程有5种状态"><a href="#Linux上进程有5种状态" class="headerlink" title="Linux上进程有5种状态:"></a>Linux上进程有5种状态:</h1><ul>
+<li><strong>运行</strong>: (正在运行或在运行队列中等待)</li>
+<li><strong>中断</strong>: (休眠中, 受阻, 在等待某个条件的形成或接受到信号)</li>
+<li><strong>不可中断</strong>: (收到信号不唤醒和不可运行, 进程必须等待直到有中断发生)</li>
+<li><strong>僵死</strong>: (进程已终止, 但进程描述符存在, 直到父进程调用wait4()系统调用后释放)</li>
+<li>*<em>停止</em>: (进程收到SIGSTOP, SIGTSTP, SIGTTIN, SIGTTOU信号后停止运行运行)</li>
+</ul>
+<h1 id="ps工具标识进程的5种状态码"><a href="#ps工具标识进程的5种状态码" class="headerlink" title="ps工具标识进程的5种状态码:"></a>ps工具标识进程的5种状态码:</h1><ul>
+<li><code>R 运行</code> runnable (on run queue)</li>
+<li><code>S 中断</code> sleeping</li>
+<li><code>D 不可中断</code> uninterruptible sleep (usually IO)</li>
+<li><code>Z 僵死</code> a defunct (”zombie”) process</li>
+<li><code>T 停止</code> traced or stopped</li>
+</ul>
+<h1 id="命令参数"><a href="#命令参数" class="headerlink" title="命令参数"></a>命令参数</h1><ul>
+<li><code>a</code> 显示所有进程</li>
+<li><code>-a</code> 显示同一终端下的所有程序</li>
+<li><code>-A</code> 显示所有进程</li>
+<li><code>c</code> 显示进程的真实名称</li>
+<li><code>-N</code> 反向选择</li>
+<li><code>-e</code> 等于“-A”</li>
+<li><code>e</code> 显示环境变量</li>
+<li><code>f</code> 显示程序间的关系</li>
+<li><code>-H</code> 显示树状结构</li>
+<li><code>r</code> 显示当前终端的进程</li>
+<li><code>T</code> 显示当前终端的所有程序</li>
+<li><code>u</code> 指定用户的所有进程</li>
+<li><code>-au</code> 显示较详细的资讯</li>
+<li><code>-aux</code> 显示所有包含其他使用者的行程</li>
+<li><code>-C&lt;命令&gt;</code> 列出指定命令的状况</li>
+<li><code>-C&lt;命令&gt;</code> 列出指定命令的状况</li>
+<li><code>–width&lt;字符数&gt;</code> 每页显示的字符数</li>
+<li><code>–help</code> 显示帮助信息</li>
+<li><code>–version</code> 显示版本显示</li>
+</ul>
+<h1 id="输出列的含义"><a href="#输出列的含义" class="headerlink" title="输出列的含义"></a>输出列的含义</h1><ul>
+<li><code>F</code> - 代表这个程序的旗标 (flag)， 4 代表使用者为 super user</li>
+<li><code>S</code> - 代表这个程序的状态 (STAT)，关于各 STAT 的意义将在内文介绍</li>
+<li><code>UID</code> - 程序被该 UID 所拥有</li>
+<li><code>PID</code> - 进程的ID</li>
+<li><code>PPID</code> - 则是其上级父程序的ID</li>
+<li><code>C</code> - CPU 使用的资源百分比</li>
+<li><code>PRI</code> - 这个是 Priority (优先执行序) 的缩写，详细后面介绍</li>
+<li><code>NI</code> - 这个是 Nice 值，在下一小节我们会持续介绍</li>
+<li><code>ADDR</code> - 这个是 kernel function，指出该程序在内存的那个部分。如果是个 running的程序，一般就是 “-“</li>
+<li><code>SZ</code> - 使用掉的内存大小</li>
+<li><code>WCHAN</code> - 目前这个程序是否正在运作当中，若为 - 表示正在运作</li>
+<li><code>TTY</code> - 登入者的终端机位置</li>
+<li><code>TIME</code> - 使用掉的 CPU 时间。</li>
+<li><code>CMD</code> - 所下达的指令为何</li>
+</ul>
+<h1 id="使用实例"><a href="#使用实例" class="headerlink" title="使用实例"></a>使用实例</h1><h2 id="实例1：显示所有进程信息"><a href="#实例1：显示所有进程信息" class="headerlink" title="实例1：显示所有进程信息"></a>实例1：显示所有进程信息</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# ps -A</span><br><span class="line">  PID TTY          TIME CMD</span><br><span class="line">    <span class="number">1</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">11</span> systemd</span><br><span class="line">    <span class="number">2</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> kthreadd</span><br><span class="line">    <span class="number">3</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">04</span> ksoftirqd/<span class="number">0</span></span><br><span class="line">    <span class="number">5</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> kworker/<span class="number">0</span>:<span class="number">0</span>H</span><br><span class="line">    <span class="number">6</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> kworker/u2:<span class="number">0</span></span><br><span class="line">    <span class="number">7</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> migration/<span class="number">0</span></span><br><span class="line">    <span class="number">8</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> rcu_bh</span><br><span class="line">    <span class="number">9</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">45</span> rcu_sched</span><br><span class="line">   <span class="number">10</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> lru-add-drain</span><br></pre></td></tr></table></figure>
+<h2 id="实例2：显示指定用户信息"><a href="#实例2：显示指定用户信息" class="headerlink" title="实例2：显示指定用户信息"></a>实例2：显示指定用户信息</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# ps -u root</span><br><span class="line">  PID TTY          TIME CMD</span><br><span class="line">    <span class="number">1</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">11</span> systemd</span><br><span class="line">    <span class="number">2</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> kthreadd</span><br><span class="line">    <span class="number">3</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">04</span> ksoftirqd/<span class="number">0</span></span><br><span class="line">    <span class="number">5</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> kworker/<span class="number">0</span>:<span class="number">0</span>H</span><br><span class="line">    <span class="number">6</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> kworker/u2:<span class="number">0</span></span><br><span class="line">    <span class="number">7</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> migration/<span class="number">0</span></span><br><span class="line">    <span class="number">8</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> rcu_bh</span><br><span class="line">    <span class="number">9</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">45</span> rcu_sched</span><br><span class="line">   <span class="number">10</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> lru-add-drain</span><br></pre></td></tr></table></figure>
+<h2 id="实例3：显示所有进程信息，连同命令行"><a href="#实例3：显示所有进程信息，连同命令行" class="headerlink" title="实例3：显示所有进程信息，连同命令行"></a>实例3：显示所有进程信息，连同命令行</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# ps -ef</span><br><span class="line">UID        PID  PPID  C STIME TTY          TIME CMD</span><br><span class="line">root         <span class="number">1</span>     <span class="number">0</span>  <span class="number">0</span> Aug03 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">11</span> /usr/lib/systemd/systemd --switched-root --sys</span><br><span class="line">root         <span class="number">2</span>     <span class="number">0</span>  <span class="number">0</span> Aug03 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> [kthreadd]</span><br><span class="line">root         <span class="number">3</span>     <span class="number">2</span>  <span class="number">0</span> Aug03 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">04</span> [ksoftirqd/<span class="number">0</span>]</span><br><span class="line">root         <span class="number">5</span>     <span class="number">2</span>  <span class="number">0</span> Aug03 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> [kworker/<span class="number">0</span>:<span class="number">0</span>H]</span><br><span class="line">root         <span class="number">6</span>     <span class="number">2</span>  <span class="number">0</span> Aug03 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> [kworker/u2:<span class="number">0</span>]</span><br><span class="line">root         <span class="number">7</span>     <span class="number">2</span>  <span class="number">0</span> Aug03 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> [migration/<span class="number">0</span>]</span><br><span class="line">root         <span class="number">8</span>     <span class="number">2</span>  <span class="number">0</span> Aug03 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> [rcu_bh]</span><br><span class="line">root         <span class="number">9</span>     <span class="number">2</span>  <span class="number">0</span> Aug03 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">45</span> [rcu_sched]</span><br><span class="line">root        <span class="number">10</span>     <span class="number">2</span>  <span class="number">0</span> Aug03 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> [lru-add-drain]</span><br></pre></td></tr></table></figure>
+<h2 id="实例4：-ps-与grep-组合使用，查找特定进程"><a href="#实例4：-ps-与grep-组合使用，查找特定进程" class="headerlink" title="实例4： ps 与grep 组合使用，查找特定进程"></a>实例4： ps 与grep 组合使用，查找特定进程</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# ps -ef | grep ssh</span><br><span class="line">root      <span class="number">1476</span>     <span class="number">1</span>  <span class="number">0</span> Aug03 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /usr/sbin/sshd -D</span><br><span class="line">root     <span class="number">25806</span>  <span class="number">1476</span>  <span class="number">0</span> <span class="number">10</span>:<span class="number">10</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> sshd: <span class="symbol">root@</span>pts/<span class="number">0</span></span><br><span class="line">root     <span class="number">26877</span>  <span class="number">1476</span>  <span class="number">0</span> <span class="number">17</span>:<span class="number">09</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> sshd: <span class="symbol">root@</span>pts/<span class="number">1</span></span><br><span class="line">root     <span class="number">27031</span> <span class="number">25808</span>  <span class="number">0</span> <span class="number">18</span>:<span class="number">03</span> pts/<span class="number">0</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> grep --color=<span class="built_in">auto</span> ssh</span><br></pre></td></tr></table></figure>
+<h2 id="实例5：将与这次登入的-PID-与相关信息列示出来"><a href="#实例5：将与这次登入的-PID-与相关信息列示出来" class="headerlink" title="实例5：将与这次登入的 PID 与相关信息列示出来"></a>实例5：将与这次登入的 PID 与相关信息列示出来</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# ps -l</span><br><span class="line">F S   UID   PID  PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD</span><br><span class="line"><span class="number">4</span> S     <span class="number">0</span> <span class="number">25808</span> <span class="number">25806</span>  <span class="number">0</span>  <span class="number">80</span>   <span class="number">0</span> - <span class="number">28892</span> do_wai pts/<span class="number">0</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> bash</span><br><span class="line"><span class="number">0</span> S     <span class="number">0</span> <span class="number">25899</span>     <span class="number">1</span>  <span class="number">0</span>  <span class="number">80</span>   <span class="number">0</span> - <span class="number">581002</span> futex_ pts/<span class="number">0</span>   <span class="number">00</span>:<span class="number">00</span>:<span class="number">28</span> java</span><br><span class="line"><span class="number">0</span> R     <span class="number">0</span> <span class="number">27032</span> <span class="number">25808</span>  <span class="number">0</span>  <span class="number">80</span>   <span class="number">0</span> - <span class="number">38300</span> -      pts/<span class="number">0</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> ps</span><br></pre></td></tr></table></figure>
+<h2 id="实例6：列出目前所有的正在内存中的程序"><a href="#实例6：列出目前所有的正在内存中的程序" class="headerlink" title="实例6：列出目前所有的正在内存中的程序"></a>实例6：列出目前所有的正在内存中的程序</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# ps aux</span><br><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root         <span class="number">1</span>  <span class="number">0.0</span>  <span class="number">0.3</span>  <span class="number">43392</span>  <span class="number">3388</span> ?        Ss   Aug03   <span class="number">0</span>:<span class="number">11</span> /usr/lib/systemd/systemd --sw</span><br><span class="line">root         <span class="number">2</span>  <span class="number">0.0</span>  <span class="number">0.0</span>      <span class="number">0</span>     <span class="number">0</span> ?        S    Aug03   <span class="number">0</span>:<span class="number">00</span> [kthreadd]</span><br><span class="line">root         <span class="number">3</span>  <span class="number">0.0</span>  <span class="number">0.0</span>      <span class="number">0</span>     <span class="number">0</span> ?        S    Aug03   <span class="number">0</span>:<span class="number">04</span> [ksoftirqd/<span class="number">0</span>]</span><br><span class="line">root         <span class="number">5</span>  <span class="number">0.0</span>  <span class="number">0.0</span>      <span class="number">0</span>     <span class="number">0</span> ?        S&lt;   Aug03   <span class="number">0</span>:<span class="number">00</span> [kworker/<span class="number">0</span>:<span class="number">0</span>H]</span><br><span class="line">root         <span class="number">6</span>  <span class="number">0.0</span>  <span class="number">0.0</span>      <span class="number">0</span>     <span class="number">0</span> ?        S    Aug03   <span class="number">0</span>:<span class="number">00</span> [kworker/u2:<span class="number">0</span>]</span><br><span class="line">root         <span class="number">7</span>  <span class="number">0.0</span>  <span class="number">0.0</span>      <span class="number">0</span>     <span class="number">0</span> ?        S    Aug03   <span class="number">0</span>:<span class="number">00</span> [migration/<span class="number">0</span>]</span><br><span class="line">root         <span class="number">8</span>  <span class="number">0.0</span>  <span class="number">0.0</span>      <span class="number">0</span>     <span class="number">0</span> ?        S    Aug03   <span class="number">0</span>:<span class="number">00</span> [rcu_bh]</span><br><span class="line">root         <span class="number">9</span>  <span class="number">0.0</span>  <span class="number">0.0</span>      <span class="number">0</span>     <span class="number">0</span> ?        R    Aug03   <span class="number">0</span>:<span class="number">45</span> [rcu_sched]</span><br><span class="line">root        <span class="number">10</span>  <span class="number">0.0</span>  <span class="number">0.0</span>      <span class="number">0</span>     <span class="number">0</span> ?        S&lt;   Aug03   <span class="number">0</span>:<span class="number">00</span> [lru-add-drain]</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/17/Linux-Tool-ps/" target="_blank" title="Linux ps 进程查看器">http://blog.caoxl.com/2018/08/17/Linux-Tool-ps/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ps/">ps</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/20/Linux-Tool-lsof/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Linux lsof 一切皆文件
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/17/PHP-async-notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">PHP异步的几个玩法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux上进程有5种状态"><span class="nav-number">1.</span> <span class="nav-text">Linux上进程有5种状态:</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ps工具标识进程的5种状态码"><span class="nav-number">2.</span> <span class="nav-text">ps工具标识进程的5种状态码:</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命令参数"><span class="nav-number">3.</span> <span class="nav-text">命令参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#输出列的含义"><span class="nav-number">4.</span> <span class="nav-text">输出列的含义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用实例"><span class="nav-number">5.</span> <span class="nav-text">使用实例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实例1：显示所有进程信息"><span class="nav-number">5.1.</span> <span class="nav-text">实例1：显示所有进程信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例2：显示指定用户信息"><span class="nav-number">5.2.</span> <span class="nav-text">实例2：显示指定用户信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例3：显示所有进程信息，连同命令行"><span class="nav-number">5.3.</span> <span class="nav-text">实例3：显示所有进程信息，连同命令行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例4：-ps-与grep-组合使用，查找特定进程"><span class="nav-number">5.4.</span> <span class="nav-text">实例4： ps 与grep 组合使用，查找特定进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例5：将与这次登入的-PID-与相关信息列示出来"><span class="nav-number">5.5.</span> <span class="nav-text">实例5：将与这次登入的 PID 与相关信息列示出来</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例6：列出目前所有的正在内存中的程序"><span class="nav-number">5.6.</span> <span class="nav-text">实例6：列出目前所有的正在内存中的程序</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

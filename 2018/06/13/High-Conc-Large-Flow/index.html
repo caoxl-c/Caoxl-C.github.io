@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>高并发和大流量解决方案 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Internet高并发大流量">
+  
+  
+  
+  
+  <meta name="description" content="解决高并发和大流量问题">
+<meta name="keywords" content="Internet,高并发,大流量">
+<meta property="og:type" content="article">
+<meta property="og:title" content="高并发和大流量解决方案">
+<meta property="og:url" content="http://blog.caoxl.com/2018/06/13/High-Conc-Large-Flow/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="解决高并发和大流量问题">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:44:58.711Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="高并发和大流量解决方案">
+<meta name="twitter:description" content="解决高并发和大流量问题">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-High-Conc-Large-Flow" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      高并发和大流量解决方案
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/06/13/High-Conc-Large-Flow/" class="article-date">
+	  <time datetime="2018-06-13T01:07:09.000Z" itemprop="datePublished">2018-06-13</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>解决高并发和大流量问题</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="我们说的高并发是什么"><a href="#我们说的高并发是什么" class="headerlink" title="我们说的高并发是什么?"></a>我们说的高并发是什么?</h1><blockquote>
+<p>在互联网时代,所讲的并发、高并发,通常是指并发访问。也就是在某个时间点,有多少个访问同时到来<br>通常如果一个系统的日PV在干万以上,有可能是一个高并发的系统</p>
+</blockquote>
+<h2 id="高并发的问题-我们具体该关心什么"><a href="#高并发的问题-我们具体该关心什么" class="headerlink" title="高并发的问题,我们具体该关心什么?"></a>高并发的问题,我们具体该关心什么?</h2><ul>
+<li><code>QPS</code></li>
+</ul>
+<p>每秒钟请求或者査询的数量,在互联网领域,指毎秒响应请求数(指HTTP请求);<br>一个页面中可能有多个 http 请求: <code>(总PV数*80%)/(6小时秒数*20%)=峰值每秒请求数(QPS)</code></p>
+<ul>
+<li>吞吐量</li>
+</ul>
+<p>单位时间内处理的请求数量(通常由QPS与并发数决定)</p>
+<ul>
+<li>响应时间</li>
+</ul>
+<p>从请求发出到收到响应花费的时间。例如系统处理一个HTTP请求需要100ms,这个100ms就是系统的响应时间</p>
+<ul>
+<li><code>PV</code></li>
+</ul>
+<p>综合浏览量(<code>Page view</code>),即页面浏览量或者点击量,个访客在24小时內访问的页面数量</p>
+<ul>
+<li><code>UV</code></li>
+</ul>
+<p>独立访客(<code>Unique Visitor</code>),即一定时间范围内相同访客多次访问网站,只计算为1个独立访客</p>
+<ul>
+<li>带宽</li>
+</ul>
+<p>计算带宽大小需关注两个指标,峰值流量和页面的平均大小<br><code>日网站带宽=PV/统计时间(换算到秒)*平均页面大小(单位KB)*8</code></p>
+<h2 id="常用性能测试工具"><a href="#常用性能测试工具" class="headerlink" title="常用性能测试工具"></a>常用性能测试工具</h2><p><code>ab</code>、<code>wrk</code>、 <code>http_load</code>、 <code>Web bench</code>、 <code>Siege</code>、 <code>Apache Jmeter</code></p>
+<h3 id="ab概念"><a href="#ab概念" class="headerlink" title="ab概念"></a><code>ab</code>概念</h3><blockquote>
+<p>全称是 apache benchmark,是 apache官方推出的工具刨建多个并发访问线程,模拟多个访问者同时对某一URL地址进行访问。<br>它的测试目标是基于URL的,因此,它既可以用来测试apache的负载压力,也可以测试 nginx、 lighthttp、 tomcat、IS等其它Web服务器的压力</p>
+</blockquote>
+<h3 id="ab的使用"><a href="#ab的使用" class="headerlink" title="ab的使用"></a><code>ab</code>的使用</h3><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">模拟并发请求<span class="number">100</span>次,总共请求<span class="number">5000</span>次</span><br><span class="line">ab -c <span class="number">100</span> -n <span class="number">5000</span> www.demo.com</span><br></pre></td></tr></table></figure>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
+<li>测试机器与被测试机器分开</li>
+<li>不要对线上服务做压力测试</li>
+<li>观察测试工具ab所在机器,以及被测试的前端机的cPU,内存,网络等都不超过最高限度的75% (<a href="http://blog.caoxl.com/2018/06/05/Linux-cmd-top/">top 命令</a>)</li>
+</ol>
+<blockquote>
+<p>详细请看: <a href="http://blog.caoxl.com/2018/06/06/Linux-cmd-ab/">Linux 命令 「ab」</a></p>
+</blockquote>
+<h2 id="QPS划分"><a href="#QPS划分" class="headerlink" title="QPS划分"></a>QPS划分</h2><h3 id="QPS达到50"><a href="#QPS达到50" class="headerlink" title="QPS达到50"></a>QPS达到50</h3><p>可以称之为小型网站,一般的服务器就可以应付,无需优化</p>
+<h3 id="QPS达到100"><a href="#QPS达到100" class="headerlink" title="QPS达到100"></a>QPS达到100</h3><p>假设关系型数据库的每次请求在0.01秒完成<br>假设单页面只有一个SQL查询,那么100QPS意味着1秒钟完成100<br>次请求,但是此时我们并不能保证数据库查询能完成100次</p>
+<p><strong>方案</strong>:数据库缓存层、<a href="http://blog.caoxl.com/2018/06/08/Nginx-reverse-proxy/">数据库的负载均衡</a></p>
+<h3 id="QPS达到800"><a href="#QPS达到800" class="headerlink" title="QPS达到800"></a>QPS达到800</h3><p>假设我们使用百兆带宽,意味着网站出口的实际带宽是8M左右假设每个页面只有10K,在这个并发条件下,百兆带宽已经吃完</p>
+<p><strong>方案</strong>:CDN加速、负载均衡</p>
+<h3 id="QPS达到1000"><a href="#QPS达到1000" class="headerlink" title="QPS达到1000"></a>QPS达到1000</h3><p>假设使用 <code>Memcache</code>缓存数据库查询数据,每个页面对<code>Memcache</code>的请求远大于直接对<code>DB</code>的请求<br><code>Memcache</code>的悲观并发数在<code>2W</code>左右,但有可能在之前内网带宽已经吃光,表现出不稳定</p>
+<p><strong>方案</strong>:静态HTML缓存</p>
+<h3 id="QPS达到2000"><a href="#QPS达到2000" class="headerlink" title="QPS达到2000"></a>QPS达到2000</h3><p>这个级别下,文件系统访问锁都成为了灾难</p>
+<p><strong>方案</strong>:做业务分离,分布式存储</p>
+<h1 id="数据库的优化"><a href="#数据库的优化" class="headerlink" title="数据库的优化"></a>数据库的优化</h1><ul>
+<li>数据库的缓存(memcache 缓存,redis 缓存等)</li>
+<li>分库分表、分区操作</li>
+<li>读写分离</li>
+<li>负载均衡</li>
+</ul>
+<h2 id="数据表数据类型优化"><a href="#数据表数据类型优化" class="headerlink" title="数据表数据类型优化"></a>数据表数据类型优化</h2><h3 id="字段使用什么样的数据类型更合适"><a href="#字段使用什么样的数据类型更合适" class="headerlink" title="字段使用什么样的数据类型更合适"></a>字段使用什么样的数据类型更合适</h3><ul>
+<li><code>tinyint</code> (0-255) <code>smallint</code> , <code>bigint</code></li>
+<li><code>char</code>, <code>varchar</code></li>
+<li><code>enum</code> 特定、固定的分类可以使用<code>enum</code>存储,效率更快</li>
+<li>`IP地址的存储 //用 php 的 ip2long(‘192.168.1.38’); //3232235814</li>
+<li>对字段进行 <code>not null</code> 这样,存储的字段就不会有 <code>null</code> 值 ,只有空值</li>
+</ul>
+<h2 id="索引优化"><a href="#索引优化" class="headerlink" title="索引优化"></a>索引优化</h2><ul>
+<li>索引不是越多越好,在合适的字段上创建合适的索引</li>
+<li>复合索引的前缀原则</li>
+<li><code>like</code>查询<code>%</code>的问题(% 在前如:%name 则索引失败)</li>
+<li>全表扫描优化</li>
+<li><code>or</code>条件索引使用情况</li>
+<li>字符串类型索引失效的问题(如字符串类型的字段必须要加引号查询)</li>
+</ul>
+<h2 id="SQL语句的优化"><a href="#SQL语句的优化" class="headerlink" title="SQL语句的优化"></a>SQL语句的优化</h2><ul>
+<li>优化查询过程中的数据访问</li>
+<li>优化长难句的查询语句</li>
+<li>优化特定类型的查询语句</li>
+<li>使用 Limit</li>
+<li>返回列不用<code>*</code></li>
+<li>变复杂为简单</li>
+<li>切分查询(如删大量数据时,可分多次删除)</li>
+<li>分解关联查询</li>
+<li>优化 <code>count()</code> (如对统计数据单独存放在一个字段,而不是进行 count() 统计)</li>
+<li>优化关联查询</li>
+<li>优化子查询</li>
+<li>优化 <code>Group by</code> 和 <code>distinct</code></li>
+<li>优化 <code>limit</code> 和 <code>union</code></li>
+</ul>
+<h2 id="存储引擎优化"><a href="#存储引擎优化" class="headerlink" title="存储引擎优化"></a>存储引擎优化</h2><p>尽量使用 <strong><code>Inno DB</code></strong>存储引擎</p>
+<h2 id="数据表结构设计的优化"><a href="#数据表结构设计的优化" class="headerlink" title="数据表结构设计的优化"></a>数据表结构设计的优化</h2><h3 id="分区操作"><a href="#分区操作" class="headerlink" title="分区操作"></a>分区操作</h3><ul>
+<li>通过特定的策略对数据表进行物理拆分</li>
+<li>对用户透明</li>
+<li>partition by (分区)</li>
+<li>对新建表进行分区</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> employees (</span><br><span class="line">    <span class="keyword">id</span> <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    fname <span class="built_in">VARCHAR</span>(<span class="number">30</span>),</span><br><span class="line">    lname <span class="built_in">VARCHAR</span>(<span class="number">30</span>),</span><br><span class="line">    hired <span class="built_in">DATE</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'1970-01-01'</span>,</span><br><span class="line">    separated <span class="built_in">DATE</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'9999-12-31'</span>,</span><br><span class="line">    job_code <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    store_id <span class="built_in">INT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">RANGE</span> (store_id) (</span><br><span class="line">    <span class="keyword">PARTITION</span> p0 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">6</span>),</span><br><span class="line">    <span class="keyword">PARTITION</span> p1 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">11</span>),</span><br><span class="line">    <span class="keyword">PARTITION</span> p2 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">16</span>),</span><br><span class="line">    <span class="keyword">PARTITION</span> p3 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> MAXVALUE</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>对已有表进行分区</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="keyword">user</span> <span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">RANGE</span> (<span class="keyword">id</span>)</span><br><span class="line">(   </span><br><span class="line"><span class="keyword">PARTITION</span> p_Apr <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">2</span>),</span><br><span class="line"><span class="keyword">PARTITION</span> p_May <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">4</span>), </span><br><span class="line"><span class="keyword">PARTITION</span> p_Dec <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> MAXVALUE </span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h3><ul>
+<li>水平拆分</li>
+<li>垂直拆分</li>
+</ul>
+<h2 id="数据库服务器架构的优化"><a href="#数据库服务器架构的优化" class="headerlink" title="数据库服务器架构的优化"></a>数据库服务器架构的优化</h2><ul>
+<li>主从复制</li>
+<li>读写分离</li>
+<li>双主热备</li>
+<li>负载均衡:<ul>
+<li>通过<code>LVS</code>的三种基本模式实现负载均衡</li>
+<li><code>My Cat</code>数据库中间件实现负载均衡</li>
+</ul>
+</li>
+</ul>
+<h1 id="流量优化-防盗链"><a href="#流量优化-防盗链" class="headerlink" title="流量优化-防盗链"></a>流量优化-防盗链</h1><h2 id="防盗链处理"><a href="#防盗链处理" class="headerlink" title="防盗链处理"></a>防盗链处理</h2><h2 id="盗链概念"><a href="#盗链概念" class="headerlink" title="盗链概念"></a>盗链概念</h2><blockquote>
+<p>盗链是指在自己的页面上展示一些并不在自己服务器上的内容获得他人服务器上的资源地址,<br>绕过别人的资源展示页面,直接在自己的页面上向最终用户提供此内容</p>
+</blockquote>
+<p>常见的是小站盗用大站的图片、音乐、视频、软件等资源<br>通过盗链的方法可以减轻自己服务器的负担,因为真实的空间和流量均是来自别人的服务器</p>
+<h2 id="防盗链概念"><a href="#防盗链概念" class="headerlink" title="防盗链概念"></a>防盗链概念</h2><blockquote>
+<p>防止别人通过一些技术手段绕过本站的资源展示页面,盗用本站的资源,<br>让绕开本站资源展示页面的资源链接失效</p>
+</blockquote>
+<p>可以大大减轻服务器及带宽的压力</p>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>通过 <code>Referer</code> 或者 <code>签名</code>,<strong>网站可以检测目标网页访问的来源网页</strong>,<br>如果是资源文件,则可以跟踪到显示它的网页地址。<br>一旦检测到来源不是本站即进行阻止或者返回指定的页面</p>
+<h2 id="Referer-方式防盗链"><a href="#Referer-方式防盗链" class="headerlink" title="Referer 方式防盗链"></a><code>Referer</code> 方式防盗链</h2><p><code>Nginx</code>模块 <code>ngx_http_referer_module</code>用于阻挡来源非法的域名请求<br>Nginx指令 <code>valid referers</code>, 全局变量<code>$invalid referer</code><br><code>valid_referers none / blocked / server_names,string</code></p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">none</span>:<span class="string">" Referer"</span>来源头部为空的情况</span><br><span class="line"><span class="attribute">blocked</span>:<span class="string">" Referer"</span>来源头部不为空,但是里面的值被代理或者防火墙删除了,这些值都不以<span class="attribute">htp</span>:/或者 <span class="attribute">https</span>:<span class="comment">//开头.</span></span><br><span class="line">server <span class="attribute">names</span>:“ Referer"来源头部包含当前的 server names</span><br></pre></td></tr></table></figure>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">location ~ .*\.(gifljpglpnglflvlswfrarlzips)<span class="variable">$&#123;</span></span><br><span class="line">    valid_referers none blocked imooc.com * <span class="symbol">imooc.com:</span></span><br><span class="line">    if(<span class="variable">$invalid_referer</span>)&#123;</span><br><span class="line">        <span class="comment">#return 403:</span></span><br><span class="line">        rewrite ^<span class="regexp">/ http:/</span><span class="regexp">/www.imooc.com/</span><span class="number">403</span>.jpg;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="加密签名"><a href="#加密签名" class="headerlink" title="加密签名"></a>加密签名</h2><p>伪造 <code>Referer</code>:可以使用加密签名解决<br>使用第三方模块<code>HttpaccesskeyModule</code>实现 <code>Nginx</code>防盗链</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">accesskey</span> <span class="string">on off模块开关</span></span><br><span class="line"><span class="attr">accesskey_hashmethod</span> <span class="string">md5 | sha-1签名加密方式</span></span><br><span class="line"><span class="attr">accesskey_arg</span> <span class="string">GET参数名称</span></span><br><span class="line"><span class="attr">accesskey</span> <span class="string">signature加密规则</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">location</span> <span class="string">~ .*\.(gifljpglpnglflvlswfrarlzips)$&#123;</span></span><br><span class="line">    <span class="attr">accesskey</span> <span class="string">on;</span></span><br><span class="line">    <span class="attr">accesskey_hashmethod</span> <span class="string">md5;</span></span><br><span class="line">    <span class="attr">accesskey_arg</span> <span class="string">sign;</span></span><br><span class="line">    <span class="meta">accesskey_signature"pwd11111$remote_addr;</span>  <span class="string"># pwd11111 加客户端 ip</span></span><br><span class="line"><span class="attr">&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sign</span>= md5(<span class="string">'jason'</span>. <span class="variable">$_SERVER</span>[<span class="string">'remote_addr'</span>];</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'&lt;img src=”./logo_new,png?sign=. $sign.'</span><span class="string">"&gt;';</span></span><br></pre></td></tr></table></figure>
+<h1 id="CDN加速"><a href="#CDN加速" class="headerlink" title="CDN加速"></a><code>CDN</code>加速</h1><h2 id="CDN"><a href="#CDN" class="headerlink" title="CDN ?"></a>CDN ?</h2><p><code>CDN</code>的全称是<code>Content Delivery Network</code>，即<strong>内容分发网络</strong>。 </p>
+<p>其基本思路是尽可能避开互联网上有可能影响数据传输速度和稳定性的瓶颈和环节，使内容传输的更快、更稳定。</p>
+<h2 id="传统模式"><a href="#传统模式" class="headerlink" title="传统模式"></a>传统模式</h2><blockquote>
+<p><code>入域名发起请求</code>–&gt;<code>解析域名获取内容</code>–&gt;<code>对应的服务器</code>–&gt;<code>服务器响应并返</code></p>
+</blockquote>
+<h2 id="使用CDN访问"><a href="#使用CDN访问" class="headerlink" title="使用CDN访问"></a>使用CDN访问</h2><blockquote>
+<p><code>用户发起请求</code>–&gt;<code>智能DNS的解析</code>(根据IP判断地理位置、接入网类型、选择路由最短和负载最轻的服务器)<br>–&gt;<code>取得缓存服务器IP</code><br>–&gt;<code>把内容返回给用户(如果缓存中有)</code><br>–&gt;<code>缓存中无,向源站发起请求</code><br>–&gt;<code>将结果返回给用户</code><br>–&gt;<code>将结果存入缓存服务器</code></p>
+</blockquote>
+<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>站点或者应用中大量静态资源的加速分发,例如:Css,JS图片和HTML,大文件下载,直播网站等</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><ul>
+<li><code>BAT</code>等都有提供<code>CDN</code>服务</li>
+<li>可用<code>VS</code>做4层负载均衡</li>
+<li>可用 <code>Nginx</code>, <code>Varnish</code>, <code>Squid</code>, <code>Apache Trafficserver</code>做<code>7</code>层负载均衡和 <code>cache</code></li>
+<li>使用 <code>squid反向代理</code>, 或者 <code>Nginx</code>等的反向代理</li>
+</ul>
+<h1 id="独立图片服务器部署"><a href="#独立图片服务器部署" class="headerlink" title="独立图片服务器部署"></a>独立图片服务器部署</h1><h2 id="独立的必要性"><a href="#独立的必要性" class="headerlink" title="独立的必要性"></a>独立的必要性</h2><ul>
+<li>分担Web服务器的I/O负载将耗费资源的图片服务分离出来,提高服务器的性能和稳定性</li>
+<li>能够专门对图片服务器进行优化-为图片服务设置有针对性的缓存方案,减少带宽成本,提高访问速度</li>
+<li>提高网站的可扩展性-通过增加图片服务器,提高图片吞吐能力</li>
+</ul>
+<h2 id="采用独立域名"><a href="#采用独立域名" class="headerlink" title="采用独立域名"></a>采用独立域名</h2><blockquote>
+<p>并非二级域名</p>
+</blockquote>
+<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><ul>
+<li>同一域名下浏览器的并发连接数有限制,突破浏览器连接数的限制</li>
+<li>由于<code>cookie</code>的原因,对缓存不利,大部分 <code>Web cache</code>都只缓存不带<code>cookie</code>的请求,<br>导致每次的图片请求都不能命中 <code>cache</code></li>
+</ul>
+<h2 id="独立后的问题"><a href="#独立后的问题" class="headerlink" title="独立后的问题"></a>独立后的问题</h2><h3 id="如何进行图片上传和图片同步"><a href="#如何进行图片上传和图片同步" class="headerlink" title="如何进行图片上传和图片同步"></a>如何进行图片上传和图片同步</h3><ul>
+<li><code>NFS</code>共享方式</li>
+<li>利用<code>FTP</code>同步(php 可以操作 ftp)</li>
+</ul>
+<h1 id="动态语言静态化"><a href="#动态语言静态化" class="headerlink" title="动态语言静态化"></a>动态语言静态化</h1><h2 id="什么是动态语言静态化"><a href="#什么是动态语言静态化" class="headerlink" title="什么是动态语言静态化"></a>什么是动态语言静态化</h2><p>将现有<code>PHP</code>等动态语言的逻辑代码生成为静态<code>HTML</code>文件,用户访问动态脚本重定向到静态<code>HTML</code>文件的过程。<br>对实时性要求不高的页面</p>
+<h2 id="为什么要静态化"><a href="#为什么要静态化" class="headerlink" title="为什么要静态化"></a>为什么要静态化</h2><p>动态脚本通常会做逻辑计算和数据查询,访问量越大,服务器压力越大<br>访问量大时可能会造成CPU负载过高,数据库服务器压力过大</p>
+<h2 id="静态化的实现方式"><a href="#静态化的实现方式" class="headerlink" title="静态化的实现方式"></a>静态化的实现方式</h2><h3 id="使用模板引擎"><a href="#使用模板引擎" class="headerlink" title="使用模板引擎"></a>使用模板引擎</h3><p>可以使用<code>Smarty</code>的缓存机制生成静态<code>HTML</code>缓存文件</p>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$<span class="function"><span class="title">smarty</span>-&gt;</span> cache dir=$RooT.<span class="string">"/ cache"</span>;/缓存目录</span><br><span class="line">$<span class="function"><span class="title">smarty</span>-&gt;</span> caching=<span class="literal">true</span>;<span class="comment">//是否开启缓存</span></span><br><span class="line">$<span class="function"><span class="title">smarty</span>-&gt;</span> cache_lifetime=<span class="string">"3600"</span>;/缓存时间</span><br><span class="line">$<span class="function"><span class="title">smarty</span>-&gt;</span> display(string template, string cache_id[, string compile_id]]):</span><br><span class="line">$<span class="function"><span class="title">smarty</span>-&gt;</span> clear_all_cache();<span class="comment">//清除所有缓存</span></span><br><span class="line">$<span class="function"><span class="title">smarty</span>-&gt;</span> clear_cache(<span class="string">" file.html"</span>);/清除指定的缓存</span><br><span class="line">$<span class="function"><span class="title">smarty</span>-&gt;</span> clear_cache( <span class="string">'article.htm'</span>,$art_id);<span class="comment">//清除同一个模板下的指定缓存号的缓存</span></span><br></pre></td></tr></table></figure>
+<h3 id="利用ob系列的函数"><a href="#利用ob系列的函数" class="headerlink" title="利用ob系列的函数"></a>利用ob系列的函数</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">ob_start</span><span class="params">()</span></span>:打开输出控制缓冲</span><br><span class="line">ob_get_contents0:返回输出缓冲区内容</span><br><span class="line"><span class="function"><span class="title">ob_clean</span><span class="params">()</span></span>:清空输出缓冲区</span><br><span class="line">ob_end_flush0:冲刷出(送出)输出缓冲区内容并关闭缓冲</span><br></pre></td></tr></table></figure>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">ob_start</span>():</span><br><span class="line"><span class="comment">//输出到页面的HTML代码</span></span><br><span class="line">...</span><br><span class="line"><span class="selector-tag">ob_get_contents</span>();</span><br><span class="line"><span class="selector-tag">ob</span> <span class="selector-tag">end</span> <span class="selector-tag">flush</span>();</span><br><span class="line"><span class="selector-tag">fopen</span>(); <span class="comment">//写入</span></span><br></pre></td></tr></table></figure>
+<p>实现页面静态化,并且当内容改变时,主动缓存新内容,且如果有<code>$_ GET</code>参数时候,带参数的静态化页面</p>
+<p><strong>例:</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$id = $_GET[<span class="string">'id'</span>];</span></span><br><span class="line"><span class="php"><span class="keyword">if</span> (<span class="keyword">empty</span>($id)) &#123;</span></span><br><span class="line"><span class="php">    $id = <span class="string">''</span>;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php">$cache_name = md5(<span class="keyword">__FILE__</span>) . <span class="string">'-'</span> . $id . <span class="string">'.html'</span>;</span></span><br><span class="line"><span class="php">$cache_lifetime = <span class="number">3600</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">if</span> (@filectime(<span class="keyword">__FILE__</span>) &lt;= @filectime($cache_name) &amp;&amp; file_exists($cache_name) &amp;&amp; $cache_lifetime+@filectime($cache_name) &gt; time()) &#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">include</span> $cache_name;</span></span><br><span class="line"><span class="php">    <span class="keyword">exit</span>;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"><span class="php">ob_start();</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">b</span>&gt;</span>This is  My script <span class="php"><span class="meta">&lt;?php</span> <span class="keyword">echo</span> $id; <span class="meta">?&gt;</span></span><span class="tag">&lt;/<span class="name">b</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$content = ob_get_contents();</span></span><br><span class="line"><span class="php">ob_end_flush();</span></span><br><span class="line"><span class="php">file_put_contents($cache_name, $content);</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h1 id="动态语言的并发处理"><a href="#动态语言的并发处理" class="headerlink" title="动态语言的并发处理"></a>动态语言的并发处理</h1><h2 id="什么是进程、线程、协程"><a href="#什么是进程、线程、协程" class="headerlink" title="什么是进程、线程、协程?"></a>什么是进程、线程、协程?</h2><h3 id="进程-Process"><a href="#进程-Process" class="headerlink" title="进程(Process)"></a>进程(<code>Process</code>)</h3><p>是计算机中的程序关于某数据集合上的一次运行活动,<br>是系统进行资源分配和调度的基本单位,是操作系统结构的基础,进程是一个“执行中的程序”</p>
+<p><code>进程的三态模型</code>:多道程序系统中,进程在处理器上交替运行,状态不断地发生变化</p>
+<ul>
+<li>运行</li>
+</ul>
+<p>运行:<strong>当一个进程在处理机上运行时,则称该进程处于运行状态</strong>。处于此状态的进程的数目小于等于处理器的数目,对于单处理机系统,处于运行状态的进程只有一个。<br>在没有其他进程可以执行时(如所有进程都在阻塞状态),通常会自动执行系统的空闲进程。</p>
+<ul>
+<li>就绪</li>
+</ul>
+<p>就绪:<strong>当一个进程获得了除处理机以外的一切所需资源,一旦得到处理机即可运行,则称此进程处于就绪状态</strong>。就绪进程可以按多个优先级来划分队列。<br>例如,当一个进程由于时间片用完而进入就绪状态时,排入低优先级队列;当进程由I/O操作完成而进入就绪状态时,排入高优先级队列。</p>
+<ul>
+<li>阻塞</li>
+</ul>
+<p>阻塞:也称为等待或睡眠状态,<strong>一个进程正在等待某一事件发生(例如请求Io而等待I/o完成等)而暂时停止运行,<br>这时即使把处理机分配给进程也无法运行,故称该进程处于阻塞状态</strong></p>
+<p><code>进程的五态模型</code>:对于一个实际的系统,进程的状态及其转换更为复杂。</p>
+<ul>
+<li>新建态</li>
+<li>活跃就绪/静止就绪</li>
+<li>运行</li>
+<li>活跃阻塞/静止阻塞</li>
+<li>终止态</li>
+</ul>
+<h3 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h3><p>线程,有时被称为<code>轻量级进程</code> (Lightweight Process,LWP),是程序执行流的最小单元。</p>
+<blockquote>
+<p>线程是进程中的一个实体,是被系统独立调度和分派的基本单位,线程自己不拥有系统资源,<br>只拥有一点儿在运行中必不可少的资源但它可与同属一个进程的其它线程共享进程所拥有的全部资源。</p>
+</blockquote>
+<p>一个线程可以创建和撤销另一个线程,同一进程中的多个线程之间可以并发执行。</p>
+<p>线程是程序中一个单一的顺序控制流程。进程内一个相对独立的、可调度的执行单元,是系统独立调度和分派<code>CPU</code>的基本单位指运行中的程序的调度单位。</p>
+<p><strong>在单个程序中同时运行多个线程完成不同的工作,称为<code>多线程</code>。</strong></p>
+<p>每一个程序都至少有一个线程,若程序只有一个线程,那就是程序本身。</p>
+<p>线程的状态:<code>就绪</code>、<code>阻塞</code>、<code>运行</code></p>
+<h3 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h3><blockquote>
+<p><code>协程是一种用户态的轻量级线程</code>,协程的调度完全由用户控制。<br>协程拥有自己的寄存器上下文和栈。协程调度切换时,将寄存器上下文和栈保存到其他地方,在切回来的时候,<br>恢复先前保存的寄存器上下文和栈,直接操作栈则基本没有内核切换的开销,可以不加锁的访问全局变量,所以上下文的切换非常快。</p>
+</blockquote>
+<h3 id="线程与进程的区别"><a href="#线程与进程的区别" class="headerlink" title="线程与进程的区别 ?"></a>线程与进程的区别 ?</h3><ol>
+<li>线程是进程内的一个执行单元,进程内至少有一个线程,它们共享进程的地址空间,而进程有自己独立的地址空间</li>
+<li>进程是资源分配和拥有的单位,同一个进程内的线程共享进程的资源</li>
+<li>线程是处理器调度的基本单位但进程不是</li>
+<li>二者均可并发执行</li>
+<li>每个独立的线程有一个程序运行的入口、顺序执行序列和程序的出口,<br>但是线程不能够独立执行,必须依存在应用程序中,由应用程序提供多个线程执行控制</li>
+</ol>
+<h3 id="线程与协程的区别"><a href="#线程与协程的区别" class="headerlink" title="线程与协程的区别"></a>线程与协程的区别</h3><ol>
+<li>一个线程可以多个协程,一个进程也可以单独拥有多个协程</li>
+<li>线程进程都是同步机制,而协程则是异步</li>
+<li>协程能保留上一次调用时的状态,每次过程重入时,就相当于进入上一次调用的状态</li>
+</ol>
+<h2 id="什么是多进程、多线程"><a href="#什么是多进程、多线程" class="headerlink" title="什么是多进程、多线程 ?"></a>什么是多进程、多线程 ?</h2><h3 id="多进程"><a href="#多进程" class="headerlink" title="多进程"></a>多进程</h3><p>同一个时间里,同一个计算机系统中如果<strong>允许两个或两个以上的进程处于运行状态,这就是多进程</strong>(如同时听歌,玩游戏)<br>多开一个进程,多分配一份资源,进程间通讯不方便</p>
+<h3 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h3><p>线程就是把一个进程分为很多片,每一片都可以是一个独立的流程<br>与多进程的区别是<strong>只会使用一个进程的资源</strong>,线程间可以直接通信</p>
+<h2 id="同步阻塞模型"><a href="#同步阻塞模型" class="headerlink" title="同步阻塞模型"></a>同步阻塞模型</h2><h3 id="多进程-1"><a href="#多进程-1" class="headerlink" title="多进程"></a>多进程</h3><p>最早的服务器端程序都是通过多进程、多线程来解决并发IO的问题一个请求创建一个进程,<br>然后子进程进入循环同步堵塞地与客户端连接进行交互,收发处理数据</p>
+<h3 id="多线程-1"><a href="#多线程-1" class="headerlink" title="多线程"></a>多线程</h3><p>用多线程模式实现非常简单,线程中可以直接向某一个客户端连接发送数据</p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p>这种模型严重依赖进程的数量解决并发问题<br>启动大量进程会带来额外的进程调度消耗</p>
+<h2 id="异步非阻塞模型"><a href="#异步非阻塞模型" class="headerlink" title="异步非阻塞模型"></a>异步非阻塞模型</h2><ul>
+<li>现在各种高并发异步<code>IO</code>的服务器程序都是基于<code>epol</code>!实现的</li>
+<li><code>IO复用异步非阻塞程序</code>使用经典的 <code>Reactor</code>模型,<br><strong>Reactor顾名思义就是反应堆的意思</strong>,它本身不处理任何数据收发。只是可以监视一个<code>socket</code>句柄的事件变化</li>
+</ul>
+<h3 id="Reactor有4个核心的操作"><a href="#Reactor有4个核心的操作" class="headerlink" title="Reactor有4个核心的操作"></a><code>Reactor</code>有4个核心的操作</h3><ul>
+<li><code>add</code>添加<code>socket</code>监听到 <code>reactor</code></li>
+<li><code>set</code>修改事件监听,可以设置监听的类型,如可读、可写</li>
+<li><code>del</code>从<code>reactor</code>中移除,不再监听事件</li>
+<li><code>callback</code>,事件发生后对应的处理逻辑,一般在<code>add</code>/<code>set</code>时制定</li>
+</ul>
+<p>-&gt;<a href="http://rango.swoole.com/archives/508" target="_blank" rel="noopener">more</a></p>
+<p><code>Nginx</code>:  多线程 <code>Reactor</code><br><code>Swoole</code>: 多线程 <code>Reactor</code> + 多进程 <code>Worker</code></p>
+<h2 id="PHP并发编程实践"><a href="#PHP并发编程实践" class="headerlink" title="PHP并发编程实践"></a>PHP并发编程实践</h2><h3 id="PHP的-Swoole扩展"><a href="#PHP的-Swoole扩展" class="headerlink" title="PHP的 Swoole扩展"></a>PHP的 <code>Swoole</code>扩展</h3><p>PHP的异步、并行、高性能网络通信引擎,使用纯C语言编写,提供了PHP语言的异步多线程服务器,<br><code>异步TCP/UDP网络客户端</code>,<code>异步 MYSQL</code>,<code>异步 Redis</code>, <code>数据库连接池</code>, <code>Asynctask</code>, <code>消息队列</code>, <code>毫秒定时器</code>, <code>异步文件读写</code>, <code>异步DNS查询</code></p>
+<p>除了异步IO的支持之外, <code>Swoole</code>为PHP多进程的模式设计了<strong>多个并发数据结构</strong>和<strong>IPC通信机制</strong>,可以大大简化多进程并发编程的工作</p>
+<p><code>Swoole2.0</code>支持了类似<code>Go</code>语言的协程,可以使用完全同步的代码实现异步程序</p>
+<ul>
+<li><code>Swoole</code>的异步<code>MYSQL</code>实现:</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$db =  <span class="keyword">new</span> Swoole\MYSQL;</span><br><span class="line">$server =  <span class="keyword">array</span>(<span class="string">'host'</span>=&gt;<span class="string">",'user=&gt;'','password'=&gt;"</span>,database=&gt;<span class="string">",);</span></span><br><span class="line"><span class="string">$db-&gt;connect($server, function(Sdb, Result)&#123;</span></span><br><span class="line"><span class="string">	$db-&gt;query ("</span>show tables<span class="string">", function(Swoole\MYSQL $db, $result)&#123;</span></span><br><span class="line"><span class="string">		//do some thing</span></span><br><span class="line"><span class="string">	&#125;);</span></span><br><span class="line"><span class="string">&#125;);</span></span><br></pre></td></tr></table></figure>
+<h1 id="并发处理"><a href="#并发处理" class="headerlink" title="并发处理"></a>并发处理</h1><h2 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h2><ul>
+<li>场景说明</li>
+</ul>
+<p>用户注册后,需要发注册邮件和注册短信</p>
+<ul>
+<li>串行方式</li>
+</ul>
+<p>将注册信息写入数据库成功后,发送注册邮件,再发送注册短信</p>
+<ul>
+<li>并行方式</li>
+</ul>
+<p>将注册信息写入数据库成功后,发送注册邮件的同时发送注册短信</p>
+<ul>
+<li>消息队列方式</li>
+</ul>
+<p>将注册信息写入数据库成功后,将成功信息写入队列,此时直接返回成功给用户,<br>写入队列的时间非常短,可以忽略不计,然后异步发送邮件和短信</p>
+<h2 id="应用解耦"><a href="#应用解耦" class="headerlink" title="应用解耦"></a>应用解耦</h2><ul>
+<li>场景说明</li>
+</ul>
+<p>用户下单后,订单系统需要通知库存系统。<br>假如库存系统无法访问,则订单减库存将失败,从而导致订单失败订单系统与库存系统耦合</p>
+<ul>
+<li>引用队列</li>
+</ul>
+<p>用户下单后,订单系统完成持久化处理,将消息写入消息队列,返回用户订单下单成功,<br>订阅下单的消息,采用拉/推的方式,获取下单信息,库存系统根据下单信息,进行库存操作</p>
+<h2 id="流量削锋"><a href="#流量削锋" class="headerlink" title="流量削锋"></a>流量削锋</h2><ul>
+<li>应用场景</li>
+</ul>
+<p>秒杀活动,流量瞬时激增,服务器压力大。</p>
+<p>用户发起请求,服务器接收后,先写入消息队列。假如消息队列长度超过最大值,则直接报错或提示用户<br>后续程序读取消息队列再做处理<br>控制请求量<br>缓解高流量</p>
+<h2 id="日志处理"><a href="#日志处理" class="headerlink" title="日志处理"></a>日志处理</h2><ul>
+<li>应用场景</li>
+</ul>
+<p>解决大量日志的传输,日志采集程序将程序写入消息队列,然后通过日志处理程序的订阅消费日志</p>
+<h2 id="消息通讯"><a href="#消息通讯" class="headerlink" title="消息通讯"></a>消息通讯</h2><ul>
+<li>应用场景</li>
+</ul>
+<p>聊天室<br>多个客户端订阅同一主题,进行消息发布和接收</p>
+<h2 id="常见消息队列产品"><a href="#常见消息队列产品" class="headerlink" title="常见消息队列产品"></a>常见消息队列产品</h2><p><code>Kafka</code>、 <code>Activemq</code>、 <code>Zeros</code>、 <code>Rabbitmq</code>、 <code>Redis</code>等</p>
+<h2 id="接口的并发请求"><a href="#接口的并发请求" class="headerlink" title="接口的并发请求"></a>接口的并发请求</h2><p><code>curl_multi_init</code></p>
+<p><code>php</code> 端可同时调用多个接口</p>
+<h1 id="数据库缓存"><a href="#数据库缓存" class="headerlink" title="数据库缓存"></a>数据库缓存</h1><blockquote>
+<p><code>MySQL</code>等一些常见的关系型数据库的数据都存储在磁盘当中,在高并发场景下,业务应用对<code>MYSQL</code>产生的增、删、改、查的操作造成巨大的I/O开销和查询压力,<br>这无疑对数据库和服务器都是一种巨大的压力,为了解决此类问题,<code>缓存数据</code>的概念应运而生。</p>
+</blockquote>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>极大地解决数据库服务器的压力<br>提高应用数据的响应速度</p>
+<h2 id="常见的缓存形式"><a href="#常见的缓存形式" class="headerlink" title="常见的缓存形式"></a>常见的缓存形式</h2><ul>
+<li>内存缓存</li>
+<li>文件缓存</li>
+</ul>
+<h2 id="启用-MYSQL查询缓存"><a href="#启用-MYSQL查询缓存" class="headerlink" title="启用 MYSQL查询缓存"></a>启用 MYSQL查询缓存</h2><p>极大地降低CPU使用率</p>
+<h3 id="query-cache-type"><a href="#query-cache-type" class="headerlink" title="query_cache_type"></a><code>query_cache_type</code></h3><p>查询缓存类型,有<code>0</code>、<code>1</code>、<code>2</code>三个取值:</p>
+<ul>
+<li><code>0</code>表示不使用查询缓存。</li>
+<li><code>1</code>表示始终使用查询缓存。</li>
+</ul>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对某一条不进行缓存</span></span><br><span class="line"><span class="keyword">SELECT</span> SQL_NO_CACHE* <span class="keyword">FROM</span> my_table <span class="keyword">WHERE</span> condition</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>2</code>表示按需使用查询缓存</li>
+</ul>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在需要缓存时,添加SQL_CACHE</span></span><br><span class="line"><span class="keyword">SELECT</span> SQL_CACHE * <span class="keyword">FROM</span> my_table <span class="keyword">WHERE</span> condition</span><br></pre></td></tr></table></figure>
+<h3 id="query-cache-size"><a href="#query-cache-size" class="headerlink" title="query_cache_size"></a><code>query_cache_size</code></h3><p>默认情况下 <code>query_cache_size</code>为0,表示为<strong>查询缓存预留的内存</strong>为0,无法使用查询缓存</p>
+<ul>
+<li>设置</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> <span class="keyword">query</span> <span class="keyword">cache</span> <span class="keyword">size</span> =<span class="number">134217728</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="注意事项-1"><a href="#注意事项-1" class="headerlink" title="注意事项"></a>注意事项</h3><p>查询缓存可以看做是SQL文本和查询结果的映射<br>第二次查询的SQL和第一次查询的SQL完全相同,则会使用缓存<br><code>SHOW STATUS LIKE &#39;Qcache_hits</code>;查看命中次数<br>表的结构或数据发生改变时,查询缓存中的数据不再有效</p>
+<h2 id="清理缓存"><a href="#清理缓存" class="headerlink" title="清理缓存"></a>清理缓存</h2><p><code>FLUSH QUERY CACHE;</code> // 清理查询缓存内存碎片<br><code>RESET QUERY CACHE;</code> // 从查询缓存中移出所有查询<br><code>FLUSH TABLES;</code>      // 关闭所有打开的表, 同时该操作将惠清空查询缓存中的内容</p>
+<h2 id="使用-Memcache-缓存查询数据"><a href="#使用-Memcache-缓存查询数据" class="headerlink" title="使用 Memcache 缓存查询数据"></a>使用 <code>Memcache</code> 缓存查询数据</h2><p>对于大型站点,如果没有中间缓存层,当流量打入数据库层时,即便有之前的几层为我们挡住一部分流量,但是在大并发的情况下,还是会有大量请求涌入数据库层,<br>这样对于数据库服务器的压力冲击很大,响应速度也会下降,因此添加中间缓存层很有必要。</p>
+<h3 id="工作原理-1"><a href="#工作原理-1" class="headerlink" title="工作原理"></a>工作原理</h3><p><code>Memcache</code>是一个高性能的分布式的内存对象缓存系统,通过在内存里维护一个统一的巨大的<code>hash</code>表,<br>它能够用来存储各种格式的数据,包括图像、视频、文件以及数据库检索的结果等。<br>简单的说就是<strong>将数据调用到内存,然后从内存中读取</strong>,从而大大提高读取速度</p>
+<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><ul>
+<li>获取: <code>get(key)</code></li>
+<li>设置: <code>set(key, val, exp)</code></li>
+<li>删除: <code>delete(key)</code></li>
+</ul>
+<h2 id="使用-Redis-绶存查询数据"><a href="#使用-Redis-绶存查询数据" class="headerlink" title="使用 Redis 绶存查询数据"></a>使用 <code>Redis</code> 绶存查询数据</h2><h3 id="与-Memcache的区别"><a href="#与-Memcache的区别" class="headerlink" title="与 Memcache的区别"></a>与 Memcache的区别</h3><ul>
+<li>性能相差不大</li>
+<li><code>Redis</code>在2.0版本后增加了自己的VM特性,突破物理内存的限制,<code>Memcache</code>可以修改最大可用内存采用<code>LRU算法</code></li>
+<li><code>Redis</code>,依赖客户端来实现分布式读写</li>
+<li><code>Memcache</code>本身没有数据冗余机制</li>
+<li><code>Redis</code>支持(快照、<code>AOF</code>),依赖快照进行持久化,<code>aof</code>增强了可靠性的同时,对性能有所影响</li>
+<li><code>Memcache</code>不支持持久化,通常做缓存,提升性能;</li>
+<li><code>Memcache</code>在并发场景下,用<code>cas</code>保证一致性, <code>redis</code>事务支持比较弱,只能保证事务中的毎个操作连续执行</li>
+<li><code>Redis</code>支持多种类的数据类型</li>
+<li><code>Redis</code>用于数据量较小的高性能操作和运算上</li>
+<li><code>Memcache</code>用于在动态系统中减少数据库负载,提升性能;适合做缓存,提高性能</li>
+</ul>
+<h1 id="Web服务器的负载均衡-Ngnix反向代理"><a href="#Web服务器的负载均衡-Ngnix反向代理" class="headerlink" title="Web服务器的负载均衡-Ngnix反向代理"></a><code>Web</code>服务器的负载均衡-<code>Ngnix</code>反向代理</h1><h2 id="七层负载均衡的实现"><a href="#七层负载均衡的实现" class="headerlink" title="七层负载均衡的实现"></a>七层负载均衡的实现</h2><p>基于URL等应用层信息的负载均衡<br><code>Nginx</code>的<code>proxy</code>是它一个很强大的功能,实现了<code>7</code>层负载均衡</p>
+<h2 id="Nginx负载均衡"><a href="#Nginx负载均衡" class="headerlink" title="Nginx负载均衡"></a><code>Nginx</code>负载均衡</h2><ul>
+<li>内置策略: <code>IP Hash</code>、<code>加权轮询</code></li>
+<li>扩展策略: <code>fair策略</code>、<code>通用hash</code>、<code>一致性hash</code></li>
+</ul>
+<h3 id="内置策略"><a href="#内置策略" class="headerlink" title="内置策略"></a>内置策略</h3><ul>
+<li>加权轮询策略</li>
+</ul>
+<p>首先将请求都分给高权重的机器,直到该机器的权值降到了比其他机器低,才开始将请求分给下一个高权重的机器<br>当所有后端机器都<code>down</code>掉时, <code>Nginx</code>会立即将所有机器的标志位清成初始状态,以避免造成所有的机器都处在 <code>timeout</code>的状态</p>
+<ul>
+<li><code>IP Hash</code></li>
+</ul>
+<p><code>Nginx</code>内置的另一个负载均衡的策略,流程和轮询很类似,只是其中的算法和具体的策略有些变化<br><strong>IP Hash算法是一种变相的轮询算法</strong></p>
+<h3 id="扩展策略"><a href="#扩展策略" class="headerlink" title="扩展策略"></a>扩展策略</h3><ul>
+<li><code>fair</code>策略</li>
+</ul>
+<p>根据后端服务器的响应时间判断负载情况,从中选出负载最轻的机器进行分流</p>
+<ul>
+<li>通用<code>Hash</code>、一致性<code>Hash</code>策略</li>
+</ul>
+<p>通用<code>hash</code>比较简单,可以以<code>Nginx</code>内置的变量为<code>key</code>进行<code>hash</code>,<br>一致性<code>hash</code>采用了<code>Nginx</code>内置的一致性<code>hash</code>环,支持 <code>memcache</code></p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Nginx配置</span></span><br><span class="line">http&#123;</span><br><span class="line">    upstream imooc_cluster &#123;</span><br><span class="line">        server <span class="number">121.42</span><span class="number">.68</span><span class="number">.3</span>:<span class="number">8001</span> weight=<span class="number">10</span>;<span class="comment">// 加权中</span></span><br><span class="line">        server <span class="number">121.42</span><span class="number">.69</span><span class="number">.3</span>:<span class="number">8002</span> weight=<span class="number">9</span>;</span><br><span class="line">        #server <span class="number">121.42</span><span class="number">.68</span><span class="number">.3</span>:<span class="number">8003</span>;</span><br><span class="line">        #server <span class="number">121.42</span><span class="number">.68</span><span class="number">.4</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen <span class="number">80</span>;</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http: <span class="comment">//imooc_cluster;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="四层负载均衡的实现"><a href="#四层负载均衡的实现" class="headerlink" title="四层负载均衡的实现"></a>四层负载均衡的实现</h2><p>通过报文中的目标地址和端口,再加上负载均衡设备设置的服务器选择方式,决定最终选择的内部服务器</p>
+<p><code>LVS</code>实现服务器集群负载均衡有三种方式: <code>NAT</code>, <code>DR</code> 和 <code>TUN</code></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://www.kancloud.cn/idcpj/php_interview/610396" target="_blank" rel="noopener">第九章高并发和大流量解决方案</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/06/13/High-Conc-Large-Flow/" target="_blank" title="高并发和大流量解决方案">http://blog.caoxl.com/2018/06/13/High-Conc-Large-Flow/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/">Internet</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/大流量/">大流量</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/高并发/">高并发</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/06/13/MySQL-large-table-opt/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          MySQL 大表优化
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/12/PHP-7/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">PHP7 新特性</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#我们说的高并发是什么"><span class="nav-number">1.</span> <span class="nav-text">我们说的高并发是什么?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#高并发的问题-我们具体该关心什么"><span class="nav-number">1.1.</span> <span class="nav-text">高并发的问题,我们具体该关心什么?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用性能测试工具"><span class="nav-number">1.2.</span> <span class="nav-text">常用性能测试工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ab概念"><span class="nav-number">1.2.1.</span> <span class="nav-text">ab概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ab的使用"><span class="nav-number">1.2.2.</span> <span class="nav-text">ab的使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意事项"><span class="nav-number">1.2.3.</span> <span class="nav-text">注意事项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QPS划分"><span class="nav-number">1.3.</span> <span class="nav-text">QPS划分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#QPS达到50"><span class="nav-number">1.3.1.</span> <span class="nav-text">QPS达到50</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QPS达到100"><span class="nav-number">1.3.2.</span> <span class="nav-text">QPS达到100</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QPS达到800"><span class="nav-number">1.3.3.</span> <span class="nav-text">QPS达到800</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QPS达到1000"><span class="nav-number">1.3.4.</span> <span class="nav-text">QPS达到1000</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QPS达到2000"><span class="nav-number">1.3.5.</span> <span class="nav-text">QPS达到2000</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库的优化"><span class="nav-number">2.</span> <span class="nav-text">数据库的优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据表数据类型优化"><span class="nav-number">2.1.</span> <span class="nav-text">数据表数据类型优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字段使用什么样的数据类型更合适"><span class="nav-number">2.1.1.</span> <span class="nav-text">字段使用什么样的数据类型更合适</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引优化"><span class="nav-number">2.2.</span> <span class="nav-text">索引优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL语句的优化"><span class="nav-number">2.3.</span> <span class="nav-text">SQL语句的优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#存储引擎优化"><span class="nav-number">2.4.</span> <span class="nav-text">存储引擎优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据表结构设计的优化"><span class="nav-number">2.5.</span> <span class="nav-text">数据表结构设计的优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分区操作"><span class="nav-number">2.5.1.</span> <span class="nav-text">分区操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分库分表"><span class="nav-number">2.5.2.</span> <span class="nav-text">分库分表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库服务器架构的优化"><span class="nav-number">2.6.</span> <span class="nav-text">数据库服务器架构的优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#流量优化-防盗链"><span class="nav-number">3.</span> <span class="nav-text">流量优化-防盗链</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#防盗链处理"><span class="nav-number">3.1.</span> <span class="nav-text">防盗链处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#盗链概念"><span class="nav-number">3.2.</span> <span class="nav-text">盗链概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#防盗链概念"><span class="nav-number">3.3.</span> <span class="nav-text">防盗链概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工作原理"><span class="nav-number">3.4.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Referer-方式防盗链"><span class="nav-number">3.5.</span> <span class="nav-text">Referer 方式防盗链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加密签名"><span class="nav-number">3.6.</span> <span class="nav-text">加密签名</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CDN加速"><span class="nav-number">4.</span> <span class="nav-text">CDN加速</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CDN"><span class="nav-number">4.1.</span> <span class="nav-text">CDN ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传统模式"><span class="nav-number">4.2.</span> <span class="nav-text">传统模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用CDN访问"><span class="nav-number">4.3.</span> <span class="nav-text">使用CDN访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#场景"><span class="nav-number">4.4.</span> <span class="nav-text">场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">4.5.</span> <span class="nav-text">实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#独立图片服务器部署"><span class="nav-number">5.</span> <span class="nav-text">独立图片服务器部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#独立的必要性"><span class="nav-number">5.1.</span> <span class="nav-text">独立的必要性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#采用独立域名"><span class="nav-number">5.2.</span> <span class="nav-text">采用独立域名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原因"><span class="nav-number">5.2.1.</span> <span class="nav-text">原因</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#独立后的问题"><span class="nav-number">5.3.</span> <span class="nav-text">独立后的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何进行图片上传和图片同步"><span class="nav-number">5.3.1.</span> <span class="nav-text">如何进行图片上传和图片同步</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动态语言静态化"><span class="nav-number">6.</span> <span class="nav-text">动态语言静态化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是动态语言静态化"><span class="nav-number">6.1.</span> <span class="nav-text">什么是动态语言静态化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要静态化"><span class="nav-number">6.2.</span> <span class="nav-text">为什么要静态化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态化的实现方式"><span class="nav-number">6.3.</span> <span class="nav-text">静态化的实现方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用模板引擎"><span class="nav-number">6.3.1.</span> <span class="nav-text">使用模板引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用ob系列的函数"><span class="nav-number">6.3.2.</span> <span class="nav-text">利用ob系列的函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动态语言的并发处理"><span class="nav-number">7.</span> <span class="nav-text">动态语言的并发处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是进程、线程、协程"><span class="nav-number">7.1.</span> <span class="nav-text">什么是进程、线程、协程?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#进程-Process"><span class="nav-number">7.1.1.</span> <span class="nav-text">进程(Process)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程"><span class="nav-number">7.1.2.</span> <span class="nav-text">线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#协程"><span class="nav-number">7.1.3.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程与进程的区别"><span class="nav-number">7.1.4.</span> <span class="nav-text">线程与进程的区别 ?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程与协程的区别"><span class="nav-number">7.1.5.</span> <span class="nav-text">线程与协程的区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是多进程、多线程"><span class="nav-number">7.2.</span> <span class="nav-text">什么是多进程、多线程 ?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多进程"><span class="nav-number">7.2.1.</span> <span class="nav-text">多进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程"><span class="nav-number">7.2.2.</span> <span class="nav-text">多线程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#同步阻塞模型"><span class="nav-number">7.3.</span> <span class="nav-text">同步阻塞模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多进程-1"><span class="nav-number">7.3.1.</span> <span class="nav-text">多进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程-1"><span class="nav-number">7.3.2.</span> <span class="nav-text">多线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点"><span class="nav-number">7.3.3.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异步非阻塞模型"><span class="nav-number">7.4.</span> <span class="nav-text">异步非阻塞模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reactor有4个核心的操作"><span class="nav-number">7.4.1.</span> <span class="nav-text">Reactor有4个核心的操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP并发编程实践"><span class="nav-number">7.5.</span> <span class="nav-text">PHP并发编程实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP的-Swoole扩展"><span class="nav-number">7.5.1.</span> <span class="nav-text">PHP的 Swoole扩展</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#并发处理"><span class="nav-number">8.</span> <span class="nav-text">并发处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#消息队列"><span class="nav-number">8.1.</span> <span class="nav-text">消息队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用解耦"><span class="nav-number">8.2.</span> <span class="nav-text">应用解耦</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流量削锋"><span class="nav-number">8.3.</span> <span class="nav-text">流量削锋</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日志处理"><span class="nav-number">8.4.</span> <span class="nav-text">日志处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息通讯"><span class="nav-number">8.5.</span> <span class="nav-text">消息通讯</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见消息队列产品"><span class="nav-number">8.6.</span> <span class="nav-text">常见消息队列产品</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口的并发请求"><span class="nav-number">8.7.</span> <span class="nav-text">接口的并发请求</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库缓存"><span class="nav-number">9.</span> <span class="nav-text">数据库缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优点"><span class="nav-number">9.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见的缓存形式"><span class="nav-number">9.2.</span> <span class="nav-text">常见的缓存形式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启用-MYSQL查询缓存"><span class="nav-number">9.3.</span> <span class="nav-text">启用 MYSQL查询缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#query-cache-type"><span class="nav-number">9.3.1.</span> <span class="nav-text">query_cache_type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#query-cache-size"><span class="nav-number">9.3.2.</span> <span class="nav-text">query_cache_size</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意事项-1"><span class="nav-number">9.3.3.</span> <span class="nav-text">注意事项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#清理缓存"><span class="nav-number">9.4.</span> <span class="nav-text">清理缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-Memcache-缓存查询数据"><span class="nav-number">9.5.</span> <span class="nav-text">使用 Memcache 缓存查询数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#工作原理-1"><span class="nav-number">9.5.1.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法"><span class="nav-number">9.5.2.</span> <span class="nav-text">方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-Redis-绶存查询数据"><span class="nav-number">9.6.</span> <span class="nav-text">使用 Redis 绶存查询数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#与-Memcache的区别"><span class="nav-number">9.6.1.</span> <span class="nav-text">与 Memcache的区别</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Web服务器的负载均衡-Ngnix反向代理"><span class="nav-number">10.</span> <span class="nav-text">Web服务器的负载均衡-Ngnix反向代理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#七层负载均衡的实现"><span class="nav-number">10.1.</span> <span class="nav-text">七层负载均衡的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx负载均衡"><span class="nav-number">10.2.</span> <span class="nav-text">Nginx负载均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#内置策略"><span class="nav-number">10.2.1.</span> <span class="nav-text">内置策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展策略"><span class="nav-number">10.2.2.</span> <span class="nav-text">扩展策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四层负载均衡的实现"><span class="nav-number">10.3.</span> <span class="nav-text">四层负载均衡的实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">11.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

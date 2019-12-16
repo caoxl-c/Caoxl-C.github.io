@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>laravel中队列的应用 「database」 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LaravelFrameworkQueue">
+  
+  
+  
+  
+  <meta name="description" content="Laravel 使用database驱动做队列">
+<meta name="keywords" content="Laravel,Framework,Queue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel中队列的应用 「database」">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/09/Laravel-Queue-database-Dev-Notes/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="Laravel 使用database驱动做队列">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:18:50.866Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel中队列的应用 「database」">
+<meta name="twitter:description" content="Laravel 使用database驱动做队列">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Laravel-Queue-database-Dev-Notes" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Laravel中队列的应用 「database」
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/09/Laravel-Queue-database-Dev-Notes/" class="article-date">
+	  <time datetime="2018-08-09T01:35:44.000Z" itemprop="datePublished">2018-08-09</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><code>Laravel</code> 使用<code>database</code>驱动做队列</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="使用Databse驱动步骤"><a href="#使用Databse驱动步骤" class="headerlink" title="使用Databse驱动步骤"></a>使用<code>Databse</code>驱动步骤</h1><ol>
+<li>修改 <code>.env</code> 中的配置项 <code>QUEUE_DRIVER</code> 为 <code>database</code></li>
+</ol>
+<blockquote>
+<p><a href="https://laravel-china.org/docs/laravel/5.5/queues/1324" target="_blank" rel="noopener">Laravel队列系统介绍</a></p>
+</blockquote>
+<ol start="2">
+<li>首先要创建数据表来存储任务:</li>
+</ol>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">php artisan queue:<span class="keyword">table</span></span><br><span class="line">php artisan migrate</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>创建 <code>job</code> 文件:</li>
+</ol>
+<figure class="highlight cos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan make:<span class="keyword">job</span> SendReminderEmail</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li><p>在 <code>Controller</code> 层 <code>$this-&gt;dispatch(new SendRemindEmail())</code> 生产队列，于是 <code>database jobs</code> 中记录了最新添加的队列任务</p>
+</li>
+<li><p>单一消费队列:</p>
+</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan <span class="built_in">queue</span>:work</span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>依次消费所有队列:</li>
+</ol>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan <span class="built_in">queue</span>:<span class="built_in">listen</span></span><br></pre></td></tr></table></figure>
+<ol start="7">
+<li>失败任务存在<code>failed_tabke</code></li>
+</ol>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan queue:failed-<span class="keyword">table</span></span><br></pre></td></tr></table></figure>
+<h1 id="使用队列步骤"><a href="#使用队列步骤" class="headerlink" title="使用队列步骤"></a>使用队列步骤</h1><h2 id="「创建」任务类"><a href="#「创建」任务类" class="headerlink" title="「创建」任务类"></a>「创建」任务类</h2><figure class="highlight cos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan make:<span class="keyword">job</span> SendNoticeEmail</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>原文中有:<code>--queued</code>  参数表示运行具有队列属性，即该任务类必须实现 ShouldQueue 接口。<br>自成Laravel 5.2版本后,不需要<code>--queued</code></p>
+</blockquote>
+<p>创建后，根据业务需求编写任务类，通常是某个模块所需的耗时功能。比如：发邮件、截图、生成压缩包、七牛云上传，等。</p>
+<p>本文写的是发邮件, 在那之前需要一些邮件配置, 这里我用的是163邮箱:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">MAIL_DRIVER</span>=smtp</span><br><span class="line"><span class="attr">MAIL_HOST</span>=smtp.<span class="number">163</span>.com</span><br><span class="line"><span class="attr">MAIL_PORT</span>=<span class="number">25</span></span><br><span class="line"><span class="attr">MAIL_FROM_ADDRESS</span>=你的邮箱</span><br><span class="line"><span class="attr">MAIL_FROM_NAME</span>=LC</span><br><span class="line"><span class="attr">MAIL_USERNAME</span>=你的邮箱</span><br><span class="line"><span class="attr">MAIL_PASSWORD</span>=邮箱授权码</span><br><span class="line"><span class="attr">MAIL_ENCRYPTION</span>=null</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>app/Http/Jobs/SendNoticeEmail.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Jobs</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">User</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Bus</span>\<span class="title">Queueable</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Queue</span>\<span class="title">SerializesModels</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Queue</span>\<span class="title">InteractsWithQueue</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Contracts</span>\<span class="title">Queue</span>\<span class="title">ShouldQueue</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Foundation</span>\<span class="title">Bus</span>\<span class="title">Dispatchable</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">Mail</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SendNoticeEmail</span> <span class="keyword">implements</span> <span class="title">ShouldQueue</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">use</span> <span class="title">Dispatchable</span>, <span class="title">InteractsWithQueue</span>, <span class="title">Queueable</span>, <span class="title">SerializesModels</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> $user;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Create a new job instance.</span></span><br><span class="line"><span class="comment">     * 创建一个新的任务实例</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">(User $user)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;user = $user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Execute the job.</span></span><br><span class="line"><span class="comment">     * 运行任务</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $user = <span class="keyword">$this</span>-&gt;user;</span><br><span class="line"></span><br><span class="line">        Mail::send(<span class="string">'emails.notice'</span>, [<span class="string">'user'</span> =&gt; $user], <span class="function"><span class="keyword">function</span> <span class="params">($msg)</span> <span class="title">use</span> <span class="params">($user)</span> </span>&#123;</span><br><span class="line">            <span class="comment">// 发件人的邮箱和用户名</span></span><br><span class="line">            $msg-&gt;from(<span class="string">'code0807@163.com'</span>, <span class="string">'LC'</span>);</span><br><span class="line">            <span class="comment">// 收件人的邮箱地址,用户名,提示消息</span></span><br><span class="line">            $msg-&gt;to($user-&gt;email, $user-&gt;name);</span><br><span class="line">            $msg-&gt;subject(<span class="string">'队列发送邮件'</span>);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><a href="https://laravel.com/docs/5.5/mail" target="_blank" rel="noopener">Mail</a></p>
+</blockquote>
+<h2 id="「派发」任务"><a href="#「派发」任务" class="headerlink" title="「派发」任务"></a>「派发」任务</h2><p>在某个业务逻辑处派发具体的任务，即「任务入队」：<code>$this-&gt;dispatch($job)</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">User</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Jobs</span>\<span class="title">SendNoticeEmail</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserController</span> <span class="keyword">extends</span> <span class="title">Controller</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sendNoticeEmail</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $user = User::findOrFail(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        $job  = (<span class="keyword">new</span> SendNoticeEmail($user))-&gt;onQueue(<span class="string">'emails'</span>);</span><br><span class="line">        <span class="comment">//$job  = (new SendNoticeEmail($user))-&gt;delay('10');</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">$this</span>-&gt;dispatch($job);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> view(<span class="string">'emails.sendmail'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也支持使用 <code>$this-&gt;dispatchFrom()</code> 从请求中派发任务。</p>
+<p><strong>只要使用了 <code>DispatchesJobs</code> trait 的类都可以直接通过 <code>$this-&gt;dispatch($job)</code>来派发任务到队列上。</strong></p>
+<p>在将任务入队的时候，可以用 <code>onQueue(QUEUE_NAME)</code> 指定任务所属的队列；也可以用 <code>delay(secs)</code> 来延迟多少秒后运行。</p>
+<h2 id="处理「回调」"><a href="#处理「回调」" class="headerlink" title="处理「回调」"></a>处理「回调」</h2><p>所注册的队列任务，运行完成后会被执行的回调操作，比如：数据库状态更新、邮件通知，等。主要有两种：</p>
+<p><strong>完成通过</strong>：<code>Queue::after($connection, $job, $data)</code>。</p>
+<p><strong>失败通过</strong>：<code>Queue::failing($connection, $job, $data)</code>。</p>
+<p>通常在 <code>AppServiceProvider</code> 类的 <code>boot()</code> 方法中处理队列回调，其中失败事件可以直接在任务类中重写 <code>failed()</code> 方法来处理任务运行失败后的操作。</p>
+<p>这里的 <code>$connection</code> 指的是队列连接类型，比如 <code>database</code>。</p>
+<p><code>$job</code> 是指当前任务实例本身的完整信息，其对应的类定义是：<code>Illuminate\Queue\Jobs\DatabaseJob</code>，其中有很多方法可以获取当前队列和任务对象的信息。</p>
+<p><code>$data</code> 是被序列化的 $job 对象属性对象，被存储在任务表的 <code>payload</code> 字段，可以通过 <code>unserialize($data[&#39;data&#39;][&#39;command&#39;])</code> 来恢复该实例对象。</p>
+<h2 id="「侦听」任务"><a href="#「侦听」任务" class="headerlink" title="「侦听」任务"></a>「侦听」任务</h2><p>代码逻辑写好之后，只是单纯将任务入队操作，并不会执行。需要启动 Laravel 侦听器来处理这些队列任务：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan <span class="built_in">queue</span>:<span class="built_in">listen</span> --<span class="built_in">queue</span>=<span class="keyword">default</span>,capture</span><br></pre></td></tr></table></figure>
+<p><code>--queue=default,capture</code> 中代表此侦听器将处理哪些队列，排越靠左的队列，优先级越高。</p>
+<h2 id="queue-listen-和-queue-work-区别-？"><a href="#queue-listen-和-queue-work-区别-？" class="headerlink" title="queue:listen 和 queue:work 区别 ？"></a><code>queue:listen</code> 和 <code>queue:work</code> 区别 ？</h2><blockquote>
+<p>本地调试的时候要使用 <code>queue:listen</code>，因为 <code>queue:work</code>在启动后，代码修改，<code>queue:work</code>不会再 <code>Load</code> 上下文，但是 <code>queue:listen</code>仍然会重新 <code>Load</code> 新代码。</p>
+<p>其余情况全部使用 <code>queue:work</code> 吧，因为效率更高。</p>
+</blockquote>
+<h2 id="开发环境注意事项-？"><a href="#开发环境注意事项-？" class="headerlink" title="开发环境注意事项 ？"></a>开发环境注意事项 ？</h2><ul>
+<li>方便调试队列任务，可以将 <code>Queue Driver</code> 设置为 <code>sync</code>，将队列变成同步执行。</li>
+<li>Job 类中的 <code>handle</code> 方法是可以使用依赖注入的。</li>
+</ul>
+<h1 id="队列的释放和删除"><a href="#队列的释放和删除" class="headerlink" title="队列的释放和删除"></a>队列的释放和删除</h1><p>从队列中释放一个任务，只是把这个任务重新放回队列，并不是从队列中删除。</p>
+<p>要删除一个队列，需要删除队列中相应的记录，比如是数据库驱动的队列，就需要删除任务表中相关的记录。</p>
+<p>也可以用 Artisan 命令来删除失败任务：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">php artisan <span class="built_in">queue</span>:forget <span class="number">5</span>    # 删除掉某个失败任务</span><br><span class="line"></span><br><span class="line">php artisan <span class="built_in">queue</span>:<span class="built_in">flush</span>       # 删除所有失败任务</span><br></pre></td></tr></table></figure>
+<p><strong>非失败任务不能删除，因为任务成功后会自动删除。</strong></p>
+<h1 id="队列线上实践"><a href="#队列线上实践" class="headerlink" title="队列线上实践"></a>队列线上实践</h1><p>在实际应用（线上）中，往往不是使用 <code>queue:listen</code> 来处理队列任务，而是通过 <code>queue:work</code> 配合 <code>--daemon</code> 选项，再加上 <u><a href="http://supervisord.org/configuration.html" target="_blank" rel="noopener">supervisor</a></u> 进程管理器，来处理线上环境的队列任务。</p>
+<p>相关配置及脚本如下：</p>
+<ul>
+<li><strong>队列任务批量部署脚本</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#! /bin/env bash</span></span><br><span class="line"><span class="comment"># deploy.sh</span></span><br><span class="line"></span><br><span class="line">workers=1</span><br><span class="line">worker_len=16</span><br><span class="line">sleep_secs=3</span><br><span class="line"></span><br><span class="line"><span class="comment">#path=/data/wwwroot/eme.dev</span></span><br><span class="line">path=/data/wwwroot/www.eme168.com</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (( <span class="variable">$workers</span>&lt;=<span class="variable">$worker_len</span> ))</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"deploying phjs-cc queue daemon... (<span class="variable">$workers</span>/<span class="variable">$worker_len</span>)"</span></span><br><span class="line">        php <span class="variable">$path</span>/artisan queue:work database --queue=phjs-cc-<span class="variable">$workers</span> --memory=256 --sleep=2 --tries=2 --daemon &amp;</span><br><span class="line">        sleep <span class="variable">$sleep_secs</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"deploying shrinking-thumb queue daemon... (<span class="variable">$workers</span>/<span class="variable">$worker_len</span>)"</span></span><br><span class="line">        php <span class="variable">$path</span>/artisan queue:work database --queue=shrink-thumb-<span class="variable">$workers</span> --memory=256 --sleep=2 --tries=2 --daemon &amp;</span><br><span class="line">        sleep <span class="variable">$sleep_secs</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"deploying qn-upload queue daemon... (<span class="variable">$workers</span>/<span class="variable">$worker_len</span>)"</span></span><br><span class="line">        php <span class="variable">$path</span>/artisan queue:work database --queue=qn-upload-<span class="variable">$workers</span> --memory=128 --sleep=2 --tries=2 --daemon &amp;</span><br><span class="line">        sleep <span class="variable">$sleep_secs</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">let</span> <span class="string">"workers++"</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">'deploy finished.'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">exit</span> 0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#! /bin/env bash</span></span><br><span class="line"><span class="comment"># undeploy.sh</span></span><br><span class="line"></span><br><span class="line">workers=0</span><br><span class="line">worker_len=16</span><br><span class="line">sleep_secs=1</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (( <span class="variable">$workers</span>&lt;=<span class="variable">$worker_len</span> ))</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"un-deploying phjs-cc queue daemon... (<span class="variable">$workers</span>/<span class="variable">$worker_len</span>)"</span></span><br><span class="line">        `tmux <span class="built_in">kill</span>-session -t <span class="string">"phjs-cc-<span class="variable">$workers</span>"</span>`</span><br><span class="line">        sleep <span class="variable">$sleep_secs</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"un-deploying shrinking-thumb queue daemon... (<span class="variable">$workers</span>/<span class="variable">$worker_len</span>)"</span></span><br><span class="line">        `tmux <span class="built_in">kill</span>-session -t <span class="string">"shrink-thumb-<span class="variable">$workers</span>"</span>`</span><br><span class="line">        sleep <span class="variable">$sleep_secs</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">"un-deploying qn-upload queue daemon... (<span class="variable">$workers</span>/<span class="variable">$worker_len</span>)"</span></span><br><span class="line">        `tmux <span class="built_in">kill</span>-session -t <span class="string">"qn-upload-<span class="variable">$workers</span>"</span>`</span><br><span class="line">        sleep <span class="variable">$sleep_secs</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">let</span> <span class="string">"workers++"</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">'un-deploy finished.'</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">exit</span> 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># ps -ef | grep php | grep -v grep | awk '&#123;print $2&#125;' | xargs kill -9</span></span><br></pre></td></tr></table></figure>
+<p>这里部署的后台处理进程个数根据服务器配置情况而定，这里是在 <code>4 核／16G／20M</code> 的阿里云 ECS 机器上部署的。</p>
+<ul>
+<li>安装&amp;使用 <code>supervisor</code></li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以 CentOS 6 为例</span></span><br><span class="line"></span><br><span class="line">yum <span class="builtin-name">info</span> supervisor</span><br><span class="line">yum install -y supervisor</span><br><span class="line"></span><br><span class="line">service supervisord start|stop|restart</span><br><span class="line"></span><br><span class="line">supervisorctl reread</span><br><span class="line">supervisorctl start proj-worker:*</span><br><span class="line"></span><br><span class="line">vim /etc/supervisord.conf</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>supervisor</code> 对应配置</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">[program:proj-phjs]</span><br><span class="line"><span class="attribute">process_name</span>=%(program_name)s_%(process_num)02d</span><br><span class="line"><span class="attribute">command</span>=php /data/wwwroot/www.proj.com/artisan queue:work database <span class="attribute">--queue</span>=phjs-cc-%(process_num)2d <span class="attribute">--memory</span>=256 <span class="attribute">--sleep</span>=2 <span class="attribute">--tries</span>=2 --daemon</span><br><span class="line"><span class="attribute">autostart</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">autorestart</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">user</span>=www</span><br><span class="line"><span class="attribute">numprocs</span>=16</span><br><span class="line"><span class="attribute">redirect_stderr</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">stdout_logfile</span>=/data/wwwroot/www.proj.com/storage/logs/sv-worker.log</span><br><span class="line"></span><br><span class="line">[program:proj-shrink]</span><br><span class="line"><span class="attribute">process_name</span>=%(program_name)s_%(process_num)02d</span><br><span class="line"><span class="attribute">command</span>=php /data/wwwroot/www.proj.com/artisan queue:work database <span class="attribute">--queue</span>=shrink-thumb-%(process_num)2d <span class="attribute">--memory</span>=256 <span class="attribute">--sleep</span>=2 <span class="attribute">--tries</span>=2 --daemon</span><br><span class="line"><span class="attribute">autostart</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">autorestart</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">user</span>=www</span><br><span class="line"><span class="attribute">numprocs</span>=16</span><br><span class="line"><span class="attribute">redirect_stderr</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">stdout_logfile</span>=/data/wwwroot/www.proj.com/storage/logs/sv-worker.log</span><br><span class="line"></span><br><span class="line">[program:proj-upload]</span><br><span class="line"><span class="attribute">process_name</span>=%(program_name)s_%(process_num)02d</span><br><span class="line"><span class="attribute">command</span>=php /data/wwwroot/www.proj.com/artisan queue:work database <span class="attribute">--queue</span>=qn-upload-%(process_num)2d <span class="attribute">--memory</span>=256 <span class="attribute">--sleep</span>=2 <span class="attribute">--tries</span>=2 --daemon</span><br><span class="line"><span class="attribute">autostart</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">autorestart</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">user</span>=www</span><br><span class="line"><span class="attribute">numprocs</span>=16</span><br><span class="line"><span class="attribute">redirect_stderr</span>=<span class="literal">true</span></span><br><span class="line"><span class="attribute">stdout_logfile</span>=/data/wwwroot/www.proj.com/storage/logs/sv-worker.log</span><br></pre></td></tr></table></figure>
+<p>注意这里的 <code>numprocs</code> 数最好和 <code>deploy.sh</code> 里面的 <code>workers</code> 数量保持一致，因为确保每个后台运行的队列处理进程都能被 <code>supervisor</code> 监控到。</p>
+<p>其中，<code>%(process_num)2d</code> 对应的是数 <code>numprocs</code> 内的序号。<code>0</code> 表示不足多少位（这里是2位）时填充。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://laravel-china.org/docs/laravel/5.5/queues/1324" target="_blank" rel="noopener">Laravel 的队列系统介绍</a></li>
+<li><a href="https://segmentfault.com/a/1190000012384121" target="_blank" rel="noopener">Laravel队列小结</a></li>
+<li><a href="http://laravelacademy.org/post/2012.html" target="_blank" rel="noopener">Laravel 队列系列 —— 基于 Redis 实现任务队列的基本配置和使用</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/09/Laravel-Queue-database-Dev-Notes/" target="_blank" title="Laravel中队列的应用 「database」">http://blog.caoxl.com/2018/08/09/Laravel-Queue-database-Dev-Notes/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/">Framework</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Queue/">Queue</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/10/Lumen-CORS/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          基于Lumen-CORS跨域
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/08/Windows-cmd/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Windows 常用命令记录</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用Databse驱动步骤"><span class="nav-number">1.</span> <span class="nav-text">使用Databse驱动步骤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用队列步骤"><span class="nav-number">2.</span> <span class="nav-text">使用队列步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#「创建」任务类"><span class="nav-number">2.1.</span> <span class="nav-text">「创建」任务类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#「派发」任务"><span class="nav-number">2.2.</span> <span class="nav-text">「派发」任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理「回调」"><span class="nav-number">2.3.</span> <span class="nav-text">处理「回调」</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#「侦听」任务"><span class="nav-number">2.4.</span> <span class="nav-text">「侦听」任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#queue-listen-和-queue-work-区别-？"><span class="nav-number">2.5.</span> <span class="nav-text">queue:listen 和 queue:work 区别 ？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发环境注意事项-？"><span class="nav-number">2.6.</span> <span class="nav-text">开发环境注意事项 ？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#队列的释放和删除"><span class="nav-number">3.</span> <span class="nav-text">队列的释放和删除</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#队列线上实践"><span class="nav-number">4.</span> <span class="nav-text">队列线上实践</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

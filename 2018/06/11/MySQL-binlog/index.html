@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mysql bin日志 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MySQLbinlog">
+  
+  
+  
+  
+  <meta name="description" content="mysqlbinlog是从二进制日志读取语句的工具。在二进制日志文件中包含的执行过的语句的日志可用来帮助从崩溃中恢复">
+<meta name="keywords" content="MySQL,binlog">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL bin日志">
+<meta property="og:url" content="http://blog.caoxl.com/2018/06/11/MySQL-binlog/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="mysqlbinlog是从二进制日志读取语句的工具。在二进制日志文件中包含的执行过的语句的日志可用来帮助从崩溃中恢复">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:28:48.245Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL bin日志">
+<meta name="twitter:description" content="mysqlbinlog是从二进制日志读取语句的工具。在二进制日志文件中包含的执行过的语句的日志可用来帮助从崩溃中恢复">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MySQL-binlog" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MySQL bin日志
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/06/11/MySQL-binlog/" class="article-date">
+	  <time datetime="2018-06-11T08:09:53.000Z" itemprop="datePublished">2018-06-11</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><strong>mysqlbinlog</strong>是从二进制日志读取语句的工具。<br>在二进制日志文件中包含的执行过的语句的日志可用来帮助从崩溃中恢复</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="查看配置"><a href="#查看配置" class="headerlink" title="查看配置"></a>查看配置</h1><ul>
+<li>查看<code>binlog</code>是否开启</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'log_bin'</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看<code>binlog</code>文件的目录位置</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'datadir'</span>;</span><br></pre></td></tr></table></figure>
+<h1 id="开启Binlog"><a href="#开启Binlog" class="headerlink" title="开启Binlog"></a>开启<code>Binlog</code></h1><ul>
+<li><code>Windows</code>下</li>
+</ul>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// my.ini</span></span><br><span class="line">[mysqld]</span><br><span class="line"><span class="built_in">log</span>-bin=mysqlbin-<span class="built_in">log</span>  <span class="meta"># =号后面的名字自定义</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>Linux</code>下</li>
+</ul>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// my.conf</span></span><br><span class="line">[mysqld]</span><br><span class="line"><span class="keyword">log</span>-bin=/<span class="keyword">var</span>/<span class="keyword">log</span>/mysql/mysql-bin.<span class="keyword">log</span></span><br></pre></td></tr></table></figure>
+<h1 id="基础使用"><a href="#基础使用" class="headerlink" title="基础使用"></a>基础使用</h1><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog <span class="params">--start-datetime=</span><span class="string">"2018-06-09 17:50:00"</span> <span class="params">--stop-datetime=</span><span class="string">"2018-06-09 18:00:00"</span> mysql-bin.000009</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>bin.000009 是当前的binlog文件(使用 show master status可查询)</p>
+</blockquote>
+<h2 id="查看-binlog"><a href="#查看-binlog" class="headerlink" title="查看 binlog"></a>查看 <code>binlog</code></h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog -vv <span class="attribute">--base64-output</span>=decode-rows /path/<span class="keyword">to</span>/mysql-bin-log</span><br></pre></td></tr></table></figure>
+<h2 id="恢复成-SQL"><a href="#恢复成-SQL" class="headerlink" title="恢复成 SQL"></a>恢复成 <code>SQL</code></h2><ul>
+<li>恢复本地 <code>binlog</code></li>
+</ul>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mysqlbinlog </span>\</span><br><span class="line"><span class="built_in">--no-defaults</span> \                                 <span class="comment">#不要阅读任何选项文件</span></span><br><span class="line"><span class="built_in">--base64-output=AUTO</span> \                          <span class="comment">#base64输出=自动</span></span><br><span class="line"><span class="built_in">--verbose</span> \                                     <span class="comment">#重建为SQL语句</span></span><br><span class="line">-- <span class="built_in">set-charset=utf8</span> \                           <span class="comment">#将字符集添加到输出</span></span><br><span class="line"><span class="built_in">--start-datetime='2018-06-11</span> <span class="string">00:00:</span><span class="string">00'</span> \        <span class="comment">#开始时间</span></span><br><span class="line"><span class="built_in">--stop-datetime='2018-06-12</span> <span class="string">00:00:</span><span class="string">00'</span> \         <span class="comment">#结束时间</span></span><br><span class="line">./<span class="string">mysql-bin.</span><span class="string">000009 </span>&gt; /<span class="string">data/</span><span class="string">restore.</span><span class="string">sql </span>         <span class="comment">#存储</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>恢复远程服务器 <code>binlog</code></li>
+</ul>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog <span class="string">\</span></span><br><span class="line">--<span class="literal">no</span>-defaults <span class="string">\</span>                                 <span class="comment">#不要阅读任何选项文件</span></span><br><span class="line">-uroot -p <span class="string">\</span>                                     <span class="comment">#用户名/密码</span></span><br><span class="line">-hrm-wz93132ahz16ttyhq.mysql.rds.aliyuncs.com <span class="string">\</span> <span class="comment">#服务器地址</span></span><br><span class="line">--read-<span class="keyword">from</span>-remote-server <span class="string">\</span>                     <span class="comment">#从远程服务器读取,</span></span><br><span class="line">mysql-bin.<span class="number">000009</span> &gt; restore.sql                  <span class="comment">#存储</span></span><br></pre></td></tr></table></figure>
+<h1 id="小插曲"><a href="#小插曲" class="headerlink" title="小插曲"></a>小插曲</h1><p>不到迫不得已不用binlog日志,当你要使用binlog日志的时候说明你的数据已经丢失了.</p>
+<p>可以把错误扼杀在摇篮.</p>
+<p>使用<code>mysqldump</code>进行备份.</p>
+<h2 id="导出所有数据库"><a href="#导出所有数据库" class="headerlink" title="导出所有数据库"></a>导出所有数据库</h2><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">mysqldump</span> -uroot -proot --<span class="literal">all</span>-databases &gt; /<span class="literal">all</span>.sql</span><br></pre></td></tr></table></figure>
+<h2 id="导出部分数据库全部数据"><a href="#导出部分数据库全部数据" class="headerlink" title="导出部分数据库全部数据"></a>导出部分数据库全部数据</h2><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -uroot -proot <span class="params">--databases</span> db1 db2 &gt; <span class="string">/db.sql</span></span><br></pre></td></tr></table></figure>
+<h2 id="导出数据库部分表数据"><a href="#导出数据库部分表数据" class="headerlink" title="导出数据库部分表数据"></a>导出数据库部分表数据</h2><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">mysqldump</span> -uroot -proot db1 --tables <span class="built_in">a1</span> <span class="built_in">a2</span> &gt; /table.sql</span><br></pre></td></tr></table></figure>
+<h2 id="条件导出"><a href="#条件导出" class="headerlink" title="条件导出"></a>条件导出</h2><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -uroot -proot -databases db1 --tables a1 --<span class="keyword">where</span>=<span class="string">'id=1'</span> &gt; <span class="keyword">where</span>.sql</span><br></pre></td></tr></table></figure>
+<h2 id="导出数据后生产新的binlog文件"><a href="#导出数据后生产新的binlog文件" class="headerlink" title="导出数据后生产新的binlog文件"></a>导出数据后生产新的<code>binlog</code>文件</h2><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -uroot -proot <span class="comment">--databases db1 -F &gt; binlog.sql</span></span><br></pre></td></tr></table></figure>
+<h2 id="只导出表结构不导出数据"><a href="#只导出表结构不导出数据" class="headerlink" title="只导出表结构不导出数据"></a>只导出表结构不导出数据</h2><figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">mysqldump</span> <span class="literal">-</span><span class="comment">uroot</span> <span class="literal">-</span><span class="comment">proot</span> --<span class="comment">no</span><span class="literal">-</span><span class="comment">data</span> --<span class="comment">databases</span> <span class="comment">db1</span> &gt; <span class="comment">nodata</span><span class="string">.</span><span class="comment">sql</span></span><br></pre></td></tr></table></figure>
+<h2 id="跨服务器导出导入数据"><a href="#跨服务器导出导入数据" class="headerlink" title="跨服务器导出导入数据"></a>跨服务器导出导入数据</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msyqldump <span class="attribute">--host</span>=h1 -uroot -proot --databases db1 | mysql <span class="attribute">--hosts</span>=h2 -uroot -proot db2</span><br></pre></td></tr></table></figure>
+<p><strong>将h1服务器中的db1数据库的所有数据导入到h2中的db2数据库中，db2的数据库必须存在否则会报错</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump <span class="attribute">--host</span>=h1 -uroot -proot -C --databases db1 |mysql <span class="attribute">--host</span>=h2 -uroot -proot db2</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>加上-C参数可以启用压缩传递。</p>
+</blockquote>
+<h2 id="锁表导出-lock-tables"><a href="#锁表导出-lock-tables" class="headerlink" title="锁表导出 --lock-tables"></a>锁表导出 <code>--lock-tables</code></h2><p>开始导出前，锁定所有表。用<code>READ LOCAL</code>锁定表以允许<code>MyISAM</code>表并行插入。<br>对于支持事务的表例如<code>InnoDB</code>和<code>BDB</code>，<code>--single-transaction</code>是一个更好的选择，因为它根本不需要锁定表。</p>
+<p>请注意当导出多个数据库时，<code>--lock-tables</code>分别为每个数据库锁定表。<br>因此，该选项不能保证导出文件中的表在数据库之间的逻辑一致性。不同数据库表的导出状态可以完全不同。</p>
+<h2 id="导出存储过程和自定义函数-routines-R"><a href="#导出存储过程和自定义函数-routines-R" class="headerlink" title="导出存储过程和自定义函数--routines, -R"></a>导出存储过程和自定义函数<code>--routines, -R</code></h2><figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">mysqldump</span> <span class="literal">-</span><span class="comment">uroot</span> <span class="literal">-</span><span class="comment">proot</span> <span class="literal">-</span><span class="comment">host=localhost</span> --<span class="comment">all</span><span class="literal">-</span><span class="comment">databases</span> --<span class="comment">routines</span></span><br></pre></td></tr></table></figure>
+<h2 id="压缩备份"><a href="#压缩备份" class="headerlink" title="压缩备份"></a>压缩备份</h2><figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 压缩</span></span><br><span class="line">mysqldump -uroot -proot -databases abd <span class="number">2</span>&gt;/dev/<span class="literal">null</span> <span class="string">| gzip &gt;/adc.sql.gz</span></span><br><span class="line"><span class="comment">// 还原</span></span><br><span class="line">gunzip -c abc.sql.gz <span class="string">| mysql -uroot -proot abc</span></span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqlbinlog.html" target="_blank" rel="noopener">mysqlbinlog - 处理二进制日志文件的实用程序</a></li>
+<li><a href="http://www.cnblogs.com/chenmh/p/5300370.html" target="_blank" rel="noopener">MySQL mysqldump数据导出详解</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/06/11/MySQL-binlog/" target="_blank" title="MySQL bin日志">http://blog.caoxl.com/2018/06/11/MySQL-binlog/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/binlog/">binlog</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/06/12/Linux-install-cmd/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Linux 安装命令集合
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/11/JavaScript-IOS-Android/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">JavaScript 区分IOS/安卓 跳转下载</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#查看配置"><span class="nav-number">1.</span> <span class="nav-text">查看配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#开启Binlog"><span class="nav-number">2.</span> <span class="nav-text">开启Binlog</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基础使用"><span class="nav-number">3.</span> <span class="nav-text">基础使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看-binlog"><span class="nav-number">3.1.</span> <span class="nav-text">查看 binlog</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#恢复成-SQL"><span class="nav-number">3.2.</span> <span class="nav-text">恢复成 SQL</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小插曲"><span class="nav-number">4.</span> <span class="nav-text">小插曲</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#导出所有数据库"><span class="nav-number">4.1.</span> <span class="nav-text">导出所有数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导出部分数据库全部数据"><span class="nav-number">4.2.</span> <span class="nav-text">导出部分数据库全部数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导出数据库部分表数据"><span class="nav-number">4.3.</span> <span class="nav-text">导出数据库部分表数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件导出"><span class="nav-number">4.4.</span> <span class="nav-text">条件导出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导出数据后生产新的binlog文件"><span class="nav-number">4.5.</span> <span class="nav-text">导出数据后生产新的binlog文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#只导出表结构不导出数据"><span class="nav-number">4.6.</span> <span class="nav-text">只导出表结构不导出数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨服务器导出导入数据"><span class="nav-number">4.7.</span> <span class="nav-text">跨服务器导出导入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#锁表导出-lock-tables"><span class="nav-number">4.8.</span> <span class="nav-text">锁表导出 --lock-tables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导出存储过程和自定义函数-routines-R"><span class="nav-number">4.9.</span> <span class="nav-text">导出存储过程和自定义函数--routines, -R</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#压缩备份"><span class="nav-number">4.10.</span> <span class="nav-text">压缩备份</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

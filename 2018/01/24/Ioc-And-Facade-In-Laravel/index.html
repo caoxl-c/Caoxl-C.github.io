@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>laravel核心之ioc和facade | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LaravelIocFacade">
+  
+  
+  
+  
+  <meta name="description" content="这两个概念对于 Laravel 的使用者来说应该并不陌生，尤其是当你希望扩展或者替换 Laravel 核心库的时候，理解和合理使用它们可以极大提升 Laravel 的战斗力。这里以创建一个自己的 ServiceProvider 为例理解 Inversion of Control 和 Facade 在 Laravel 中的应用。  这是写于2014年的老文章,只是为了从远古时期了解下Laravel">
+<meta name="keywords" content="Laravel,Ioc,Facade">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel核心之IOC和Facade">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/24/Ioc-And-Facade-In-Laravel/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="这两个概念对于 Laravel 的使用者来说应该并不陌生，尤其是当你希望扩展或者替换 Laravel 核心库的时候，理解和合理使用它们可以极大提升 Laravel 的战斗力。这里以创建一个自己的 ServiceProvider 为例理解 Inversion of Control 和 Facade 在 Laravel 中的应用。  这是写于2014年的老文章,只是为了从远古时期了解下Laravel">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:58:41.881Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel核心之IOC和Facade">
+<meta name="twitter:description" content="这两个概念对于 Laravel 的使用者来说应该并不陌生，尤其是当你希望扩展或者替换 Laravel 核心库的时候，理解和合理使用它们可以极大提升 Laravel 的战斗力。这里以创建一个自己的 ServiceProvider 为例理解 Inversion of Control 和 Facade 在 Laravel 中的应用。  这是写于2014年的老文章,只是为了从远古时期了解下Laravel">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Ioc-And-Facade-In-Laravel" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Laravel核心之IOC和Facade
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/24/Ioc-And-Facade-In-Laravel/" class="article-date">
+	  <time datetime="2018-01-24T10:17:20.000Z" itemprop="datePublished">2018-01-24</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>这两个概念对于 Laravel 的使用者来说应该并不陌生，尤其是当你希望扩展或者替换 Laravel 核心库的时候，理解和合理使用它们可以极大提升 Laravel 的战斗力。这里以创建一个自己的 ServiceProvider 为例理解 Inversion of Control 和 Facade 在 Laravel 中的应用。</p>
+</blockquote>
+<p>这是写于2014年的老文章,只是为了从远古时期了解下Laravel的核心,基础好的可以略过</p>
+<p>直接看最新文档即可: <strong><u><a href="http://d.laravel-china.org/" target="_blank" rel="noopener">Laravel 让我们书写优雅的代码</a></u></strong></p>
+<a id="more"></a>
+<h1 id="控制反转（Inversion-of-Control）"><a href="#控制反转（Inversion-of-Control）" class="headerlink" title="控制反转（Inversion of Control）"></a>控制反转（Inversion of Control）</h1><h2 id="什么是-IoC"><a href="#什么是-IoC" class="headerlink" title="什么是 IoC ?"></a>什么是 IoC ?</h2><blockquote>
+<p>控制反转（Inversion of Control，缩写为IoC），是面向对象编程中的一种设计原则，可以用来减低计算机代码之间的耦合度。其中最常见的方式叫做依赖注入（Dependency Injection，简称<strong>DI</strong>），还有一种方式叫“依赖查找”（Dependency Lookup）。通过控制反转，对象在被创建的时候，由一个调控系统内所有对象的外界实体，将其所依赖的对象的引用传递给它。 — 维基百科</p>
+</blockquote>
+<p>简单说来，就是一个类把自己的的控制权交给另外一个对象，类间的依赖由这个对象去解决。<strong>依赖注入</strong>属于依赖的显示申明，而<strong>依赖查找</strong>则是通过查找来解决依赖。</p>
+<h2 id="Laravel-中的使用"><a href="#Laravel-中的使用" class="headerlink" title="Laravel 中的使用"></a>Laravel 中的使用</h2><p>注入一个类：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">App::bind(<span class="string">'foo'</span>, <span class="function"><span class="keyword">function</span><span class="params">($app)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> FooBar;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>这个例子的意思是创建一个别名为 <code>foo</code> 的类，使用时实际实例化的是 FooBar。</p>
+<p>使用这个类的方法是</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$value = App::make(<span class="string">'foo'</span>);</span><br></pre></td></tr></table></figure>
+<p><code>$value</code> 实际上是 <code>FooBar</code> 对象。</p>
+<p>这样的话每次实例化后的都是同一个对象。</p>
+<p>注入类的更多例子可以看 <a href="https://laravel.com/docs/4.2/ioc" target="_blank" rel="noopener">Laravel 官网</a></p>
+<p>你可能会疑问上面的代码应该写在哪儿呢？答案是你希望他们在哪儿运行就写在哪儿。知道写哪儿还用来看这种基础文章么！</p>
+<h1 id="服务提供器-Service-Providers"><a href="#服务提供器-Service-Providers" class="headerlink" title="服务提供器 (Service Providers)"></a>服务提供器 (Service Providers)</h1><p>为了让依赖注入的代码不至于写乱，Laravel 搞了一个 <strong>服务提供器</strong>（Service Provider）的东西，它将这些依赖聚集在了一块，统一申明和管理，让依赖变得更加容易维护。</p>
+<h2 id="Laravel-中的使用-1"><a href="#Laravel-中的使用-1" class="headerlink" title="Laravel 中的使用"></a>Laravel 中的使用</h2><p>定义一个服务提供器：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">ServiceProvider</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FooServiceProvider</span> <span class="keyword">extends</span> <span class="title">ServiceProvider</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">register</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;app-&gt;bind(<span class="string">'foo'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Foo;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个代码也不难理解，就是申明一个服务提供器，这个服务提供器有一个 <code>register</code> 的方法。这个方法实现了我们上面讲到的依赖注入。</p>
+<p>当我们执行下面代码：</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">App::<span class="keyword">register</span>(<span class="string">'FooServiceProvider'</span>);</span><br></pre></td></tr></table></figure>
+<p>我们就完成一个注入了。但是这个还是得手动写，所以怎么让 Laravel 自己来做这事儿呢？</p>
+<p>我们只要在 <code>app/config/app.php</code> 中的 <code>providers</code> 数组里面增加一行：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'providers'</span> =&gt; [</span><br><span class="line">    …</span><br><span class="line">       ‘FooServiceProvider’,</span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+<p>这样我们就可以使用 <code>App::make(‘foo’)</code> 来实例化一个类了。</p>
+<p>你不禁要问了，这么写也太难看了吧？不要慌，有办法。</p>
+<h1 id="门面模式（Facade）"><a href="#门面模式（Facade）" class="headerlink" title="门面模式（Facade）"></a>门面模式（Facade）</h1><p>为了让 Laravel 中的核心类使用起来更加方便，Laravel实现了门面模式。</p>
+<blockquote>
+<p>外觀模式（Facade pattern），是軟件工程中常用的一種軟件設計模式，它為子系統中的一組接口提供一個統一的高層接口，使得子系統更容易使用。 — 维基百科</p>
+</blockquote>
+<h2 id="Laravel-中的使用-2"><a href="#Laravel-中的使用-2" class="headerlink" title="Laravel 中的使用"></a>Laravel 中的使用</h2><p>我们使用的大部分核心类都是基于门面模式实现的。例如：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$value = <span class="keyword">Cache</span><span class="type">::get</span>(<span class="string">'key'</span>);</span><br></pre></td></tr></table></figure>
+<p>这些静态调用实际上调用的并不是静态方法，而是通过 PHP 的魔术方法 <code>__callStatic()</code> 将请求转到了相应的方法上。</p>
+<p>那么如何讲我们前面写的<strong>服务提供器</strong>也这样使用呢？方法很简单，只要这么写：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">use <span class="type">Illuminate</span>\<span class="type">Support</span>\<span class="type">Facades</span>\<span class="type">Facade</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> <span class="keyword">extends</span> <span class="title">Facade</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> static function getFacadeAccessor() &#123; <span class="keyword">return</span> ‘foo’; &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样我们就可以通过 <code>Foo::test()</code> 来调用我们之前真正的 FooBar 类的方法了。</p>
+<h1 id="别名（Alias）"><a href="#别名（Alias）" class="headerlink" title="别名（Alias）"></a>别名（Alias）</h1><p>有时候我们可能将 <code>Facade</code> 放在我们扩展库中，它有比较深的命名空间，如：<code>\Library\MyClass\Foo</code>。这样导致使用起来并不方便。<code>Laravel</code> 可以用别名来替换掉这么长的名字。</p>
+<p>我们只要在 <code>app/config/app.php</code> 中 <code>aliases</code> 下增加一行即可：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'aliases'</span> =&gt; [</span><br><span class="line">    …</span><br><span class="line">    <span class="string">'Foo'</span> =&gt; ‘Library<span class="string">\MyClass\Foo’,</span></span><br><span class="line">],</span><br></pre></td></tr></table></figure>
+<p>这样它的使用就由 <code>\Library\MyClass\Foo::test()</code> 变成 <code>Foo::test()</code> 了。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>所以有了<strong>控制反转（Inversion of Control）</strong>和 <strong>门面模式（Facade）</strong>，实际还有 <strong>服务提供器（Service Providers）</strong>和<strong>别名（Alias）</strong>，我们创建自己的类库和扩展 Laravel 都会方便很多。</p>
+<p>这里总结一下创建自己类库的方法：</p>
+<p> 1.在 <code>app/library/MyFoo</code> 下创建类 <code>MyFoo.php</code><br> 2.在 <code>app/library/MyFoo/providers</code> 下创建 <code>MyFooServiceProvider.php</code><br> 3.在 <code>app/library/MyFoo/facades</code> 下创建 <code>MyFooFacade.php</code><br> 4.在 <code>app/config/app.php</code> 中添加 <code>providers</code> 和 <code>aliases</code></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="Laravel核心之IOC和Facade">Laravel核心之IOC和Facade</a></li>
+<li><a href="https://d.laravel-china.org/" target="_blank" rel="noopener">Laravel 文档</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/24/Ioc-And-Facade-In-Laravel/" target="_blank" title="Laravel核心之IOC和Facade">http://blog.caoxl.com/2018/01/24/Ioc-And-Facade-In-Laravel/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Facade/">Facade</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ioc/">Ioc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/31/Laravel-5-5-With-Dingo-API-And-LaravelAdmin/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Laravel 5.5 with DA - LA
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/24/Docker-Summary-Notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Docker 使用总结</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#控制反转（Inversion-of-Control）"><span class="nav-number">1.</span> <span class="nav-text">控制反转（Inversion of Control）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是-IoC"><span class="nav-number">1.1.</span> <span class="nav-text">什么是 IoC ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel-中的使用"><span class="nav-number">1.2.</span> <span class="nav-text">Laravel 中的使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务提供器-Service-Providers"><span class="nav-number">2.</span> <span class="nav-text">服务提供器 (Service Providers)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel-中的使用-1"><span class="nav-number">2.1.</span> <span class="nav-text">Laravel 中的使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#门面模式（Facade）"><span class="nav-number">3.</span> <span class="nav-text">门面模式（Facade）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel-中的使用-2"><span class="nav-number">3.1.</span> <span class="nav-text">Laravel 中的使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#别名（Alias）"><span class="nav-number">4.</span> <span class="nav-text">别名（Alias）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

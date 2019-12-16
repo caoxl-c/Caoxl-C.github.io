@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>laravel 5.5 with da - la | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LaravelLaravelAdminFrameworkDingoAPI">
+  
+  
+  
+  
+  <meta name="description" content="本文主要总结使用 Laravel 5.5，及配套的一些组件在进行开发遇到的一些值得记录的东西，以及坑。  Laravel 5.5 - Dingo API - Laravel admin">
+<meta name="keywords" content="Laravel,LaravelAdmin,Framework,DingoAPI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel 5.5 with DA - LA">
+<meta property="og:url" content="http://blog.caoxl.com/2018/01/31/Laravel-5-5-With-Dingo-API-And-LaravelAdmin/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="本文主要总结使用 Laravel 5.5，及配套的一些组件在进行开发遇到的一些值得记录的东西，以及坑。  Laravel 5.5 - Dingo API - Laravel admin">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:56:54.949Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Laravel 5.5 with DA - LA">
+<meta name="twitter:description" content="本文主要总结使用 Laravel 5.5，及配套的一些组件在进行开发遇到的一些值得记录的东西，以及坑。  Laravel 5.5 - Dingo API - Laravel admin">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Laravel-5-5-With-Dingo-API-And-LaravelAdmin" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Laravel 5.5 with DA - LA
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/01/31/Laravel-5-5-With-Dingo-API-And-LaravelAdmin/" class="article-date">
+	  <time datetime="2018-01-31T03:42:34.000Z" itemprop="datePublished">2018-01-31</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>本文主要总结使用 Laravel 5.5，及配套的一些组件在进行开发遇到的一些值得记录的东西，以及坑。</p>
+<blockquote>
+<p>Laravel 5.5 - Dingo API - Laravel admin </p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Laravel-5-5"><a href="#Laravel-5-5" class="headerlink" title="Laravel 5.5"></a>Laravel 5.5</h1><h2 id="重拾-Tinker"><a href="#重拾-Tinker" class="headerlink" title="重拾 Tinker"></a>重拾 Tinker</h2><p>这货真的很好用，Laravel 引入的所有类有很多方法名我们其实是不知道的，但是在 tinker 中可以被全部补全出来。</p>
+<p>当然除了补全 Laravel 中的类方法和全局函数，也可以和 php -a 一样补全 PHP 内置的函数，且能少些不少语法。</p>
+<p>总之，对开发期间帮助性很强，十分推荐。</p>
+<h2 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h2><h3 id="自定义-API-路由文件"><a href="#自定义-API-路由文件" class="headerlink" title="自定义 API 路由文件"></a>自定义 API 路由文件</h3><p>为了方便管理 API，希望把 API 的路由文件分离到不同的文件，期望 Laravel 自动载入 <em>routes/api/</em> 目录下的所有路由文件。</p>
+<p>修改 <em>App\Providers\RouteServiceProvider</em>，新增 <code>$apiRoutesPath</code> 属性并修改 <code>mapApiRoutes()</code> 方法如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> $apiRoutesPath = <span class="string">'api'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">mapApiRoutes</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  $routeRegistrar = Route::prefix(<span class="string">'api'</span>)</span><br><span class="line">    -&gt;middleware(<span class="string">'api'</span>)</span><br><span class="line">    -&gt;namespace(<span class="keyword">$this</span>-&gt;namespace);</span><br><span class="line">    </span><br><span class="line">  load_phps(</span><br><span class="line">    route_path(<span class="keyword">$this</span>-&gt;apiRoutesPath),</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="params">($file)</span> <span class="title">use</span> <span class="params">($routeRegistrar)</span> </span>&#123;</span><br><span class="line">      $routeRegistrar-&gt;group($file);</span><br><span class="line">    &#125;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中 <code>load_phps</code> 是我自定义的全局辅助函数，在 Laravel 启动时已经载入，定义如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">load_phps</span><span class="params">(string $path, \Closure $callable)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (! file_exists($path)) &#123;</span><br><span class="line">    excp(<span class="string">"PHP files path not exists: &#123;$path&#125;"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  $result = [];</span><br><span class="line">  $fsi = <span class="keyword">new</span> \FilesystemIterator($path);</span><br><span class="line">  <span class="keyword">foreach</span> ($fsi <span class="keyword">as</span> $file) &#123;</span><br><span class="line">    <span class="keyword">if</span> ($file-&gt;isFile()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="string">'php'</span> == $file-&gt;getExtension()) &#123;</span><br><span class="line">        $result[$file-&gt;getPathname()] = $callable($file);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">elseif</span> ($file-&gt;isDir()) &#123;</span><br><span class="line">      $_path = $path.<span class="string">'/'</span>.$file-&gt;getBasename();</span><br><span class="line">      load_phps($_path, $callable);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">unset</span>($fsi);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> $result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h2><h3 id="自定义模型属性"><a href="#自定义模型属性" class="headerlink" title="自定义模型属性"></a>自定义模型属性</h3><p>在一个模型控制器获取一个主要的模型数据后，往往还需要和其他接口或模型或计算结果进行聚合，为了方便直接返回一个模型，可以考虑动态地往模型现有数据中添加其他数据。</p>
+<ul>
+<li>创建一个 <code>AttrCustomable</code> trait</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="comment">// Make Model capable to add custom attributes in Laravel 5.5</span></span></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Traits</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">trait</span> AttrCustomable</span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">private</span> $customAttributes = [];</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">addCustomAttribute</span><span class="params">(string $key, $value)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;customAttributes[$key] = $value;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> <span class="keyword">$this</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">toArray</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $data = <span class="keyword">parent</span>::toArray();</span></span><br><span class="line"><span class="php">        $data = array_filter(array_merge($data, <span class="keyword">$this</span>-&gt;customAttributes));</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> $data;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>在模型里使用该 trait</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">namespace <span class="type">App</span>\<span class="type">Models</span>;</span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span> <span class="keyword">extends</span> <span class="title">Model</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  use <span class="type">AttrCustomable</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在控制器里添加聚合数据</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Controllers</span>\<span class="title">Api</span>\<span class="title">V1</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">show</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">  &#123;</span></span><br><span class="line"><span class="php">  	<span class="keyword">return</span> <span class="keyword">$this</span>-&gt;user()</span></span><br><span class="line"><span class="php">        -&gt;addCustomAttribute(<span class="string">'pionts'</span>, <span class="number">10000</span>)</span></span><br><span class="line"><span class="php">        -&gt;addCustomAttribute(<span class="string">'foo'</span>, <span class="string">'bar'</span>);</span></span><br><span class="line"><span class="php">  &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="获取隐藏属性"><a href="#获取隐藏属性" class="headerlink" title="获取隐藏属性"></a>获取隐藏属性</h3><p>假设在 User 模型的某个方法内，要访问 <code>hidden</code> 过的属性 <code>password</code>，有如下几种方式：</p>
+<ul>
+<li>通过模型的 <code>makeVisible</code> 方法 (5.1 是 <code>withHidden</code>)</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">$this</span>-&gt;makeVisible(<span class="string">'password'</span>);    <span class="comment">// 使 password 属性可见</span></span><br><span class="line"><span class="keyword">echo</span> <span class="keyword">$this</span>-&gt;password;    <span class="comment">// 输出用户密码</span></span><br><span class="line"><span class="keyword">$this</span>-&gt;makeHidden(<span class="string">'password'</span>);    <span class="comment">// 使 password 属性隐藏</span></span><br></pre></td></tr></table></figure>
+<p>源码入下:</p>
+<ul>
+<li><code>makeVisible</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">makeVisible</span><span class="params">($attributes)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;hidden = array_diff(<span class="keyword">$this</span>-&gt;hidden, (<span class="keyword">array</span>) $attributes);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (! <span class="keyword">empty</span>(<span class="keyword">$this</span>-&gt;visible)) &#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;addVisible($attributes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>makeHidden</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">makeHidden</span><span class="params">($attributes)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $attributes = (<span class="keyword">array</span>) $attributes;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">$this</span>-&gt;visible = array_diff(<span class="keyword">$this</span>-&gt;visible, $attributes);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">$this</span>-&gt;hidden = array_unique(array_merge(<span class="keyword">$this</span>-&gt;hidden, $attributes));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过模型的 <code>getAttributes</code> 方法</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$allAttrs = <span class="keyword">$this</span>-&gt;getAttributes();    <span class="comment">// 直接获得模型所有属性（无视可见性设置）</span></span><br><span class="line"><span class="keyword">echo</span> $allAttrs[<span class="string">'password'</span>];    <span class="comment">// 输出用户密码</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果模型实现了 <code>Illuminate\Contracts\Auth\Authenticatable</code> 接口，则还可以通过该接口提供的 <code>getAuthPassword</code> 方法只获取密码属性</li>
+</ul>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span> <span class="keyword">extends</span> <span class="title">Model</span> <span class="title">implements</span> <span class="title">\Illuminate\Contracts\Auth\Authenticatable</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  public function index()</span><br><span class="line">  &#123;</span><br><span class="line">    echo $<span class="keyword">this</span>-&gt;getAuthPassword();    <span class="comment">// 输出用户密码</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="如何判断模型是否存在"><a href="#如何判断模型是否存在" class="headerlink" title="如何判断模型是否存在"></a>如何判断模型是否存在</h3><figure class="highlight erlang-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$mode-&gt;exists;    // !!! 属性调用而非方法</span><br></pre></td></tr></table></figure>
+<h3 id="定义资源路由后控制器模型注入失效？"><a href="#定义资源路由后控制器模型注入失效？" class="headerlink" title="定义资源路由后控制器模型注入失效？"></a>定义资源路由后控制器模型注入失效？</h3><ul>
+<li>路由定义：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$router-&gt;group([</span><br><span class="line">  <span class="string">'prefix'</span> =&gt; <span class="string">'members'</span>,</span><br><span class="line">  <span class="string">'middleware'</span> =&gt; [</span><br><span class="line">    <span class="string">'api.auth'</span>,</span><br><span class="line">  ],</span><br><span class="line">], <span class="function"><span class="keyword">function</span> <span class="params">($router)</span> </span>&#123;</span><br><span class="line">  $router-&gt;resource(<span class="string">'address'</span>, <span class="string">'MemberAddress'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>生成路由定义如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- GET|HEAD     /members<span class="built_in">/address </span>            MemberAddress@index</span><br><span class="line">- POST         /members<span class="built_in">/address </span>            MemberAddress@store</span><br><span class="line">- GET|HEAD     /members/address/&#123;address&#125;   MemberAddress@show</span><br><span class="line">- PUT|PATCH    /members/address/&#123;address&#125;   MemberAddress@update</span><br><span class="line">- DELETE       /members/address/&#123;address&#125;   MemberAddress@destroy</span><br></pre></td></tr></table></figure>
+<ul>
+<li>以对应的 <code>MemberAddress</code> 控制器的 <code>show</code> 方法举例：</li>
+</ul>
+<p>请求 <code>GET</code> <code>/members/address/1</code>，其中 1 号的记录在数据库是实际存在的，可在方法中不是期望的输出：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Models</span>\<span class="title">MemberAddress</span> <span class="title">as</span> <span class="title">Address</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">show</span><span class="params">(Address $address)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  dd($address-&gt;exists);    <span class="comment">// 输出 false !!!</span></span><br><span class="line">  </span><br><span class="line">  dd(func_get_args());     <span class="comment">// 输出如下：</span></span><br><span class="line">  </span><br><span class="line">  <span class="keyword">array</span>:<span class="number">2</span> [▼</span><br><span class="line">    <span class="number">0</span> =&gt; MemberAddress &#123;<span class="comment">#365 ▶&#125;</span></span><br><span class="line">    <span class="number">1</span> =&gt; <span class="string">"1"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果显示，这里在向控制器方法自动注入模型的时候，参数和模型没有对应上，导致 $address 只是个空模型，这当然不是我们想要的。</p>
+<p>在 dingo api GitHub 的这个 <a href="https://github.com/dingo/api/issues/1179" target="_blank" rel="noopener"><code>issue</code></a> 的提示下，去翻了 <code>bindings</code> 这个中间件的源码后找到了我想要的解决办法：</p>
+<blockquote>
+<p>参见：<code>Illuminate\Routing\ImplicitRouteBinding@resolveForRoute</code>。</p>
+</blockquote>
+<ul>
+<li>修改 <code>MemberAddress</code> 控制器的构造方法如下：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">$this</span></span><br><span class="line">    -&gt;middleware(<span class="string">'id_filter:address,\App\Models\MemberAddress'</span>)</span><br><span class="line">    -&gt;only([</span><br><span class="line">      <span class="string">'show'</span>, <span class="string">'update'</span>, <span class="string">'destroy'</span></span><br><span class="line">    ]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>新增中间件并注册到 <code>App\Http\Kernel</code>：</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">protected $routeMiddleware = [</span><br><span class="line">  /<span class="regexp">/ ...</span></span><br><span class="line"><span class="regexp">  'id_filter' =&gt; \App\Http\Middleware\IDFilter::class,</span></span><br><span class="line"><span class="regexp">];</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>IDFilter</code> 中间件内容如下：</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php"><span class="comment">// Filter ID for resource routes</span></span></span><br><span class="line"><span class="php"><span class="comment">// - 1. Check if has given id key</span></span></span><br><span class="line"><span class="php"><span class="comment">// - 2. Check id value illegality</span></span></span><br><span class="line"><span class="php"><span class="comment">// - 3. Implicit bind route parameters segment (id key) with given model</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Http</span>\<span class="title">Middleware</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">IDFilter</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="comment">// TODO</span></span></span><br><span class="line"><span class="php">    <span class="comment">// !!! Find a better way to handle method params count</span></span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span><span class="params">(</span></span></span></span><br><span class="line"><span class="php">        $request,</span></span><br><span class="line"><span class="php">        \Closure $next,</span></span><br><span class="line"><span class="php">        string $idkey,</span></span><br><span class="line"><span class="php">        string $class = <span class="keyword">null</span>,</span></span><br><span class="line"><span class="php">        string $abortOn404 = <span class="string">'no'</span>,</span></span><br><span class="line"><span class="php">        string $forget = <span class="string">'no'</span></span></span><br><span class="line"><span class="php">    )</span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $route = $request-&gt;route();</span></span><br><span class="line"><span class="php">        $id    = ($route-&gt;parameters[$idkey] ?? <span class="keyword">false</span>);</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span> (empty_safe($id) || (! ispint($id)) || ($id &lt; <span class="number">1</span>)) &#123;</span></span><br><span class="line"><span class="php">            abort(<span class="number">403</span>, <span class="string">"Bad id value of `&#123;$idkey&#125;`: &#123;$id&#125;"</span>);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span> ($class) &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">if</span> (! class_exists($class)) &#123;</span></span><br><span class="line"><span class="php">                abort(<span class="number">503</span>, <span class="string">'Model class not exists: '</span>.$class);</span></span><br><span class="line"><span class="php">            &#125;</span></span><br><span class="line"><span class="php">            $model  = app($class);</span></span><br><span class="line"><span class="php">            $_model = $model-&gt;where($model-&gt;getRouteKeyName(), $id)-&gt;first();</span></span><br><span class="line"><span class="php">            <span class="keyword">if</span> (ci_equal(<span class="string">'yes'</span>, $abortOn404) &amp;&amp; (! $_model)) &#123;</span></span><br><span class="line"><span class="php">                abort(<span class="number">404</span>, <span class="string">'Model object not found: '</span>.get_class($model));</span></span><br><span class="line"><span class="php">            &#125;</span></span><br><span class="line"><span class="php">            <span class="keyword">if</span> (ci_equal(<span class="string">'yes'</span>, $forget)) &#123;</span></span><br><span class="line"><span class="php">                $route-&gt;forgetParameter($idkey);</span></span><br><span class="line"><span class="php">            &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="php">                $route-&gt;setParameter($idkey, $_model ?? $model);</span></span><br><span class="line"><span class="php">            &#125;</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> $next($request);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>其中，<code>getRouteKeyName</code> 默认返回 <code>id</code> 可以在相应模型中重写这个方法实现自定义。</p>
+<p>之所以不直接用 Laravel 提供的默认 <code>bindings</code> 中间件，原因有两点：</p>
+<ul>
+<li><p>没有提供（或者我暂时未找到） route segment 过滤的东西，默认找不到直接返回了 404，而我要的是既能正确提示路由参数格式不对，以及在参数格式正确但找不到数据库记录时，仍然要注入一个空模型到控制器方法。</p>
+</li>
+<li><p>使用了模型的 <code>resolveRouteBinding()</code> 方法，该方法在关联不上路由参数时返回 null 导致进入控制器后还需要再实例化一遍。</p>
+</li>
+</ul>
+<h2 id="使用锁的场景"><a href="#使用锁的场景" class="headerlink" title="使用锁的场景"></a>使用锁的场景</h2><p>通常在并发场景下，<strong>为了防止某个资源被重复创建／更新，在同时存在查询-更新／创建操作的时候</strong>必要使用悲观锁：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$amount = <span class="number">100</span>;</span><br><span class="line">\DB::beginTransction();</span><br><span class="line">$user = \App\Models\User::lockForUpdate()-&gt;find(<span class="number">1</span>);    <span class="comment">// 锁住该用户对应的行记录，防止并发中的其他请求修改该用户状态</span></span><br><span class="line">$log = \App\Models\BalanceLog::insert([</span><br><span class="line">  <span class="string">'before'</span>    =&gt; $user-&gt;balance,</span><br><span class="line">  <span class="string">'create_at'</span> =&gt; time(),</span><br><span class="line">  <span class="string">'amount'</span>    =&gt; $amount,</span><br><span class="line">]);</span><br><span class="line">$user-&gt;balance += $amount;</span><br><span class="line">$user-&gt;save();</span><br><span class="line">\DB::commit();</span><br></pre></td></tr></table></figure>
+<p>如果不使用 <code>lockForUpdate()</code> 来锁住该用户对应的记录，那么在多个相同请求到来时，该用户的余额和日志会被更新／创建多条，这明显不是我们想要的。</p>
+<p><code>lockForUpdate()</code> 创建的锁将在本次事务结束后释放，且如果记录不存在，<code>lockForUpdate()</code> 则不会起到什么作用。</p>
+<h1 id="Laravel-Admin"><a href="#Laravel-Admin" class="headerlink" title="Laravel-Admin"></a><u><a href="https://github.com/z-song/laravel-admin" target="_blank" rel="noopener">Laravel-Admin</a></u></h1><blockquote>
+<p>不需要前端、UI, 后端就可以开发整个后台</p>
+</blockquote>
+<p>这是个专门写后台管理系统的轮子。简而言之，是用 PHP 同时写后台页面和后端逻辑。</p>
+<p>优点是将 Web 前端组件很好地封装到后端，使后端人员可以不用操心页面上的东西，要什么页面元素按照文档照做就行了，这么一来，写一个后台只需要后端就够了。</p>
+<h1 id="Dingo-API"><a href="#Dingo-API" class="headerlink" title="Dingo API"></a><u><a href="https://github.com/dingo/api/" target="_blank" rel="noopener">Dingo API</a></u></h1><p>虽然对于 Laravel 5.5 来说，要实现 Dingo API 的所有功能易如反掌，但之所以选择 Dingo API，主要是因为已经有很多的人用它，相信它封装得更标准，更简便，更稳定，不想花时间重复造轮子罢了。</p>
+<p>如果使用过程发现并不好用，或者不太适合我们的项目，这样改造起来也有针对性。</p>
+<h2 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h2><ul>
+<li>优点：可以自动生成文档</li>
+</ul>
+<p>Dingo API 使用提供了 api:docs 这个 artisan 命令，可以自动为 API 生成版本文档。</p>
+<ul>
+<li>缺点：文档生成不够智能，代码中注释量增多</li>
+</ul>
+<p>虽然在定义 API 端点的时候指已经明了版本号和路由，但是为了生成更好看的 API 文档，仍然需要在类和方法前面重新定义路由的类型和路径，已经版本号。这样一来，代码中要添加很多额外的注释。</p>
+<ul>
+<li>缺点：<code>api:cache</code> 会缓存除了 API 以外的所有路由。</li>
+</ul>
+<p>期望:只缓存通过 Dingo API 定义好的路由。</p>
+<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><ul>
+<li><code>version</code> 为 <code>group</code> 的别名</li>
+</ul>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获得版本号为 v1 的路由列表</span></span><br><span class="line"><span class="function"><span class="title">dd</span>(<span class="title">version</span>(<span class="string">'v1'</span>));</span></span><br></pre></td></tr></table></figure>
+<h3 id="如何访问指定版本的接口？"><a href="#如何访问指定版本的接口？" class="headerlink" title="如何访问指定版本的接口？"></a>如何访问指定版本的接口？</h3><p>在配置 Dingo API 的时候，有个配置项叫做 <code>API_VERSION</code> 的配置，这个配置的作用是作为默认版本号，即客户端当没有指定。</p>
+<p>在 HTTP 请求头中添加 <code>Accept</code> 字段，举例说明：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET <span class="string">http:</span><span class="comment">//api.example.com/user \</span></span><br><span class="line">-H <span class="string">'Authorization: Bearer ??TOKEN??'</span> \</span><br><span class="line">-H <span class="string">'Accept: application/vnd.&#123;API_SUBTYPE&#125;.&#123;VERSION_NUMBER&#125;+json'</span> \</span><br></pre></td></tr></table></figure>
+<p>其中，<code>API_SUBTYPE</code> 就是 <code>.env</code> 中配置的 <code>API_SUBTYPE</code> ，<code>VERSION_NUMBER</code> 就是使用 <code>version()</code> 方法定义过的版本号，<code>vnd</code> 是 <code>API_STANDARDS_TREE</code> 推荐的值，<code>json</code> 代表客户端期望服务器返回的数据格式。</p>
+<h3 id="如何正确使用自动刷新-Token-机制？"><a href="#如何正确使用自动刷新-Token-机制？" class="headerlink" title="如何正确使用自动刷新 Token 机制？"></a>如何正确使用自动刷新 Token 机制？</h3><p>需要前后端协作好：后端要根据当此请求携带的 Token 自动生成一条新 Token，并返回给前端；前端要做好自动使用后端每次返回的更新 Token 来作为下次 API 请求的 Token。</p>
+<p>以 <u><a href="https://github.com/tymondesigns/jwt-auth" target="_blank" rel="noopener">tymon/jwt-auth</a></u> 认证驱动为例，在 <code>Tymon\JWTAuth\Providers\AbstractServiceProvider</code> 中已经定义好 <code>$middlewareAliases</code> 中间件别名如下：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">protected $middlewareAliases = [</span><br><span class="line">  <span class="string">'jwt.auth'</span> =&gt; Authenticate::<span class="class"><span class="keyword">class</span>,</span></span><br><span class="line">  <span class="string">'jwt.check'</span> =&gt; Check::<span class="class"><span class="keyword">class</span>,</span></span><br><span class="line">  <span class="string">'jwt.refresh'</span> =&gt; RefreshToken::<span class="class"><span class="keyword">class</span>,    // 重新刷新 <span class="title">TOKEN</span></span></span><br><span class="line">  <span class="string">'jwt.renew'</span> =&gt; AuthenticateAndRenew::<span class="class"><span class="keyword">class</span>,</span></span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>可以直接在路由定义或控制器构造函数中使用：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 路由中使用</span></span><br><span class="line">dingo()-&gt;version(<span class="string">'v1'</span>, [</span><br><span class="line">    <span class="string">'namespace'</span>  =&gt; <span class="string">'App\Http\Controllers\Api\V1'</span>,</span><br><span class="line">    <span class="string">'middleware'</span> =&gt; [</span><br><span class="line">        <span class="string">'jwt.refresh'</span>,</span><br><span class="line">    ],</span><br><span class="line">], <span class="function"><span class="keyword">function</span> <span class="params">($router)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在控制器中使用</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">$this</span>-&gt;middleware(<span class="string">'jwt.refresh'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每次请求 API 成功后，均会在响应头中的 <code>Authorization</code>字段，其值便是刷新后的 <code>Token</code>。</p>
+<h3 id="如何使用-dingo-Router-中-name-定义过的-API-路由？"><a href="#如何使用-dingo-Router-中-name-定义过的-API-路由？" class="headerlink" title="如何使用 dingo Router 中 name() 定义过的 API 路由？"></a>如何使用 dingo Router 中 <code>name()</code> 定义过的 API 路由？</h3><p>Dingo 定义过的的命名路由是不能用 Laravel 自带的 route 方法获取完整 URL 的，只能用 Dingo 的 URL 生成器。</p>
+<p><strong>举例说明：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义微信授权登录回调路由</span></span><br><span class="line">$router</span><br><span class="line">  -&gt;post(<span class="string">'&#123;user&#125;/wechat'</span>, <span class="string">'Passport@oauthloginFromWechat'</span>)</span><br><span class="line">  -&gt;name(<span class="string">'callback.oauth.wechat'</span>);</span><br><span class="line">  </span><br><span class="line"><span class="comment">// 错误写法</span></span><br><span class="line">route(<span class="string">'callback.oauth.wechat'</span>);    <span class="comment">// 提示找不到路由</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 正确写法</span></span><br><span class="line">app(<span class="string">'Dingo\Api\Routing\UrlGenerator'</span>)</span><br><span class="line">  -&gt;version(<span class="string">'v1'</span>)</span><br><span class="line">  -&gt;route(<span class="string">'callback.oauth.wechat'</span>, [<span class="string">'user'</span> =&gt; <span class="number">1</span>]);</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><p><u><a href="https://github.com/liyu001989/lumen-api-demo" target="_blank" rel="noopener">liyu001989/lumen-api-demo</a></u></p>
+</li>
+<li><p><u><a href="https://b.von.im/2017/07/15/2017-7-15-Laravel-Multi-Auth/" target="_blank" rel="noopener">Laravel 多用户认证</a></u></p>
+</li>
+<li><p><u><a href="https://github.com/dingo/api/issues/341" target="_blank" rel="noopener">Where to write transformers ? · Issue #341 · dingo/api</a></u></p>
+</li>
+<li><p><u><a href="https://m.dotdev.co/test-driven-api-development-using-laravel-dingo-and-jwt-with-documentation-ae4014260148" target="_blank" rel="noopener">Test Driven API Development using Laravel, Dingo and JWT with Documentation</a></u></p>
+</li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/01/31/Laravel-5-5-With-Dingo-API-And-LaravelAdmin/" target="_blank" title="Laravel 5.5 with DA - LA">http://blog.caoxl.com/2018/01/31/Laravel-5-5-With-Dingo-API-And-LaravelAdmin/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DingoAPI/">DingoAPI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Framework/">Framework</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LaravelAdmin/">LaravelAdmin</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/31/PHP-Necessary/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          PHP 必备
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/24/Ioc-And-Facade-In-Laravel/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Laravel核心之IOC和Facade</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Laravel-5-5"><span class="nav-number">1.</span> <span class="nav-text">Laravel 5.5</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#重拾-Tinker"><span class="nav-number">1.1.</span> <span class="nav-text">重拾 Tinker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由"><span class="nav-number">1.2.</span> <span class="nav-text">路由</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义-API-路由文件"><span class="nav-number">1.2.1.</span> <span class="nav-text">自定义 API 路由文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型"><span class="nav-number">1.3.</span> <span class="nav-text">模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义模型属性"><span class="nav-number">1.3.1.</span> <span class="nav-text">自定义模型属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取隐藏属性"><span class="nav-number">1.3.2.</span> <span class="nav-text">获取隐藏属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何判断模型是否存在"><span class="nav-number">1.3.3.</span> <span class="nav-text">如何判断模型是否存在</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#定义资源路由后控制器模型注入失效？"><span class="nav-number">1.3.4.</span> <span class="nav-text">定义资源路由后控制器模型注入失效？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用锁的场景"><span class="nav-number">1.4.</span> <span class="nav-text">使用锁的场景</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Laravel-Admin"><span class="nav-number">2.</span> <span class="nav-text">Laravel-Admin</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dingo-API"><span class="nav-number">3.</span> <span class="nav-text">Dingo API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优缺点"><span class="nav-number">3.1.</span> <span class="nav-text">优缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FAQ"><span class="nav-number">3.2.</span> <span class="nav-text">FAQ</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何访问指定版本的接口？"><span class="nav-number">3.2.1.</span> <span class="nav-text">如何访问指定版本的接口？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何正确使用自动刷新-Token-机制？"><span class="nav-number">3.2.2.</span> <span class="nav-text">如何正确使用自动刷新 Token 机制？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何使用-dingo-Router-中-name-定义过的-API-路由？"><span class="nav-number">3.2.3.</span> <span class="nav-text">如何使用 dingo Router 中 name() 定义过的 API 路由？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

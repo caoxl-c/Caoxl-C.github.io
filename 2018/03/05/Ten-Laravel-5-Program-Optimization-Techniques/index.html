@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>十个 laravel 5 程序优化技巧 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Laravel优化">
+  
+  
+  
+  
+  <meta name="description" content="说明性能一直是 Laravel 框架为人诟病的一个点，所以调优 Laravel 程序算是一个必学的技能。 接下来分享一些开发的最佳实践，还有调优技巧。">
+<meta name="keywords" content="Laravel,优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="十个 Laravel 5 程序优化技巧">
+<meta property="og:url" content="http://blog.caoxl.com/2018/03/05/Ten-Laravel-5-Program-Optimization-Techniques/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="说明性能一直是 Laravel 框架为人诟病的一个点，所以调优 Laravel 程序算是一个必学的技能。 接下来分享一些开发的最佳实践，还有调优技巧。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:55:23.799Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="十个 Laravel 5 程序优化技巧">
+<meta name="twitter:description" content="说明性能一直是 Laravel 框架为人诟病的一个点，所以调优 Laravel 程序算是一个必学的技能。 接下来分享一些开发的最佳实践，还有调优技巧。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Ten-Laravel-5-Program-Optimization-Techniques" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      十个 Laravel 5 程序优化技巧
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/03/05/Ten-Laravel-5-Program-Optimization-Techniques/" class="article-date">
+	  <time datetime="2018-03-05T03:31:01.000Z" itemprop="datePublished">2018-03-05</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h1 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h1><p>性能一直是 Laravel 框架为人诟病的一个点，所以调优 Laravel 程序算是一个必学的技能。</p>
+<p>接下来分享一些开发的最佳实践，还有调优技巧。</p>
+<a id="more"></a>
+<p>这里是简单的列表：</p>
+<blockquote>
+<ul>
+<li>配置信息缓存 <code>artisan config:cache</code></li>
+<li>路由缓存 <code>artisan route:cache</code></li>
+<li>类映射加载优化 <code>artisan optimize</code></li>
+<li>自动加载优化 <code>composer dumpautoload</code></li>
+<li>使用 <code>Memcached</code> 来存储会话 <code>config/session.php</code></li>
+<li>使用专业缓存驱动器 <code>config/cache.php</code></li>
+<li>数据库请求优化</li>
+<li>为数据集书写缓存逻辑</li>
+<li>使用即时编译器（<code>JIT</code>），如：<code>HHVM</code>、<code>OpCache</code></li>
+<li>前端资源合并 <code>Elixir</code></li>
+</ul>
+</blockquote>
+<h1 id="1-配置信息缓存"><a href="#1-配置信息缓存" class="headerlink" title="1. 配置信息缓存"></a>1. 配置信息缓存</h1><p>使用以下 <code>Artisan</code> 自带命令，把 <code>config</code>文件夹里所有配置信息合并到一个文件里，减少运行时文件的载入数量：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan config:cache</span><br></pre></td></tr></table></figure>
+<p>上面命令会生成文件 <code>bootstrap/cache/config.php</code>，可以使用以下命令来取消配置信息缓存：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan config:clear</span><br></pre></td></tr></table></figure>
+<p>此命令做的事情就是把 <code>bootstrap/cache/config.php</code> 文件删除。</p>
+<blockquote>
+<p>注意：配置信息缓存不会随着更新而自动重载，所以，开发时候建议关闭配置信息缓存，一般在生产环境中使用，可以配合 <a href="https://laravel-china.org/docs/laravel/5.1/envoy" target="_blank" rel="noopener">Envoy 任务运行器</a> 一起使用。</p>
+</blockquote>
+<h1 id="2-路由缓存"><a href="#2-路由缓存" class="headerlink" title="2. 路由缓存"></a>2. 路由缓存</h1><p>路由缓存可以有效的提高路由器的注册效率，在大型应用程序中效果越加明显，可以使用以下命令：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan route:cache</span><br></pre></td></tr></table></figure>
+<p>以上命令会生成 <code>bootstrap/cache/routes.php</code> 文件，需要注意的是，路由缓存不支持路由匿名函数编写逻辑，详见：<a href="https://laravel-china.org/docs/laravel/5.1/controllers#路由缓存" target="_blank" rel="noopener">文档 - 路由缓存</a>。</p>
+<p>可以使用下面命令清除路由缓存：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan route:clear</span><br></pre></td></tr></table></figure>
+<p>此命令做的事情就是把 <code>bootstrap/cache/routes.php</code> 文件删除。</p>
+<blockquote>
+<p>注意：配置信息缓存不会随着更新而自动重载，所以，开发时候建议关闭配置信息缓存，一般在生产环境中使用，可以配合 <a href="https://laravel-china.org/docs/laravel/5.1/envoy" target="_blank" rel="noopener">Envoy 任务运行器</a> 一起使用。</p>
+</blockquote>
+<h1 id="3-类映射加载优化"><a href="#3-类映射加载优化" class="headerlink" title="3. 类映射加载优化"></a>3. 类映射加载优化</h1><p><code>optimize</code> 命令把常用加载的类合并到一个文件里，通过减少文件的加载，来提高运行效率：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan optimize --force</span><br></pre></td></tr></table></figure>
+<p>会生成 <code>bootstrap/cache/compiled.php</code> 和 <code>bootstrap/cache/services.json</code> 两个文件。</p>
+<p>你可以可以通过修改 <code>config/compile.php</code> 文件来添加要合并的类。</p>
+<p>在 <code>production</code> 环境中，参数 <code>--force</code> 不需要指定，文件就会自动生成。</p>
+<p>要清除类映射加载优化，请运行以下命令：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan clear-compiled</span><br></pre></td></tr></table></figure>
+<p>此命令会删除上面 <code>optimize</code> 生成的两个文件。</p>
+<blockquote>
+<p>注意：此命令要运行在 <code>php artisan config:cache</code> 后，因为 <code>optimize</code> 命令是根据配置信息（如：<code>config/app.php</code> 文件的 <code>providers</code> 数组）来生成文件的。</p>
+</blockquote>
+<h1 id="4-自动加载优化"><a href="#4-自动加载优化" class="headerlink" title="4. 自动加载优化"></a>4. 自动加载优化</h1><p>此命令不止针对于 <code>Laravel</code> 程序，适用于所有使用 <code>composer</code> 来构建的程序。此命令会把 <code>PSR-0</code> 和 <code>PSR-4</code> 转换为一个类映射表，来提高类的加载速度。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer dumpautoload -o</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：<code>php artisan optimize --force</code> 命令里已经做了这个操作。</p>
+</blockquote>
+<h1 id="5-使用-Memcached-来存储会话"><a href="#5-使用-Memcached-来存储会话" class="headerlink" title="5. 使用 Memcached 来存储会话"></a>5. 使用 Memcached 来存储会话</h1><p>每一个 <code>Laravel</code> 的请求，都会产生会话，修改会话的存储方式能有效提高程序效率，会话的配置信息是 <code>config/session.php</code>，建议修改为 <code>Memcached</code> 或者 <code>Redis</code> 等专业的缓存软件：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'driver'</span> =&gt; <span class="string">'memcached'</span>,</span><br></pre></td></tr></table></figure>
+<h1 id="6-使用专业缓存驱动器"><a href="#6-使用专业缓存驱动器" class="headerlink" title="6. 使用专业缓存驱动器"></a>6. 使用专业缓存驱动器</h1><p>「缓存」是提高应用程序运行效率的法宝之一，默认缓存驱动是 <code>file</code> 文件缓存，建议切换到专业的缓存系统，如 <code>Redis</code> 或者 <code>Memcached</code>，不建议使用数据库缓存。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'default'</span> =&gt; <span class="string">'redis'</span>,</span><br></pre></td></tr></table></figure>
+<h1 id="7-数据库请求优化"><a href="#7-数据库请求优化" class="headerlink" title="7. 数据库请求优化"></a>7. 数据库请求优化</h1><p>数据库请求优化</p>
+<ul>
+<li><p>数据关联模型读取时使用 <a href="https://laravel-china.org/docs/laravel/5.1/eloquent-relationships#预加载" target="_blank" rel="noopener">延迟预加载</a> 和 <a href="https://laravel-china.org/docs/laravel/5.1/eloquent-relationships#预加载" target="_blank" rel="noopener">预加载</a> ；</p>
+</li>
+<li><p>使用 <a href="https://github.com/barryvdh/laravel-debugbar" target="_blank" rel="noopener">Laravel Debugbar</a> 或者 <a href="https://laravel-china.org/topics/23/use-clockwork-to-debug-laravel-app" target="_blank" rel="noopener">Clockwork</a> 留意每一个页面的总数据库请求数量；</p>
+</li>
+</ul>
+<p>这里的篇幅只写到与 <strong>Laravel</strong> 相关的，其他关于数据优化的内容，请自行查阅其他资料。</p>
+<h1 id="8-为数据集书写缓存逻辑"><a href="#8-为数据集书写缓存逻辑" class="headerlink" title="8. 为数据集书写缓存逻辑"></a>8. 为数据集书写缓存逻辑</h1><p>合理的使用 <code>Laravel</code> 提供的缓存层操作，把从数据库里面拿出来的数据集合进行缓存，减少数据库的压力，运行在内存上的专业缓存软件对数据的读取也远远快于数据库。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$posts = Cache::remember(<span class="string">'index.posts'</span>, $minutes = <span class="number">30</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Post::with(<span class="string">'comments'</span>, <span class="string">'tags'</span>, <span class="string">'author'</span>, <span class="string">'seo'</span>)-&gt;whereHidden(<span class="number">0</span>)-&gt;get();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><code>remember</code> 甚至连数据关联模型也都一并缓存了，多么方便呀。</p>
+<h1 id="9-使用即时编译器"><a href="#9-使用即时编译器" class="headerlink" title="9. 使用即时编译器"></a>9. 使用即时编译器</h1><p><code>HHVM</code> 和 <code>OpCache</code> 都能轻轻松松的让你的应用程序在不用做任何修改的情况下，直接提高 50% 或者更高的性能，PHPhub 之前做个一个实验，具体请见：<a href="https://laravel-china.org/topics/301/using-opcache-to-enhance-the-performance-of-the-php-55-program" target="_blank" rel="noopener">使用 OpCache 提升 PHP 5.5+ 程序性能。</a></p>
+<h1 id="10-前端资源合并"><a href="#10-前端资源合并" class="headerlink" title="10. 前端资源合并"></a>10. 前端资源合并</h1><p>作为优化的标准，一个页面只应该加载一个 <code>CSS</code> 和 一个 <code>JS</code> 文件，并且文件要能方便走 CDN，需要文件名随着修改而变化。</p>
+<p>Laravel Elixir 提供了一套简便实用的方案，详细请见文档：<a href="https://laravel-china.org/docs/laravel/5.1/elixir" target="_blank" rel="noopener">Laravel Elixir 文档</a>。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://laravel-china.org/articles/2020/ten-laravel-5-program-optimization-techniques" target="_blank" rel="noopener">十个 Laravel 5 程序优化技巧</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/03/05/Ten-Laravel-5-Program-Optimization-Techniques/" target="_blank" title="十个 Laravel 5 程序优化技巧">http://blog.caoxl.com/2018/03/05/Ten-Laravel-5-Program-Optimization-Techniques/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/03/14/Learn-ThinkPHP5/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          ThinkPHP5 「学习笔记」
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/03/05/zhihu-god-reply/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">知乎神回复 「用于自省」</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#说明"><span class="nav-number">1.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-配置信息缓存"><span class="nav-number">2.</span> <span class="nav-text">1. 配置信息缓存</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-路由缓存"><span class="nav-number">3.</span> <span class="nav-text">2. 路由缓存</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-类映射加载优化"><span class="nav-number">4.</span> <span class="nav-text">3. 类映射加载优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-自动加载优化"><span class="nav-number">5.</span> <span class="nav-text">4. 自动加载优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-使用-Memcached-来存储会话"><span class="nav-number">6.</span> <span class="nav-text">5. 使用 Memcached 来存储会话</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-使用专业缓存驱动器"><span class="nav-number">7.</span> <span class="nav-text">6. 使用专业缓存驱动器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-数据库请求优化"><span class="nav-number">8.</span> <span class="nav-text">7. 数据库请求优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-为数据集书写缓存逻辑"><span class="nav-number">9.</span> <span class="nav-text">8. 为数据集书写缓存逻辑</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-使用即时编译器"><span class="nav-number">10.</span> <span class="nav-text">9. 使用即时编译器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-前端资源合并"><span class="nav-number">11.</span> <span class="nav-text">10. 前端资源合并</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">12.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

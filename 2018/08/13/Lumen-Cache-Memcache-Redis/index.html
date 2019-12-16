@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>基于lumen-几种缓存方法 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LumenRedisMemcache">
+  
+  
+  
+  
+  <meta name="description" content="缓存时PHPer优化所必备的一个知识点">
+<meta name="keywords" content="Lumen,Redis,Memcache">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Lumen-几种缓存方法">
+<meta property="og:url" content="http://blog.caoxl.com/2018/08/13/Lumen-Cache-Memcache-Redis/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="缓存时PHPer优化所必备的一个知识点">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T06:17:35.499Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于Lumen-几种缓存方法">
+<meta name="twitter:description" content="缓存时PHPer优化所必备的一个知识点">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Lumen-Cache-Memcache-Redis" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      基于Lumen-几种缓存方法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/08/13/Lumen-Cache-Memcache-Redis/" class="article-date">
+	  <time datetime="2018-08-13T02:59:07.000Z" itemprop="datePublished">2018-08-13</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Laravel-Lumen/">Laravel / Lumen</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>缓存时PHPer优化所必备的一个知识点</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>首先，修改<code>.env</code>文件配置缓存的驱动方式</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 缓存驱动方式：apc, array, database, file, memcached, redis</span></span><br><span class="line"><span class="built_in">CACHE_DRIVER</span>=memcached</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>apc</code>: APC驱动，APC是PHP的一个扩展，其目标是为缓存和优化PHP中间码（opcode）提供一个免费、开源、健壮的框架</li>
+<li><code>array</code>: 数组驱动，往往仅仅用于测试，好处是不会持久化，只会在一次PHP脚本执行的生命周期内有效</li>
+<li><code>database</code>: 数据库驱动，需参考下面代码在数据库中建立缓存表，并设置<code>CACHE_DATABASE_TABLE</code>和<code>CACHE_DATABASE_CONNECTION</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Schema::create(<span class="string">'cache'</span>, <span class="function"><span class="keyword">function</span><span class="params">($table)</span> </span>&#123;</span><br><span class="line">  $table-&gt;string(<span class="string">'key'</span>)-&gt;unique();</span><br><span class="line">  $table-&gt;text(<span class="string">'value'</span>);</span><br><span class="line">  $table-&gt;integer(<span class="string">'expiration'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>file</code>: 文件驱动，系统将生成缓存文件储存在<code>/storage/framework/cache</code>文件夹里，所以，<strong>777</strong>权限是必须的</li>
+<li><code>memcached</code>: <code>Memcached</code>驱动，使用之前需要先在系统中安装<code>Memcached</code>，并设置<code>MEMCACHED_HOST和MEMCACHED_PORT</code></li>
+<li><code>redis</code>: <code>Redis</code>驱动，使用之前需要先在系统中安装<code>Redis</code>，并设置<code>CACHE_REDIS_CONNECTION</code></li>
+</ul>
+<blockquote>
+<p>众多驱动方式中，<code>array</code>不是持久缓存，<code>database</code>需要读取数据库，<code>file</code>需要读取文件，<code>apc/memcached/redis</code>是基于内存的，所以…选择适合自己的</p>
+</blockquote>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><blockquote>
+<p>缓存需要<code>Facade</code>的支持，否则会提示<code>Class &#39;Cache&#39; not found</code>错误，所以，请检查<code>/bootstrap/app.php</code>，确认<code>$app-&gt;withFacades();</code>的注释已去掉</p>
+<blockquote>
+<p>Lumen已经默认去掉注释</p>
+</blockquote>
+</blockquote>
+<p>无论选用任何驱动方式，缓存的使用方式是统一的，请看以下代码：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">use <span class="keyword">Cache</span>;</span><br><span class="line"><span class="params">...</span></span><br><span class="line"></span><br><span class="line">$id = <span class="number">5</span>;</span><br><span class="line"><span class="comment">// 读取缓存</span></span><br><span class="line">$result = <span class="keyword">Cache</span><span class="type">::get</span>(<span class="string">'UserData_'</span>.$id);</span><br><span class="line"><span class="keyword">if</span>($result)&#123;</span><br><span class="line">    <span class="keyword">return</span> $result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$result = User<span class="type">::findOrFail</span>($id);</span><br><span class="line"><span class="comment">// 添加缓存，时间60分钟</span></span><br><span class="line"><span class="keyword">Cache</span><span class="type">::put</span>(<span class="string">'UserData_'</span>.$id, $result, <span class="number">60</span>);</span><br></pre></td></tr></table></figure>
+<p>接下来具体说一下<code>Memcached</code>和<code>Redis</code></p>
+<h1 id="Memcached"><a href="#Memcached" class="headerlink" title="Memcached"></a><code>Memcached</code></h1><h2 id="Memcache-与-Memcached"><a href="#Memcache-与-Memcached" class="headerlink" title="Memcache 与 Memcached"></a><code>Memcache</code> 与 <code>Memcached</code></h2><blockquote>
+<p><code>Memcache:</code> 是一个自由和开放源代码、高性能、分配的内存对象缓存系统。用于加速动态web应用程序，减轻数据库负载。它可以应对任意多个连接，使用非阻塞的网络IO。由于它的工作机制是在内存中开辟一块空间，然后建立一个Hash表，Memcached自管理这些Hash表。</p>
+<p><code>Memcached:</code> Memcache是该系统的项目名称，Memcached是该系统的主程序文件（字母d可以理解为daemon），以守护程序方式运行于一个或多个服务器中，随时接受客户端的连接操作，使用共享内存存取数据。</p>
+</blockquote>
+<p>PHP 有两个 Memcached 客户端：<strong>“PHP Memcache 扩展”</strong> 和 <strong>“PHP Memcached 扩展”</strong>，这就是是我们搞混的地方。</p>
+<ul>
+<li><p><strong>PHP Memcache 扩展</strong>: 用 PHP 实现的，支持面向对象和面向过程两种接口，2004年就实现了，是老客户端，而且功能少，属性也可设置的少。</p>
+<blockquote>
+<p>函数列表：<a href="http://php.net/manual/zh/book.memcache.php" target="_blank" rel="noopener">http://php.net/manual/zh/book.memcache.php</a></p>
+</blockquote>
+</li>
+<li><p><strong>PHP Memcached 扩展</strong>: 基于 libmemcached 开发的，使用 libmemcached 库提供的 API 与 Memcached 服务进行交互，只支持面向对象的接口，2009年才实现，Memcached 扩展功能更加完善，支持的函数更多，比如支持批量操作，</p>
+<blockquote>
+<p>函数列表：<a href="http://php.net/manual/zh/book.memcached.php" target="_blank" rel="noopener">http://php.net/manual/zh/book.memcached.php</a><br><strong>现在一般建议使用 Memcached 扩展</strong>。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="必须同时安装服务端和客户端"><a href="#必须同时安装服务端和客户端" class="headerlink" title="必须同时安装服务端和客户端"></a>必须同时安装服务端和客户端</h3><p>如果安装了 <code>Memcached</code> 服务端不安装扩展，那么 <code>PHP</code> 无法操控 <code>Memcached</code>。</p>
+<p>同样如果安装了 <code>PHP Memcached</code> 扩展（PHP Memcache 和 PHP memcached 两者选择一个)，但是没有安装 <code>Memcached</code> 服务端，那么这个就无法使用。</p>
+<p>只有同时安装了 <code>Memcached</code> 服务端和 PHP 客户端扩展才可以提高动态网站性能。</p>
+<h2 id="具体应用"><a href="#具体应用" class="headerlink" title="具体应用"></a>具体应用</h2><ul>
+<li>确保 <code>PHP</code> 安装并引入了 <code>memcached</code> 扩展（可能要重启 php-fpm）；确保 <code>Memcached</code> 已正常运行（略）</li>
+</ul>
+<h3 id="本地测试"><a href="#本地测试" class="headerlink" title="本地测试"></a>本地测试</h3><blockquote>
+<p>windows下安装PHP7.0/7.1的Memcache扩展: <u><a href="https://github.com/nono303/PHP7-memcache-dll" target="_blank" rel="noopener">nono303/PHP7-memcache-dll</a></u></p>
+</blockquote>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php">$memcache = <span class="keyword">new</span> Memcache;</span></span><br><span class="line"><span class="php">$memcache-&gt;connect(<span class="string">'localhost'</span>, <span class="number">11211</span>) <span class="keyword">or</span> <span class="keyword">die</span> (<span class="string">"Could not connect"</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">$version = $memcache-&gt;getVersion();</span></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"Memcache Server's version: "</span>.$version.<span class="string">"&lt;br/&gt;\n"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$tmp_object = <span class="keyword">new</span> stdClass;</span></span><br><span class="line"><span class="php">$tmp_object-&gt;str_attr = <span class="string">'test'</span>;</span></span><br><span class="line"><span class="php">$tmp_object-&gt;int_attr = <span class="number">123</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$memcache-&gt;set(<span class="string">'key'</span>, $tmp_object, <span class="keyword">false</span>, <span class="number">10</span>) <span class="keyword">or</span> <span class="keyword">die</span> (<span class="string">"Failed to save data at the server"</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"Store data in the cache (data will expire in 10 seconds)&lt;br/&gt;\n"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$get_result = $memcache-&gt;get(<span class="string">'key'</span>);</span></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"Data from the cache:&lt;br/&gt;\n"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">var_dump($get_result);</span></span><br></pre></td></tr></table></figure>
+<h3 id="在Lumen中应用"><a href="#在Lumen中应用" class="headerlink" title="在Lumen中应用"></a>在<code>Lumen</code>中应用</h3><ul>
+<li>创建并配置 <code>config/cache.php</code>：</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">return</span> [</span></span><br><span class="line"><span class="php">    <span class="string">'default'</span> =&gt; <span class="string">'memcached'</span>,</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="string">'stores'</span> =&gt; [</span></span><br><span class="line"><span class="php">        <span class="string">'memcached'</span> =&gt; [</span></span><br><span class="line"><span class="php">            <span class="string">'driver'</span> =&gt; <span class="string">'memcached'</span>,</span></span><br><span class="line"><span class="php">            <span class="string">'servers'</span> =&gt; [</span></span><br><span class="line"><span class="php">                [</span></span><br><span class="line"><span class="php">                    <span class="string">'host'</span> =&gt; env(<span class="string">'MEMCACHED_HOST'</span>, <span class="string">'127.0.0.1'</span>),</span></span><br><span class="line"><span class="php">                    <span class="string">'port'</span> =&gt; env(<span class="string">'MEMCACHED_PORT'</span>, <span class="number">11211</span>),</span></span><br><span class="line"><span class="php">                    <span class="string">'weight'</span> =&gt; <span class="number">100</span>,</span></span><br><span class="line"><span class="php">                ],</span></span><br><span class="line"><span class="php">            ],</span></span><br><span class="line"><span class="php">        ],</span></span><br><span class="line"><span class="php">    ],</span></span><br><span class="line"><span class="php">    </span></span><br><span class="line"><span class="php">];</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>配置<code>.env</code></li>
+</ul>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">CACHE_DRIVER</span>=memcached</span><br><span class="line"><span class="attr">MEMCACHED_HOST</span>=<span class="number">172.17</span>.<span class="number">0.11</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>bootstrap/app.php</code> 中引入配置和 <code>memcached.connector</code>：</li>
+</ul>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$app</span>-&gt;configure(<span class="string">'cache'</span>);</span><br><span class="line"></span><br><span class="line">/<span class="regexp">/ !!! 不配会坑</span></span><br><span class="line"><span class="regexp">$app-&gt;singleton(</span></span><br><span class="line"><span class="regexp">    'memcached.connector', Illuminate\Cache\MemcachedConnector::class</span></span><br><span class="line"><span class="regexp">);</span></span><br></pre></td></tr></table></figure>
+<h3 id="在Laravel中重新封装"><a href="#在Laravel中重新封装" class="headerlink" title="在Laravel中重新封装"></a>在<code>Laravel</code>中重新封装</h3><ul>
+<li><code>app/Contract/Service/Cachable.php</code></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// Cache Service Interface</span></span></span><br><span class="line"><span class="php"><span class="comment">// @caoxl</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Contract</span>\<span class="title">Service</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">interface</span> <span class="title">Cachable</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="comment">// Get cached value by given key</span></span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">get</span><span class="params">(string $key)</span> : <span class="title">string</span></span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="comment">// Cache given value by key for seconds</span></span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">set</span><span class="params">(string $key, string $value, int $seconds)</span> : <span class="title">Cachable</span></span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="comment">// Get cached value by given key</span></span></span><br><span class="line"><span class="php">    <span class="comment">// And delete that cache when fetch it successfully</span></span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">flush</span><span class="params">(string $key)</span> : <span class="title">string</span></span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="comment">// Delete cached value by given key</span></span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">delete</span><span class="params">(string $key)</span> : <span class="title">bool</span></span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">incrementToday</span><span class="params">(string $key, int $step = <span class="number">1</span>)</span> : <span class="title">int</span></span>;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>app/Service/Cache/Laravel.php</code></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// Cache service re-packing from Laravel</span></span></span><br><span class="line"><span class="php"><span class="comment">// @caoxl</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Services</span>\<span class="title">Cache</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">Cache</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Contract</span>\<span class="title">Service</span>\<span class="title">Cachable</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">Laravel</span> <span class="keyword">implements</span> <span class="title">Cachable</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">get</span><span class="params">(string $key)</span>: <span class="title">string</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> (string) Cache::get($key);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">set</span><span class="params">(string $key, string $value, int $seconds)</span>: <span class="title">Cachable</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        Cache::put($key, $value, ($seconds/<span class="number">60</span>));</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">return</span> <span class="keyword">$this</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">flush</span><span class="params">(string $key)</span>: <span class="title">string</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $value = <span class="keyword">null</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">if</span> (Cache::has($key)) &#123;</span></span><br><span class="line"><span class="php">            $value = Cache::get($key);</span></span><br><span class="line"><span class="php">            Cache::forget($key);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">return</span> (string) $value;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">delete</span><span class="params">(string $key)</span>: <span class="title">bool</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">if</span> (Cache::has($key)) &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">return</span> Cache::forget($key);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">return</span> <span class="keyword">true</span>;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">incrementToday</span><span class="params">(string $key, int $step = <span class="number">1</span>)</span>: <span class="title">int</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $times   = intval(Cache::get($key));</span></span><br><span class="line"><span class="php">        $times  += $step;</span></span><br><span class="line"><span class="php">        $minutes = (<span class="keyword">$this</span>-&gt;seconds_left_today() / <span class="number">60</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        Cache::put($key, $times, $minutes);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">return</span> $times;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">seconds_left_today</span><span class="params">()</span> : <span class="title">int</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $tomorrow = strtotime(date(<span class="string">'Y-m-d'</span>, strtotime(<span class="string">'+1 day'</span>)));</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">return</span> $tomorrow - time();</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>注意：这里如果不事先加载单例 <code>MemcachedConnector</code> ，则会报如下错误：</p>
+<blockquote>
+<p>lumen.ERROR: ReflectionException: Class memcached.connector does not exist in /data/www/vendor/illuminate/container/Container.php:729`</p>
+</blockquote>
+<ul>
+<li>如果是生产环境?</li>
+</ul>
+<p>生产环境一般开启了 autoload 等缓存了的，为确保正确加载，部署时要清理下缓存先：</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">php artisan config:clear</span><br><span class="line">composer dump-autoload</span><br><span class="line"></span><br><span class="line"><span class="meta"># Lumen 默认没有以下命令</span></span><br><span class="line"><span class="meta"># php artisan optimize</span></span><br><span class="line"><span class="meta"># php artisan clear-compiled</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>memcached</code> 默认的过期时间则 不能大于 <code>30</code> 天！</p>
+</blockquote>
+<h1 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a><code>Redis</code></h1><ul>
+<li>安装<code>redis</code>, 使用<code>composer</code>即可:</li>
+</ul>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">composer</span> <span class="meta">require</span> illuminate/redis</span><br><span class="line"><span class="symbol">composer</span> <span class="meta">require</span> predis/predis</span><br></pre></td></tr></table></figure>
+<ul>
+<li>或者</li>
+</ul>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"require"</span>: &#123;</span><br><span class="line">    <span class="string">"php"</span>: <span class="string">"&gt;=7.1.3"</span>,</span><br><span class="line">    <span class="string">"illuminate/redis"</span>: <span class="string">"5.5.*"</span>,</span><br><span class="line">    <span class="string">"laravel/lumen-framework"</span>: <span class="string">"5.5.*"</span>,</span><br><span class="line">    <span class="string">"predis/predis"</span>: <span class="string">"^1.1"</span>,</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<ul>
+<li>注册<code>redis</code>类</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$app-&gt;register(Illuminate\Redis\RedisServiceProvider::<span class="class"><span class="keyword">class</span>);</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>在要使用<code>redis</code>的地方即可</li>
+</ul>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use Illuminate<span class="symbol">\S</span>upport<span class="symbol">\F</span>acades<span class="symbol">\R</span>edis;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>redis</code>常用命令</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// Redis Reference Resources</span></span></span><br><span class="line"><span class="php"><span class="comment">// 这个文件仅供忘记Redis命令时参考,使用Redis无需重新封装.</span></span></span><br><span class="line"><span class="php"><span class="comment">// @caoxl</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Traits</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">Redis</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">set</span><span class="params">($key, $val)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        Redis::set($key, $val);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">setex</span><span class="params">($key, $exp, $val)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        Redis::setex($key, $exp, $val);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">get</span><span class="params">($key)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> Redis::get($key);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">expire</span><span class="params">($key, $exp = <span class="number">180</span>)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        Redis::expire($key, $exp);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">incr</span><span class="params">($key)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        Redis::incr($key);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">del</span><span class="params">($key)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        Redis::del($key);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">exists</span><span class="params">($key)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> Redis::exists($key);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://www.shuijingwanwq.com/2017/09/11/1906/" target="_blank" rel="noopener">在 Windows 10 64 下安装 Memcached，安装 PHP 7.0.22 的 Memcache 扩展</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/08/13/Lumen-Cache-Memcache-Redis/" target="_blank" title="基于Lumen-几种缓存方法">http://blog.caoxl.com/2018/08/13/Lumen-Cache-Memcache-Redis/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lumen/">Lumen</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Memcache/">Memcache</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/">Redis</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/14/YouDao-notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          PHP 基础知识 II
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/13/Linux-Dev-Notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Linux 管理总结</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#配置"><span class="nav-number">1.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用"><span class="nav-number">2.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Memcached"><span class="nav-number">3.</span> <span class="nav-text">Memcached</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Memcache-与-Memcached"><span class="nav-number">3.1.</span> <span class="nav-text">Memcache 与 Memcached</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#必须同时安装服务端和客户端"><span class="nav-number">3.1.1.</span> <span class="nav-text">必须同时安装服务端和客户端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#具体应用"><span class="nav-number">3.2.</span> <span class="nav-text">具体应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#本地测试"><span class="nav-number">3.2.1.</span> <span class="nav-text">本地测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在Lumen中应用"><span class="nav-number">3.2.2.</span> <span class="nav-text">在Lumen中应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在Laravel中重新封装"><span class="nav-number">3.2.3.</span> <span class="nav-text">在Laravel中重新封装</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis"><span class="nav-number">4.</span> <span class="nav-text">Redis</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>初识 yaml | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="DevToolCaoxlYAML">
+  
+  
+  
+  
+  <meta name="description" content="YAML 是专门用来写配置文件的语言，非常简洁和强大，远比 JSON 格式方便。">
+<meta name="keywords" content="DevTool,Caoxl,YAML">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识 YAML">
+<meta property="og:url" content="http://blog.caoxl.com/2018/07/30/What-is-YAML/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="YAML 是专门用来写配置文件的语言，非常简洁和强大，远比 JSON 格式方便。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-22T03:27:31.870Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初识 YAML">
+<meta name="twitter:description" content="YAML 是专门用来写配置文件的语言，非常简洁和强大，远比 JSON 格式方便。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-What-is-YAML" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      初识 YAML
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2018/07/30/What-is-YAML/" class="article-date">
+	  <time datetime="2018-07-30T07:52:05.000Z" itemprop="datePublished">2018-07-30</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/开发工具/">开发工具</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p><code>YAML</code> 是专门用来写配置文件的语言，非常简洁和强大，远比 <code>JSON</code> 格式方便。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p><code>YAML</code> 语言的设计目标，就是方便人类读写。它实质上是一种通用的数据串行化格式</p>
+<p>它的基本语法规则如下:</p>
+<ul>
+<li>大小写敏感</li>
+<li>使用缩进表示层级关系</li>
+<li>缩进时不允许使用Tab键, 只需要使用空格</li>
+<li>缩进的空格数目不重要, 只要相同层级的元素左侧对其即可</li>
+</ul>
+<p><strong>#</strong> 表示注释, 从这个字符一直到行尾, 都会被解析器忽略</p>
+<p><code>YAML</code> 支持的数据结构有三种。</p>
+<ul>
+<li>对象: 键值对的集合, 又称为映射(<code>mapping</code>) / 哈希(<code>hashes</code>) / 字典(<code>dictionary</code>)</li>
+<li>数组: 一组按次序排列的值, 又称为序列(<code>sequence</code>) / 列表 (<code>list</code>)</li>
+<li>纯量(<code>scalars</code>): 单个的、不可再分的值</li>
+</ul>
+<h1 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h1><p>对象的一组键值对, 使用冒号结果表示</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">animal:</span> pets</span><br></pre></td></tr></table></figure>
+<p>转为 <code>JavaScript</code>如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">animal</span>: <span class="string">'pets'</span> &#125;</span><br></pre></td></tr></table></figure>
+<p><code>YAML</code>也允许另一种写法, 将所有键值写成一个行内对象</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">hash</span>: &#123; <span class="attribute">name</span>: Caoxl, foo: bar &#125;</span><br></pre></td></tr></table></figure>
+<p>转为 <code>JavaScript</code> 如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">hash</span>: &#123;name: <span class="string">'Caoxl'</span>, foo: <span class="string">'bar'</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h1><p>一组连词线开头的行, 构成一个数组</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">- </span>Cat</span><br><span class="line"><span class="bullet">- </span>Dog</span><br><span class="line"><span class="bullet">- </span>Goldfish</span><br></pre></td></tr></table></figure>
+<p>转为 <code>JavaScript</code> 如下:</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">'Cat</span>', <span class="symbol">'Dog</span>', <span class="symbol">'Goldfish</span>']</span><br></pre></td></tr></table></figure>
+<p>数据结构的子成员是一个数组，则可以在该项下面缩进一个空格</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-</span><br><span class="line"><span class="ruby">  - Cat</span></span><br><span class="line"><span class="ruby">  - Dog</span></span><br><span class="line"><span class="ruby">  - Goldfish</span></span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[[<span class="symbol">'Cat</span>', <span class="symbol">'God</span>', <span class="symbol">'Goldfish</span>']]</span><br></pre></td></tr></table></figure>
+<p>数组也可以采用行内表示法</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">animal</span>: <span class="comment">[Cat, Dog]</span></span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">animal</span>: [<span class="string">'Cat'</span>, <span class="string">'Dog'</span>]&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="复合结构"><a href="#复合结构" class="headerlink" title="复合结构"></a>复合结构</h1><p>对象和数组可以结合使用, 形成复合结构</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">languages:</span> </span><br><span class="line">  - Ruby</span><br><span class="line">  - Perl</span><br><span class="line">  - Python</span><br><span class="line"></span><br><span class="line">websites<span class="comment">;</span></span><br><span class="line">  YAML: yaml<span class="meta">.org</span></span><br><span class="line">  Ruby: ruby-lang<span class="meta">.org</span></span><br><span class="line">  Python: python<span class="meta">.org</span></span><br><span class="line">  Perl: use.perl<span class="meta">.org</span></span><br></pre></td></tr></table></figure>
+<p>转为 <code>JavaScript</code>如下:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attribute">language</span>: [<span class="string">'Ruby, '</span>Perl<span class="string">', '</span>Python'],</span><br><span class="line">    <span class="attribute">websites</span>: &#123;</span><br><span class="line">        <span class="attribute">YAML</span>: <span class="string">'yaml.org'</span>,</span><br><span class="line">        <span class="attribute">Ruby</span>: <span class="string">'ruby-lang.org'</span>,</span><br><span class="line">        <span class="attribute">Python</span>: <span class="string">'python.org'</span>,</span><br><span class="line">        <span class="attribute">Perl</span>: <span class="string">'use.perl.org'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="纯量"><a href="#纯量" class="headerlink" title="纯量"></a>纯量</h1><p>纯量是最基本的、不可再分的值。以下数据类型都属于 <code>JavaScript</code> 的纯量。</p>
+<blockquote>
+<ul>
+<li>字符串</li>
+<li>布尔值</li>
+<li>整数</li>
+<li>浮点数</li>
+<li><code>Null</code></li>
+<li>时间</li>
+<li>日期</li>
+</ul>
+</blockquote>
+<ul>
+<li>数值直接以字面量的形式表示:</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">number:</span> <span class="number">12.30</span></span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">number</span>: <span class="number">12.30</span> &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>布尔值用<code>true</code>和<code>false</code>表示</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">isSet:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">isSet</span>: true &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>null</code> 用 <code>~</code>表示</li>
+</ul>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">parent:</span> ~</span><br></pre></td></tr></table></figure>
+<p>转为 <code>JavaScript</code>如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">parent</span>: null &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>时间采用 <code>ISO8601</code>格式:</li>
+</ul>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iso8601: <span class="number">2018</span><span class="number">-12</span><span class="number">-14</span>t <span class="number">21</span>:<span class="number">59</span>:<span class="number">43.10</span><span class="number">-05</span>:<span class="number">00</span></span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">iso8601</span>: <span class="keyword">new</span> <span class="built_in">Date</span>(<span class="string">'2018-12-14t21:59:43.10-05:00'</span>) &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>日期采用复合 <code>ISO8601</code> 格式的年、月、日表示。</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">date:</span> <span class="number">1976</span><span class="number">-07</span><span class="number">-31</span></span><br></pre></td></tr></table></figure>
+<p>转为 <code>JavaScript</code> 如下。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">date</span>: new <span class="built_in">Date</span>(<span class="string">'1976-07-31'</span>) &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>YAML</code>允许使用两个感叹号, 强制转换数据类型</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">e:</span> <span class="type">!!str</span> <span class="number">123</span></span><br><span class="line"><span class="attr">f:</span> <span class="type">!!str</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">e</span>: <span class="string">'123'</span>, f: <span class="string">'true'</span> &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h1><p>字符串是最常见, 也是最复杂的一种数据类型</p>
+<ul>
+<li>字符串默认不使用引号表示</li>
+</ul>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">str: </span>这是一行字符串</span><br></pre></td></tr></table></figure>
+<p>转为 <code>JavaScript</code>如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">str</span>: <span class="string">'这是一行字符串'</span> &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果字符串之中包含空格或特殊字符, 需要放在引号之中</li>
+</ul>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">str</span>: <span class="string">'内容: 字符串'</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>单引号双引号都可以使用, 双引号不会对特殊字符转义</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">s1:</span> <span class="string">'内容\n字符串'</span></span><br><span class="line"><span class="string">s2:</span> <span class="string">"内容\n字符串"</span></span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="string">s1:</span> <span class="string">'内容\\n字符串'</span>, <span class="string">s2:</span> <span class="string">'内容\n字符串'</span>&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>单引号之中如果还有单引号，必须连续使用两个单引号转义。</li>
+</ul>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">str</span>: <span class="string">'labor'</span><span class="string">'s day'</span></span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">str</span>: <span class="string">'labor\'s day'</span> &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>字符串可以写成多行, 从第二行开始, 必须有一个单空格缩进, 换行符会被转为空格</li>
+</ul>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">str: </span>这是一段</span><br><span class="line">  多行</span><br><span class="line">  字符串</span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">str</span>: <span class="string">'这是一段 多行 字符串'</span> &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>多行字符串可以使用<code>|</code>保留换行符, 也可以使用<code>&gt;</code>折叠换行</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">this:</span> <span class="string">|</span></span><br><span class="line">  <span class="string">Foo</span></span><br><span class="line">  <span class="string">Bar</span></span><br><span class="line"><span class="attr">that:</span> <span class="string">&gt;</span></span><br><span class="line">  <span class="string">Foo</span></span><br><span class="line">  <span class="string">Bar</span></span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">this</span>: <span class="string">'Foo\nBar\n'</span>, that: <span class="string">'Foo Bar\n'</span> &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>+</code>表示保留文章块末尾的换行, <code>-</code>表示删除字符串末尾的换行</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">s1:</span> <span class="string">|</span></span><br><span class="line">  <span class="string">Foo</span></span><br><span class="line"></span><br><span class="line"><span class="attr">s2:</span> <span class="string">|+</span></span><br><span class="line">  <span class="string">Foo</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="attr">s3:</span> <span class="string">|-</span></span><br><span class="line">  <span class="string">Foo</span></span><br></pre></td></tr></table></figure>
+<p>转为<code>JavaScript</code>如下:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="string">s1:</span> <span class="string">'Foo\n'</span>, <span class="string">s2:</span> <span class="string">'Foo\n\n\n'</span>, <span class="string">s3:</span> <span class="string">'Foo'</span> &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>字符串之中可以插入<code>HTML</code>标记</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">message: |</span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span> <span class="attr">style</span>=<span class="string">"color: red"</span>&gt;</span></span><br><span class="line">        段落</span><br><span class="line">    <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>转为 <code>JavaScript</code> 如下</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attribute">message</span>: <span class="string">'\n&lt;p style="color: red"&gt;\n  段落\n&lt;/p&gt;\n'</span> &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://en.wikipedia.org/wiki/YAML" target="_blank" rel="noopener">YAML From Wikipedia</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2016/07/yaml.html" target="_blank" rel="noopener">YAML 语言教程 by 阮一峰</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2018/07/30/What-is-YAML/" target="_blank" title="初识 YAML">http://blog.caoxl.com/2018/07/30/What-is-YAML/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Caoxl/">Caoxl</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DevTool/">DevTool</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/YAML/">YAML</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/31/Ten-Standard-For-Frame/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          评判框架的10大标准
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/27/Symfony-First-Use/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Symfony 框架初次使用</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象"><span class="nav-number">2.</span> <span class="nav-text">对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数组"><span class="nav-number">3.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#复合结构"><span class="nav-number">4.</span> <span class="nav-text">复合结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#纯量"><span class="nav-number">5.</span> <span class="nav-text">纯量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字符串"><span class="nav-number">6.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
