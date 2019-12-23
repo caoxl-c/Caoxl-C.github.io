@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>linux 查看cpu信息 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LinuxCPU">
+  
+  
+  
+  
+  <meta name="description" content="总核数 = 物理CPU个数 X 每颗物理CPU的核数总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数">
+<meta name="keywords" content="Linux,CPU">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 查看CPU信息">
+<meta property="og:url" content="http://blog.caoxl.com/2019/12/23/Linux-CPU-Information/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="总核数 = 物理CPU个数 X 每颗物理CPU的核数总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-23T08:25:43.815Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux 查看CPU信息">
+<meta name="twitter:description" content="总核数 = 物理CPU个数 X 每颗物理CPU的核数总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Linux-CPU-Information" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Linux 查看CPU信息
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/12/23/Linux-CPU-Information/" class="article-date">
+	  <time datetime="2019-12-23T07:59:39.000Z" itemprop="datePublished">2019-12-23</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>总核数 = 物理CPU个数 X 每颗物理CPU的核数<br>总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="查看物理CPU个数"><a href="#查看物理CPU个数" class="headerlink" title="查看物理CPU个数"></a>查看物理CPU个数</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l</span></span><br><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h2 id="查看每个物理CPU中core的个数-即核数"><a href="#查看每个物理CPU中core的个数-即核数" class="headerlink" title="查看每个物理CPU中core的个数(即核数)"></a>查看每个物理CPU中core的个数(即核数)</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># cat /proc/cpuinfo | grep "cpu cores" | uniq</span></span><br><span class="line">cpu cores	: <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h2 id="查看逻辑CPU的个数"><a href="#查看逻辑CPU的个数" class="headerlink" title="查看逻辑CPU的个数"></a>查看逻辑CPU的个数</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># cat /proc/cpuinfo | grep "processor" | wc -l</span></span><br><span class="line"><span class="number">2</span></span><br></pre></td></tr></table></figure>
+<h2 id="查看位于相同物理封装的处理器中的逻辑处理器的数量。"><a href="#查看位于相同物理封装的处理器中的逻辑处理器的数量。" class="headerlink" title="查看位于相同物理封装的处理器中的逻辑处理器的数量。"></a>查看位于相同物理封装的处理器中的逻辑处理器的数量。</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># cat /proc/cpuinfo | grep "siblings" | sort | uniq</span></span><br><span class="line">siblings	: <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<h2 id="查看CPU信息（型号）"><a href="#查看CPU信息（型号）" class="headerlink" title="查看CPU信息（型号）"></a>查看CPU信息（型号）</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c</span></span><br><span class="line">      <span class="number">2</span>  Intel(R) Xeon(R) CPU E5<span class="number">-2682</span> v4 @ <span class="number">2.50</span>GHz</span><br></pre></td></tr></table></figure>
+<h2 id="proc-cpuinfo"><a href="#proc-cpuinfo" class="headerlink" title="/proc/cpuinfo"></a><code>/proc/cpuinfo</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># cat /proc/cpuinfo</span></span><br><span class="line">processor	: <span class="number">0</span></span><br><span class="line">vendor_id	: GenuineIntel</span><br><span class="line">cpu family	: <span class="number">6</span></span><br><span class="line">model		: <span class="number">79</span></span><br><span class="line">model name	: Intel(R) Xeon(R) CPU E5<span class="number">-2682</span> v4 @ <span class="number">2.50</span>GHz</span><br><span class="line">stepping	: <span class="number">1</span></span><br><span class="line">microcode	: <span class="number">0x1</span></span><br><span class="line">cpu MHz		: <span class="number">2499.996</span></span><br><span class="line">cache size	: <span class="number">40960</span> KB</span><br><span class="line">physical id	: <span class="number">0</span></span><br><span class="line">siblings	: <span class="number">2</span></span><br><span class="line">core id		: <span class="number">0</span></span><br><span class="line">cpu cores	: <span class="number">1</span></span><br><span class="line">apicid		: <span class="number">0</span></span><br><span class="line">initial apicid	: <span class="number">0</span></span><br><span class="line">fpu		: yes</span><br><span class="line">fpu_exception	: yes</span><br><span class="line">cpuid level	: <span class="number">13</span></span><br><span class="line">wp		: yes</span><br><span class="line">flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl eagerfpu pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm <span class="number">3</span>dnowprefetch ibrs ibpb stibp fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm rdseed adx smap xsaveopt spec_ctrl intel_stibp</span><br><span class="line">bogomips	: <span class="number">4999.99</span></span><br><span class="line">clflush size	: <span class="number">64</span></span><br><span class="line">cache_alignment	: <span class="number">64</span></span><br><span class="line">address sizes	: <span class="number">46</span> bits physical, <span class="number">48</span> bits virtual</span><br><span class="line">power management:</span><br><span class="line"></span><br><span class="line">processor	: <span class="number">1</span></span><br><span class="line">vendor_id	: GenuineIntel</span><br><span class="line">cpu family	: <span class="number">6</span></span><br><span class="line">model		: <span class="number">79</span></span><br><span class="line">model name	: Intel(R) Xeon(R) CPU E5<span class="number">-2682</span> v4 @ <span class="number">2.50</span>GHz</span><br><span class="line">stepping	: <span class="number">1</span></span><br><span class="line">microcode	: <span class="number">0x1</span></span><br><span class="line">cpu MHz		: <span class="number">2499.996</span></span><br><span class="line">cache size	: <span class="number">40960</span> KB</span><br><span class="line">physical id	: <span class="number">0</span></span><br><span class="line">siblings	: <span class="number">2</span></span><br><span class="line">core id		: <span class="number">0</span></span><br><span class="line">cpu cores	: <span class="number">1</span></span><br><span class="line">apicid		: <span class="number">1</span></span><br><span class="line">initial apicid	: <span class="number">1</span></span><br><span class="line">fpu		: yes</span><br><span class="line">fpu_exception	: yes</span><br><span class="line">cpuid level	: <span class="number">13</span></span><br><span class="line">wp		: yes</span><br><span class="line">flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl eagerfpu pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm <span class="number">3</span>dnowprefetch ibrs ibpb stibp fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm rdseed adx smap xsaveopt spec_ctrl intel_stibp</span><br><span class="line">bogomips	: <span class="number">4999.99</span></span><br><span class="line">clflush size	: <span class="number">64</span></span><br><span class="line">cache_alignment	: <span class="number">64</span></span><br><span class="line">address sizes	: <span class="number">46</span> bits physical, <span class="number">48</span> bits virtual</span><br><span class="line">power management:</span><br></pre></td></tr></table></figure>
+<ul>
+<li>以上输出项的含义如下：</li>
+</ul>
+<blockquote>
+<p><code>processor</code>　：系统中逻辑处理核的编号。对于单核处理器，则可认为是其CPU编号，对于多核处理器则可以是物理核、或者使用超线程技术虚拟的逻辑核<br><code>vendor_id</code>：CPU制造商<br><code>cpu family</code>：CPU产品系列代号<br><code>model</code>：CPU属于其系列中的哪一代的代号<br><code>model name</code>：CPU属于的名字及其编号、标称主频<br><code>stepping</code>：CPU属于制作更新版本<br><code>cpu MHz</code>：CPU的实际使用主频<br><code>cache size</code>：CPU二级缓存大小<br><code>physical id</code>：单个CPU的标号<br><code>siblings</code>：单个CPU逻辑物理核数<br><code>core id</code>：当前物理核在其所处CPU中的编号，这个编号不一定连续<br><code>cpu cores</code>：该逻辑核所处CPU的物理核数<br><code>apicid</code>：用来区分不同逻辑核的编号，系统中每个逻辑核的此编号必然不同，此编号不一定连续<br><code>fpu</code>：是否具有浮点运算单元（Floating Point Unit）<br><code>fpu_exception</code>：是否支持浮点计算异常<br><code>cpuid level</code>：执行cpuid指令前，eax寄存器中的值，根据不同的值cpuid指令会返回不同的内容<br><code>wp</code>：表明当前CPU是否在内核态支持对用户空间的写保护（Write Protection）<br><code>flags</code>：当前CPU支持的功能<br><code>bogomips</code>：在系统内核启动时粗略测算的CPU速度（Million Instructions Per Second）<br><code>clflush size</code>：每次刷新缓存的大小单位<br><code>cache_alignment</code>：缓存地址对齐单位<br><code>address sizes</code>：可访问地址空间位数<br><code>power management</code>：对能源管理的支持</p>
+</blockquote>
+<h2 id="lscpu命令"><a href="#lscpu命令" class="headerlink" title="lscpu命令"></a><code>lscpu</code>命令</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># lscpu</span></span><br><span class="line">Architecture:          x86_64</span><br><span class="line">CPU op-mode(s):        <span class="number">32</span>-bit, <span class="number">64</span>-bit</span><br><span class="line">Byte Order:            Little Endian</span><br><span class="line">CPU(s):                <span class="number">24</span></span><br><span class="line">On-line CPU(s) <span class="keyword">list</span>:   <span class="number">0</span><span class="number">-23</span></span><br><span class="line">Thread(s) per core:    <span class="number">2</span></span><br><span class="line">Core(s) per socket:    <span class="number">12</span></span><br><span class="line">Socket(s):             <span class="number">1</span></span><br><span class="line">NUMA node(s):          <span class="number">1</span></span><br><span class="line">Vendor ID:             GenuineIntel</span><br><span class="line">CPU family:            <span class="number">6</span></span><br><span class="line">Model:                 <span class="number">85</span></span><br><span class="line">Model name:            Intel(R) Xeon(R) Platinum <span class="number">8163</span> CPU @ <span class="number">2.50</span>GHz</span><br><span class="line">Stepping:              <span class="number">4</span></span><br><span class="line">CPU MHz:               <span class="number">2494.132</span></span><br><span class="line">BogoMIPS:              <span class="number">4988.26</span></span><br><span class="line">Hypervisor vendor:     KVM</span><br><span class="line">Virtualization type:   full</span><br><span class="line">L1d cache:             <span class="number">32</span>K</span><br><span class="line">L1i cache:             <span class="number">32</span>K</span><br><span class="line">L2 cache:              <span class="number">1024</span>K</span><br><span class="line">L3 cache:              <span class="number">33792</span>K</span><br><span class="line">NUMA node0 CPU(s):     <span class="number">0</span><span class="number">-23</span></span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2019/12/23/Linux-CPU-Information/" target="_blank" title="Linux 查看CPU信息">http://blog.caoxl.com/2019/12/23/Linux-CPU-Information/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CPU/">CPU</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/12/20/Yii2-Cheat-Sheet/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Yii2 速查表</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看物理CPU个数"><span class="nav-number">1.</span> <span class="nav-text">查看物理CPU个数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看每个物理CPU中core的个数-即核数"><span class="nav-number">2.</span> <span class="nav-text">查看每个物理CPU中core的个数(即核数)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看逻辑CPU的个数"><span class="nav-number">3.</span> <span class="nav-text">查看逻辑CPU的个数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看位于相同物理封装的处理器中的逻辑处理器的数量。"><span class="nav-number">4.</span> <span class="nav-text">查看位于相同物理封装的处理器中的逻辑处理器的数量。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看CPU信息（型号）"><span class="nav-number">5.</span> <span class="nav-text">查看CPU信息（型号）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#proc-cpuinfo"><span class="nav-number">6.</span> <span class="nav-text">/proc/cpuinfo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lscpu命令"><span class="nav-number">7.</span> <span class="nav-text">lscpu命令</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2019 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2019 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
