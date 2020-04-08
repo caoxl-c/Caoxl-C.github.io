@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>rabbitmq 再深入 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="RabbitMQ">
+  
+  
+  
+  
+  <meta name="description" content="问即是学">
+<meta name="keywords" content="RabbitMQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ 再深入">
+<meta property="og:url" content="http://blog.caoxl.com/2020/04/08/RabbitMQ-Learn-More/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="问即是学">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-04-08T07:11:27.887Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ 再深入">
+<meta name="twitter:description" content="问即是学">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-RabbitMQ-Learn-More" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      RabbitMQ 再深入
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2020/04/08/RabbitMQ-Learn-More/" class="article-date">
+	  <time datetime="2020-04-08T06:19:22.000Z" itemprop="datePublished">2020-04-08</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>问即是学</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="什么是RabbitMQ"><a href="#什么是RabbitMQ" class="headerlink" title="什么是RabbitMQ ?"></a>什么是RabbitMQ ?</h1><blockquote>
+<p>RabbitMQ是一款开源的，Erlang编写的，基于AMQP协议的消息中间件</p>
+</blockquote>
+<h1 id="什么是消息中间件"><a href="#什么是消息中间件" class="headerlink" title="什么是消息中间件 ?"></a>什么是消息中间件 ?</h1><blockquote>
+<p>是关注于数据的发送和接收，利用高效可靠的异步消息传递机制集成分布式系统</p>
+</blockquote>
+<h1 id="RabbitMQ的使用场景"><a href="#RabbitMQ的使用场景" class="headerlink" title="RabbitMQ的使用场景 ?"></a>RabbitMQ的使用场景 ?</h1><ul>
+<li><ol>
+<li>服务间异步通信</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>顺序消费</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>定时任务</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>请求削峰</li>
+</ol>
+</li>
+</ul>
+<h1 id="RabbitMQ基本概念"><a href="#RabbitMQ基本概念" class="headerlink" title="RabbitMQ基本概念 ?"></a>RabbitMQ基本概念 ?</h1><blockquote>
+<ul>
+<li><code>Broker</code>: 简单来说就是消息队列服务器实体</li>
+<li><code>Exchange</code>: 消息交换机，它指定消息按什么规则，路由到哪个队列</li>
+<li><code>Queue</code>: 消息队列载体，每个消息都会被投入到一个或多个队列</li>
+<li><code>Binding</code>:  绑定，它的作用就是把<code>exchange</code>和<code>queue</code>按照路由规则绑定起来</li>
+<li><code>Routing Key</code>:  路由关键字，<code>exchange</code>根据这个关键字进行消息投递</li>
+<li><code>VHost</code>:  vhost 可以理解为虚拟 <code>broker</code> ，即 mini-RabbitMQ server。其内部均含有独立的 <code>queue</code>、<code>exchange</code> 和 <code>binding</code> 等，但最最重要的是，其拥有独立的权限系统，可以做到 vhost 范围的用户控制。当然，从 RabbitMQ 的全局角度，vhost 可以作为不同权限隔离的手段</li>
+<li><code>Producer</code>: 消息生产者，就是投递消息的程序</li>
+<li><code>Consumer</code>: 消息消费者，就是接受消息的程序</li>
+<li><code>Channel</code>: 消息通道，在客户端的每个连接里，可建立多个<code>channel</code>，每个<code>channel</code>代表一个会话任务</li>
+</ul>
+</blockquote>
+<h1 id="RabbitMQ的工作模式"><a href="#RabbitMQ的工作模式" class="headerlink" title="RabbitMQ的工作模式 ?"></a>RabbitMQ的工作模式 ?</h1><h2 id="Simple模式-即最简单的收发模式"><a href="#Simple模式-即最简单的收发模式" class="headerlink" title="Simple模式 (即最简单的收发模式)"></a>Simple模式 (即最简单的收发模式)</h2><ul>
+<li><ol>
+<li>消息产生消息，将消息放入队列</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>消息的消费者(<code>consumer</code>) 监听 消息队列,如果队列中有消息,就消费掉,消息被拿走后,自动从队列中删除(隐患 消息可能没有被消费者正确处理,已经从队列中消失了,造成消息的丢失，这里可以设置成手动的<code>ack</code>,但如果设置成手动<code>ack</code>，处理完后要及时发送<code>ack</code>消息给队列，否则会造成内存溢出)。</li>
+</ol>
+</li>
+</ul>
+<h2 id="Work工作模式-资源的竞争"><a href="#Work工作模式-资源的竞争" class="headerlink" title="Work工作模式 (资源的竞争)"></a>Work工作模式 (资源的竞争)</h2><ul>
+<li><ol>
+<li>消息产生者将消息放入队列消费者可以有多个,消费者1,消费者2同时监听同一个队列,消息被消费。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>C1 C2共同争抢当前的消息队列内容,谁先拿到谁负责消费消息(隐患：高并发情况下,默认会产生某一个消息被多个消费者共同使用,可以设置一个开关(synchronize) 保证一条消息只能被一个消费者使用)。</li>
+</ol>
+</li>
+</ul>
+<h2 id="Publish-Subscribe发布订阅-共享资源"><a href="#Publish-Subscribe发布订阅-共享资源" class="headerlink" title="Publish/Subscribe发布订阅 (共享资源)"></a>Publish/Subscribe发布订阅 (共享资源)</h2><ul>
+<li><ol>
+<li>每个消费者监听自己的队列；</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>生产者将消息发给<code>broker</code>，由交换机将消息转发到绑定此交换机的每个队列，每个绑定交换机的队列都将接收到消息。</li>
+</ol>
+</li>
+</ul>
+<h2 id="Routing路由模式"><a href="#Routing路由模式" class="headerlink" title="Routing路由模式"></a>Routing路由模式</h2><ul>
+<li><ol>
+<li>消息生产者将消息发送给交换机按照路由判断,路由是字符串(info) 当前产生的消息携带路由字符(对象的方法),交换机根据路由的key,只能匹配上路由key对应的消息队列,对应的消费者才能消费消息;</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>根据业务功能定义路由字符串</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>从系统的代码逻辑中获取对应的功能字符串,将消息任务扔到对应的队列中。</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>业务场景:error 通知;EXCEPTION;错误通知的功能;传统意义的错误通知;客户通知;利用key路由,可以将程序中的错误封装成消息传入到消息队列中,开发者可以自定义消费者,实时接收错误;</li>
+</ol>
+</li>
+</ul>
+<h2 id="Topic主题模式-路由模式的一种"><a href="#Topic主题模式-路由模式的一种" class="headerlink" title="Topic主题模式 (路由模式的一种)"></a>Topic主题模式 (路由模式的一种)</h2><ul>
+<li><ol>
+<li>星号井号代表通配符</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>星号代表多个单词,井号代表一个单词</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>路由功能添加模糊匹配</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>消息产生者产生消息,把消息交给交换机</li>
+</ol>
+</li>
+<li><ol start="5">
+<li>交换机根据key的规则模糊匹配到对应的队列,由队列的监听消费者接收消息消费</li>
+</ol>
+</li>
+</ul>
+<h1 id="如何保证RabbitMQ消息的顺序性"><a href="#如何保证RabbitMQ消息的顺序性" class="headerlink" title="如何保证RabbitMQ消息的顺序性 ?"></a>如何保证RabbitMQ消息的顺序性 ?</h1><h1 id="如何确保消息正确地发送至-RabbitMQ"><a href="#如何确保消息正确地发送至-RabbitMQ" class="headerlink" title="如何确保消息正确地发送至 RabbitMQ ?"></a>如何确保消息正确地发送至 RabbitMQ ?</h1><h2 id="发送方确认模式"><a href="#发送方确认模式" class="headerlink" title="发送方确认模式"></a>发送方确认模式</h2><ul>
+<li>将信道设置成 <code>confirm</code> 模式（发送方确认模式），则所有在信道上发布的消息都会被指派一个唯一的 ID。</li>
+<li>一旦消息被投递到目的队列后，或者消息被写入磁盘后（可持久化的消息），信道会发送一个确认给生产者（包含消息唯一 ID）。</li>
+<li>如果 RabbitMQ 发生内部错误从而导致消息丢失，会发送一条 <code>nack</code>（not acknowledged，未确认）消息。</li>
+<li>发送方确认模式是异步的，生产者应用程序在等待确认的同时，可以继续发送消息。当确认消息到达生产者应用程序，生产者应用程序的回调方法就会被触发来处理确认消息。</li>
+</ul>
+<h2 id="接收方确认机制"><a href="#接收方确认机制" class="headerlink" title="接收方确认机制"></a>接收方确认机制</h2><ul>
+<li>消费者接收每一条消息后都必须进行确认（消息接收和消息确认是两个不同操作）。只有消费者确认了消息，RabbitMQ 才能安全地把消息从队列中删除。</li>
+<li>这里并没有用到超时机制，<code>RabbitMQ</code> 仅通过 <code>Consumer</code> 的连接中断来确认是否需要重新发送消息。也就是说，只要连接不中断，<code>RabbitMQ</code> 给了 <code>Consumer</code> 足够长的时间来处理消息。保证数据的最终一致性；</li>
+</ul>
+<p>下面罗列几种特殊情况</p>
+<ul>
+<li>如果消费者接收到消息，<strong>在确认之前断开了连接或取消订阅</strong>，RabbitMQ 会认为消息没有被分发，然后重新分发给下一个订阅的消费者。（可能存在消息重复消费的隐患，需要去重）</li>
+<li>如果消费者接收到消息却没有确认消息，连接也未断开，则 RabbitMQ 认为该消费者繁忙，将不会给该消费者分发更多的消息。</li>
+</ul>
+<h1 id="如何保证RabbitMQ消息的可靠传输"><a href="#如何保证RabbitMQ消息的可靠传输" class="headerlink" title="如何保证RabbitMQ消息的可靠传输 ?"></a>如何保证RabbitMQ消息的可靠传输 ?</h1><p>消息不可靠的情况可能是消息丢失，劫持等原因；</p>
+<p>丢失又分为：<code>生产者丢失消息</code>、<code>消息列表丢失消息</code>、<code>消费者丢失消息</code>；</p>
+<h2 id="生产者丢失消息"><a href="#生产者丢失消息" class="headerlink" title="生产者丢失消息"></a>生产者丢失消息</h2><p>从生产者弄丢数据这个角度来看，RabbitMQ提供<code>transaction</code>和<code>confirm</code>模式来确保生产者不丢消息；</p>
+<ul>
+<li><code>transaction</code>机制</li>
+</ul>
+<blockquote>
+<p>发送消息前，开启事务（channel.txSelect()）,然后发送消息，如果发送过程中出现什么异常，事务就会回滚（channel.txRollback()）,如果发送成功则提交事务（channel.txCommit()）。然而，这种方式有个缺点：吞吐量下降；</p>
+</blockquote>
+<ul>
+<li><code>confirm</code>模式</li>
+</ul>
+<blockquote>
+<p>一旦channel进入confirm模式，所有在该信道上发布的消息都将会被指派一个唯一的ID（从1开始），一旦消息被投递到所有匹配的队列之后；<br>rabbitMQ就会发送一个ACK给生产者（包含消息的唯一ID），这就使得生产者知道消息已经正确到达目的队列了；<br>如果rabbitMQ没能处理该消息，则会发送一个Nack消息给你，你可以进行重试操作。</p>
+</blockquote>
+<h2 id="消息队列丢失消息"><a href="#消息队列丢失消息" class="headerlink" title="消息队列丢失消息"></a>消息队列丢失消息</h2><blockquote>
+<p>消息持久化。处理消息队列丢数据的情况，一般是开启持久化磁盘的配置。</p>
+</blockquote>
+<p>如何持久化?</p>
+<ul>
+<li><ol>
+<li>将<code>queue</code>的持久化标识<code>durable</code>设置为<code>true</code>,则代表是一个持久的队列</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>发送消息的时候将<code>deliveryMode=2</code></li>
+</ol>
+</li>
+</ul>
+<h2 id="消费者丢失消息"><a href="#消费者丢失消息" class="headerlink" title="消费者丢失消息"></a>消费者丢失消息</h2><blockquote>
+<p>消费者丢数据一般是因为采用了自动确认消息模式，改为手动确认消息即可！<br>解决方案：处理消息成功后，<strong>手动回复确认消息</strong>。</p>
+</blockquote>
+<h1 id="RabbitMQ-上的一个-queue-中存放的-message-是否有数量限制"><a href="#RabbitMQ-上的一个-queue-中存放的-message-是否有数量限制" class="headerlink" title="RabbitMQ 上的一个 queue 中存放的 message 是否有数量限制 ?"></a>RabbitMQ 上的一个 queue 中存放的 message 是否有数量限制 ?</h1><blockquote>
+<p>可以认为是无限制，因为限制取决于机器的<strong>内存</strong>，但是消息过多会导致处理效率的下降。</p>
+</blockquote>
+<h1 id="消息基于什么传输"><a href="#消息基于什么传输" class="headerlink" title="消息基于什么传输 ?"></a>消息基于什么传输 ?</h1><blockquote>
+<p><code>RabbitMQ</code> 使用<strong>信道</strong>的方式来传输数据。信道是建立在真实的 <code>TCP</code> 连接内的虚拟连接，且每条 <code>TCP</code> 连接上的信道数量没有限制。</p>
+</blockquote>
+<h1 id="消息如何分发"><a href="#消息如何分发" class="headerlink" title="消息如何分发 ?"></a>消息如何分发 ?</h1><blockquote>
+<p>若该队列至少有一个消费者订阅，消息将以循环（round-robin）的方式发送给消费者。每条消息只会分发给一个订阅的消费者（前提是消费者能够正常处理消息并进行确认）。通过路由可实现多消费的功能</p>
+</blockquote>
+<h1 id="消息怎么路由"><a href="#消息怎么路由" class="headerlink" title="消息怎么路由 ?"></a>消息怎么路由 ?</h1><blockquote>
+<p>消息提供方-&gt;路由-&gt;一至多个队列消息发布到交换器时，消息将拥有一个路由键（routing key），在消息创建时设定。通过队列路由键，可以把队列绑定到交换器上。消息到达交换器后，RabbitMQ 会将消息的路由键与队列的路由键进行匹配（针对不同的交换机有不同的路由规则）；</p>
+</blockquote>
+<p>常用的交换机主要分为一下三种：</p>
+<ul>
+<li><code>fanout</code>: 如果交换机收到消息，将会广播到所有绑定的队列上</li>
+<li><code>direct</code>: 如果路由键完全匹配，消息就被投递到相应的队列</li>
+<li><code>topic</code>: 可以使来自不同源头的消息能够到达同一个队列。 使用 <code>topic</code> 交换机时，可以使用通配符</li>
+</ul>
+<h1 id="RabbitMQ-的优缺点"><a href="#RabbitMQ-的优缺点" class="headerlink" title="RabbitMQ 的优缺点 ?"></a>RabbitMQ 的优缺点 ?</h1><h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ul>
+<li>异步处理 - 相比于传统的串行、并行方式，提高了系统吞吐量。</li>
+<li>应用解耦 - 系统间通过消息通信，不用关心其他系统的处理。</li>
+<li>流量削锋 - 可以通过消息队列长度控制请求量；可以缓解短时间内的高并发请求。</li>
+<li>日志处理 - 解决大量日志传输。</li>
+<li>消息通讯 - 消息队列一般都内置了高效的通信机制，因此也可以用在纯的消息通讯。比如实现点对点消息队列，或者聊天室等。</li>
+</ul>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li>系统可用性降低</li>
+<li>系统复杂度提高</li>
+<li>一致性问题</li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2020/04/08/RabbitMQ-Learn-More/" target="_blank" title="RabbitMQ 再深入">http://blog.caoxl.com/2020/04/08/RabbitMQ-Learn-More/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RabbitMQ/">RabbitMQ</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/04/03/RabbitMq-Actual-Combat-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">RabbitMQ 实战记录</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是RabbitMQ"><span class="nav-number">1.</span> <span class="nav-text">什么是RabbitMQ ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是消息中间件"><span class="nav-number">2.</span> <span class="nav-text">什么是消息中间件 ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RabbitMQ的使用场景"><span class="nav-number">3.</span> <span class="nav-text">RabbitMQ的使用场景 ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RabbitMQ基本概念"><span class="nav-number">4.</span> <span class="nav-text">RabbitMQ基本概念 ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RabbitMQ的工作模式"><span class="nav-number">5.</span> <span class="nav-text">RabbitMQ的工作模式 ?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Simple模式-即最简单的收发模式"><span class="nav-number">5.1.</span> <span class="nav-text">Simple模式 (即最简单的收发模式)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Work工作模式-资源的竞争"><span class="nav-number">5.2.</span> <span class="nav-text">Work工作模式 (资源的竞争)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Publish-Subscribe发布订阅-共享资源"><span class="nav-number">5.3.</span> <span class="nav-text">Publish/Subscribe发布订阅 (共享资源)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Routing路由模式"><span class="nav-number">5.4.</span> <span class="nav-text">Routing路由模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Topic主题模式-路由模式的一种"><span class="nav-number">5.5.</span> <span class="nav-text">Topic主题模式 (路由模式的一种)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何保证RabbitMQ消息的顺序性"><span class="nav-number">6.</span> <span class="nav-text">如何保证RabbitMQ消息的顺序性 ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何确保消息正确地发送至-RabbitMQ"><span class="nav-number">7.</span> <span class="nav-text">如何确保消息正确地发送至 RabbitMQ ?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#发送方确认模式"><span class="nav-number">7.1.</span> <span class="nav-text">发送方确认模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接收方确认机制"><span class="nav-number">7.2.</span> <span class="nav-text">接收方确认机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何保证RabbitMQ消息的可靠传输"><span class="nav-number">8.</span> <span class="nav-text">如何保证RabbitMQ消息的可靠传输 ?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#生产者丢失消息"><span class="nav-number">8.1.</span> <span class="nav-text">生产者丢失消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息队列丢失消息"><span class="nav-number">8.2.</span> <span class="nav-text">消息队列丢失消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消费者丢失消息"><span class="nav-number">8.3.</span> <span class="nav-text">消费者丢失消息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RabbitMQ-上的一个-queue-中存放的-message-是否有数量限制"><span class="nav-number">9.</span> <span class="nav-text">RabbitMQ 上的一个 queue 中存放的 message 是否有数量限制 ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#消息基于什么传输"><span class="nav-number">10.</span> <span class="nav-text">消息基于什么传输 ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#消息如何分发"><span class="nav-number">11.</span> <span class="nav-text">消息如何分发 ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#消息怎么路由"><span class="nav-number">12.</span> <span class="nav-text">消息怎么路由 ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RabbitMQ-的优缺点"><span class="nav-number">13.</span> <span class="nav-text">RabbitMQ 的优缺点 ?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优点"><span class="nav-number">13.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缺点"><span class="nav-number">13.2.</span> <span class="nav-text">缺点</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2020 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2020 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
