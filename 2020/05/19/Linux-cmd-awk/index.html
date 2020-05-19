@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>linux awk使用 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Linuxawk">
+  
+  
+  
+  
+  <meta name="description" content="awk是一种编程语言，用于在linux/unix下对文本和数据进行处理。">
+<meta name="keywords" content="Linux,awk">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux awk使用">
+<meta property="og:url" content="http://blog.caoxl.com/2020/05/19/Linux-cmd-awk/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="awk是一种编程语言，用于在linux/unix下对文本和数据进行处理。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-05-19T03:11:01.407Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux awk使用">
+<meta name="twitter:description" content="awk是一种编程语言，用于在linux/unix下对文本和数据进行处理。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Linux-cmd-awk" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Linux awk使用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2020/05/19/Linux-cmd-awk/" class="article-date">
+	  <time datetime="2020-05-19T02:29:47.000Z" itemprop="datePublished">2020-05-19</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>awk是一种编程语言，用于在linux/unix下对文本和数据进行处理。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="awk命令格式和选项"><a href="#awk命令格式和选项" class="headerlink" title="awk命令格式和选项"></a>awk命令格式和选项</h1><h2 id="语法形式"><a href="#语法形式" class="headerlink" title="语法形式"></a>语法形式</h2><blockquote>
+<p>awk [options] ‘script’ var=value file(s)<br>awk [options] -f script_file var=value file(s)</p>
+</blockquote>
+<h3 id="常用命令选项"><a href="#常用命令选项" class="headerlink" title="常用命令选项"></a>常用命令选项</h3><ul>
+<li>-F fs: fs指定输入分隔符, fs可以是字符串或正则表达式，如-F:</li>
+<li>-v var=value 赋值一个用户定义变量，将外部变量传递给awk</li>
+<li>-f script_file 从脚本文件中读取awk命令</li>
+</ul>
+<h1 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h1><ul>
+<li><code>log.txt</code>文本内容如下：</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">2 this is a test</span><br><span class="line">3 Are you like awk</span><br><span class="line">This's a test</span><br><span class="line">10 There are orange,apple,mongo</span><br></pre></td></tr></table></figure>
+<h2 id="用法一"><a href="#用法一" class="headerlink" title="用法一:"></a>用法一:</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk '&#123;[pattern] action&#125;' &#123;filenames&#125; # 行匹配语句 awk ''只能用单引号</span><br></pre></td></tr></table></figure>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 每行按空格或TAB分割，输出文本中的1、4项</span></span><br><span class="line">[root@caoxl ~]# awk '&#123;print $1,$4&#125;' log.txt</span><br><span class="line">2 a</span><br><span class="line">3 like</span><br><span class="line">This's </span><br><span class="line">10 orange,apple,mongo</span><br><span class="line"></span><br><span class="line"><span class="section"># 格式化输出</span></span><br><span class="line">[root@caoxl ~]# awk '&#123;printf "%-8s %-10s\n",$1,$4&#125;' log.txt</span><br><span class="line">2        a         </span><br><span class="line">3        like      </span><br><span class="line">This's             </span><br><span class="line">10       orange,apple,mongo</span><br></pre></td></tr></table></figure>
+<h2 id="用法二"><a href="#用法二" class="headerlink" title="用法二:"></a>用法二:</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F #-F相当于内置变了FS, 指定分割字符</span><br></pre></td></tr></table></figure>
+<h3 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 使用","分割</span></span><br><span class="line">[root@caoxl ~]# awk -F, '&#123;print $1,$2&#125;' log.txt</span><br><span class="line">2 this is a test </span><br><span class="line">3 Are you like awk </span><br><span class="line">This's a test </span><br><span class="line">10 There are orange apple</span><br><span class="line"></span><br><span class="line"><span class="section"># 或者使用内建变量</span></span><br><span class="line">[root@caoxl ~]# awk 'BEGIN&#123;FS=","&#125;&#123;print $1,$2&#125;' log.txt</span><br><span class="line">2 this is a test </span><br><span class="line">3 Are you like awk </span><br><span class="line">This's a test </span><br><span class="line">10 There are orange apple</span><br><span class="line"></span><br><span class="line"><span class="section"># 使用多个分隔符.先使用空格分割，然后对分割结果再使用","分割</span></span><br><span class="line">2 this</span><br><span class="line">3 Are</span><br><span class="line">This's a</span><br><span class="line">10 There</span><br></pre></td></tr></table></figure>
+<h2 id="用法三"><a href="#用法三" class="headerlink" title="用法三:"></a>用法三:</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -v # 设置变量</span><br></pre></td></tr></table></figure>
+<h3 id="实例-2"><a href="#实例-2" class="headerlink" title="实例"></a>实例</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# awk -va=1 '&#123;print $1,$1+a&#125;' log.txt</span><br><span class="line">2 3</span><br><span class="line">3 4</span><br><span class="line">This's 1</span><br><span class="line">10 11</span><br><span class="line"></span><br><span class="line">[root@caoxl ~]# awk -va=1 -vb=s '&#123;print $1,$1+a,$1b&#125;' log.txt</span><br><span class="line">2 3 2s</span><br><span class="line">3 4 3s</span><br><span class="line">This's 1 This'ss</span><br><span class="line">10 11 10s</span><br></pre></td></tr></table></figure>
+<h2 id="用法四"><a href="#用法四" class="headerlink" title="用法四:"></a>用法四:</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -f &#123;awk脚本&#125; &#123;文件名&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="实例-3"><a href="#实例-3" class="headerlink" title="实例"></a>实例</h3><ul>
+<li><code>cal.awk</code></li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">#!/bin/awk -f</span></span><br><span class="line"><span class="section">#运行前</span></span><br><span class="line">BEGIN &#123;</span><br><span class="line"><span class="code">    math = 0</span></span><br><span class="line"><span class="code">    english = 0</span></span><br><span class="line"><span class="code">    computer = 0</span></span><br><span class="line"> </span><br><span class="line"><span class="code">    printf "NAME    NO.   MATH  ENGLISH  COMPUTER   TOTAL\n"</span></span><br><span class="line"><span class="code">    printf "---------------------------------------------\n"</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="section">#运行中</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="code">    math+=$3</span></span><br><span class="line"><span class="code">    english+=$4</span></span><br><span class="line"><span class="code">    computer+=$5</span></span><br><span class="line"><span class="code">    printf "%-6s %-6s %4d %8d %8d %8d\n", $1, $2, $3, $4, $5, $3+$4+$5</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="section">#运行后</span></span><br><span class="line">END &#123;</span><br><span class="line"><span class="code">    printf "---------------------------------------------\n"</span></span><br><span class="line"><span class="code">    printf "  TOTAL:%10d %8d %8d \n", math, english, computer</span></span><br><span class="line"><span class="code">    printf "AVERAGE:%10.2f %8.2f %8.2f\n", math/NR, english/NR, computer/NR</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>score.txt</code></li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Marry   2143 78 84 77</span><br><span class="line">Jack    2321 66 78 45</span><br><span class="line">Tom     2122 48 77 71</span><br><span class="line">Mike    2537 87 97 95</span><br><span class="line">Bob     2415 40 57 62</span><br></pre></td></tr></table></figure>
+<ul>
+<li>运行</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# awk -f cal.awk score.txt</span><br><span class="line">NAME    NO.   MATH  ENGLISH  COMPUTER   TOTAL</span><br><span class="line">---------------------------------------------</span><br><span class="line">Marry  2143     78       84       77      239</span><br><span class="line">Jack   2321     66       78       45      189</span><br><span class="line">Tom    2122     48       77       71      196</span><br><span class="line">Mike   2537     87       97       95      279</span><br><span class="line">Bob    2415     40       57       62      159</span><br><span class="line">---------------------------------------------</span><br><span class="line">  TOTAL:       319      393      350 </span><br><span class="line">AVERAGE:     63.80    78.60    70.00</span><br></pre></td></tr></table></figure>
+<h2 id="其他用法"><a href="#其他用法" class="headerlink" title="其他用法:"></a>其他用法:</h2><ul>
+<li>从文件中找出长度大于30的行</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# awk 'length&gt;30' log.txt </span><br><span class="line">10 There are orange,apple,mongo</span><br></pre></td></tr></table></figure>
+<ul>
+<li>打印九九乘法表</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]# seq 9 | sed 'H;g' | awk -v RS='' '&#123;for(i=1;i<span class="xml"><span class="tag">&lt;<span class="name">=NF;i++)printf("%dx%d=%d%s",</span> <span class="attr">i</span>, <span class="attr">NR</span>, <span class="attr">i</span>*<span class="attr">NR</span>, <span class="attr">i</span>==<span class="string">NR?</span>"\<span class="attr">n</span>"<span class="attr">:</span>"\<span class="attr">t</span>")&#125;'</span></span></span><br><span class="line"><span class="xml">1x1=1</span></span><br><span class="line"><span class="xml">1x2=2	2x2=4</span></span><br><span class="line"><span class="xml">1x3=3	2x3=6	3x3=9</span></span><br><span class="line"><span class="xml">1x4=4	2x4=8	3x4=12	4x4=16</span></span><br><span class="line"><span class="xml">1x5=5	2x5=10	3x5=15	4x5=20	5x5=25</span></span><br><span class="line"><span class="xml">1x6=6	2x6=12	3x6=18	4x6=24	5x6=30	6x6=36</span></span><br><span class="line"><span class="xml">1x7=7	2x7=14	3x7=21	4x7=28	5x7=35	6x7=42	7x7=49</span></span><br><span class="line"><span class="xml">1x8=8	2x8=16	3x8=24	4x8=32	5x8=40	6x8=48	7x8=56	8x8=64</span></span><br><span class="line"><span class="xml">1x9=9	2x9=18	3x9=27	4x9=36	5x9=45	6x9=54	7x9=63	8x9=72	9x9=81</span></span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2020/05/19/Linux-cmd-awk/" target="_blank" title="Linux awk使用">http://blog.caoxl.com/2020/05/19/Linux-cmd-awk/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/awk/">awk</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/04/23/MySQL-Basic-Knowledge-II/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">MySQL 基础知识 II</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#awk命令格式和选项"><span class="nav-number">1.</span> <span class="nav-text">awk命令格式和选项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#语法形式"><span class="nav-number">1.1.</span> <span class="nav-text">语法形式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常用命令选项"><span class="nav-number">1.1.1.</span> <span class="nav-text">常用命令选项</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本用法"><span class="nav-number">2.</span> <span class="nav-text">基本用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#用法一"><span class="nav-number">2.1.</span> <span class="nav-text">用法一:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实例"><span class="nav-number">2.1.1.</span> <span class="nav-text">实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用法二"><span class="nav-number">2.2.</span> <span class="nav-text">用法二:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实例-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用法三"><span class="nav-number">2.3.</span> <span class="nav-text">用法三:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实例-2"><span class="nav-number">2.3.1.</span> <span class="nav-text">实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用法四"><span class="nav-number">2.4.</span> <span class="nav-text">用法四:</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实例-3"><span class="nav-number">2.4.1.</span> <span class="nav-text">实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他用法"><span class="nav-number">2.5.</span> <span class="nav-text">其他用法:</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2020 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2020 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
