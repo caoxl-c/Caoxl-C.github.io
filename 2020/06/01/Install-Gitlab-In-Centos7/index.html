@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>centos7 安装部署gitlab | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="GitlabCentOS7">
+  
+  
+  
+  
+  <meta name="description" content="GitLab一个开源的git仓库管理平台，方便团队协作开发、管理。">
+<meta name="keywords" content="Gitlab,CentOS7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS7 安装部署Gitlab">
+<meta property="og:url" content="http://blog.caoxl.com/2020/06/01/Install-Gitlab-In-Centos7/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="GitLab一个开源的git仓库管理平台，方便团队协作开发、管理。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-06-02T01:58:00.474Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CentOS7 安装部署Gitlab">
+<meta name="twitter:description" content="GitLab一个开源的git仓库管理平台，方便团队协作开发、管理。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Install-Gitlab-In-Centos7" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      CentOS7 安装部署Gitlab
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2020/06/01/Install-Gitlab-In-Centos7/" class="article-date">
+	  <time datetime="2020-06-01T01:46:29.000Z" itemprop="datePublished">2020-06-01</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>GitLab一个开源的git仓库管理平台，方便团队协作开发、管理。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><h2 id="安装基础依赖"><a href="#安装基础依赖" class="headerlink" title="安装基础依赖"></a>安装基础依赖</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 安装基础依赖</span></span><br><span class="line">sudo yum install -y curl policycoreutils-python openssh-server</span><br><span class="line"></span><br><span class="line"><span class="section"># 启动ssh服务&amp;设置为开机启动</span></span><br><span class="line">sudo systemctl enable sshd</span><br><span class="line">sudo systemctl start sshd</span><br></pre></td></tr></table></figure>
+<h2 id="安装Postfix"><a href="#安装Postfix" class="headerlink" title="安装Postfix"></a>安装Postfix</h2><p>Postfix是一个邮件服务器，GitLab发送邮件需要用到</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">#安装postfix</span></span><br><span class="line">sudo yum install -y postfix</span><br><span class="line"></span><br><span class="line"><span class="section">#启动postfix并设置为开机启动</span></span><br><span class="line">sudo systemctl enable postfix</span><br><span class="line">sudo systemctl start postfix</span><br></pre></td></tr></table></figure>
+<ul>
+<li>报 <code>Job for postfix.service failed because the control process exited with error code. See &quot;systemctl status postfix.service&quot; and &quot;journalctl -xe&quot; for details.</code>错误, 解决办法:</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 修改 /etc/postfix/main.cf 的设置</span></span><br><span class="line">inet_protocols = ipv4</span><br><span class="line">inet_interfaces = all</span><br><span class="line"><span class="section"># 重新启动postfix即可</span></span><br><span class="line">sudo systemctl restart postfix.service</span><br></pre></td></tr></table></figure>
+<h2 id="开放ssh以及http服务（80端口）"><a href="#开放ssh以及http服务（80端口）" class="headerlink" title="开放ssh以及http服务（80端口）"></a>开放ssh以及http服务（80端口）</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">#开放ssh、http服务</span></span><br><span class="line">sudo firewall-cmd --add-service=ssh --permanent</span><br><span class="line">sudo firewall-cmd --add-service=http --permanent</span><br><span class="line"></span><br><span class="line"><span class="section">#重载防火墙规则</span></span><br><span class="line">sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<ul>
+<li>报 <code>FirewallD is not running</code>, 解决办法:</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start firewalld</span><br></pre></td></tr></table></figure>
+<h1 id="部署过程"><a href="#部署过程" class="headerlink" title="部署过程"></a>部署过程</h1><p>本次我们部署的是社区版:<code>gitlab-ce</code>，如果要部署商业版可以把关键字替换为：<code>gitlab-ee</code></p>
+<h2 id="Yum安装GitLab"><a href="#Yum安装GitLab" class="headerlink" title="Yum安装GitLab"></a>Yum安装GitLab</h2><ul>
+<li>添加GitLab社区版Package</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash</span><br></pre></td></tr></table></figure>
+<ul>
+<li>安装GitLab社区版</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y gitlab-ce</span><br></pre></td></tr></table></figure>
+<p>安装成功后会看到gitlab-ce打印了以下图形</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="code">    </span></span><br><span class="line"><span class="code">       *.                  *.</span></span><br><span class="line"><span class="code">      ***                 ***</span></span><br><span class="line"><span class="code">     *****               *****</span></span><br><span class="line"><span class="code">    .******             *******</span></span><br><span class="line"><span class="code">    ********            ********</span></span><br><span class="line">   ,,,,,,,,,<span class="strong">*****</span><span class="strong">*****</span>*,,,,,,,,,</span><br><span class="line">  ,,,,,,,,,,,<span class="strong">*****</span><span class="emphasis">***</span>*,,,,,,,,,,,</span><br><span class="line">  .,,,,,,,,,,,<span class="strong">*****</span>**,,,,,,,,,,,,</span><br><span class="line"><span class="code">      ,,,,,,,,,*****,,,,,,,,,.</span></span><br><span class="line"><span class="code">         ,,,,,,,****,,,,,,</span></span><br><span class="line"><span class="code">            .,,,***,,,,</span></span><br><span class="line"><span class="code">                ,*,.</span></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="code">     _______ __  __          __</span></span><br><span class="line"><span class="code">    / ____(_) /_/ /   ____ _/ /_</span></span><br><span class="line">   / / <span class="strong">__/ / __</span>/ /   / <span class="strong">__ `/ __</span> \</span><br><span class="line">  / /<span class="emphasis">_/ / / /_</span>/ /<span class="emphasis">___</span>/ /<span class="emphasis">_/ / /_</span>/ /</span><br><span class="line">  \<span class="strong">____/_/\__</span>/<span class="strong">_____</span>/\<span class="strong">__,_/_.__</span>_/</span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">Thank you for installing GitLab!</span><br></pre></td></tr></table></figure>
+<h2 id="配置GitLab站点Url"><a href="#配置GitLab站点Url" class="headerlink" title="配置GitLab站点Url"></a>配置GitLab站点Url</h2><p>GitLab默认的配置文件路径是<code>/etc/gitlab/gitlab.rb</code></p>
+<p>默认的站点Url配置项是：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">external_url 'http://gitlab.example.com'</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">#修改配置文件</span></span><br><span class="line">sudo vi /etc/gitlab/gitlab.rb</span><br><span class="line"></span><br><span class="line"><span class="section">#配置首页地址</span></span><br><span class="line">external_url 'http://gitlab.caoxl.com'</span><br></pre></td></tr></table></figure>
+<ul>
+<li>防火墙开启端口</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl init.d]# firewall-cmd --add-port=9999/tcp --permanent</span><br><span class="line">success</span><br></pre></td></tr></table></figure>
+<h2 id="启动并访问Gitlab"><a href="#启动并访问Gitlab" class="headerlink" title="启动并访问Gitlab"></a>启动并访问Gitlab</h2><ul>
+<li>启动Gitlab</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">#重新配置并启动</span></span><br><span class="line">sudo gitlab-ctl reconfigure</span><br><span class="line"></span><br><span class="line"><span class="section">#完成后将会看到如下输出</span></span><br><span class="line">Running handlers:</span><br><span class="line">Running handlers complete</span><br><span class="line">Chef Client finished, 3/709 resources updated in 15 seconds</span><br><span class="line">gitlab Reconfigured!</span><br><span class="line"></span><br><span class="line"><span class="section">#启动</span></span><br><span class="line">sudo gitlab-ctl restart</span><br></pre></td></tr></table></figure>
+<ul>
+<li>访问Gitlab</li>
+</ul>
+<p>将设置的域名DNS解析到服务器IP，或者修改本地host将域名指向服务器IP。访问：<code>http://gitlab.caoxl.com</code></p>
+<p>这时候会提示为管理员账号设置密码。管理员账号默认username是<code>root</code>。<br>设置完成之后即可使用<code>root</code>账号登录，登陆后会进入欢迎界面。</p>
+<ul>
+<li>报<code>ruby_block[authorize Grafana with GitLab] action run</code>,解决办法</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># vim /etc/gitlab/gitlab.rb</span></span><br><span class="line">monitoring[<span class="string">'grafana'</span>][<span class="symbol">'enable'</span>] = false</span><br></pre></td></tr></table></figure>
+<ul>
+<li>报 <code>Whoops, GitLab is taking too much time to respond. (502)错误</code>, 解决办法</li>
+</ul>
+<p>原因是端口被其他服务占用了，需要更换配置文件里得到端口 ，并且执行<code>gitlab-ctl reconfigure</code>, <code>gitlab-ctl restart</code> 就可以解决</p>
+<h1 id="GitLab常用配置"><a href="#GitLab常用配置" class="headerlink" title="GitLab常用配置"></a>GitLab常用配置</h1><h2 id="邮件配置"><a href="#邮件配置" class="headerlink" title="邮件配置"></a>邮件配置</h2><p>配置邮箱可以让GitLab在发生相应事件的时候进行邮件通知<br>比如：找回密码、添加邮箱等</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">#修改配置文件</span></span><br><span class="line">sudo vi /etc/gitlab/gitlab.rb</span><br><span class="line"></span><br><span class="line"><span class="section">#邮件配置</span></span><br><span class="line">gitlab<span class="emphasis">_rails['smtp_</span>enable'] = true</span><br><span class="line">gitlab<span class="emphasis">_rails['smtp_</span>address'] = 'smtp.163.com'</span><br><span class="line">gitlab<span class="emphasis">_rails['smtp_</span>port'] = 465</span><br><span class="line">gitlab<span class="emphasis">_rails['smtp_</span>user_name'] = 'yourmail@163.com'</span><br><span class="line">gitlab<span class="emphasis">_rails['smtp_</span>password'] = 'yourpasswd'</span><br><span class="line">gitlab<span class="emphasis">_rails['smtp_</span>domain'] = 'smtp.163.com'</span><br><span class="line">gitlab<span class="emphasis">_rails['smtp_</span>authentication'] = 'login'</span><br><span class="line">gitlab<span class="emphasis">_rails['smtp_</span>enable<span class="emphasis">_starttls_</span>auto'] = true</span><br><span class="line">gitlab<span class="emphasis">_rails['smtp_</span>tls'] = true</span><br><span class="line">gitlab<span class="emphasis">_rails['gitlab_</span>email_enabled'] = true</span><br><span class="line">gitlab<span class="emphasis">_rails['gitlab_</span>email_from'] = 'yourmail@163.com'</span><br><span class="line">gitlab<span class="emphasis">_rails['gitlab_</span>email<span class="emphasis">_display_</span>name'] = 'Gitlab'</span><br><span class="line"></span><br><span class="line"><span class="section">#保存后，重新配置并启动GitLab</span></span><br><span class="line">sudo gitlab-ctl reconfigure</span><br></pre></td></tr></table></figure>
+<h2 id="禁用创建组权限"><a href="#禁用创建组权限" class="headerlink" title="禁用创建组权限"></a>禁用创建组权限</h2><p>GitLab默认所有的注册用户都可以创建组。但对于团队来说，通常只会给Leader相关权限。<br>虽然可以在用户管理界面取消权限，但毕竟不方便。我们可以通过配置GitLab默认禁用创建组权限。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">#修改配置文件</span></span><br><span class="line">sudo vi /etc/gitlab/gitlab.rb</span><br><span class="line"></span><br><span class="line"><span class="section">#开启gitlab_rails['gitlab_default_can_create_group'] 选项，并将值设置为false</span></span><br><span class="line"><span class="section">### GitLab user privileges</span></span><br><span class="line">gitlab<span class="emphasis">_rails['gitlab_</span>default<span class="emphasis">_can_</span>create_group'] = false</span><br><span class="line"></span><br><span class="line"><span class="section">#保存后，重新配置并启动GitLab</span></span><br><span class="line">sudo gitlab-ctl reconfigure</span><br></pre></td></tr></table></figure>
+<h2 id="gitlab-ctl常用命令介绍"><a href="#gitlab-ctl常用命令介绍" class="headerlink" title="gitlab-ctl常用命令介绍"></a>gitlab-ctl常用命令介绍</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gitlab-ctl cmd</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>check-config</code></td>
+<td style="text-align:left">检查在gitlab中是否有任何配置。在指定版本中删除的rb</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>deploy-page</code></td>
+<td style="text-align:left">安装部署页面</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>diff-config</code></td>
+<td style="text-align:left">将用户配置与包可用配置进行比较</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>remove-accounts</code></td>
+<td style="text-align:left">删除所有用户和组</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>upgrade</code></td>
+<td style="text-align:left">升级</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>once</code></td>
+<td style="text-align:left">如果GitLab服务停止了就启动服务，如果已启动就不做任何操作</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>restart</code></td>
+<td style="text-align:left">重启GitLab服务</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>start</code></td>
+<td style="text-align:left">如果GitLab服务停止了就启动服务，如果已启动就重启服务</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>stop</code></td>
+<td style="text-align:left">停止GitLab服务</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>status</code></td>
+<td style="text-align:left">查看GitLab服务状态</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>reconfigure</code></td>
+<td style="text-align:left">reconfigure重新配置GitLab并启动</td>
+</tr>
+</tbody>
+</table>
+<h1 id="解决Gitlab的Nginx以及自带Nginx冲突问题"><a href="#解决Gitlab的Nginx以及自带Nginx冲突问题" class="headerlink" title="解决Gitlab的Nginx以及自带Nginx冲突问题"></a>解决Gitlab的Nginx以及自带Nginx冲突问题</h1><blockquote>
+<p>vim /etc/gitlab/gitlab.rb</p>
+</blockquote>
+<p>做以下修改:</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 禁用Gitlab的nginx</span><br><span class="line">nginx['enable'] = false</span><br><span class="line"></span><br><span class="line">// 设置自建Nginx的用户, 查看用户命令看说明</span><br><span class="line">web<span class="emphasis">_server['external_</span>users'] = ['www']</span><br><span class="line"></span><br><span class="line">// 修改监听方式和监听地址</span><br><span class="line">gitlab<span class="emphasis">_workhorse['listen_</span>network'] = "tcp"</span><br><span class="line">gitlab<span class="emphasis">_workhorse['listen_</span>addr'] = "127.0.0.1:9999"</span><br><span class="line"></span><br><span class="line">// 最后执行下面命令让配置生效：</span><br><span class="line">sudo gitlab-ctl reconfigure</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>说明</code></li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /usr/local/nginx/conf/nginx.conf | grep user</span><br></pre></td></tr></table></figure>
+<ul>
+<li>配置Nginx, 新增<code>gitlab.conf</code></li>
+</ul>
+<blockquote>
+<p><a href="https://gitlab.com/gitlab-org/gitlab-recipes/blob/master/web-server/nginx/gitlab-omnibus-nginx.conf" target="_blank" rel="noopener">官网提供配置 - gitlab-omnibus-nginx.conf</a></p>
+</blockquote>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">upstream gitlab-workhorse &#123;</span><br><span class="line"><span class="code">    server 127.0.0.1:9999; #根据实际情况修改, 与gitlab.rb中的gitlab_workhorse['listen_addr']一致</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">## Normal HTTP host</span></span><br><span class="line">server &#123;</span><br><span class="line"><span class="code">    listen 80;</span></span><br><span class="line"><span class="code">    listen [::]:80 default_server;</span></span><br><span class="line"><span class="code">    server_name gitlab.caoxl.com; ## 修改成自己的域名；</span></span><br><span class="line"><span class="code">    server_tokens off; ## Don't show the nginx version number, a security best practice</span></span><br><span class="line"><span class="code">    root /opt/gitlab/embedded/service/gitlab-rails/public;</span></span><br><span class="line"></span><br><span class="line"><span class="code">    ## See app/controllers/application_controller.rb for headers set</span></span><br><span class="line"></span><br><span class="line"><span class="code">    ## Individual nginx logs for this GitLab vhost</span></span><br><span class="line"><span class="code">    access_log  /var/log/nginx/gitlab_access.log; # 根据实际情况修改</span></span><br><span class="line"><span class="code">    error_log   /var/log/nginx/gitlab_error.log;  # 根据实际情况修改</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="code">    location / &#123;</span></span><br><span class="line"><span class="code">        client_max_body_size 0;</span></span><br><span class="line"><span class="code">        gzip off;</span></span><br><span class="line"></span><br><span class="line"><span class="code">        ## https://github.com/gitlabhq/gitlabhq/issues/694</span></span><br><span class="line"><span class="code">        ## Some requests take more than 30 seconds.</span></span><br><span class="line"><span class="code">        proxy_read_timeout      300;</span></span><br><span class="line"><span class="code">        proxy_connect_timeout   300;</span></span><br><span class="line"><span class="code">        proxy_redirect          off;</span></span><br><span class="line"></span><br><span class="line"><span class="code">        proxy_http_version 1.1;</span></span><br><span class="line"><span class="code">    </span></span><br><span class="line"><span class="code">        proxy_set_header    Host                $http_host;</span></span><br><span class="line"><span class="code">        proxy_set_header    X-Real-IP           $remote_addr;</span></span><br><span class="line"><span class="code">        proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;</span></span><br><span class="line"><span class="code">        proxy_set_header    X-Forwarded-Proto   $scheme;</span></span><br><span class="line"></span><br><span class="line"><span class="code">        proxy_pass http://gitlab-workhorse;</span></span><br><span class="line"><span class="code">    &#125;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>重启Nginx: <code>sudo service nginx restart</code></li>
+</ul>
+<h1 id="解决Gitlab访问502问题"><a href="#解决Gitlab访问502问题" class="headerlink" title="解决Gitlab访问502问题"></a>解决Gitlab访问502问题</h1><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod -R o+x /opt/gitlab/embedded/service//gitlab-rails/</span><br></pre></td></tr></table></figure>
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2020/06/01/Install-Gitlab-In-Centos7/" target="_blank" title="CentOS7 安装部署Gitlab">http://blog.caoxl.com/2020/06/01/Install-Gitlab-In-Centos7/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CentOS7/">CentOS7</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Gitlab/">Gitlab</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/05/30/Hello-PHP8/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">值得期待的PHP8新特性</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备工作"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装基础依赖"><span class="nav-number">1.1.</span> <span class="nav-text">安装基础依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Postfix"><span class="nav-number">1.2.</span> <span class="nav-text">安装Postfix</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开放ssh以及http服务（80端口）"><span class="nav-number">1.3.</span> <span class="nav-text">开放ssh以及http服务（80端口）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署过程"><span class="nav-number">2.</span> <span class="nav-text">部署过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Yum安装GitLab"><span class="nav-number">2.1.</span> <span class="nav-text">Yum安装GitLab</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置GitLab站点Url"><span class="nav-number">2.2.</span> <span class="nav-text">配置GitLab站点Url</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动并访问Gitlab"><span class="nav-number">2.3.</span> <span class="nav-text">启动并访问Gitlab</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GitLab常用配置"><span class="nav-number">3.</span> <span class="nav-text">GitLab常用配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#邮件配置"><span class="nav-number">3.1.</span> <span class="nav-text">邮件配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#禁用创建组权限"><span class="nav-number">3.2.</span> <span class="nav-text">禁用创建组权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gitlab-ctl常用命令介绍"><span class="nav-number">3.3.</span> <span class="nav-text">gitlab-ctl常用命令介绍</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决Gitlab的Nginx以及自带Nginx冲突问题"><span class="nav-number">4.</span> <span class="nav-text">解决Gitlab的Nginx以及自带Nginx冲突问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决Gitlab访问502问题"><span class="nav-number">5.</span> <span class="nav-text">解决Gitlab访问502问题</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2020 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2020 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
