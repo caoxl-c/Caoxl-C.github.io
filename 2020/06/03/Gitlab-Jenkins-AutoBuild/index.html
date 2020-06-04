@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="使用 Gitlab+Jenkins 实现自动化构建">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-06-03T09:53:09.509Z">
+<meta property="og:updated_time" content="2020-06-04T01:30:03.355Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用 Gitlab+Jenkins 实现自动化构建">
 <meta name="twitter:description" content="使用 Gitlab+Jenkins 实现自动化构建">
@@ -222,7 +222,7 @@
 <blockquote>
 <p>/bin/sh /shell/deploy/jenkins_deploy.sh ${WORKSPACE} ${JOB_NAME} ${BUILD_NUMBER}</p>
 </blockquote>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">#!/bin/bash</span></span><br><span class="line">tar -zcvf /var/www/code<span class="emphasis">_backup/$&#123;JOB_</span>NAME&#125;<span class="emphasis">_$&#123;BUILD_</span>NUMBER&#125;.tar.gz /$&#123;WORKSPACE&#125;/$&#123;JOB_NAME&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">echo "Hello, world!”</span><br></pre></td></tr></table></figure>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd /$&#123;WORKSPACE&#125;</span><br><span class="line">tar -zcvf /var/www/code<span class="emphasis">_backup/$&#123;JOB_</span>NAME&#125;<span class="emphasis">_$&#123;BUILD_</span>NUMBER&#125;.tar.gz $&#123;JOB_NAME&#125;</span><br><span class="line">tar -zcvf /var/www/code<span class="emphasis">_backup/$&#123;JOB_</span>NAME&#125;<span class="emphasis">_$&#123;BUILD_</span>NUMBER&#125;_bak.tar.gz /var/www/lumen6.caoxl.com</span><br><span class="line">mv /var/www/code<span class="emphasis">_backup/$&#123;JOB_</span>NAME&#125;<span class="emphasis">_$&#123;BUILD_</span>NUMBER&#125;.tar.gz /var/www/</span><br><span class="line">cd /var/www/</span><br><span class="line">tar -zxvf $&#123;JOB<span class="emphasis">_NAME&#125;_</span>$&#123;BUILD_NUMBER&#125;.tar.gz</span><br><span class="line">rm $&#123;JOB<span class="emphasis">_NAME&#125;_</span>$&#123;BUILD_NUMBER&#125;.tar.gz</span><br><span class="line">chown -Rf www:www *</span><br></pre></td></tr></table></figure>
 <h1 id="Jenkins-触发式构建"><a href="#Jenkins-触发式构建" class="headerlink" title="Jenkins 触发式构建"></a>Jenkins 触发式构建</h1><blockquote>
 <p>用于开发环境部署，开发人员push代码或者合并代码到gitlab项目的master分支，jenkins就部署代码到对应服务器。</p>
@@ -233,7 +233,6 @@
 <h1 id="Jenkins-定时构建"><a href="#Jenkins-定时构建" class="headerlink" title="Jenkins 定时构建"></a>Jenkins 定时构建</h1><blockquote>
 <p>用于APP自动打包，定时构建是在参数化构建的基础上添加的，开发人员可以登录jenkins手动传入tag进行打包，如果不手动打包，那么jenkins就每天凌晨从gitlab拉取最新的APP代码打包。</p>
 </blockquote>
-<p>// 压缩<br>cd /var/lib/jenkins/workspace/<br>tar -zcvf /var/www/code_backup/lumen6.caoxl.com_17.tar.gz lumen6.caoxl.com<br>tar -zcvf /var/www/code_backup/lumen6.caoxl.com_17_bak.tar.gz /var/www/lumen6.caoxl.com<br>mv /var/www/code_backup/lumen6.caoxl.com_17.tar.gz /var/www/<br>cd /var/www/<br>// 解压<br>tar -zxvf lumen6.caoxl.com_17.tar.gz<br>rm ${JOB_NAME}_${BUILD_NUMBER}.tar.gz<br>chown -Rf www:www *</p>
 
         
       
