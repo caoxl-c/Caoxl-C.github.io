@@ -19,7 +19,7 @@
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="使用 Gitlab+Jenkins 实现自动化构建">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-06-04T01:30:03.355Z">
+<meta property="og:updated_time" content="2020-06-04T06:22:29.988Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用 Gitlab+Jenkins 实现自动化构建">
 <meta name="twitter:description" content="使用 Gitlab+Jenkins 实现自动化构建">
@@ -214,7 +214,7 @@
 <li>添加公钥到jenkins服务器root用户，用来执行部署脚本</li>
 </ul>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 输入以下, 并且输入服务器密码即可</span><br><span class="line">[root@caoxl ~]# ssh-copy-id -i .ssh/id_rsa.pub root@47.107.169.233</span><br><span class="line">/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: ".ssh/id_rsa.pub"</span><br><span class="line">/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed</span><br><span class="line">/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys</span><br><span class="line">root@47.107.169.233's password: </span><br><span class="line"></span><br><span class="line">Number of key(s) added: 1</span><br><span class="line"></span><br><span class="line">Now try logging into the machine, with:   "ssh 'root@47.107.169.233'"</span><br><span class="line">and check to make sure that only the key(s) you wanted were added.</span><br></pre></td></tr></table></figure>
-<h2 id="准备一个脚本"><a href="#准备一个脚本" class="headerlink" title="准备一个脚本"></a>准备一个脚本</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl deploy]# cat /shell/deploy/jenkins_deploy.sh</span><br><span class="line"><span class="section">#!/bin/bash</span></span><br><span class="line">echo "部署脚本被执行"</span><br></pre></td></tr></table></figure>
+<h2 id="准备一个脚本"><a href="#准备一个脚本" class="headerlink" title="准备一个脚本"></a>准备一个脚本</h2><figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl deploy]# cat /shell/deploy/jenkins_deploy.sh</span><br><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">echo "部署脚本被执行"</span><br></pre></td></tr></table></figure>
 <p>注意：如果是生产配置，直接把这个脚本换成对应项目的上线脚本即可，jenkins配置无须修改。</p>
 <ul>
 <li>正式脚本</li>
@@ -222,7 +222,6 @@
 <blockquote>
 <p>/bin/sh /shell/deploy/jenkins_deploy.sh ${WORKSPACE} ${JOB_NAME} ${BUILD_NUMBER}</p>
 </blockquote>
-<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">echo "Hello, world!”</span><br></pre></td></tr></table></figure>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd /$&#123;WORKSPACE&#125;</span><br><span class="line">tar -zcvf /var/www/code<span class="emphasis">_backup/$&#123;JOB_</span>NAME&#125;<span class="emphasis">_$&#123;BUILD_</span>NUMBER&#125;.tar.gz $&#123;JOB_NAME&#125;</span><br><span class="line">tar -zcvf /var/www/code<span class="emphasis">_backup/$&#123;JOB_</span>NAME&#125;<span class="emphasis">_$&#123;BUILD_</span>NUMBER&#125;_bak.tar.gz /var/www/lumen6.caoxl.com</span><br><span class="line">mv /var/www/code<span class="emphasis">_backup/$&#123;JOB_</span>NAME&#125;<span class="emphasis">_$&#123;BUILD_</span>NUMBER&#125;.tar.gz /var/www/</span><br><span class="line">cd /var/www/</span><br><span class="line">tar -zxvf $&#123;JOB<span class="emphasis">_NAME&#125;_</span>$&#123;BUILD_NUMBER&#125;.tar.gz</span><br><span class="line">rm $&#123;JOB<span class="emphasis">_NAME&#125;_</span>$&#123;BUILD_NUMBER&#125;.tar.gz</span><br><span class="line">chown -Rf www:www *</span><br></pre></td></tr></table></figure>
 <h1 id="Jenkins-触发式构建"><a href="#Jenkins-触发式构建" class="headerlink" title="Jenkins 触发式构建"></a>Jenkins 触发式构建</h1><blockquote>
 <p>用于开发环境部署，开发人员push代码或者合并代码到gitlab项目的master分支，jenkins就部署代码到对应服务器。</p>
@@ -273,6 +272,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2020/06/15/Git-Use-Notes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          三年 Git 使用心得 &amp; 常见问题整理
+        
+      </div>
+    </a>
   
   
     <a href="/2020/06/02/Install-Jenkins-In-CentOS7/" id="article-nav-older" class="article-nav-link-wrap">
