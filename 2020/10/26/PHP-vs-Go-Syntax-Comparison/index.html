@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php与go的语法对比 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHPGo">
+  
+  
+  
+  
+  <meta name="description" content="PHP 是一种动态类型语言，它使新手更容易编写代码。现在的问题是，PHP 开发人员能否从动态类型语言切换到像 Go 这样的静态类型语言？为了找到答案，让我们对比一下 Go 和 PHP 之间的语法差异。 Go 是由 Google 设计的一门静态类型的编译型语言。它有点类似于 C，但是它包含了更多的优点，比如垃圾回收、内存安全、结构类型和并发性。它的并发机制使多核和网络机器能够发挥最大的作用。这是 G">
+<meta name="keywords" content="PHP,Go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP与Go的语法对比">
+<meta property="og:url" content="http://blog.caoxl.com/2020/10/26/PHP-vs-Go-Syntax-Comparison/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="PHP 是一种动态类型语言，它使新手更容易编写代码。现在的问题是，PHP 开发人员能否从动态类型语言切换到像 Go 这样的静态类型语言？为了找到答案，让我们对比一下 Go 和 PHP 之间的语法差异。 Go 是由 Google 设计的一门静态类型的编译型语言。它有点类似于 C，但是它包含了更多的优点，比如垃圾回收、内存安全、结构类型和并发性。它的并发机制使多核和网络机器能够发挥最大的作用。这是 G">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-10-26T03:50:31.229Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP与Go的语法对比">
+<meta name="twitter:description" content="PHP 是一种动态类型语言，它使新手更容易编写代码。现在的问题是，PHP 开发人员能否从动态类型语言切换到像 Go 这样的静态类型语言？为了找到答案，让我们对比一下 Go 和 PHP 之间的语法差异。 Go 是由 Google 设计的一门静态类型的编译型语言。它有点类似于 C，但是它包含了更多的优点，比如垃圾回收、内存安全、结构类型和并发性。它的并发机制使多核和网络机器能够发挥最大的作用。这是 G">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-vs-Go-Syntax-Comparison" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP与Go的语法对比
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2020/10/26/PHP-vs-Go-Syntax-Comparison/" class="article-date">
+	  <time datetime="2020-10-26T03:01:10.000Z" itemprop="datePublished">2020-10-26</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Caoxl/">Caoxl</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p><code>PHP</code> 是一种动态类型语言，它使新手更容易编写代码。现在的问题是，PHP 开发人员能否从动态类型语言切换到像 Go 这样的静态类型语言？为了找到答案，让我们对比一下 Go 和 PHP 之间的语法差异。</p>
+<p><code>Go</code> 是由 Google 设计的一门静态类型的编译型语言。它有点类似于 C，但是它包含了更多的优点，比如垃圾回收、内存安全、结构类型和并发性。它的并发机制使多核和网络机器能够发挥最大的作用。这是 GoLang 的最佳卖点之一。此外，Go 速度快，表现力强，干净且高效。这也是 Go 如此吸引开发者学习的原因。</p>
+<a id="more"></a>
+<h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><ul>
+<li><code>Go</code> 同时支持有符号和无符号整数，而 <code>PHP</code> 只支持有符号整数。</li>
+<li>另一个主要区别是数组。<code>Go</code> 对 <code>array</code> 和 <code>map</code> 有单独的类型，而 <code>PHP</code> 数组实际上是有序的 <code>map</code>。</li>
+<li><code>Go</code> 与 <code>PHP</code> 相比没有对象。但是，Go 有一个类似于 <code>object</code> 的 <code>struct</code> 类型。</li>
+</ul>
+<h2 id="PHP-数据类型"><a href="#PHP-数据类型" class="headerlink" title="PHP 数据类型:"></a>PHP 数据类型:</h2><figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">boolean</span><br><span class="line">string</span><br><span class="line">integer // Signed integer, PHP does<span class="built_in"> not </span>support unsigned integers.</span><br><span class="line">float (also known as <span class="string">"floats"</span>, <span class="string">"doubles"</span>,<span class="built_in"> or </span><span class="string">"real numbers"</span>)</span><br><span class="line">array</span><br><span class="line">object</span><br><span class="line">null</span><br><span class="line">resource</span><br></pre></td></tr></table></figure>
+<h2 id="Go-数据类型"><a href="#Go-数据类型" class="headerlink" title="Go 数据类型:"></a>Go 数据类型:</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span></span><br><span class="line"><span class="keyword">bool</span></span><br><span class="line"><span class="keyword">int</span>  <span class="keyword">int8</span>  <span class="keyword">int16</span>  <span class="keyword">int32</span>  <span class="keyword">int64</span> <span class="comment">// Signed integer</span></span><br><span class="line"><span class="keyword">uint</span> <span class="keyword">uint8</span> <span class="keyword">uint16</span> <span class="keyword">uint32</span> <span class="keyword">uint64</span> <span class="keyword">uintptr</span> <span class="comment">// Unsigned integers</span></span><br><span class="line"><span class="keyword">byte</span> <span class="comment">// alias for uint8</span></span><br><span class="line"><span class="keyword">rune</span> <span class="comment">// alias for int32</span></span><br><span class="line"><span class="keyword">float32</span> <span class="keyword">float64</span></span><br><span class="line"><span class="keyword">complex64</span> <span class="keyword">complex128</span></span><br><span class="line">array</span><br><span class="line">slices</span><br><span class="line"><span class="keyword">map</span></span><br><span class="line"><span class="keyword">struct</span></span><br></pre></td></tr></table></figure>
+<h1 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h1><p>Go 使用 <code>var</code> 声明全局变量和函数变量。但是，它也支持带有初始化程序的简写语法，但只能在函数内部使用。另一方面，PHP 仅支持带有初始化程序的变量声明。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 变量声明</span></span><br><span class="line"><span class="comment">// Go               // PHP</span></span><br><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">i</span> int           <span class="variable">$i</span> = <span class="number">0</span>      <span class="comment">// integer</span></span><br><span class="line"><span class="selector-tag">var</span> f float64       <span class="variable">$f</span> = <span class="number">0.0</span>    <span class="comment">// float</span></span><br><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">b</span> bool          <span class="variable">$b</span> = false  <span class="comment">// boolean</span></span><br><span class="line"><span class="selector-tag">var</span> s string        <span class="variable">$s</span> = <span class="string">""</span>     <span class="comment">// string</span></span><br><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">a</span> [<span class="number">2</span>]string     <span class="variable">$a</span> = []     <span class="comment">// array</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 简短的变量声明</span></span><br><span class="line"><span class="comment">// Go                      // PHP</span></span><br><span class="line"><span class="selector-tag">i</span> := <span class="number">0</span>                     <span class="variable">$i</span> = <span class="number">0</span>      <span class="comment">// integer</span></span><br><span class="line">f := <span class="number">0.0</span>                   <span class="variable">$f</span> = <span class="number">0.0</span>    <span class="comment">// float</span></span><br><span class="line"><span class="selector-tag">b</span> := false                 <span class="variable">$b</span> = false  <span class="comment">// boolean</span></span><br><span class="line">s := <span class="string">""</span>                    <span class="variable">$s</span> = <span class="string">""</span>     <span class="comment">// string</span></span><br><span class="line"><span class="selector-tag">a</span> := [<span class="number">1</span>]string&#123;<span class="string">"hello"</span>&#125;    <span class="variable">$a</span> = []     <span class="comment">// array</span></span><br></pre></td></tr></table></figure>
+<h1 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h1><ul>
+<li>Go</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">i := <span class="number">42</span>             <span class="comment">// Signed integer</span></span><br><span class="line">f := <span class="keyword">float64</span>(i)     <span class="comment">// Float</span></span><br><span class="line">u := <span class="keyword">uint</span>(f)        <span class="comment">// Unsigned integer</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$i = <span class="number">1</span>;</span><br><span class="line">$f = (<span class="keyword">float</span>) $i;    <span class="comment">// 1.0</span></span><br><span class="line">$b = (bool) $f      <span class="comment">// true</span></span><br><span class="line">$s = (<span class="keyword">string</span>) $b    <span class="comment">// "1"</span></span><br></pre></td></tr></table></figure>
+<h1 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h1><ul>
+<li>Go</li>
+</ul>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Go</span></span><br><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">a</span> [<span class="number">2</span>]string</span><br><span class="line"><span class="selector-tag">a</span>[<span class="number">0</span>] = <span class="string">"Hello"</span></span><br><span class="line"><span class="selector-tag">a</span>[<span class="number">1</span>] = <span class="string">"World"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// OR</span></span><br><span class="line"><span class="selector-tag">a</span> := [<span class="number">2</span>]string&#123;<span class="string">"hello"</span>, <span class="string">"world"</span>&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PHP</span></span><br><span class="line">$a = [</span><br><span class="line">    <span class="string">"hello"</span>,</span><br><span class="line">    <span class="string">"world"</span></span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<h1 id="Maps"><a href="#Maps" class="headerlink" title="Maps"></a>Maps</h1><ul>
+<li>Go</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Go</span></span><br><span class="line">m := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;</span><br><span class="line">    <span class="string">"first_name"</span>: <span class="string">"Foo"</span>,</span><br><span class="line">    <span class="string">"last_name"</span>: <span class="string">"Bar"</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PHP</span></span><br><span class="line">$m = [</span><br><span class="line">    <span class="string">"first_name"</span> =&gt; <span class="string">"Foo"</span>,</span><br><span class="line">    <span class="string">"last_name"</span> =&gt; <span class="string">"Bar"</span></span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<h1 id="对象类型"><a href="#对象类型" class="headerlink" title="对象类型"></a>对象类型</h1><p>Go 不支持对象。但是，您可以使用 <code>structs</code> 实现 <code>object</code> 之类的语法。</p>
+<ul>
+<li>Go</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Go</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span></span><br><span class="line">    Address <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    person := Person&#123;<span class="string">"Foo bar"</span>, <span class="string">"Sydney, Australia"</span>&#125;</span><br><span class="line">    fmt.Println(person.Name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PHP</span></span><br><span class="line">$person = <span class="keyword">new</span> stdClass;</span><br><span class="line">$person-&gt;Name = <span class="string">"Foo bar"</span>;</span><br><span class="line">$person-&gt;Address = <span class="string">"Sydney, Australia"</span>;</span><br><span class="line"><span class="keyword">echo</span> $person-&gt;Name;</span><br><span class="line"><span class="comment">// 或使用类型转换</span></span><br><span class="line">$person = (object) [</span><br><span class="line">    <span class="string">'Name'</span> =&gt; <span class="string">"Foo bar"</span>,</span><br><span class="line">    <span class="string">'Address'</span> =&gt; <span class="string">"Sydney, Australia"</span></span><br><span class="line">];</span><br><span class="line"><span class="keyword">echo</span> $person-&gt;Name;</span><br></pre></td></tr></table></figure>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><p>Go 和 PHP 函数之间的主要区别是； <strong>Go 函数可以返回任意数量的结果，而 PHP 函数只能返回一个结果。</strong> 但是，PHP 可以通过返回数组来模拟相同的功能。</p>
+<ul>
+<li>Go</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Go</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fullname</span><span class="params">(firstName <span class="keyword">string</span>, lastName <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> firstName + <span class="string">" "</span> + lastName</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    name := fullname(<span class="string">"Foo"</span>, <span class="string">"Bar"</span>)</span><br><span class="line">    fmt.Println(name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PHP</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fullname</span><span class="params">(string $firstName, string $lastName)</span> : <span class="title">string</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> $firstName . <span class="string">" "</span> . $lastName;</span><br><span class="line">&#125;</span><br><span class="line">$name = fullname(<span class="string">"Foo"</span>, <span class="string">"Bar"</span>);</span><br><span class="line"><span class="keyword">echo</span> $name;</span><br></pre></td></tr></table></figure>
+<h2 id="返回多个结果"><a href="#返回多个结果" class="headerlink" title="返回多个结果"></a>返回多个结果</h2><ul>
+<li>Go</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Go</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">swap</span><span class="params">(x, y <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">string</span>, <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> y, x</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    a, b := swap(<span class="string">"hello"</span>, <span class="string">"world"</span>)</span><br><span class="line">    fmt.Println(a, b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PHP</span></span><br><span class="line"><span class="comment">// 返回一个数组以获得多个结果</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">swap</span><span class="params">(string $x, string $y)</span>: <span class="title">array</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> [$y, $x];</span><br><span class="line">&#125;</span><br><span class="line">[$a, $b] = swap(<span class="string">'hello'</span>, <span class="string">'world'</span>);</span><br><span class="line"><span class="keyword">echo</span> $a, $b;</span><br></pre></td></tr></table></figure>
+<h1 id="控制语句"><a href="#控制语句" class="headerlink" title="控制语句"></a>控制语句</h1><h2 id="if-else"><a href="#if-else" class="headerlink" title="if-else"></a><code>if-else</code></h2><ul>
+<li>Go</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">compare</span><span class="params">(a <span class="keyword">int</span>, b <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> a &gt; b &#123;</span><br><span class="line">        fmt.Println(<span class="string">"a is bigger than b"</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"a is NOT greater than b"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    compare(<span class="number">12</span>, <span class="number">10</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">compare</span><span class="params">(int $a, int $b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ($a &gt; $b) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"a is bigger than b"</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"a is NOT greater than b"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">compare(<span class="number">12</span>, <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="switch"><a href="#switch" class="headerlink" title="switch"></a><code>switch</code></h2><p>根据 Golang 官方教程文档:</p>
+<blockquote>
+<p>Go 的 switch 与 C，C+，Java，JavaScript 和 PHP 中的类似，除了 Go 只运行选中的 case，而不是随后的所有 case。 实际上， <code>break</code> 语句在这些语言中的每个 case<br>后都是必需的，而在 Go 中则是自动补充的。另一个重要的区别是 Go 的 switch cases 不需要是常量，并且涉及的值也不必是整数。</p>
+</blockquote>
+<ul>
+<li>Go</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"runtime"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Print(<span class="string">"Go runs on "</span>)</span><br><span class="line"></span><br><span class="line">    os := runtime.GOOS;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> os &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">"darwin"</span>:</span><br><span class="line">        fmt.Println(<span class="string">"OS X."</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="string">"linux"</span>:</span><br><span class="line">        fmt.Println(<span class="string">"Linux."</span>)</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        fmt.Printf(<span class="string">"%s.\n"</span>, os)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="string">"PHP runs on "</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span> (PHP_OS) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">"darwin"</span>:</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"OS X."</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">"linux"</span>:</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"Linux."</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">echo</span> PHP_OS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="for"><a href="#for" class="headerlink" title="for"></a>for</h2><ul>
+<li>Go</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    sum := <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        sum += i</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fmt.Println(sum)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$sum = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; <span class="number">10</span>; $i++) &#123;</span><br><span class="line">    $sum += $i;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span> $sum;</span><br></pre></td></tr></table></figure>
+<h2 id="while"><a href="#while" class="headerlink" title="while"></a>while</h2><p>Go 自身没有 while 循环的语法。相应的，Go 使用 for 循环代替实现 <code>while</code> 循环.</p>
+<ul>
+<li>Go</li>
+</ul>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line">func main() &#123;</span><br><span class="line">    <span class="built_in">sum</span> := <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    for <span class="built_in">sum</span> &lt; <span class="number">100</span> &#123;</span><br><span class="line">        <span class="built_in">sum</span> += <span class="built_in">sum</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fmt</span>.Println(<span class="built_in">sum</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$sum = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">while</span> ($sum &lt; <span class="number">100</span>) &#123;</span><br><span class="line">    $sum += $sum;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span> $sum;</span><br></pre></td></tr></table></figure>
+<h2 id="foreach-range"><a href="#foreach-range" class="headerlink" title="foreach/range"></a>foreach/range</h2><p>PHP 使用 <code>foreach</code> 迭代数组和对象。与之对应，Go 使用 <code>range</code> 迭代 slice 或 map。</p>
+<ul>
+<li>Go</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    colours := []<span class="keyword">string</span>&#123;<span class="string">"Maroon"</span>, <span class="string">"Red"</span>, <span class="string">"Green"</span>, <span class="string">"Blue"</span>&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> index, colour := <span class="keyword">range</span> colours &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"index: %d, colour: %s\n"</span>, index, colour)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>PHP</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$colours = [<span class="string">"Maroon"</span>, <span class="string">"Red"</span>, <span class="string">"Green"</span>, <span class="string">"Blue"</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> ($colours <span class="keyword">as</span> $index =&gt; $color) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"index: &#123;$index&#125;, color: &#123;$color&#125;\n"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://engineering.carsguide.com.au/go-vs-php-syntax-comparison-c1465380b8ff" target="_blank" rel="noopener">原文地址</a></li>
+<li><a href="https://learnku.com/php/t/39590" target="_blank" rel="noopener">译文地址</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2020/10/26/PHP-vs-Go-Syntax-Comparison/" target="_blank" title="PHP与Go的语法对比">http://blog.caoxl.com/2020/10/26/PHP-vs-Go-Syntax-Comparison/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/09/23/Interview-Questions-Notes-IX/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">PHP面试/笔试题杂记 IX</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据类型"><span class="nav-number">1.</span> <span class="nav-text">数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-数据类型"><span class="nav-number">1.1.</span> <span class="nav-text">PHP 数据类型:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go-数据类型"><span class="nav-number">1.2.</span> <span class="nav-text">Go 数据类型:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#变量"><span class="nav-number">2.</span> <span class="nav-text">变量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类型转换"><span class="nav-number">3.</span> <span class="nav-text">类型转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数组"><span class="nav-number">4.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Maps"><span class="nav-number">5.</span> <span class="nav-text">Maps</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象类型"><span class="nav-number">6.</span> <span class="nav-text">对象类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#函数"><span class="nav-number">7.</span> <span class="nav-text">函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#返回多个结果"><span class="nav-number">7.1.</span> <span class="nav-text">返回多个结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#控制语句"><span class="nav-number">8.</span> <span class="nav-text">控制语句</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#if-else"><span class="nav-number">8.1.</span> <span class="nav-text">if-else</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#switch"><span class="nav-number">8.2.</span> <span class="nav-text">switch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#for"><span class="nav-number">8.3.</span> <span class="nav-text">for</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#while"><span class="nav-number">8.4.</span> <span class="nav-text">while</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#foreach-range"><span class="nav-number">8.5.</span> <span class="nav-text">foreach/range</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2020 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2020 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
