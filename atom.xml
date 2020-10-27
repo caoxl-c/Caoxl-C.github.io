@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://blog.caoxl.com/"/>
-  <updated>2020-10-26T07:15:10.915Z</updated>
+  <updated>2020-10-27T08:47:00.729Z</updated>
   <id>http://blog.caoxl.com/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>PHP 单元测试</title>
+    <link href="http://blog.caoxl.com/2020/10/27/PHP-Unit-Test/"/>
+    <id>http://blog.caoxl.com/2020/10/27/PHP-Unit-Test/</id>
+    <published>2020-10-27T08:30:20.000Z</published>
+    <updated>2020-10-27T08:47:00.729Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>朋友，你听说过安。。。不是，写过单元测试吗。</p><p>单元测试是开发过程中必不可少的一环，一个项目有良好的单元测试代码，重构的勇气都大很多。这次写一篇小文来介绍一下 PHP 的单元测试工具 PHPUnit 的使用。</p><a id="more"></a><h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>安装 PHPUnit 的方式很简单，使用 composer 可以一行代码就可以安装。</p><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer require --dev phpunit/phpunit</span><br></pre></td></tr></table></figure><p>安装之后，在 <code>vendor/bin</code> 目录下有一个 <code>phpunit</code> 的可执行文件，这个就是 <code>phpunit</code> 本体了</p><p>假设我们项目的目录结构如下：</p><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">➜  phpunit tree .</span><br><span class="line"></span><br><span class="line">├── controller</span><br><span class="line">├── model</span><br><span class="line">├── service</span><br><span class="line">├── test</span><br><span class="line">└── vendor</span><br><span class="line">├── composer.json</span><br></pre></td></tr></table></figure><p>其中我们的单元测试代码都放在 test 目录下。使用 composer 来为我们解决 autoload 的问题</p><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"autoload"</span>: &#123;</span><br><span class="line">    <span class="attr">"psr-4"</span>: &#123;</span><br><span class="line">      <span class="attr">"Controller\\"</span>: <span class="string">"controller/"</span>,</span><br><span class="line">      <span class="attr">"Model\\"</span>: <span class="string">"model/"</span>,</span><br><span class="line">      <span class="attr">"Service\\"</span>: <span class="string">"service/"</span>,</span><br><span class="line">      <span class="attr">"Test\\"</span>: <span class="string">"test/"</span>,</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>好了，假设我们现在进行开发，在 service 目录中添加了一个 CalculateService 的文件，并且编写了一个 abs 的函数。</p><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">Service</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">CalculateService</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">abs</span><span class="params">($num)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> abs($num);</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure><p>现在我们对 abs 函数进行单元测试，PHPUnit 规定了一个测试类必须遵守如下的规定：</p><ul><li>单元测试类名必须以 <code>Test</code> 结尾，必须继承 <code>\PHPUnit\Framework\TestCase</code> 基类。</li><li>每个测试函数必须以 <code>test</code> 开头。</li></ul><p>上面的规定是必须遵守的，如果代码没有遵守规定 PHPUnit 不会把他当做单元测试代码。除了以上的两条，还有一些良好的编码习惯可以参考：</p><ul><li>单元测试代码都放在 <code>test</code> 目录下。</li><li>每个单元测试类以被测试的类名开头。例如被测试类为 <code>CalculateService</code>，那么单元测试类应该为 <code>CalculateServiceTest</code>。</li><li>每个单元测试函数应该为被测试函数名结尾。例如被测试函数为 <code>abs</code>，那么单元测试函数应该为 <code>testAbs</code>。</li></ul><p>根据上面的规范，编写单元测试代码</p><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">Test</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Service</span>\<span class="title">CalculateService</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PHPUnit</span>\<span class="title">Framework</span>\<span class="title">TestCase</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">CalculateServiceTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testAbs</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $calculateService = <span class="keyword">new</span> CalculateService();</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">4</span>, $calculateService-&gt;abs(<span class="number">4</span>));</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure><p>在上面的测试代码中，调用了我们要测试的函数 <code>abs</code>，然后断言 <code>$calculateService-&gt;abs(4)</code> 的结果为 <code>4</code>。在 phpstorm 中直接在 <code>testAbs</code> 函数处右键选择 <code>run CalculateServiceTest</code> 执行：</p><p>发现在控制台会输出如下内容</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Time: <span class="number">00</span>:<span class="number">00.068</span>, Memory: <span class="number">6.00</span> MB</span><br><span class="line"> </span><br><span class="line">OK (<span class="number">1</span> test, <span class="number">1</span> assertion)</span><br><span class="line"></span><br><span class="line">Process finished with <span class="keyword">exit</span> code <span class="number">0</span></span><br></pre></td></tr></table></figure><p>表明 <code>abs</code> 通过了 <code>$calculateService-&gt;abs(4) == 4</code> 的测试用例。<strong>这里注意一点，这里并不表明 abs 函数已经通过测试，一个良好的测试应该包含多个测试用例来覆盖尽可能多的可能性</strong>。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;朋友，你听说过安。。。不是，写过单元测试吗。&lt;/p&gt;
+&lt;p&gt;单元测试是开发过程中必不可少的一环，一个项目有良好的单元测试代码，重构的勇气都大很多。这次写一篇小文来介绍一下 PHP 的单元测试工具 PHPUnit 的使用。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="PHP" scheme="http://blog.caoxl.com/categories/PHP/"/>
+    
+    
+      <category term="PHP" scheme="http://blog.caoxl.com/tags/PHP/"/>
+    
+      <category term="单元测试" scheme="http://blog.caoxl.com/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
   
   <entry>
     <title>做一顿饭来理解协程</title>
@@ -503,33 +528,6 @@
     
     
       <category term="Swoole" scheme="http://blog.caoxl.com/tags/Swoole/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Swoft V2 学习日志</title>
-    <link href="http://blog.caoxl.com/2020/04/09/Swoft-V2-Learning/"/>
-    <id>http://blog.caoxl.com/2020/04/09/Swoft-V2-Learning/</id>
-    <published>2020-04-09T02:43:20.000Z</published>
-    <updated>2020-04-09T02:48:29.000Z</updated>
-    
-    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/assets/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/assets/js/APlayer.min.js&quot; cla
-      
-    
-    </summary>
-    
-      <category term="加分技能" scheme="http://blog.caoxl.com/categories/%E5%8A%A0%E5%88%86%E6%8A%80%E8%83%BD/"/>
-    
-    
-      <category term="Swoole" scheme="http://blog.caoxl.com/tags/Swoole/"/>
-    
-      <category term="Swoft" scheme="http://blog.caoxl.com/tags/Swoft/"/>
     
   </entry>
   
