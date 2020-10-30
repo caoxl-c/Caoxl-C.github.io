@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>php单元测试 (一) 基础 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHPUnit单元测试">
+  
+  
+  
+  
+  <meta name="description" content="概述 单元测试（unit testing），是指对软件中的最小可测试单元进行检查和验证。">
+<meta name="keywords" content="PHPUnit,单元测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP单元测试 (一) 基础">
+<meta property="og:url" content="http://blog.caoxl.com/2020/10/29/PHP-Unit-I-Basic/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="概述 单元测试（unit testing），是指对软件中的最小可测试单元进行检查和验证。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-10-29T09:02:02.918Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP单元测试 (一) 基础">
+<meta name="twitter:description" content="概述 单元测试（unit testing），是指对软件中的最小可测试单元进行检查和验证。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-PHP-Unit-I-Basic" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      PHP单元测试 (一) 基础
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2020/10/29/PHP-Unit-I-Basic/" class="article-date">
+	  <time datetime="2020-10-29T06:12:49.000Z" itemprop="datePublished">2020-10-29</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><blockquote>
+<p>单元测试（unit testing），是指对软件中的最小可测试单元进行检查和验证。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="测试DEMO"><a href="#测试DEMO" class="headerlink" title="测试DEMO"></a>测试DEMO</h1><ul>
+<li><code>Transfer.php</code></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">Controller</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">Transfer</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">private</span> $accountA = <span class="number">100</span>;</span></span><br><span class="line"><span class="php">    <span class="keyword">private</span> $accountB = <span class="number">100</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">aToB</span><span class="params">(int $money)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;accountA -= $money;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;accountB += $money;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">bToA</span><span class="params">(int $money)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;accountB -= $money;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;accountA += $money;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getAccountA</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;accountA;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getAccountB</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;accountB;</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>TransferTest.php</code></li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">Test</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Controller</span>\<span class="title">Transfer</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PHPUnit</span>\<span class="title">Framework</span>\<span class="title">TestCase</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">TransferTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">private</span> $transferObj;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">setUp</span><span class="params">()</span> : <span class="title">void</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;transferObj = <span class="keyword">new</span> Transfer();</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testAtoB</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $originalA = <span class="keyword">$this</span>-&gt;transferObj-&gt;getAccountA();</span></span><br><span class="line"><span class="php">        $originalB = <span class="keyword">$this</span>-&gt;transferObj-&gt;getAccountB();</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;transferObj-&gt;aToB(<span class="number">10</span>);</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;assertEquals($originalA - <span class="number">10</span>, <span class="keyword">$this</span>-&gt;transferObj-&gt;getAccountA());</span></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;assertEquals($originalB + <span class="number">10</span>, <span class="keyword">$this</span>-&gt;transferObj-&gt;getAccountB());</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>执行测试:</li>
+</ul>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PHPUnit 9.5-gd3b55c36f by Sebastian Bergmann and contributors.</span><br><span class="line"></span><br><span class="line">.                                                                   1 / 1 (100%)</span><br><span class="line"></span><br><span class="line"><span class="keyword">Time:</span> 00:00.029, Memory: 8.00 MB</span><br><span class="line"></span><br><span class="line">OK (1 test, 2 assertions)</span><br></pre></td></tr></table></figure>
+<h1 id="详细使用"><a href="#详细使用" class="headerlink" title="详细使用"></a>详细使用</h1><h2 id="基境"><a href="#基境" class="headerlink" title="基境"></a>基境</h2><blockquote>
+<p><a href="https://phpunit.readthedocs.io/en/9.3/fixtures.html" target="_blank" rel="noopener">https://phpunit.readthedocs.io/en/9.3/fixtures.html</a></p>
+</blockquote>
+<p>PHPUnit 支持共享建立基境的代码。</p>
+<p>提供了以下几个模板方法：</p>
+<ul>
+<li><code>setUpBeforeClass</code>: 测试用例类的第一个测试运行之前执行</li>
+<li><code>tearDownAfterClass</code>:  测试用例类的最后一个测试运行之后执行</li>
+<li><code>setUp</code>: 每个测试方法运行之前执行</li>
+<li><code>tearDown</code>: 每个测试方法运行之后执行</li>
+</ul>
+<p><strong>注意：每个测试方法都是在一个全新的测试类实例上运行的</strong></p>
+<h3 id="全局状态"><a href="#全局状态" class="headerlink" title="全局状态"></a>全局状态</h3><blockquote>
+<p><a href="https://phpunit.readthedocs.io/en/9.3/fixtures.html#global-state" target="_blank" rel="noopener">https://phpunit.readthedocs.io/en/9.3/fixtures.html#global-state</a></p>
+</blockquote>
+<ul>
+<li>全局变量：有时候测试代码中用到了全局变量（$_GLOBALS），但是如果对这里面的变量进行了修改，可能会导致其他测试方法出现问题，那么怎么保证每个测试方法都使用的是一样的全局变量呢？ 通过：<code>@backupGlobals disabled|enabled</code> 它可标注在：<ul>
+<li>测试类: 作用范围为整个测试类</li>
+<li>测试方法: 作用范围为这个方法</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">Test</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PHPUnit</span>\<span class="title">Framework</span>\<span class="title">TestCase</span>;</span></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @backupGlobals disabled</span><br><span class="line"><span class="php"> */</span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">MyTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line">    /**</span><br><span class="line">     * @backupGlobals enabled</span><br><span class="line"><span class="php">     */</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testThatInteractsWithGlobalVariables</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>支持设置 “全局变量黑名单” 黑名单中的全局变量将被排除于备份与还原操作之外：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @backupGlobals disabled</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $backupGlobalsBlacklist = [<span class="symbol">'globalVariabl</span>e'];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * @backupGlobals enabled</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    public function testThatInteractsWithGlobalVariables()</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于全局变量的备份和还原的原理是使用了：<code>serialize()</code> 与 <code>unserialize()</code>。</p>
+<ul>
+<li><p><strong>注意</strong>：</p>
+<ul>
+<li>对于无法被序列化的对象放入 <code>$GLOBALS</code> 数组内时，备份操作就会出问题。比如：<code>PDO</code></li>
+<li>在方法（例如 <code>setUp()</code>）内对 <code>$backupGlobalsBlacklist</code> 属性进行设置是无效的</li>
+</ul>
+</li>
+<li><p>类的静态属性 。对于类的静态属性的备份和还原可以通过：<code>@backupStaticAttributes enabled|disabled</code><br>作用对象：在测试开始时已声明的所有类（而不仅是测试类自身），且只作用于静态类属性，不作用于函数内声明的静态变量。<br>使用位置和 <code>backupGlobals</code> 一致：</p>
+<ul>
+<li>测试类</li>
+<li>测试方法<br>只有启用了 <code>@backupStaticAttributes</code> 的测试方法才会在方法之前执行此操作。如果在此之前运行的某个没有启用 <code>@backupStaticAttributes</code> 的测试方法改变了静态属性的值，那么被备份及还原的将会是这个改变后的值</li>
+</ul>
+</li>
+</ul>
+<p>同样提供了黑名单支持：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $backupStaticAttributesBlacklist = [</span><br><span class="line">      <span class="symbol">'classNam</span>e' =&gt; [<span class="symbol">'attributeNam</span>e']</span><br><span class="line">    ];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="依赖关系"><a href="#依赖关系" class="headerlink" title="依赖关系"></a>依赖关系</h2><p>使用 <code>@depends</code> 声明测试方法所依赖的其他测试方法。 依赖方法的返回值，会作为被依赖方法的参数，其顺序和 <code>@depends</code> 的顺序一致，但是不会影响代码的执行顺序。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testOne</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;assertTrue(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"depends1"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testTwo</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;assertTrue(<span class="keyword">true</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"depends2"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@depends</span> testOne</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@depends</span> testTwo</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testDepends</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;assertEquals([<span class="string">'depends1'</span>, <span class="string">'depends2'</span>], func_get_args());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试结果</li>
+</ul>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Time:</span> 00:00.315, Memory: 6.00 MB</span><br><span class="line"></span><br><span class="line">OK (3 tests, 3 assertions)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>注意</strong>：<ul>
+<li>当被依赖的测试方法失败时，不会再执行依赖方法的测试。</li>
+<li>如果被依赖方法返回的是对象，默认是引用传递，如果希望传递对象的副本时，使用： <code>@depends clone</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="数据供给器"><a href="#数据供给器" class="headerlink" title="数据供给器"></a>数据供给器</h2><p>使用 <code>@dataProvider</code> 声明数据供给器。 对应的方法需要返回：</p>
+<ul>
+<li>数组（每个元素也是数组）</li>
+<li>可遍历的对象（实现了迭代接口）</li>
+</ul>
+<p>然后测试时，会将每次迭代器提供的一组数据进行测试，直到全部遍历完毕。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> $a</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> $b</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> $sum</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@dataProvider</span> additionProvider</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testSum</span><span class="params">($a, $b, $sum)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;assertEquals($sum, $a + $b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">additionProvider</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> [</span><br><span class="line">        [<span class="number">1</span>, <span class="number">3</span>, <span class="number">4</span>],</span><br><span class="line">        [<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>],</span><br><span class="line">        [<span class="number">1</span>, <span class="number">1</span>, <span class="number">3</span>],</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试结果</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">Failed</span> <span class="string">asserting</span> <span class="string">that</span> <span class="number">2</span> <span class="string">matches</span> <span class="string">expected</span> <span class="number">3</span><span class="string">.</span></span><br><span class="line"><span class="string">Expected</span> <span class="string">:3</span></span><br><span class="line"><span class="string">Actual</span>   <span class="string">:2</span></span><br><span class="line"><span class="string">&lt;Click</span> <span class="string">to</span> <span class="string">see</span> <span class="string">difference&gt;</span></span><br><span class="line"></span><br><span class="line"> <span class="string">/Users/caoxl/WWW/test.com/tests/MyTest.php:56</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Time:</span> <span class="number">00</span><span class="string">:00.403,</span> <span class="attr">Memory:</span> <span class="number">8.00</span> <span class="string">MB</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="string">FAILURES!</span></span><br><span class="line"><span class="attr">Tests:</span> <span class="number">3</span><span class="string">,</span> <span class="attr">Assertions:</span> <span class="number">3</span><span class="string">,</span> <span class="attr">Failures:</span> <span class="number">1</span><span class="string">.</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意:<ul>
+<li>和 <code>@depends</code> 同时使用时，<code>@provider</code> 提供的参数会优先于 <code>@depends</code> 提供的参数，并且，依赖关系提供的参数不会变化。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testOne</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;assertTrue(<span class="keyword">true</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'Depends1'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* <span class="doctag">@depends</span> testOne</span></span><br><span class="line"><span class="comment">* <span class="doctag">@dataProvider</span> additionProvider</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testSum</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;assertEquals([<span class="string">'Provider1'</span>, <span class="string">'Depends1'</span>], func_get_args());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//会测试两次，第一此传递：Provider1，第二次传递：Provider2</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">additionProvider</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> [</span><br><span class="line">      [<span class="string">'Provider1'</span>],</span><br><span class="line">      [<span class="string">'Provider2'</span>],</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试结果</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">PHPUnit</span> <span class="number">9.5</span><span class="string">-gd3b55c36f</span> <span class="string">by</span> <span class="string">Sebastian</span> <span class="string">Bergmann</span> <span class="string">and</span> <span class="string">contributors.</span></span><br><span class="line"></span><br><span class="line"><span class="string">Failed</span> <span class="string">asserting</span> <span class="string">that</span> <span class="string">two</span> <span class="string">arrays</span> <span class="string">are</span> <span class="string">equal.</span></span><br><span class="line"><span class="string">&lt;Click</span> <span class="string">to</span> <span class="string">see</span> <span class="string">difference&gt;</span></span><br><span class="line"></span><br><span class="line"> <span class="string">/Users/caoxl/WWW/test.com/tests/MyTest.php:57</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Time:</span> <span class="number">00</span><span class="string">:00.378,</span> <span class="attr">Memory:</span> <span class="number">8.00</span> <span class="string">MB</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="string">FAILURES!</span></span><br><span class="line"><span class="attr">Tests:</span> <span class="number">3</span><span class="string">,</span> <span class="attr">Assertions:</span> <span class="number">3</span><span class="string">,</span> <span class="attr">Failures:</span> <span class="number">1</span><span class="string">.</span></span><br></pre></td></tr></table></figure>
+<h2 id="异常测试"><a href="#异常测试" class="headerlink" title="异常测试"></a>异常测试</h2><p>异常测试有两种方式：</p>
+<ul>
+<li>在代码中使用: <code>$this-&gt;expectException(InvalidArgumentException::class);</code></li>
+<li>使用标注：<code>@expectException</code></li>
+</ul>
+<p>断言方法/标注：</p>
+<ul>
+<li><code>expectException</code></li>
+<li><code>expectExceptionCode</code></li>
+<li><code>expectExceptionMessage</code></li>
+<li><code>expectExceptionMessageRegExp</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testException1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;expectException(InvalidArgumentException::class);</span><br><span class="line">    <span class="keyword">$this</span>-&gt;expectExceptionMessage(<span class="string">"hello"</span>);</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="keyword">Exception</span>(<span class="string">'hello'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *  <span class="doctag">@expectedException</span> InvalidArgumentException</span></span><br><span class="line"><span class="comment"> *  <span class="doctag">@expectedExceptionMessage</span> hi</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testException2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> InvalidArgumentException(<span class="string">'hello'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：不允许对 ：<code>Exception</code> 类进行测试，异常类越明确越好。</p>
+<h2 id="错误调试"><a href="#错误调试" class="headerlink" title="错误调试"></a>错误调试</h2><p>默认情况下，在测试过程中如果触发到了 <code>PHP</code> 的错误/警告，<code>PHPUnit</code> 会将其转换为异常：</p>
+<ul>
+<li><code>PHPUnit\Framework\Error\Notice</code></li>
+<li><code>PHPUnit\Framework\Error\Warning</code></li>
+<li><code>PHPUnit\Framework\Error\Error</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testError</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;expectException(Error::class);</span><br><span class="line">    <span class="comment">// 触发一个错误</span></span><br><span class="line">    <span class="keyword">include</span> <span class="string">'file_not_existing_file.php'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试结果:</li>
+</ul>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Time:</span> 00:00.319, Memory: 8.00 MB</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">FAILURES!</span><br><span class="line">Tests: 1, Assertions: 1, Failures: 1.</span><br></pre></td></tr></table></figure>
+<h2 id="输出内容测试"><a href="#输出内容测试" class="headerlink" title="输出内容测试"></a>输出内容测试</h2><p>有时候，想要断言 某方法的运行过程中生成了预期的输出（例如，通过 <code>echo</code> 或 <code>print</code>）。<code>PHPUnit\Framework\TestCase</code> 类使用 PHP 的 输出缓冲 特性来为此提供必要的功能支持。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testOutput1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;expectOutputString(<span class="string">"Hello"</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"Hello"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testOutput2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;expectOutputRegex(<span class="string">"/\d+/"</span>);</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"Hello World"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试结果</li>
+</ul>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// testOutput2</span><br><span class="line">Failed asserting that 'Hello World' matches PCRE pattern "/\d+/".</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">Time:</span> 00:00.368, Memory: 8.00 MB</span><br><span class="line"></span><br><span class="line">FAILURES!</span><br><span class="line">Tests: 1, Assertions: 1, Failures: 1.</span><br></pre></td></tr></table></figure>
+<h2 id="标记未完成-与-跳过"><a href="#标记未完成-与-跳过" class="headerlink" title="标记未完成 与 跳过"></a>标记未完成 与 跳过</h2><ul>
+<li>标记未完成</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testMark</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;assertTrue(<span class="keyword">true</span>);</span><br><span class="line">    <span class="comment">// 在这里停止</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;markTestIncomplete(<span class="string">"后续还未完成"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试结果:</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">PHPUnit</span> <span class="number">9.5</span><span class="string">-gd3b55c36f</span> <span class="string">by</span> <span class="string">Sebastian</span> <span class="string">Bergmann</span> <span class="string">and</span> <span class="string">contributors.</span></span><br><span class="line"></span><br><span class="line"><span class="string">后续还未完成</span></span><br><span class="line"></span><br><span class="line"> <span class="string">/Users/caoxl/WWW/test.com/tests/MyTest.php:114</span></span><br><span class="line"> </span><br><span class="line"><span class="attr">Time:</span> <span class="number">00</span><span class="string">:00.393,</span> <span class="attr">Memory:</span> <span class="number">8.00</span> <span class="string">MB</span></span><br><span class="line"></span><br><span class="line"><span class="string">OK,</span> <span class="string">but</span> <span class="string">incomplete,</span> <span class="string">skipped,</span> <span class="string">or</span> <span class="string">risky</span> <span class="string">tests!</span></span><br><span class="line"><span class="attr">Tests:</span> <span class="number">1</span><span class="string">,</span> <span class="attr">Assertions:</span> <span class="number">1</span><span class="string">,</span> <span class="attr">Incomplete:</span> <span class="number">1</span><span class="string">.</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>跳过测试</li>
+</ul>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">setUp</span><span class="params">()</span>: void</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!extension_loaded(<span class="string">'mysqli'</span>)) &#123;</span><br><span class="line">        $<span class="keyword">this</span>-&gt;markTestSkipped(<span class="string">"MySQLi 扩展不可用"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试结果:</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">PHPUnit</span> <span class="number">9.5</span><span class="string">-gd3b55c36f</span> <span class="string">by</span> <span class="string">Sebastian</span> <span class="string">Bergmann</span> <span class="string">and</span> <span class="string">contributors.</span></span><br><span class="line"></span><br><span class="line"><span class="string">MySQLi</span> <span class="string">扩展不可用</span></span><br><span class="line"></span><br><span class="line"> <span class="string">/Users/caoxl/WWW/test.com/tests/MyTest.php:24</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Time:</span> <span class="number">00</span><span class="string">:00.425,</span> <span class="attr">Memory:</span> <span class="number">8.00</span> <span class="string">MB</span></span><br><span class="line"></span><br><span class="line"><span class="string">OK,</span> <span class="string">but</span> <span class="string">incomplete,</span> <span class="string">skipped,</span> <span class="string">or</span> <span class="string">risky</span> <span class="string">tests!</span></span><br><span class="line"><span class="attr">Tests:</span> <span class="number">1</span><span class="string">,</span> <span class="attr">Assertions:</span> <span class="number">0</span><span class="string">,</span> <span class="attr">Skipped:</span> <span class="number">1</span><span class="string">.</span></span><br></pre></td></tr></table></figure>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2020/10/29/PHP-Unit-I-Basic/" target="_blank" title="PHP单元测试 (一) 基础">http://blog.caoxl.com/2020/10/29/PHP-Unit-I-Basic/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHPUnit/">PHPUnit</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/单元测试/">单元测试</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/10/27/PHP-Unit-Test/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">PHP 单元测试</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试DEMO"><span class="nav-number">2.</span> <span class="nav-text">测试DEMO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#详细使用"><span class="nav-number">3.</span> <span class="nav-text">详细使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基境"><span class="nav-number">3.1.</span> <span class="nav-text">基境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全局状态"><span class="nav-number">3.1.1.</span> <span class="nav-text">全局状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#依赖关系"><span class="nav-number">3.2.</span> <span class="nav-text">依赖关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据供给器"><span class="nav-number">3.3.</span> <span class="nav-text">数据供给器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常测试"><span class="nav-number">3.4.</span> <span class="nav-text">异常测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#错误调试"><span class="nav-number">3.5.</span> <span class="nav-text">错误调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出内容测试"><span class="nav-number">3.6.</span> <span class="nav-text">输出内容测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标记未完成-与-跳过"><span class="nav-number">3.7.</span> <span class="nav-text">标记未完成 与 跳过</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2020 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2020 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
