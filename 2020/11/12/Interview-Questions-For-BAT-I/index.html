@@ -3,20 +3,26 @@
 <head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="utf-8">
   
-  <title>interview-questions-for-bat-i | Keep It Simple And Stupid</title>
+  <title>大厂面试题 i | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
+  <meta name="keywords" content="面试题笔试题">
   
   
   
-  <meta property="og:type" content="article">
-<meta property="og:title" content="Interview-Questions-For-BAT-I">
+  
+  <meta name="description" content="保持学习, 保持警惕, 居安思危, 走出舒适区.">
+<meta name="keywords" content="面试题,笔试题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大厂面试题 I">
 <meta property="og:url" content="http://blog.caoxl.com/2020/11/12/Interview-Questions-For-BAT-I/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="保持学习, 保持警惕, 居安思危, 走出舒适区.">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-11-12T02:19:14.147Z">
+<meta property="og:updated_time" content="2020-11-12T07:36:07.853Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Interview-Questions-For-BAT-I">
+<meta name="twitter:title" content="大厂面试题 I">
+<meta name="twitter:description" content="保持学习, 保持警惕, 居安思危, 走出舒适区.">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -162,7 +168,7 @@
         
   
     <h1 class="thumb" class="article-title" itemprop="name">
-      Interview-Questions-For-BAT-I
+      大厂面试题 I
     </h1>
   
 
@@ -175,6 +181,8 @@
 	</a>
 
       
+    <a class="article-category-link" href="/categories/面试-笔试题/">面试/笔试题</a>
+
       
 	<a class="article-views">
 	<span id="busuanzi_container_page_pv">
@@ -188,7 +196,264 @@
       
         
         
-          
+          <blockquote>
+<p>保持学习, 保持警惕, 居安思危, 走出舒适区.</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="字节一面"><a href="#字节一面" class="headerlink" title="字节一面"></a>字节一面</h1><h2 id="在面对未知的流量暴增，可以预先怎么处理"><a href="#在面对未知的流量暴增，可以预先怎么处理" class="headerlink" title="在面对未知的流量暴增，可以预先怎么处理"></a>在面对未知的流量暴增，可以预先怎么处理</h2><p>如果流量突然飙大，总有一个资源会遇到瓶颈。按照经验大概出问题地方是DB，磁盘IO、CPU、带宽、连接数、内存其中的一个或几个。</p>
+<h3 id="流量暴涨的原因"><a href="#流量暴涨的原因" class="headerlink" title="流量暴涨的原因"></a>流量暴涨的原因</h3><p>一般情况下，引起网站流量暴增大致为以下两种情况</p>
+<ul>
+<li>不可预测流量（网站被恶意刷量；CDN回源抓取数据；合作业务平台调取平台数据等）</li>
+<li>可预测流量（突然爆发的社会热点，营销活动的宣传；）</li>
+</ul>
+<p>不管是可预测流量还是不可预测流量都会表现在带宽和网站整体架构的应对方案上</p>
+<p>如果由于带宽原因引起，由于网站的并发量太高，达到服务器的吞吐极限，导致服务器宕机，这时需要做<strong>临时申请加大带宽，然后负载均衡分流</strong>。</p>
+<p>如果由于外网请求数据库，导致数据库频繁读写，数据库处理能力低，导致大量请求积压；如果是这种情况，就需要优化SQL，存储过程等，如果是请求过大，就要考虑做集群等。</p>
+<p>可预测流量的暴增也会拖慢网页的打开速度，甚至导致网站服务器宕机。要应对正常流量暴增，在流量高峰期到来之前就可以适当的调整，一般针对应用服务器的调整可以防止单点，负载均衡，高可用，增加后端web<br>应用服务器数量，数据库读写分离，分库分表等，防止流量暴增导致服务器挂掉</p>
+<h3 id="防止流量暴涨预备方案"><a href="#防止流量暴涨预备方案" class="headerlink" title="防止流量暴涨预备方案"></a>防止流量暴涨预备方案</h3><h4 id="流量估算"><a href="#流量估算" class="headerlink" title="流量估算"></a>流量估算</h4><blockquote>
+<p>作为一个经验充足的老运维，可以把设计流量<em>3作为系统压力的下限，即实现完了要压测，压测得到的结果要达到设计流量 </em> 3（ <em> 4， </em> 5都可以），比如服务器在IDC机房，在签合同之前就可以说明当流量异常的时候，提供一定的缓冲带宽，如果是云服务器，可以临时加带宽。<br>关键是要给系统留些缓冲。一旦发生了什么，不至于挂的太惨。此时，一般会得到一个带缓存的业务服务系统。考虑到缓存高于后台服务2～3个数量级的性能优势，多撑几倍流量一般不成问题。</p>
+</blockquote>
+<h4 id="降级方案"><a href="#降级方案" class="headerlink" title="降级方案"></a>降级方案</h4><h4 id="限流方案"><a href="#限流方案" class="headerlink" title="限流方案"></a>限流方案</h4><ul>
+<li><strong>参考</strong>: <a href="https://www.cnblogs.com/dadonggg/p/8651909.html" target="_blank" rel="noopener">如何应对网站流量暴增</a></li>
+</ul>
+<h2 id="如何限流，限流算法，对于ddos攻击怎么处理"><a href="#如何限流，限流算法，对于ddos攻击怎么处理" class="headerlink" title="如何限流，限流算法，对于ddos攻击怎么处理"></a>如何限流，限流算法，对于ddos攻击怎么处理</h2><h3 id="如何限流"><a href="#如何限流" class="headerlink" title="如何限流"></a>如何限流</h3><ul>
+<li>计数器</li>
+<li>滑动窗口</li>
+<li>漏桶</li>
+<li><p>令牌</p>
+</li>
+<li><p><strong>参考</strong>: <a href="https://www.cnblogs.com/dadonggg/p/8651909.html" target="_blank" rel="noopener">如何应对网站流量暴增</a></p>
+</li>
+</ul>
+<h3 id="ddos处理"><a href="#ddos处理" class="headerlink" title="ddos处理"></a>ddos处理</h3><blockquote>
+<p>遇到1G以下的攻击，使用防火墙就可以搞定（或者使用一些免费的云防御产品）；流量1G—10G时可以选择机房进行流量迁移和清洗；大于10G时使用高防CDN（云防御）是相对最靠谱并且价钱最能接受的。</p>
+</blockquote>
+<ul>
+<li><p><strong>参考</strong>: <a href="https://blog.csdn.net/higeek/article/details/83143897" target="_blank" rel="noopener">一次从遭遇DDoS攻击到解决的亲身经历</a></p>
+</li>
+<li><p><strong>参考</strong>: <a href="https://www.cnblogs.com/viter/archive/2018/11/14/9957214.html" target="_blank" rel="noopener">记一次DDOS攻击防御实录</a></p>
+</li>
+</ul>
+<h2 id="PHP数组的底层实现"><a href="#PHP数组的底层实现" class="headerlink" title="PHP数组的底层实现"></a>PHP数组的底层实现</h2><blockquote>
+<p>PHP 数组的底层实现是散列表（也叫 hashTable )，散列表是根据键（Key）直接访问内存存储位置的数据结构，它的key - value 之间存在一个映射函数，可以根据 key 通过映射函数得到的散列值直接索引到对应的 value 值，无需通过关键字比较，在理想情况下，不考虑散列冲突，散列表的查找效率是非常高的，时间复杂度是 O(1)。</p>
+</blockquote>
+<ul>
+<li><strong>参考</strong>: <a href="https://segmentfault.com/a/1190000020175662" target="_blank" rel="noopener">PHP7 数组的底层实现</a></li>
+</ul>
+<h2 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h2><blockquote>
+<p>分布式事务指事务的参与者、支持事务的服务器、资源服务器以及事务管理器分别位于不同的分布式系统的不同节点之上。<br>  简单的说，就是一次大的操作由不同的小操作组成，这些小的操作分布在不同的服务器上，且属于不同的应用，分布式事务需要保证这些小操作要么全部成功，要么全部失败。<br>  本质上来说，分布式事务就是为了保证不同数据库的数据一致性。</p>
+</blockquote>
+<ul>
+<li><strong>参考</strong>: <a href="https://developer.51cto.com/art/201808/581174.htm" target="_blank" rel="noopener">收藏 | 第一次有人把“分布式事务”讲的这么简单明了</a></li>
+</ul>
+<h2 id="RPC相对于传统的API调用的优点"><a href="#RPC相对于传统的API调用的优点" class="headerlink" title="RPC相对于传统的API调用的优点"></a>RPC相对于传统的API调用的优点</h2><p>REST（HTTP-Based）、RPC（Socket-Based）</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">接口类型</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">REST</td>
+<td>RESTful API充分利用了HTTP协议的设计,使用了面向资源的接口设计,相对于传统RPC降低了接口设计的复杂度</td>
+<td>RESTful API面向资源设计接口,而对于一些复杂操作来说,接口设计难度将大于RPC形式</td>
+</tr>
+<tr>
+<td style="text-align:left">RPC</td>
+<td>1) 方便使用RPC来调用远程函数,冰得到对应的结果,就像调用本地方法一样 2) 编写分布式应用程序更加简单容易,因为RPC将所有的网络代码都隐藏到了存根函数中,开发人员不必关注通信等细节 3) RPC是跨语言的</td>
+<td>1) 交互方式单一,不能进行复杂多模块之间的协议交互 2) 开发难度,RPC框架肯定高于基于简单HTTP协议的REST接口</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>参考</strong>: <a href="https://blog.csdn.net/weixin_43185598/article/details/88537824" target="_blank" rel="noopener">Rest和RPC接口区别</a></li>
+</ul>
+<h2 id="服务调度中心的感知与动态上下线"><a href="#服务调度中心的感知与动态上下线" class="headerlink" title="服务调度中心的感知与动态上下线"></a>服务调度中心的感知与动态上下线</h2><ul>
+<li><p>zookeeper</p>
+</li>
+<li><p><strong>参考</strong>: <a href="https://www.cnblogs.com/dengpengbo/p/10443547.html" target="_blank" rel="noopener">zookeeper实现动态感知服务器上下线</a></p>
+</li>
+<li><strong>参考</strong>: <a href="https://www.cnblogs.com/GodHeng/p/8797100.html" target="_blank" rel="noopener">分布式服务动态上下线感知</a></li>
+</ul>
+<h2 id="MySQL的索引，为什么是B-而不是平衡二叉树"><a href="#MySQL的索引，为什么是B-而不是平衡二叉树" class="headerlink" title="MySQL的索引，为什么是B+而不是平衡二叉树"></a>MySQL的索引，为什么是B+而不是平衡二叉树</h2><ul>
+<li><strong>参考</strong>: <a href="https://www.cnblogs.com/tiancai/p/9024351.html" target="_blank" rel="noopener">为什么MySQL数据库索引选择使用B+树？</a></li>
+<li><strong>参考</strong>: <a href="https://blog.csdn.net/jacke121/article/details/78268602" target="_blank" rel="noopener">快速理解平衡二叉树、B-tree、B+tree、B*tree</a></li>
+</ul>
+<h2 id="索引查找在Linux的磁盘上是怎么操作的"><a href="#索引查找在Linux的磁盘上是怎么操作的" class="headerlink" title="索引查找在Linux的磁盘上是怎么操作的"></a>索引查找在Linux的磁盘上是怎么操作的</h2><ul>
+<li><strong>参考</strong>: <a href="https://blog.csdn.net/qq_38410730/article/details/81416195" target="_blank" rel="noopener">【Linux】Linux根据文件路径查找索引节点</a></li>
+</ul>
+<h2 id="聚簇索引相对于B-索引的优点"><a href="#聚簇索引相对于B-索引的优点" class="headerlink" title="聚簇索引相对于B+索引的优点"></a>聚簇索引相对于B+索引的优点</h2><ul>
+<li><strong>参考</strong>: <a href="https://my.oschina.net/xiaoyoung/blog/3046779" target="_blank" rel="noopener">浅谈聚簇索引和非聚簇索引的区别</a></li>
+</ul>
+<h2 id="如何分析SQL执行慢的原因"><a href="#如何分析SQL执行慢的原因" class="headerlink" title="如何分析SQL执行慢的原因"></a>如何分析SQL执行慢的原因</h2><h2 id="Redis连接时的connect与pconnect的区别"><a href="#Redis连接时的connect与pconnect的区别" class="headerlink" title="Redis连接时的connect与pconnect的区别"></a>Redis连接时的<code>connect</code>与<code>pconnect</code>的区别</h2><ul>
+<li><code>connect</code>：脚本结束之后连接就释放了</li>
+<li><p><code>pconnect</code>：脚本结束之后连接不释放，连接保持在php-fpm进程中。</p>
+</li>
+<li><p><strong>参考</strong>: <a href="https://www.cnblogs.com/lovebing/p/6250281.html" target="_blank" rel="noopener">Redis中connect与pconnect区别？</a></p>
+</li>
+</ul>
+<h2 id="Redis有哪些结构时间复杂度较高"><a href="#Redis有哪些结构时间复杂度较高" class="headerlink" title="Redis有哪些结构时间复杂度较高"></a>Redis有哪些结构时间复杂度较高</h2><ul>
+<li><strong>参考</strong>: <a href="https://blog.csdn.net/andy86869/article/details/88366513" target="_blank" rel="noopener">Redis基础 常用类型 时间复杂度</a></li>
+</ul>
+<h2 id="Redis-hash的实现"><a href="#Redis-hash的实现" class="headerlink" title="Redis hash的实现"></a>Redis hash的实现</h2><ul>
+<li><strong>参考</strong>: <a href="https://www.cnblogs.com/ourroad/p/4891648.html" target="_blank" rel="noopener">Redis之Hash数据结构</a></li>
+</ul>
+<h2 id="算法题"><a href="#算法题" class="headerlink" title="算法题"></a>算法题</h2><blockquote>
+<p>在1个10G大小的文件中，存储的都是int型的数据，如何在内存使用小于8M的情况下进行排序</p>
+</blockquote>
+<ul>
+<li><strong>参考</strong>: <a href="https://www.cnblogs.com/dream-of-cambridge/articles/8042311.html" target="_blank" rel="noopener">归并排序，外排序，10G文件500M内存的排序</a></li>
+<li><strong>参考</strong>: <a href="https://www.cnblogs.com/Vae1990Silence/p/4423450.html" target="_blank" rel="noopener">腾讯面试题：10G 个整数，乱序排列，要求找出中位数。内存限制为 2G。</a></li>
+</ul>
+<h2 id="设计题"><a href="#设计题" class="headerlink" title="设计题"></a>设计题</h2><blockquote>
+<p>以微博为例，有1个亿的用户，同时用户之间有关注和粉丝，用户的关注和取关操作比较频繁，如何设计架构和API接口</p>
+</blockquote>
+<ul>
+<li><strong>参考</strong>: <a href="https://blog.csdn.net/bigtree_3721/article/details/79779249" target="_blank" rel="noopener">新浪微博技术架构分析和设计</a></li>
+</ul>
+<h1 id="字节二面"><a href="#字节二面" class="headerlink" title="字节二面"></a>字节二面</h1><h2 id="守护进程是什么，怎么实现"><a href="#守护进程是什么，怎么实现" class="headerlink" title="守护进程是什么，怎么实现"></a>守护进程是什么，怎么实现</h2><blockquote>
+<p>守护进程（Daemon）是运行在后台的一种特殊进程，也称为精灵进程。是生存期较长的一种进程，常常在系统自举时启动，仅在系统关闭时终止。没有控制终端，仅仅在后台运行，Linux有很多守护进程执行日常事务活动，是不受终端控制的进程。</p>
+</blockquote>
+<ul>
+<li><strong>参考</strong>: <a href="https://blog.csdn.net/m0_37925202/article/details/80214095" target="_blank" rel="noopener">守护进程详解及其代码实现</a></li>
+</ul>
+<h2 id="PHP是否适合做守护进程，为什么（内存管理这一块）"><a href="#PHP是否适合做守护进程，为什么（内存管理这一块）" class="headerlink" title="PHP是否适合做守护进程，为什么（内存管理这一块）"></a>PHP是否适合做守护进程，为什么（内存管理这一块）</h2><p>不适合,因为PHP本身不是常驻内存</p>
+<h2 id="PHP的垃圾回收机制"><a href="#PHP的垃圾回收机制" class="headerlink" title="PHP的垃圾回收机制"></a>PHP的垃圾回收机制</h2><ul>
+<li><strong>参考</strong>: <a href="https://m.php.cn/topic/php7/425508.html" target="_blank" rel="noopener">php7 垃圾回收机制详解</a></li>
+</ul>
+<h2 id="进程间通信方式"><a href="#进程间通信方式" class="headerlink" title="进程间通信方式"></a>进程间通信方式</h2><ul>
+<li><p>IPC的方式通常有管道（包括无名管道和命名管道）、消息队列、信号量、共享存储、Socket、Streams等。其中 Socket和Streams支持不同主机上的两个进程IPC</p>
+</li>
+<li><p><strong>参考</strong>: <a href="https://blog.csdn.net/wm12345645/article/details/82381407" target="_blank" rel="noopener">Liunx 六大进程间通信方式</a></p>
+</li>
+</ul>
+<h2 id="共享内存是怎么实现的"><a href="#共享内存是怎么实现的" class="headerlink" title="共享内存是怎么实现的"></a>共享内存是怎么实现的</h2><blockquote>
+<p>共享内存（Shared Memory），指两个或多个进程共享一个给定的存储区。</p>
+</blockquote>
+<ul>
+<li><strong>参考</strong>: <a href="https://www.cnblogs.com/zgq0/p/8780893.html" target="_blank" rel="noopener">进程间的五种通信方式介绍</a></li>
+</ul>
+<h2 id="怎么查看Linux服务器的负载，及判断哪些操作引起的负载过高"><a href="#怎么查看Linux服务器的负载，及判断哪些操作引起的负载过高" class="headerlink" title="怎么查看Linux服务器的负载，及判断哪些操作引起的负载过高"></a>怎么查看Linux服务器的负载，及判断哪些操作引起的负载过高</h2><ul>
+<li><strong>参考</strong>: <a href="https://blog.csdn.net/truelove12358/article/details/50502248" target="_blank" rel="noopener">linux 下查看系统资源和负载,以及性能监控</a></li>
+</ul>
+<h2 id="MySQL的IO过高怎么优化，分库分表及分区"><a href="#MySQL的IO过高怎么优化，分库分表及分区" class="headerlink" title="MySQL的IO过高怎么优化，分库分表及分区"></a>MySQL的IO过高怎么优化，分库分表及分区</h2><ul>
+<li><strong>参考</strong>: <a href="https://blog.csdn.net/designer01/article/details/82772620" target="_blank" rel="noopener">mysql分区、分表、分库、数据分片</a></li>
+</ul>
+<h2 id="MySQL的索引结构，myisam的索引结构，-innodb的索引结构，innodb为什么必须要有主键索引"><a href="#MySQL的索引结构，myisam的索引结构，-innodb的索引结构，innodb为什么必须要有主键索引" class="headerlink" title="MySQL的索引结构，myisam的索引结构， innodb的索引结构，innodb为什么必须要有主键索引"></a>MySQL的索引结构，myisam的索引结构， innodb的索引结构，innodb为什么必须要有主键索引</h2><ul>
+<li>MyISAM: 使用B+Tree作为索引结构，叶节点的data域存放的是数据记录的地址</li>
+<li><p>InnoDB: 也使用B+Tree作为索引结构，但具体实现方式却与MyISAM截然不同</p>
+</li>
+<li><p><strong>参考</strong>: <a href="https://www.cnblogs.com/olinux/p/5217186.html" target="_blank" rel="noopener">MySQL中myisam和innodb的主键索引有什么区别？</a></p>
+</li>
+</ul>
+<h2 id="添加索引，为什么可以减少io操作（磁盘页）"><a href="#添加索引，为什么可以减少io操作（磁盘页）" class="headerlink" title="添加索引，为什么可以减少io操作（磁盘页）"></a>添加索引，为什么可以减少io操作（磁盘页）</h2><blockquote>
+<p>首先明白为什么索引会增加速度，DB在执行一条Sql语句的时候，默认的方式是根据搜索条件进行全表扫描，遇到匹配条件的就加入搜索结果集合。如果我们对某一字段增加索引，查询时就会先去索引列表中一次定位到特定值的行数，大大减少遍历匹配的行数，所以能明显增加查询的速度。</p>
+</blockquote>
+<ul>
+<li><strong>参考</strong>: <a href="https://blog.csdn.net/m0_38128121/article/details/79663261" target="_blank" rel="noopener">数据库添加索引为什么能加快查询速度</a></li>
+</ul>
+<h2 id="nginx的负载均衡算法"><a href="#nginx的负载均衡算法" class="headerlink" title="nginx的负载均衡算法"></a>nginx的负载均衡算法</h2><ul>
+<li><code>round robin(默认)</code>: 轮询方式，依次将请求分配到各个后台服务器中，默认的负载均衡方式。 </li>
+<li><code>weight</code>: 根据权重来分发请求到不同的机器中，指定轮询几率，weight和访问比率成正比，用于后端服务器性能不均的情况。  </li>
+<li><code>ip_hash</code>: 根据请求者ip的hash值将请求发送到后台服务器中，可以保证来自同一ip的请求被打到固定的机器上，可以解决session问题。</li>
+<li><code>url_hash</code>: 根据请求的url的hash值将请求分到不同的机器中，当后台服务器为缓存的时候效率高。</li>
+<li><p><code>fair</code>: 根据后台响应时间来分发请求，响应时间短的分发的请求多。</p>
+</li>
+<li><p><strong>参考</strong>: <a href="https://www.cnblogs.com/DarrenChan/p/8967412.html" target="_blank" rel="noopener">nginx负载均衡的五种算法</a></p>
+</li>
+</ul>
+<h2 id="算法题-1"><a href="#算法题-1" class="headerlink" title="算法题"></a>算法题</h2><blockquote>
+<p>查找一个字符串中最长的无重复字串</p>
+</blockquote>
+<h1 id="字节三面"><a href="#字节三面" class="headerlink" title="字节三面"></a>字节三面</h1><h2 id="在一个横向和纵向都是递增的有界二维坐标轴中，如何快速判断某个数是否存在于这个二维坐标中"><a href="#在一个横向和纵向都是递增的有界二维坐标轴中，如何快速判断某个数是否存在于这个二维坐标中" class="headerlink" title="在一个横向和纵向都是递增的有界二维坐标轴中，如何快速判断某个数是否存在于这个二维坐标中"></a>在一个横向和纵向都是递增的有界二维坐标轴中，如何快速判断某个数是否存在于这个二维坐标中</h2><ul>
+<li><strong>参考</strong>: <a href="https://blog.csdn.net/qq_32169593/article/details/80987070" target="_blank" rel="noopener">从一字符串中找出其无重复最长子串字符及长度</a></li>
+</ul>
+<h2 id="设计一个定时任务管理器"><a href="#设计一个定时任务管理器" class="headerlink" title="设计一个定时任务管理器"></a>设计一个定时任务管理器</h2><ul>
+<li><strong>参考</strong>: <a href="https://studygolang.com/articles/9523" target="_blank" rel="noopener">golang实践-如何实现高性能的定时任务管理器</a></li>
+</ul>
+<h1 id="滴滴2020PHP面试题"><a href="#滴滴2020PHP面试题" class="headerlink" title="滴滴2020PHP面试题"></a>滴滴2020PHP面试题</h1><h2 id="处理算法题，最大无重复子串，链表的值交换"><a href="#处理算法题，最大无重复子串，链表的值交换" class="headerlink" title="处理算法题，最大无重复子串，链表的值交换"></a>处理算法题，最大无重复子串，链表的值交换</h2><h2 id="遇到过线上服务器CPU飙高的情况没有，如何处理"><a href="#遇到过线上服务器CPU飙高的情况没有，如何处理" class="headerlink" title="遇到过线上服务器CPU飙高的情况没有，如何处理"></a>遇到过线上服务器CPU飙高的情况没有，如何处理</h2><blockquote>
+<p>登录服务器，执行top命令，查看CPU占用情况；定位线程；定位代码，解决问题</p>
+</blockquote>
+<h2 id="对线程池的理解，项目中哪个地方使用了，如何使用的，用的框架中的哪个实现类，为什么用这个"><a href="#对线程池的理解，项目中哪个地方使用了，如何使用的，用的框架中的哪个实现类，为什么用这个" class="headerlink" title="对线程池的理解，项目中哪个地方使用了，如何使用的，用的框架中的哪个实现类，为什么用这个"></a>对线程池的理解，项目中哪个地方使用了，如何使用的，用的框架中的哪个实现类，为什么用这个</h2><ul>
+<li>1)创建/销毁线程伴随着系统开销，过于频繁的创建/销毁线程，会很大程度上影响处理效率</li>
+<li>2)线程并发数量过多，抢占系统资源从而导致阻塞</li>
+<li>3)对线程进行一些简单的管理, 延时执行 定时循环执行</li>
+</ul>
+<h2 id="对MySQL索引的理解、对组合索引的理解、索引的最佳实践"><a href="#对MySQL索引的理解、对组合索引的理解、索引的最佳实践" class="headerlink" title="对MySQL索引的理解、对组合索引的理解、索引的最佳实践"></a>对MySQL索引的理解、对组合索引的理解、索引的最佳实践</h2><ul>
+<li>普通索引：即一个索引只包含单个列，一个表可以有多个单列索引</li>
+<li>唯一索引：索引列的值必须唯一，但允许有空值</li>
+<li>复合索引：多列值组成一个索引，专门用于组合搜索，其效率大于索引合并</li>
+<li>聚簇索引(聚集索引)：并不是一种单独的索引类型，而是一种数据存储方式。具体细节取决于不同的实现，InnoDB的聚簇索引其实就是在同一个结构中保存了B-Tree索引(技术上来说是B+Tree)和数据行。</li>
+<li>非聚簇索引：不是聚簇索引，就是非聚簇索引</li>
+</ul>
+<h2 id="分布式锁的实现、对比Redis分布式锁-amp-ZK分布式锁"><a href="#分布式锁的实现、对比Redis分布式锁-amp-ZK分布式锁" class="headerlink" title="分布式锁的实现、对比Redis分布式锁 &amp; ZK分布式锁"></a>分布式锁的实现、对比Redis分布式锁 &amp; ZK分布式锁</h2><ul>
+<li>基于数据库实现；</li>
+<li>基于缓存（Redis等）实现；</li>
+<li>基于Zookeeper实现；</li>
+</ul>
+<h2 id="怎么理解微服务，服务如何划分，可以从哪几个方面去划分，为什么这样划分，微服务带来了哪些好处，哪些坏处，如何看待这个问题？"><a href="#怎么理解微服务，服务如何划分，可以从哪几个方面去划分，为什么这样划分，微服务带来了哪些好处，哪些坏处，如何看待这个问题？" class="headerlink" title="怎么理解微服务，服务如何划分，可以从哪几个方面去划分，为什么这样划分，微服务带来了哪些好处，哪些坏处，如何看待这个问题？"></a>怎么理解微服务，服务如何划分，可以从哪几个方面去划分，为什么这样划分，微服务带来了哪些好处，哪些坏处，如何看待这个问题？</h2><ul>
+<li>服务间调用,服务发现,服务容错,服务部署,数据调用</li>
+</ul>
+<h2 id="如何理解网关，网关带来的好处和坏处，如何解决"><a href="#如何理解网关，网关带来的好处和坏处，如何解决" class="headerlink" title="如何理解网关，网关带来的好处和坏处，如何解决"></a>如何理解网关，网关带来的好处和坏处，如何解决</h2><ul>
+<li>高性能，可横向扩展</li>
+<li>高可靠，业务不中断</li>
+<li>插件化的API安全控制</li>
+<li>灵活的数据编排</li>
+<li>精细化流控</li>
+<li>API版本管理</li>
+<li>API数据分析</li>
+<li>高效插件化路由算法</li>
+<li>安全认证，防攻击</li>
+<li>API访问控制</li>
+<li>Swagger导入导出</li>
+</ul>
+<h2 id="掌握哪些设计模式，常用哪些，项目中如何使用的，为什么用这个，不用那个？手写一个线程安全的单例模式"><a href="#掌握哪些设计模式，常用哪些，项目中如何使用的，为什么用这个，不用那个？手写一个线程安全的单例模式" class="headerlink" title="掌握哪些设计模式，常用哪些，项目中如何使用的，为什么用这个，不用那个？手写一个线程安全的单例模式"></a>掌握哪些设计模式，常用哪些，项目中如何使用的，为什么用这个，不用那个？手写一个线程安全的单例模式</h2><blockquote>
+<p>单例模式，工程模式，注册模式，适配器模式，观察者模式，策略模式</p>
+</blockquote>
+<h2 id="如何设计一个秒杀系统？"><a href="#如何设计一个秒杀系统？" class="headerlink" title="如何设计一个秒杀系统？"></a>如何设计一个秒杀系统？</h2><h3 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h3><ul>
+<li>nginx负载均衡，将请求分发到各个服务器，减轻压力。</li>
+<li>js、css压缩，减少流量以及请求次数。</li>
+<li>js、css压缩，减少流量以及请求次数。</li>
+</ul>
+<h3 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h3><ul>
+<li>采用redis缓存，可以提前将某些秒杀的数据加载到缓存。如库存先加载到缓存，判断缓存里的库存，成功后再继续，同时为了防止大量访问redis，可以用共享变量标识是否卖完，如卖完了，则直接返回，不用访问redis。</li>
+<li>页面缓存，即将页面直接缓存到redis，或者页面静态化，即前后端分离。</li>
+<li>开启浏览器缓存。</li>
+</ul>
+<h3 id="限流"><a href="#限流" class="headerlink" title="限流"></a>限流</h3><ul>
+<li>使用消息队列，例rabbitmq进行消峰。</li>
+<li>利用验证码防止恶意刷单，可以有效降低单位时间内访问次数。</li>
+<li>地址隐藏，防止知道地址后提前购买以及多刷。</li>
+<li>一定时间内限制url访问次数。</li>
+</ul>
+<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><ul>
+<li>利用行级锁，先扣库存，成功后再创建订单，防止超卖。</li>
+<li>唯一索引，防止重复购买。</li>
+<li>数据库读写分离，如mycat。</li>
+</ul>
+<h2 id="假设现在双十一零点，大量下单请求，如何对这些订单进行分库分表，为什么？"><a href="#假设现在双十一零点，大量下单请求，如何对这些订单进行分库分表，为什么？" class="headerlink" title="假设现在双十一零点，大量下单请求，如何对这些订单进行分库分表，为什么？"></a>假设现在双十一零点，大量下单请求，如何对这些订单进行分库分表，为什么？</h2><blockquote>
+<p>分布式ID</p>
+</blockquote>
+<p>将订单数据划分成两大类型：分别是热数据和冷数据。</p>
+<p>热数据：3个月内的订单数据，查询实时性较高。</p>
+<p>冷数据A：3个月 ~ 12个月前的订单数据，查询频率不高。</p>
+<p>冷数据B：1年前的订单数据，几乎不会查询，只有偶尔的查询需求。</p>
+<h2 id="MySQL事务隔离级别、MVCC？"><a href="#MySQL事务隔离级别、MVCC？" class="headerlink" title="MySQL事务隔离级别、MVCC？"></a>MySQL事务隔离级别、MVCC？</h2><ul>
+<li>数据库事务的隔离级别ACID（Atomicity、Consistency、Isolation、Durability，即原子性、一致性、隔离性、持久性）。</li>
+<li>SQL标准的事务隔离级别包括：读未提交（read uncommitted）、读提交（read committed）、可重复读（repeatable read）和串行化（serializable ）。</li>
+</ul>
+<h1 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h1><p>分布式架构、高可扩展、高性能、高并发、服务器性能调优、Laravel、TP6、Yii2、Redis、Swoole、Swoft、RabbitMQ、Kafka、Mysql优化、shell脚本、Docker、微服务、Nginx</p>
+<h1 id="原文地址"><a href="#原文地址" class="headerlink" title="原文地址"></a>原文地址</h1><ul>
+<li><a href="https://www.nowcoder.com/discuss/356733?type=2" target="_blank" rel="noopener">字节PHP/Golang社招面经</a></li>
+<li><a href="https://my.oschina.net/u/4178721/blog/4423526" target="_blank" rel="noopener">2020面试题之滴滴后端PHP职位</a></li>
+<li><a href="https://www.php.cn/toutiao-415522.html" target="_blank" rel="noopener">2020腾讯PHP面试题（附答案）</a></li>
+<li><a href="https://www.lagou.com/lgeduarticle/31777.html" target="_blank" rel="noopener">2019腾讯PHP面试题（附答案）</a></li>
+<li><a href="https://gitee.com/OSCYuanChuangHui/2018_lecturer_ppt/raw/master/2019.12.15%20%E6%B7%B1%E5%9C%B3%E5%B9%B4%E7%BB%88%E7%9B%9B%E5%85%B8/%E4%B8%BB%E4%BC%9A%E5%9C%BA/3.%202020%20%E5%B9%B4%E5%A6%82%E4%BD%95%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8%20PHP%E2%80%94%E2%80%94%E9%9F%A9%E5%A4%A9%E5%B3%B0.pdf" target="_blank" rel="noopener">2020 年如何正确使用 PHP——韩天峰</a></li>
+</ul>
+
         
       
     </div>
@@ -203,7 +468,7 @@
           </li>
           <li class="post-copyright-link">
           <strong>本文链接:  </strong>
-          <a href="/2020/11/12/Interview-Questions-For-BAT-I/" target="_blank" title="Interview-Questions-For-BAT-I">http://blog.caoxl.com/2020/11/12/Interview-Questions-For-BAT-I/</a>
+          <a href="/2020/11/12/Interview-Questions-For-BAT-I/" target="_blank" title="大厂面试题 I">http://blog.caoxl.com/2020/11/12/Interview-Questions-For-BAT-I/</a>
           </li>
           <li class="post-copyright-license">
             <strong>版权声明:   </strong>
@@ -219,6 +484,8 @@
       
       
         
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/笔试题/">笔试题</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面试题/">面试题</a></li></ul>
+
       
 
     </footer>
@@ -244,7 +511,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav">无</ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#字节一面"><span class="nav-number">1.</span> <span class="nav-text">字节一面</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#在面对未知的流量暴增，可以预先怎么处理"><span class="nav-number">1.1.</span> <span class="nav-text">在面对未知的流量暴增，可以预先怎么处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#流量暴涨的原因"><span class="nav-number">1.1.1.</span> <span class="nav-text">流量暴涨的原因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#防止流量暴涨预备方案"><span class="nav-number">1.1.2.</span> <span class="nav-text">防止流量暴涨预备方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#流量估算"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">流量估算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#降级方案"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">降级方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#限流方案"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">限流方案</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何限流，限流算法，对于ddos攻击怎么处理"><span class="nav-number">1.2.</span> <span class="nav-text">如何限流，限流算法，对于ddos攻击怎么处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何限流"><span class="nav-number">1.2.1.</span> <span class="nav-text">如何限流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ddos处理"><span class="nav-number">1.2.2.</span> <span class="nav-text">ddos处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP数组的底层实现"><span class="nav-number">1.3.</span> <span class="nav-text">PHP数组的底层实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式事务"><span class="nav-number">1.4.</span> <span class="nav-text">分布式事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RPC相对于传统的API调用的优点"><span class="nav-number">1.5.</span> <span class="nav-text">RPC相对于传统的API调用的优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务调度中心的感知与动态上下线"><span class="nav-number">1.6.</span> <span class="nav-text">服务调度中心的感知与动态上下线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL的索引，为什么是B-而不是平衡二叉树"><span class="nav-number">1.7.</span> <span class="nav-text">MySQL的索引，为什么是B+而不是平衡二叉树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引查找在Linux的磁盘上是怎么操作的"><span class="nav-number">1.8.</span> <span class="nav-text">索引查找在Linux的磁盘上是怎么操作的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#聚簇索引相对于B-索引的优点"><span class="nav-number">1.9.</span> <span class="nav-text">聚簇索引相对于B+索引的优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何分析SQL执行慢的原因"><span class="nav-number">1.10.</span> <span class="nav-text">如何分析SQL执行慢的原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis连接时的connect与pconnect的区别"><span class="nav-number">1.11.</span> <span class="nav-text">Redis连接时的connect与pconnect的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis有哪些结构时间复杂度较高"><span class="nav-number">1.12.</span> <span class="nav-text">Redis有哪些结构时间复杂度较高</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-hash的实现"><span class="nav-number">1.13.</span> <span class="nav-text">Redis hash的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法题"><span class="nav-number">1.14.</span> <span class="nav-text">算法题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设计题"><span class="nav-number">1.15.</span> <span class="nav-text">设计题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字节二面"><span class="nav-number">2.</span> <span class="nav-text">字节二面</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#守护进程是什么，怎么实现"><span class="nav-number">2.1.</span> <span class="nav-text">守护进程是什么，怎么实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP是否适合做守护进程，为什么（内存管理这一块）"><span class="nav-number">2.2.</span> <span class="nav-text">PHP是否适合做守护进程，为什么（内存管理这一块）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP的垃圾回收机制"><span class="nav-number">2.3.</span> <span class="nav-text">PHP的垃圾回收机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程间通信方式"><span class="nav-number">2.4.</span> <span class="nav-text">进程间通信方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#共享内存是怎么实现的"><span class="nav-number">2.5.</span> <span class="nav-text">共享内存是怎么实现的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎么查看Linux服务器的负载，及判断哪些操作引起的负载过高"><span class="nav-number">2.6.</span> <span class="nav-text">怎么查看Linux服务器的负载，及判断哪些操作引起的负载过高</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL的IO过高怎么优化，分库分表及分区"><span class="nav-number">2.7.</span> <span class="nav-text">MySQL的IO过高怎么优化，分库分表及分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL的索引结构，myisam的索引结构，-innodb的索引结构，innodb为什么必须要有主键索引"><span class="nav-number">2.8.</span> <span class="nav-text">MySQL的索引结构，myisam的索引结构， innodb的索引结构，innodb为什么必须要有主键索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加索引，为什么可以减少io操作（磁盘页）"><span class="nav-number">2.9.</span> <span class="nav-text">添加索引，为什么可以减少io操作（磁盘页）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx的负载均衡算法"><span class="nav-number">2.10.</span> <span class="nav-text">nginx的负载均衡算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法题-1"><span class="nav-number">2.11.</span> <span class="nav-text">算法题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字节三面"><span class="nav-number">3.</span> <span class="nav-text">字节三面</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#在一个横向和纵向都是递增的有界二维坐标轴中，如何快速判断某个数是否存在于这个二维坐标中"><span class="nav-number">3.1.</span> <span class="nav-text">在一个横向和纵向都是递增的有界二维坐标轴中，如何快速判断某个数是否存在于这个二维坐标中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设计一个定时任务管理器"><span class="nav-number">3.2.</span> <span class="nav-text">设计一个定时任务管理器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#滴滴2020PHP面试题"><span class="nav-number">4.</span> <span class="nav-text">滴滴2020PHP面试题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#处理算法题，最大无重复子串，链表的值交换"><span class="nav-number">4.1.</span> <span class="nav-text">处理算法题，最大无重复子串，链表的值交换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#遇到过线上服务器CPU飙高的情况没有，如何处理"><span class="nav-number">4.2.</span> <span class="nav-text">遇到过线上服务器CPU飙高的情况没有，如何处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对线程池的理解，项目中哪个地方使用了，如何使用的，用的框架中的哪个实现类，为什么用这个"><span class="nav-number">4.3.</span> <span class="nav-text">对线程池的理解，项目中哪个地方使用了，如何使用的，用的框架中的哪个实现类，为什么用这个</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对MySQL索引的理解、对组合索引的理解、索引的最佳实践"><span class="nav-number">4.4.</span> <span class="nav-text">对MySQL索引的理解、对组合索引的理解、索引的最佳实践</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式锁的实现、对比Redis分布式锁-amp-ZK分布式锁"><span class="nav-number">4.5.</span> <span class="nav-text">分布式锁的实现、对比Redis分布式锁 &amp; ZK分布式锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎么理解微服务，服务如何划分，可以从哪几个方面去划分，为什么这样划分，微服务带来了哪些好处，哪些坏处，如何看待这个问题？"><span class="nav-number">4.6.</span> <span class="nav-text">怎么理解微服务，服务如何划分，可以从哪几个方面去划分，为什么这样划分，微服务带来了哪些好处，哪些坏处，如何看待这个问题？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何理解网关，网关带来的好处和坏处，如何解决"><span class="nav-number">4.7.</span> <span class="nav-text">如何理解网关，网关带来的好处和坏处，如何解决</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#掌握哪些设计模式，常用哪些，项目中如何使用的，为什么用这个，不用那个？手写一个线程安全的单例模式"><span class="nav-number">4.8.</span> <span class="nav-text">掌握哪些设计模式，常用哪些，项目中如何使用的，为什么用这个，不用那个？手写一个线程安全的单例模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何设计一个秒杀系统？"><span class="nav-number">4.9.</span> <span class="nav-text">如何设计一个秒杀系统？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#前端"><span class="nav-number">4.9.1.</span> <span class="nav-text">前端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存"><span class="nav-number">4.9.2.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#限流"><span class="nav-number">4.9.3.</span> <span class="nav-text">限流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库"><span class="nav-number">4.9.4.</span> <span class="nav-text">数据库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#假设现在双十一零点，大量下单请求，如何对这些订单进行分库分表，为什么？"><span class="nav-number">4.10.</span> <span class="nav-text">假设现在双十一零点，大量下单请求，如何对这些订单进行分库分表，为什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL事务隔离级别、MVCC？"><span class="nav-number">4.11.</span> <span class="nav-text">MySQL事务隔离级别、MVCC？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#知识点"><span class="nav-number">5.</span> <span class="nav-text">知识点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原文地址"><span class="nav-number">6.</span> <span class="nav-text">原文地址</span></a></li></ol>
     
     </div>
   </aside>
