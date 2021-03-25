@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mysql 通过binlog恢复数据 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MySQLBinlog">
+  
+  
+  
+  
+  <meta name="description" content="日常开发，运维中，经常会出现误删数据的情况。误删数据的类型大致可分为以下几类：  使用 delete 误删行 使用 drop table 或 truncate table 误删表 使用 drop database 语句误删数据库 使用 rm 命令误删整个 MySQL 实例。">
+<meta name="keywords" content="MySQL,Binlog">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 通过binlog恢复数据">
+<meta property="og:url" content="http://blog.caoxl.com/2021/03/24/MySQL-Restore-By-Binlog/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="日常开发，运维中，经常会出现误删数据的情况。误删数据的类型大致可分为以下几类：  使用 delete 误删行 使用 drop table 或 truncate table 误删表 使用 drop database 语句误删数据库 使用 rm 命令误删整个 MySQL 实例。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://caoxl.com/imgs/create_table.png">
+<meta property="og:image" content="https://caoxl.com/imgs/drop_table.png">
+<meta property="og:image" content="https://caoxl.com/imgs/insert_table.png">
+<meta property="og:updated_time" content="2021-03-25T09:18:09.991Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL 通过binlog恢复数据">
+<meta name="twitter:description" content="日常开发，运维中，经常会出现误删数据的情况。误删数据的类型大致可分为以下几类：  使用 delete 误删行 使用 drop table 或 truncate table 误删表 使用 drop database 语句误删数据库 使用 rm 命令误删整个 MySQL 实例。">
+<meta name="twitter:image" content="https://caoxl.com/imgs/create_table.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MySQL-Restore-By-Binlog" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MySQL 通过binlog恢复数据
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2021/03/24/MySQL-Restore-By-Binlog/" class="article-date">
+	  <time datetime="2021-03-24T09:19:17.000Z" itemprop="datePublished">2021-03-24</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>日常开发，运维中，经常会出现误删数据的情况。误删数据的类型大致可分为以下几类：</p>
+<ul>
+<li>使用 <code>delete</code> 误删行</li>
+<li>使用 <code>drop table</code> 或 <code>truncate table</code> 误删表</li>
+<li>使用 <code>drop database</code> 语句误删数据库</li>
+<li>使用 <code>rm</code> 命令误删整个 MySQL 实例。</li>
+</ul>
+<a id="more"></a>
+<h1 id="本文目的"><a href="#本文目的" class="headerlink" title="本文目的"></a>本文目的</h1><p>通过了解 binlog 日志的相关配置，简单掌握通过 binlog 对数据库进行数据恢复操作；</p>
+<h1 id="mysql-日志文件"><a href="#mysql-日志文件" class="headerlink" title="mysql 日志文件"></a>mysql 日志文件</h1><p>mysql 主要有以下几种日志：</p>
+<ul>
+<li>错误日志：记录 mysql 运行过程中的错误信息</li>
+<li>一般查询日志：记录 mysql 正在运行的语句，包括查询、修改、更新等的每条 sql</li>
+<li>慢查询日志：记录查询比较耗时的 SQL 语句</li>
+<li>binlog 日志：记录数据修改记录，包括创建表、数据更新等</li>
+</ul>
+<p>这些日志均需要在 my.cnf 文件进行配置，如果不知道 mysql 的配置文件路径，可以使用 mysql 命令进行查找，</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql <span class="params">--verbose</span> <span class="params">--help</span> | grep -A 1 'Default options’ <span class="comment">#该命令会罗列出my.cnf顺序查找的路径。</span></span><br></pre></td></tr></table></figure>
+<p>例如:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[WWW] mysql --verbose --help | grep -A 1 <span class="string">'Default options'</span></span><br><span class="line">Default options are read <span class="keyword">from</span> the following files <span class="keyword">in</span> the given order:</span><br><span class="line">/etc/my.cnf /etc/mysql/my.cnf /Applications/MAMP/conf/my.cnf ~/.my.cnf</span><br></pre></td></tr></table></figure>
+<h1 id="binlog-日志"><a href="#binlog-日志" class="headerlink" title="binlog 日志"></a>binlog 日志</h1><p><code>binlog</code> 就是 <code>binary log</code>，二进制日志文件，记录所有数据库更新语句，包括表更新和记录更新，即数据操纵语言 (DML)，<code>binlog</code> 主要用于数据恢复和配置主从复制等；</p>
+<blockquote>
+<ul>
+<li>数据恢复：当数据库误删或者发生不可描述的事情时，可以通过 binlog 恢复到某个时间点的数据。</li>
+<li>主从复制：当有数据库更新之后，主库通过 binlog 记录并通知从库进行更新，从而保证主从数据库数据一致；</li>
+</ul>
+</blockquote>
+<p>mysql 按照功能分为服务层模块和存储引擎层模块，服务层负责客户端连接、SQL 语句处理优化等操作，存储引擎层负责数据的存储和查询；</p>
+<p>binlog 属于服务层模块的日志，即引擎无关性，所有数据引擎的数据更改都会记录 binlog 日志。</p>
+<p>当数据库发生崩溃时，如果使用 InnoDB 引擎，binlog 日志还可以检验 InnoDB 的 redo 日志的 commit 情况。</p>
+<h1 id="binlog-日志开启"><a href="#binlog-日志开启" class="headerlink" title="binlog 日志开启"></a>binlog 日志开启</h1><h2 id="日志开启方式"><a href="#日志开启方式" class="headerlink" title="日志开启方式"></a>日志开启方式</h2><ol>
+<li>添加配置</li>
+</ol>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">log_bin</span>=<span class="literal">ON</span></span><br><span class="line"><span class="attr">log_bin_basename</span>=/path/bin-log</span><br><span class="line"><span class="attr">log_bin_index</span>=/path/bin-log.index</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>仅仅设置log-bin参数</li>
+</ol>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">log</span>-bin=/<span class="built_in">path</span>/bin-<span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+<p>当开启 binlog 日志之后，mysql 会创建一个 log_bin_index 指定的 .index 文件和多个二进制日志文件，index 中按顺序记录了 mysql 使用的所有 binlog 文件。binlog 日志则会以指定的名称 (或默认值) 加自增的数字作为后缀，ex：<code>bin-log.000001</code>，当发生下述三种情况时，binlog 日志便会进行重建</p>
+<blockquote>
+<p>文件大小达到 <code>max_binlog_size</code> 参数的值<br>执行 flush logs 命令<br>重启 mysql 服务</p>
+</blockquote>
+<p>实例:</p>
+<ul>
+<li>设置log-bin参数</li>
+</ul>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">log-bin</span> = /Users/caoxl/WWW/mysqlbinlog/mysql-binlog</span><br><span class="line"><span class="attr">binlog_format</span> = row</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看log-bin是否开启</li>
+</ul>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="emphasis">'log_bin'</span>;</span><br><span class="line"><span class="code">+---------------+</span>-------+</span><br><span class="line">| Variable<span class="emphasis">_name | Value |</span></span><br><span class="line"><span class="emphasis">+---------------+-------+</span></span><br><span class="line"><span class="emphasis">| log_</span>bin       | OFF   |</span><br><span class="line"><span class="code">+---------------+</span>-------+</span><br><span class="line">1 row in set (0.20 sec)</span><br><span class="line"><span class="code"> </span></span><br><span class="line">mysql&gt; show variables like <span class="emphasis">'log_bin'</span>;</span><br><span class="line"><span class="code">+---------------+</span>-------+</span><br><span class="line">| Variable<span class="emphasis">_name | Value |</span></span><br><span class="line"><span class="emphasis">+---------------+-------+</span></span><br><span class="line"><span class="emphasis">| log_</span>bin       | ON    |</span><br><span class="line"><span class="code">+---------------+</span>-------+</span><br><span class="line">1 row in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<h2 id="binlog日志格式"><a href="#binlog日志格式" class="headerlink" title="binlog日志格式"></a>binlog日志格式</h2><p>通过参数 <code>binlog_format</code> 参数的值，可以设置 <code>binlog</code> 的格式，可选值有 <code>statement</code>、<code>row</code>、<code>mixed</code></p>
+<ul>
+<li><code>statement</code> 格式：记录数据库执行的原始 SQL 语句</li>
+<li><code>row</code> 格式：记录具体的行的修改，这个为目前默认值</li>
+<li><code>mixed</code> 格式：因为上边两种格式各有优缺点，所以就出现了 mixed 格式</li>
+</ul>
+<h1 id="binlog-日志查看工具：mysqlbinlog"><a href="#binlog-日志查看工具：mysqlbinlog" class="headerlink" title="binlog 日志查看工具：mysqlbinlog"></a>binlog 日志查看工具：mysqlbinlog</h1><p>因为 binlog 是二进制文件，不能像其他文件一样，直接打开查看。但 mysql 提供了 binlog 查看工具 mysqlbinlog，可以解析二进制文件。当然不同格式的日志解析结果是不一样的；</p>
+<ol>
+<li>statement 格式日志，执行 <code>mysqlbinlog /path/bin-log.000001</code>，可以直接看到原始执行的 SQL 语句</li>
+<li>row 格式日志，则可读性没有那么好，但仍可通过参数使文档更加可读 <code>mysqlbinlog -v /path/bin-log.000001</code></li>
+</ol>
+<p><code>mysqlbinlog</code> 两对非常重要的参数</p>
+<ol>
+<li><code>--start-datetime</code> &amp; <code>--stop-datetime</code> 解析某一个时间段内的 binlog；</li>
+<li><code>--start-position</code> &amp; <code>--stop-position</code> 解析在两个 position 之间的 binlog；</li>
+</ol>
+<h1 id="使用-binlog-恢复数据"><a href="#使用-binlog-恢复数据" class="headerlink" title="使用 binlog 恢复数据"></a>使用 binlog 恢复数据</h1><p>使用 <code>binlog</code> 恢复数据，本质上就是通过 <code>binlog</code> 找到所有 DML 操作，去掉错误的 SQL 语句，然后重走一遍长征路，就可以将数据恢复；</p>
+<h2 id="通过-MySQL-Cli-查询-BINLOG-信息"><a href="#通过-MySQL-Cli-查询-BINLOG-信息" class="headerlink" title="通过 MySQL Cli 查询 BINLOG 信息"></a>通过 MySQL Cli 查询 BINLOG 信息</h2><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"># 查询 BINLOG 格式</span><br><span class="line">mysql&gt; show variables like <span class="emphasis">'binlog_format'</span>;</span><br><span class="line"><span class="code">+---------------+</span>-------+</span><br><span class="line">| Variable<span class="emphasis">_name | Value |</span></span><br><span class="line"><span class="emphasis">+---------------+-------+</span></span><br><span class="line"><span class="emphasis">| binlog_</span>format | ROW   |</span><br><span class="line"><span class="code">+---------------+</span>-------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"># 查询当前数据库中 BINLOG 名称及大小</span><br><span class="line">mysql&gt; show binary logs;</span><br><span class="line"><span class="code">+---------------------+</span>-----------+</span><br><span class="line">| Log<span class="emphasis">_name            | File_</span>size |</span><br><span class="line"><span class="code">+---------------------+</span>-----------+</span><br><span class="line">| mysql-binlog.000001 |       177 |</span><br><span class="line">| mysql-binlog.000002 |       177 |</span><br><span class="line">| mysql-binlog.000003 |      2120 |</span><br><span class="line">| mysql-binlog.000004 |       154 |</span><br><span class="line"><span class="code">+---------------------+</span>-----------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"># 查看 master 正在写入的 BINLOG 信息</span><br><span class="line">mysql&gt; show master status\G;</span><br><span class="line"><span class="bullet">*************************** </span>1. row **************************<span class="strong">*</span></span><br><span class="line"><span class="strong">             File: mysql-binlog.000004</span></span><br><span class="line"><span class="strong">         Position: 154</span></span><br><span class="line"><span class="strong">     Binlog_Do_DB: </span></span><br><span class="line"><span class="strong"> Binlog_Ignore_DB: </span></span><br><span class="line"><span class="strong">Executed_Gtid_Set: </span></span><br><span class="line"><span class="strong">1 row in set (0.00 sec)</span></span><br><span class="line"><span class="strong"></span></span><br><span class="line"><span class="strong">ERROR: </span></span><br><span class="line"><span class="strong">No query specified</span></span><br><span class="line"><span class="strong"></span></span><br><span class="line"><span class="strong"># 通过 offset 查看 BINLOG 信息</span></span><br><span class="line"><span class="strong">mysql&gt; show BINLOG events in 'mysql-binlog.000004' limit 1,  10;</span></span><br><span class="line"><span class="strong">+---------------------+-----+----------------+-----------+-------------+------+</span></span><br><span class="line"><span class="strong">| Log_name            | Pos | Event_type     | Server_id | End_log_pos | Info |</span></span><br><span class="line"><span class="strong">+---------------------+-----+----------------+-----------+-------------+------+</span></span><br><span class="line"><span class="strong">| mysql-binlog.000004 | 123 | Previous_gtids |         1 |         154 |      |</span></span><br><span class="line"><span class="strong">+---------------------+-----+----------------+-----------+-------------+------+</span></span><br><span class="line"><span class="strong">1 row in set (0.00 sec)</span></span><br><span class="line"><span class="strong"></span></span><br><span class="line"><span class="strong"># 通过 position 查看 binlog 信息</span></span><br><span class="line"><span class="strong">mysql&gt; show BINLOG events in 'mysql-binlog.000004' from 1 limit 10;</span></span><br><span class="line"><span class="strong">+---------------------+-----+----------------+-----------+-------------+---------------------------------------+</span></span><br><span class="line"><span class="strong">| Log_name            | Pos | Event_type     | Server_id | End_log_pos | Info                                  |</span></span><br><span class="line"><span class="strong">+---------------------+-----+----------------+-----------+-------------+---------------------------------------+</span></span><br><span class="line"><span class="strong">| mysql-binlog.000004 |   4 | Format_desc    |         1 |         123 | Server ver: 5.7.26-log, Binlog ver: 4 |</span></span><br><span class="line"><span class="strong">| mysql-binlog.000004 | 123 | Previous_gtids |         1 |         154 |                                       |</span></span><br><span class="line"><span class="strong">+---------------------+-----+----------------+-----------+-------------+---------------------------------------+</span></span><br><span class="line"><span class="strong">2 rows in set (0.00 sec)</span></span><br></pre></td></tr></table></figure>
+<h2 id="通过-mysqlbinlog-查询-BINLOG-信息"><a href="#通过-mysqlbinlog-查询-BINLOG-信息" class="headerlink" title="通过 mysqlbinlog 查询 BINLOG 信息"></a>通过 mysqlbinlog 查询 BINLOG 信息</h2><p>在介绍 <code>mysqlbinlog</code> 工具使用前，先来看下 BINLOG 文件的内容：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询 BINLOG 的信息</span></span><br><span class="line"><span class="attribute">mysqlbinlog</span> --<span class="literal">no</span>-defaults mysql-binlog.<span class="number">000004</span> | less</span><br></pre></td></tr></table></figure>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># at <span class="number">219</span></span><br><span class="line">#<span class="number">210325</span> <span class="number">15</span>:<span class="number">43</span>:<span class="number">01</span> server id <span class="number">1</span>  end_log_pos <span class="number">293</span> CRC32 <span class="number">0x1ccf5f28</span> 	Query	thread_id=<span class="number">149</span>	exec_time=<span class="number">0</span>	error_code=<span class="number">0</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>at</code> 表示 offset 或者说事件开始的起始位置</li>
+<li><code>210325 15:43:01 server id 1</code> 表示 server 1 开始执行事件的日期</li>
+<li><code>end_log_pos 293</code> 表示事件的结束位置 + 1，或者说是下一个事件的起始位置。</li>
+<li><code>exec_time</code> 表示在 master 上花费的时间，在 salve 上，记录的时间是从 Master 记录开始，一直到 Slave 结束完成所花费的时间。</li>
+<li><code>error_code=0</code> 表示没有错误发生。</li>
+</ul>
+<h2 id="导出-BINLOG-日志，用于分析和排查-sql-语句："><a href="#导出-BINLOG-日志，用于分析和排查-sql-语句：" class="headerlink" title="导出 BINLOG 日志，用于分析和排查 sql 语句："></a>导出 BINLOG 日志，用于分析和排查 sql 语句：</h2><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog <span class="params">--no-defaults</span> <span class="params">--base64-output=decode-rows</span> -v \</span><br><span class="line"> <span class="params">--start-datetime</span>  <span class="string">"2021-03-25 14:00:00"</span> \</span><br><span class="line"> mysql-binlog.000004 &gt; <span class="string">/path/binlog_raw.sql</span></span><br></pre></td></tr></table></figure>
+<h1 id="数据实操"><a href="#数据实操" class="headerlink" title="数据实操"></a>数据实操</h1><p>恢复的大致流程如下:</p>
+<blockquote>
+<ol>
+<li>创建数据库和表，并插入数据。</li>
+<li>误删一条数据</li>
+<li>继续插入数据。</li>
+<li>误删表。</li>
+<li>最后将原来以及之后插入的数据进行恢复。</li>
+</ol>
+</blockquote>
+<h2 id="准备数据"><a href="#准备数据" class="headerlink" title="准备数据"></a>准备数据</h2><ul>
+<li>准备数据库，表及数据：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建临时数据库</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> test_binlog \</span><br><span class="line"><span class="keyword">default</span> <span class="keyword">charset</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci; </span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建临时表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`sync_test`</span> (<span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) \</span><br><span class="line"><span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT, <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,  \</span><br><span class="line">PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>) ) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加数据</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> sync_test (<span class="keyword">id</span>, <span class="keyword">name</span>) <span class="keyword">values</span> (<span class="literal">null</span>, <span class="string">'xiaoa'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> sync_test (<span class="keyword">id</span>, <span class="keyword">name</span>) <span class="keyword">values</span> (<span class="literal">null</span>, <span class="string">'xiaob'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> sync_test (<span class="keyword">id</span>, <span class="keyword">name</span>) <span class="keyword">values</span> (<span class="literal">null</span>, <span class="string">'xiaoc'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看添加的数据</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> sync_test;</span><br></pre></td></tr></table></figure>
+<h2 id="删除表或者数据"><a href="#删除表或者数据" class="headerlink" title="删除表或者数据"></a>删除表或者数据</h2><ul>
+<li>误删操作</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除 name=xiaoc 的数据</span></span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> sync_test <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">3</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 插入几条数据</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> sync_test (<span class="keyword">id</span>, <span class="keyword">name</span>) <span class="keyword">values</span> (<span class="literal">null</span>, <span class="string">'xiaod'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> sync_test (<span class="keyword">id</span>, <span class="keyword">name</span>) <span class="keyword">values</span> (<span class="literal">null</span>, <span class="string">'xiaoe'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> sync_test (<span class="keyword">id</span>, <span class="keyword">name</span>) <span class="keyword">values</span> (<span class="literal">null</span>, <span class="string">'xiaof'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除表</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> sync_test;</span><br></pre></td></tr></table></figure>
+<h2 id="数据的恢复"><a href="#数据的恢复" class="headerlink" title="数据的恢复"></a>数据的恢复</h2><p>在执行数据恢复前，如果操作的是生产环境，会有如下的建议：</p>
+<ul>
+<li>使用 <code>flush logs</code> 命令，替换当前主库中正在使用的 <code>binlog</code> 文件，好处如下：<ul>
+<li>可将误删操作，定位在一个 BINLOG 文件中，便于之后的数据分析和恢复。</li>
+<li>避免操作正在被使用的 BINLOG 文件，防止发生意外情况。</li>
+</ul>
+</li>
+<li>数据的恢复不要在生产库中执行，先在临时库恢复，确认无误后，再倒回生产库。防止对数据的二次伤害。</li>
+</ul>
+<p>通常来说，恢复主要有两个步骤：</p>
+<ol>
+<li>在临时库中，恢复定期执行的全量备份数据。</li>
+<li>然后基于全量备份的数据点，通过 BINLOG 来恢复误操作和正常的数据。</li>
+</ol>
+<h3 id="使用-BINLOG-做数据恢复前"><a href="#使用-BINLOG-做数据恢复前" class="headerlink" title="使用 BINLOG 做数据恢复前"></a>使用 BINLOG 做数据恢复前</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 查看正在使用的 Binlog 文件</span></span><br><span class="line">mysql&gt; show master status\G;</span><br><span class="line"><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">** 1. row **</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span></span><br><span class="line"><span class="code">             File: mysql-binlog.000004</span></span><br><span class="line"><span class="code">         Position: 3325</span></span><br><span class="line"><span class="code">     Binlog_Do_DB: </span></span><br><span class="line"> Binlog<span class="emphasis">_Ignore_</span>DB: </span><br><span class="line">Executed<span class="emphasis">_Gtid_</span>Set: </span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line"><span class="section"># 显示结果是: mysql-binlog.000004</span></span><br><span class="line"></span><br><span class="line"><span class="section"># 执行 flush logs 操作，生成新的 BINLOG</span></span><br><span class="line">mysql&gt; flush logs;</span><br><span class="line">Query OK, 0 rows affected (0.08 sec)</span><br><span class="line"></span><br><span class="line"><span class="section"># 查看正在使用的 Binlog 文件</span></span><br><span class="line">mysql&gt; show master status\G;</span><br><span class="line"><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">** 1. row **</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span><span class="strong">*****</span></span><br><span class="line"><span class="code">             File: mysql-binlog.000005</span></span><br><span class="line"><span class="code">         Position: 154</span></span><br><span class="line"><span class="code">     Binlog_Do_DB: </span></span><br><span class="line"> Binlog<span class="emphasis">_Ignore_</span>DB: </span><br><span class="line">Executed<span class="emphasis">_Gtid_</span>Set: </span><br><span class="line">1 row in set (0.01 sec)</span><br><span class="line"><span class="section"># 显示结果是: mysql-binlog.000005</span></span><br></pre></td></tr></table></figure>
+<h3 id="确定恢复数据的步骤"><a href="#确定恢复数据的步骤" class="headerlink" title="确定恢复数据的步骤"></a>确定恢复数据的步骤</h3><p>这里主要是有两条误删的操作，数据行的误删和表的误删。有两种方式进行恢复。</p>
+<ul>
+<li>方式一：首先恢复到删除表操作之前的位置，然后再单独恢复误删的数据行。</li>
+<li>方式二：首先恢复到误删数据行的之前的位置，然后跳过误删事件再恢复数据表操作之前的位置。</li>
+</ul>
+<p>这里采用方式一的方案进行演示，由于是演示，就不额外找一个临时库进行全量恢复了，直接进行操作。</p>
+<h3 id="查询创建表的事件位置和删除表的事件位置"><a href="#查询创建表的事件位置和删除表的事件位置" class="headerlink" title="查询创建表的事件位置和删除表的事件位置"></a>查询创建表的事件位置和删除表的事件位置</h3><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据时间确定位置信息</span></span><br><span class="line">mysqlbinlog <span class="params">--no-defaults</span> <span class="params">--base64-output=decode-rows</span> -v \</span><br><span class="line"> <span class="params">--start-datetime</span>  <span class="string">"2021-03-25 14:00:00"</span> \</span><br><span class="line"> <span class="params">--database</span> test_binlog  mysql-binlog.000005 | less</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出SQL,方便分析</span></span><br><span class="line">mysqlbinlog <span class="params">--no-defaults</span> <span class="params">--base64-output=decode-rows</span> -v \</span><br><span class="line"> <span class="params">--start-datetime</span>  <span class="string">"2021-03-25 14:00:00"</span> \</span><br><span class="line"> mysql-binlog.000001 &gt; <span class="string">/your-path/binlog_raw.sql</span></span><br></pre></td></tr></table></figure>
+<h4 id="创建表的开始位置"><a href="#创建表的开始位置" class="headerlink" title="创建表的开始位置:"></a>创建表的开始位置:</h4><p><img src="https://caoxl.com/imgs/create_table.png" alt="创建表的开始位置"></p>
+<h4 id="创建表的结束位置"><a href="#创建表的结束位置" class="headerlink" title="创建表的结束位置:"></a>创建表的结束位置:</h4><p><img src="https://caoxl.com/imgs/drop_table.png" alt="创建表的结束位置"></p>
+<h4 id="插入-name-39-xiaoc-39-的位置："><a href="#插入-name-39-xiaoc-39-的位置：" class="headerlink" title="插入 name=&#39;xiaoc&#39; 的位置："></a>插入 <code>name=&#39;xiaoc&#39;</code> 的位置：</h4><p><img src="https://caoxl.com/imgs/insert_table.png" alt="插入 `name=&#39;xiaoc&#39;` 的位置"></p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据位置导出 SQL 文件</span></span><br><span class="line">mysqlbinlog <span class="params">--no-defaults</span> <span class="params">--base64-output=decode-rows</span> -v \</span><br><span class="line"> <span class="params">--start-position</span> <span class="string">"398"</span> <span class="params">--stop-position</span> <span class="string">"2699"</span> \</span><br><span class="line"> <span class="params">--database</span> test_binlog  mysql-binlog.000005 \</span><br><span class="line"> &gt; <span class="string">/your-path/test_binlog_step1.sql</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">mysqlbinlog <span class="params">--no-defaults</span> <span class="params">--base64-output=decode-rows</span> -v \</span><br><span class="line"> <span class="params">--start-position</span> <span class="string">"1279"</span> <span class="params">--stop-position</span> <span class="string">"1563"</span> \</span><br><span class="line"> <span class="params">--database</span> test_binlog  mysql-binlog.000005 \</span><br><span class="line"> &gt; <span class="string">/your-path/test_binlog_step2.sql</span></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用 mysql 进行恢复</span></span><br><span class="line">mysql -u root -p &lt; <span class="string">/your-path//test_binlog_step1.sql</span></span><br><span class="line">mysql -u root -p &lt; <span class="string">/your-path//test_binlog_step2.sql</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>MySQL 5.7 中无论是否打开 GTID 的配置，在每次事务开启时，都首先会出 GTID 的一个事务，用于并行复制。所以在确定导出开始事务位置时，要算上这个事件。<br>在使用 –stop-position 导出时，会导出在指定位置的前一个事件，所以这里要推后一个事务。<br>对于 DML 的语句，主要结束位置要算上 COMMIT 的位置。</p>
+</blockquote>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2021/03/24/MySQL-Restore-By-Binlog/" target="_blank" title="MySQL 通过binlog恢复数据">http://blog.caoxl.com/2021/03/24/MySQL-Restore-By-Binlog/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Binlog/">Binlog</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/12/23/Liangchao-UI-PM-Resume/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">梁超 作品集</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#本文目的"><span class="nav-number">1.</span> <span class="nav-text">本文目的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mysql-日志文件"><span class="nav-number">2.</span> <span class="nav-text">mysql 日志文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#binlog-日志"><span class="nav-number">3.</span> <span class="nav-text">binlog 日志</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#binlog-日志开启"><span class="nav-number">4.</span> <span class="nav-text">binlog 日志开启</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#日志开启方式"><span class="nav-number">4.1.</span> <span class="nav-text">日志开启方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#binlog日志格式"><span class="nav-number">4.2.</span> <span class="nav-text">binlog日志格式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#binlog-日志查看工具：mysqlbinlog"><span class="nav-number">5.</span> <span class="nav-text">binlog 日志查看工具：mysqlbinlog</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用-binlog-恢复数据"><span class="nav-number">6.</span> <span class="nav-text">使用 binlog 恢复数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通过-MySQL-Cli-查询-BINLOG-信息"><span class="nav-number">6.1.</span> <span class="nav-text">通过 MySQL Cli 查询 BINLOG 信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过-mysqlbinlog-查询-BINLOG-信息"><span class="nav-number">6.2.</span> <span class="nav-text">通过 mysqlbinlog 查询 BINLOG 信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#导出-BINLOG-日志，用于分析和排查-sql-语句："><span class="nav-number">6.3.</span> <span class="nav-text">导出 BINLOG 日志，用于分析和排查 sql 语句：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据实操"><span class="nav-number">7.</span> <span class="nav-text">数据实操</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备数据"><span class="nav-number">7.1.</span> <span class="nav-text">准备数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除表或者数据"><span class="nav-number">7.2.</span> <span class="nav-text">删除表或者数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据的恢复"><span class="nav-number">7.3.</span> <span class="nav-text">数据的恢复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-BINLOG-做数据恢复前"><span class="nav-number">7.3.1.</span> <span class="nav-text">使用 BINLOG 做数据恢复前</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确定恢复数据的步骤"><span class="nav-number">7.3.2.</span> <span class="nav-text">确定恢复数据的步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询创建表的事件位置和删除表的事件位置"><span class="nav-number">7.3.3.</span> <span class="nav-text">查询创建表的事件位置和删除表的事件位置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建表的开始位置"><span class="nav-number">7.3.3.1.</span> <span class="nav-text">创建表的开始位置:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建表的结束位置"><span class="nav-number">7.3.3.2.</span> <span class="nav-text">创建表的结束位置:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#插入-name-39-xiaoc-39-的位置："><span class="nav-number">7.3.3.3.</span> <span class="nav-text">插入 name=&#39;xiaoc&#39; 的位置：</span></a></li></ol></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2021 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2021 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
