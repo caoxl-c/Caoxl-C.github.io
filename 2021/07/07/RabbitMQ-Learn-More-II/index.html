@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>rabbitmq 再深入 ii | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="消息队列RabbitMQ">
+  
+  
+  
+  
+  <meta name="description" content="之前有多篇RabbitMQ的学习, 实践是检验真理的唯一标准, 所以本篇是实践篇消息队列之 RabbitMQRabbitMQ 实战记录RabbitMq 再深入">
+<meta name="keywords" content="消息队列,RabbitMQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ 再深入 II">
+<meta property="og:url" content="http://blog.caoxl.com/2021/07/07/RabbitMQ-Learn-More-II/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="之前有多篇RabbitMQ的学习, 实践是检验真理的唯一标准, 所以本篇是实践篇消息队列之 RabbitMQRabbitMQ 实战记录RabbitMq 再深入">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-07-07T07:42:04.752Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ 再深入 II">
+<meta name="twitter:description" content="之前有多篇RabbitMQ的学习, 实践是检验真理的唯一标准, 所以本篇是实践篇消息队列之 RabbitMQRabbitMQ 实战记录RabbitMq 再深入">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="http://caoxl.com/imgs/we-min.jpg">
+  <link rel="apple-touch-icon" href="/http://caoxl.com/imgs/we-min.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="http://caoxl.com/imgs/we-min.jpg">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-RabbitMQ-Learn-More-II" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      RabbitMQ 再深入 II
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2021/07/07/RabbitMQ-Learn-More-II/" class="article-date">
+	  <time datetime="2021-07-07T02:00:57.000Z" itemprop="datePublished">2021-07-07</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>之前有多篇RabbitMQ的学习, 实践是检验真理的唯一标准, 所以本篇是实践篇<br><a href="https://blog.caoxl.com/2019/08/07/Message-Queue-RabbitMQ/">消息队列之 RabbitMQ</a><br><a href="https://blog.caoxl.com/2020/04/03/RabbitMq-Actual-Combat-1/">RabbitMQ 实战记录</a><br><a href="https://blog.caoxl.com/2020/04/08/RabbitMQ-Learn-More/">RabbitMq 再深入</a></p>
+</blockquote>
+<a id="more"></a>
+<h1 id="方法参数"><a href="#方法参数" class="headerlink" title="方法参数"></a>方法参数</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.1 建立连接</span></span><br><span class="line">$conn = <span class="keyword">new</span> AMQPStreamConnection($host, $port, $user, $password, $vhost);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$host</code>:  RabbitMQ服务器主机ID地址</li>
+<li><code>$port</code>:  RabbitMQ服务器端口</li>
+<li><code>$user</code>:  连接RabbitMQ服务器的用户名</li>
+<li><code>$password</code>:  连接RabbitMQ服务器的用户密码</li>
+<li><code>$vhost</code>: 连接RabbitMQ服务器的vhost(服务器可以有多个vhost，虚拟主机，类似nginx的vhost)</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 1.2 建立信道</span><br><span class="line">$channel = $conn-&gt;channel($channel_id);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$channel_id</code>:  信道ID, 不传则获取$channel[“”]信道,再无则循环$this-&gt;channel数组，下标从1到最大信道数找第一个不是<code>AMQPChannel</code>对象的下标，实例化并返回<code>AMQPChannel</code>对象，无则抛出异常<code>No free channel ids</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.3 声明交换机</span></span><br><span class="line">$channel-&gt;exchange_declare(</span><br><span class="line">    $exchange_name,</span><br><span class="line">    $type,</span><br><span class="line">    $passive = <span class="keyword">false</span>,</span><br><span class="line">    $durable = <span class="keyword">false</span>,</span><br><span class="line">    $auto_delete = <span class="keyword">false</span>,</span><br><span class="line">    $internal = <span class="keyword">false</span>,</span><br><span class="line">    $nowait = <span class="keyword">false</span>,</span><br><span class="line">    $arguments = <span class="keyword">array</span>(),</span><br><span class="line">    $ticket = <span class="keyword">null</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$exchange_name</code>:  交换机名称</li>
+<li><code>$type</code>:  交换机类型<ul>
+<li><code>direct</code>: (默认)直接交换器，工作方式类似于单播，<code>exchange</code>会将消息发送完全匹配<code>route_key</code>的<code>queue</code>;</li>
+<li><code>fanout</code>: 广播式交换器，不管消息的<code>route_key</code>设置为什么，<code>exchange</code>都会将消息转发给所有绑定的<code>queue</code>;</li>
+<li><code>topic</code>: 主题交换机, 工作方式类似于组播, <code>exchange</code>会将消息转发和<code>route_key</code>匹配模式相同的所有队列;</li>
+<li><code>headers</code>: 根据消息体的header匹配</li>
+</ul>
+</li>
+<li><code>$passive</code>:  是否检测同名队列</li>
+<li><code>$durable</code>:  交换机是否开启持久化</li>
+<li><code>$auto_delete</code>:  通道关闭后是否删除队列</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.4 声明队列</span></span><br><span class="line">$channel-&gt;queue_declare(</span><br><span class="line">    $queue_name = <span class="string">''</span>,</span><br><span class="line">    $passive = <span class="keyword">false</span>,</span><br><span class="line">    $durable = <span class="keyword">false</span>,</span><br><span class="line">    $exclusive = <span class="keyword">false</span>,</span><br><span class="line">    $auto_delete = <span class="keyword">true</span>,</span><br><span class="line">    $nowait = <span class="keyword">false</span>,</span><br><span class="line">    $arguments = <span class="keyword">array</span>(),</span><br><span class="line">    $ticket = <span class="keyword">null</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$queue_name</code>:  队列名称</li>
+<li><code>$passive</code>:  是否检测同名队列</li>
+<li><code>$durable</code>:  是否开启队列持久化</li>
+<li><code>$exclusive</code>:  队列是否可以被其他队列访问</li>
+<li><code>$auto_delete</code>: 通道关闭后是否删除队列</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.5 创建要发送的消息, 可以创建多个消息</span></span><br><span class="line">$msg = <span class="keyword">new</span> AMQPMessage($data, $properties);</span><br><span class="line"><span class="comment">// 单个发送</span></span><br><span class="line">$channel-&gt;basic_publish($msg, $exchange = <span class="string">''</span>, $routing_key = <span class="string">''</span>, $mandatory = <span class="keyword">false</span>, $immediate = <span class="keyword">false</span>, $ticket = <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">// 多个发送</span></span><br><span class="line"><span class="comment">// 1.多次调用 $channel-&gt;batch_basic_publish($msg, $exchange = '', $routing_key = '', $mandatory = false, $immediate = false, $ticket = null)</span></span><br><span class="line"><span class="comment">// 内部实现:往$this-&gt;batch_messages[]塞</span></span><br><span class="line"><span class="comment">// 2.再调用一次$channel-&gt;publish_batch(), 完成发送</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$data</code>:  要发送的消息</li>
+<li><code>$properties</code>:  设置的属性, 比如设置该消息持久化 <code>[&#39;delivery_mode&#39; =&gt; AMQPMessage::DELIVERY_MODE_PERSISTENT]</code></li>
+<li><code>$msg</code>:  消息内容</li>
+<li><code>$exchange</code>:  交换机</li>
+<li><code>$routing_key</code>:  路由键</li>
+<li><code>$mandatory</code>:  匹配不到队列时,是否立即丢弃消息</li>
+<li><code>$immediate</code>:  队列无消费者时,是否立即丢弃消息</li>
+<li><code>$ticket</code>:  </li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.6 路由绑定</span></span><br><span class="line">$channel-&gt;queue_bind(</span><br><span class="line">    $queue,</span><br><span class="line">    $exchange, </span><br><span class="line">    $routing_key = <span class="string">''</span>, </span><br><span class="line">    $nowait = <span class="keyword">false</span>,</span><br><span class="line">    $arguments = <span class="keyword">array</span>(),</span><br><span class="line">    $ticket = <span class="keyword">null</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$queue</code>:  队列名</li>
+<li><code>$exchange</code>:  交换机名</li>
+<li><code>$routing_key</code>:  路由键</li>
+<li><code>$nowait</code>:  声明队列无需等待</li>
+<li><code>$arguments</code>:  其他参数</li>
+<li><code>$ticket</code>:  </li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.7 消费消息</span></span><br><span class="line">$channel-&gt;basic_consume(</span><br><span class="line">    $queue = <span class="string">',</span></span><br><span class="line"><span class="string">    $consumer_tag = '</span>,</span><br><span class="line">    $no_local = <span class="keyword">false</span>,</span><br><span class="line">    $no_ack = <span class="keyword">false</span>,</span><br><span class="line">    $exclusive = <span class="keyword">false</span>,</span><br><span class="line">    $nowait = <span class="keyword">false</span>,</span><br><span class="line">    $callback = <span class="keyword">null</span>,</span><br><span class="line">    $ticket = <span class="keyword">null</span>,</span><br><span class="line">    $arguments = <span class="keyword">array</span>()</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$queue</code>:  被消费队列名称</li>
+<li><code>$consumer_tag</code>:  消费者客户端身份标识，用于区分多个客户端</li>
+<li><code>$no_local</code>:  这个功能属于AMQP的标准，但是RabbitMQ并没有做实现</li>
+<li><code>$no_ack</code>:  收到消息后，是否不需要回复确认即被认为被消费</li>
+<li><code>$exclusive</code>:  收到消息后，是否不需要回复确认即被认为被消费</li>
+<li><code>$nowait</code>:  不返回执行结果，但是如果排他开启的话，则必须需要等待结果的，如果两个一起开就会报错</li>
+<li><code>$callback</code>:  回调逻辑处理函数</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.8 手动ack示例</span></span><br><span class="line">$callback = <span class="function"><span class="keyword">function</span> <span class="params">($msg)</span> </span>&#123;</span><br><span class="line">    sleep($msg-&gt;body); </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">" [x] Received sleep "</span>, $msg-&gt;body, <span class="string">"\n"</span>;</span><br><span class="line">    $msg-&gt;delivery_info[<span class="string">'channel'</span>]-&gt;basic_ack($msg-&gt;delivery_info[<span class="string">'delivery_tag'</span>]);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">" [x] Ack "</span>.<span class="string">"\n"</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.9 限制分发示例</span></span><br><span class="line"><span class="comment">// 限制RabbitMQ只发不超过1条的消息给同一个消费者。当消息处理完毕后，有了反馈，才会进行第二次发送。</span></span><br><span class="line">$channel-&gt;basic_qos(<span class="keyword">null</span>, <span class="number">1</span>, <span class="keyword">null</span>);</span><br></pre></td></tr></table></figure>
+<h1 id="常用场景"><a href="#常用场景" class="headerlink" title="常用场景"></a>常用场景</h1><h2 id="无交换机-直接队列"><a href="#无交换机-直接队列" class="headerlink" title="无交换机, 直接队列"></a>无交换机, 直接队列</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">send</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $connection = <span class="keyword">new</span> AMQPStreamConnection(<span class="string">'localhost'</span>, <span class="number">5672</span>, <span class="string">'guest'</span>, <span class="string">'guest'</span>);</span><br><span class="line">    $channel = $connection-&gt;channel();</span><br><span class="line">    $channel-&gt;queue_declare(<span class="string">'hello'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">    $msg = <span class="keyword">new</span> AMQPMessage(<span class="string">'Hello World!'</span>);</span><br><span class="line">    $channel-&gt;basic_publish($msg, <span class="string">''</span>, <span class="string">'hello'</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">" [x] Sent 'Hello World!'\n"</span>;</span><br><span class="line">    $channel-&gt;close();</span><br><span class="line">    $connection-&gt;close();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">consume</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $connection = <span class="keyword">new</span> AMQPStreamConnection(<span class="string">'localhost'</span>, <span class="number">5672</span>, <span class="string">'guest'</span>, <span class="string">'guest'</span>);</span><br><span class="line">    $channel = $connection-&gt;channel();</span><br><span class="line">    $channel-&gt;queue_declare(<span class="string">'hello'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">' [*] Waiting for messages. To exit press CTRL+C'</span>, <span class="string">"\n"</span>;</span><br><span class="line">    $callback = <span class="function"><span class="keyword">function</span> <span class="params">($msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">" [x] Received "</span>, $msg-&gt;body, <span class="string">"\n"</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">    $channel-&gt;basic_consume(<span class="string">'hello'</span>, <span class="string">''</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, $callback);</span><br><span class="line">    <span class="keyword">while</span> (count($channel-&gt;callbacks)) &#123;</span><br><span class="line">        $channel-&gt;wait();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="工作队列按消费能力分发"><a href="#工作队列按消费能力分发" class="headerlink" title="工作队列按消费能力分发"></a>工作队列按消费能力分发</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生产者和消费者均增加</span></span><br><span class="line">$channel-&gt;basic_qos(<span class="keyword">null</span>, <span class="number">1</span>, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">// 即可。</span></span><br></pre></td></tr></table></figure>
+<h2 id="fanout广播示例-注册行为"><a href="#fanout广播示例-注册行为" class="headerlink" title="fanout广播示例 注册行为"></a><code>fanout</code>广播示例 注册行为</h2><p>例如注册后需要发送欢迎短信和邮件，将注册行为广播至短信和邮件</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生产者</span></span><br><span class="line"><span class="comment">// 定义交换机</span></span><br><span class="line">$channel-&gt;exchange_declare(<span class="string">'register'</span>, <span class="string">'fanout'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$msg = <span class="keyword">new</span> AMQPMessage(<span class="string">'register event'</span>);</span><br><span class="line">$channel-&gt;basic_publish($msg, <span class="string">'register'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册短信消费者</span></span><br><span class="line">$channel-&gt;exchange_declare(<span class="string">'register'</span>, <span class="string">'fanout'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_declare(<span class="string">'register.sms'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_bind(<span class="string">'register.sms'</span>, <span class="string">'register'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册邮件消费者</span></span><br><span class="line">$channel-&gt;exchange_declare(<span class="string">'register'</span>, <span class="string">'fanout'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_declare(<span class="string">'register.mail'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_bind(<span class="string">'register.mail'</span>, <span class="string">'register'</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="topic模糊匹配示例-日志分级"><a href="#topic模糊匹配示例-日志分级" class="headerlink" title="topic模糊匹配示例 日志分级"></a><code>topic</code>模糊匹配示例 日志分级</h2><p>例如我想一个消费者接受所有日志，一个消费者只接收error级别日志</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义交换机</span></span><br><span class="line">$channel-&gt;exchange_declare(<span class="string">'log'</span>, <span class="string">'topic'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$num = rand(<span class="number">0</span>, <span class="number">10</span>);</span><br><span class="line"><span class="keyword">if</span> ($num%<span class="number">3</span> == <span class="number">0</span>) &#123;</span><br><span class="line">    $level = <span class="string">'error'</span>;</span><br><span class="line">&#125; <span class="keyword">elseif</span> ($num%<span class="number">3</span> == <span class="number">1</span>) &#123;</span><br><span class="line">    $level = <span class="string">'warning'</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    $level = <span class="string">'common'</span>;</span><br><span class="line">&#125;</span><br><span class="line">$msg = <span class="keyword">new</span> AMQPMessage(<span class="string">'log event '</span> . $level);</span><br><span class="line">$channel-&gt;basic_publish($msg, <span class="string">'log'</span>, <span class="string">'log.'</span>.$level);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 全量日志消费者</span></span><br><span class="line">$channel-&gt;exchange_declare(<span class="string">'log'</span>, <span class="string">'topic'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_declare(<span class="string">'log.all'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_bind(<span class="string">'log.all'</span>, <span class="string">'log'</span>, <span class="string">'log.*'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// error日志消费者</span></span><br><span class="line">$channel-&gt;exchange_declare(<span class="string">'log'</span>, <span class="string">'topic'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_declare(<span class="string">'log.error'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_bind(<span class="string">'log.error'</span>, <span class="string">'log'</span>, <span class="string">'log.error'</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="headers匹配示例-日志分级"><a href="#headers匹配示例-日志分级" class="headerlink" title="headers匹配示例 日志分级"></a><code>headers</code>匹配示例 日志分级</h2><p>例如我想一个消费者接受所有日志，一个消费者只接收error级别日志</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生产者</span></span><br><span class="line"><span class="comment">// 定义交换机</span></span><br><span class="line">$channel-&gt;exchange_declare(<span class="string">'log2'</span>, <span class="string">'headers'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$num = rand(<span class="number">0</span>, <span class="number">10</span>);</span><br><span class="line"><span class="keyword">if</span> ($num%<span class="number">3</span> == <span class="number">0</span>) &#123;</span><br><span class="line">    $level = <span class="string">'error'</span>;</span><br><span class="line">&#125; <span class="keyword">elseif</span> ($num%<span class="number">3</span> == <span class="number">1</span>) &#123;</span><br><span class="line">    $level = <span class="string">'warning'</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    $level = <span class="string">'common'</span>;</span><br><span class="line">&#125;</span><br><span class="line">$msg = <span class="keyword">new</span> AMQPMessage(<span class="string">'log2 event '</span>.$level);</span><br><span class="line">$bindArguments = [</span><br><span class="line">    <span class="string">'level'</span> =&gt; $level,</span><br><span class="line">    <span class="string">'type'</span>  =&gt; <span class="string">'log'</span></span><br><span class="line">];</span><br><span class="line">$headers = <span class="keyword">new</span> AMQPTable($bindArguments);</span><br><span class="line">$msg-&gt;set(<span class="string">'application_headers'</span>, $bindArguments);</span><br><span class="line"></span><br><span class="line">$channel-&gt;basic_publish($msg, <span class="string">'log2'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 全量日志消费者</span></span><br><span class="line">$channel-&gt;exchange_declare(<span class="string">'log2'</span>, <span class="string">'headers'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_declare(<span class="string">'log2.all'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$bindArguments = [</span><br><span class="line">    <span class="string">'type'</span> =&gt; <span class="string">'log'</span>,</span><br><span class="line">    <span class="comment">//'x-match' =&gt; 'any'</span></span><br><span class="line">];</span><br><span class="line">$headers = <span class="keyword">new</span> AMQPTable($bindArguments);</span><br><span class="line">$channel-&gt;queue_bind(<span class="string">'log2.all'</span>, <span class="string">'log2'</span>, <span class="string">''</span>, <span class="keyword">false</span>, $headers);</span><br><span class="line"></span><br><span class="line"><span class="comment">// error日志消费者</span></span><br><span class="line">$channel-&gt;exchange_declare(<span class="string">'log2'</span>, <span class="string">'headers'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_declare(<span class="string">'log2.error'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$bindArguments = [</span><br><span class="line">    <span class="string">'type'</span> =&gt; <span class="string">'log'</span>,</span><br><span class="line">    <span class="string">'level'</span> =&gt; <span class="string">'error'</span>,</span><br><span class="line">    <span class="string">'x-match'</span> =&gt; <span class="string">'any'</span></span><br><span class="line">];</span><br><span class="line">$headers = <span class="keyword">new</span> AMQPTable($bindArguments);</span><br><span class="line">$channel-&gt;queue_bind(<span class="string">'log2.error'</span>, <span class="string">'log2'</span>, <span class="string">''</span>, <span class="keyword">false</span>, $headers);</span><br></pre></td></tr></table></figure>
+<h2 id="死信队列"><a href="#死信队列" class="headerlink" title="死信队列"></a>死信队列</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个没有消费者，5s后消息过期的队列</span></span><br><span class="line">$arguments = <span class="keyword">new</span> AMQPTable([</span><br><span class="line">    <span class="string">'x-dead-letter-exchange'</span>    =&gt; <span class="string">'dead'</span>,</span><br><span class="line">    <span class="string">'x-message-tl'</span>              =&gt; <span class="number">5000</span>, <span class="comment">// 消息存活时间(毫秒)</span></span><br><span class="line">    <span class="string">'x-dead-letter-routing-key'</span> =&gt; <span class="string">'dead'</span></span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义队列, 不要交换机</span></span><br><span class="line">$channel-&gt;queue_declare(<span class="string">'no_consume'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$now = time();</span><br><span class="line">$msg = <span class="keyword">new</span> AMQPMessage($now);</span><br><span class="line">$channel-&gt;basic_publish($msg, <span class="string">''</span>, <span class="string">'no_consume'</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">" [x] Sent no_consume :"</span>.date(<span class="string">'Y-m-d H:i:s'</span>, $now).<span class="string">"\n"</span>;</span><br><span class="line">$channel-&gt;close();</span><br><span class="line">$connection-&gt;close();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 消费者</span></span><br><span class="line">$channel-&gt;exchange_declare(<span class="string">'dead'</span>, <span class="string">'topic'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_declare(<span class="string">'dead.all'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">$channel-&gt;queue_bind(<span class="string">'dead.all'</span>, <span class="string">'dead'</span>, <span class="string">'dead'</span>);</span><br><span class="line">$channel-&gt;basic_qos(<span class="keyword">null</span>, <span class="number">1</span>, <span class="keyword">null</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">' [*] Waiting for messages. To exit press CTRL+C'</span>, <span class="string">"\n"</span>;</span><br><span class="line">$callback = <span class="function"><span class="keyword">function</span> <span class="params">($msg)</span> </span>&#123;</span><br><span class="line">    var_dump(<span class="string">'msg:'</span>.date(<span class="string">'Y-m-d H:i:s'</span>, $msg-&gt;body));</span><br><span class="line">    var_dump(<span class="string">'now:'</span>.date(<span class="string">'Y-m-d H:i:s'</span>));</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">" [x] Received log error "</span>, $msg-&gt;body, <span class="string">"\n"</span>;</span><br><span class="line">&#125;;</span><br><span class="line">$channel-&gt;basic_consume(<span class="string">'dead.all'</span>, <span class="string">''</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, $callback);</span><br><span class="line"><span class="keyword">while</span>(count($channel-&gt;callbacks)) &#123;</span><br><span class="line">    $channel-&gt;wait();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="rabbitmq和redis用作消息队列的区别"><a href="#rabbitmq和redis用作消息队列的区别" class="headerlink" title="rabbitmq和redis用作消息队列的区别"></a>rabbitmq和redis用作消息队列的区别</h1><ul>
+<li>可靠性</li>
+</ul>
+<blockquote>
+<p>redis: 没有相应的机制保证消息的可靠消费，如果发布者发布一条消息，而没有对应的订阅者的话，这条消息将丢失，不会存在内存中<br>rabbitmq: 没有相应的机制保证消息的可靠消费，如果发布者发布一条消息，而没有对应的订阅者的话，这条消息将丢失，不会存在内存中</p>
+</blockquote>
+<ul>
+<li>实时性</li>
+</ul>
+<blockquote>
+<p>redis: 实时性高，redis作为高效的缓存服务器，所有数据都存在在服务器中，所以它具有更高的实时性</p>
+</blockquote>
+<ul>
+<li>持久性</li>
+</ul>
+<blockquote>
+<p>redis: redis的持久化是针对于整个redis缓存的内容，它有RDB和AOF两种持久化方式（redis持久化方式，后续更新），可以将整个redis实例持久化到磁盘，以此来做数据备份，防止异常情况下导致数据丢失。<br>rabbitmq: 队列，消息都可以选择性持久化，持久化粒度更小，更灵活；</p>
+</blockquote>
+<ul>
+<li>总结:</li>
+</ul>
+<blockquote>
+<p>redis: 轻量级, 低延迟, 高并发, 低可靠性;<br>rabbitmq: 重量级, 高可靠, 异步, 不保证实时性;</p>
+</blockquote>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2021/07/07/RabbitMQ-Learn-More-II/" target="_blank" title="RabbitMQ 再深入 II">http://blog.caoxl.com/2021/07/07/RabbitMQ-Learn-More-II/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RabbitMQ/">RabbitMQ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/消息队列/">消息队列</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/07/05/Supervisor-II/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Supervisor 再深入</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#方法参数"><span class="nav-number">1.</span> <span class="nav-text">方法参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用场景"><span class="nav-number">2.</span> <span class="nav-text">常用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#无交换机-直接队列"><span class="nav-number">2.1.</span> <span class="nav-text">无交换机, 直接队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工作队列按消费能力分发"><span class="nav-number">2.2.</span> <span class="nav-text">工作队列按消费能力分发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fanout广播示例-注册行为"><span class="nav-number">2.3.</span> <span class="nav-text">fanout广播示例 注册行为</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#topic模糊匹配示例-日志分级"><span class="nav-number">2.4.</span> <span class="nav-text">topic模糊匹配示例 日志分级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#headers匹配示例-日志分级"><span class="nav-number">2.5.</span> <span class="nav-text">headers匹配示例 日志分级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死信队列"><span class="nav-number">2.6.</span> <span class="nav-text">死信队列</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#rabbitmq和redis用作消息队列的区别"><span class="nav-number">3.</span> <span class="nav-text">rabbitmq和redis用作消息队列的区别</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2021 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2021 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
