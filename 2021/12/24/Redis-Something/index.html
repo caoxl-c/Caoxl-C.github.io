@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>redis缓存那点破事 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PHPRedis缓存">
+  
+  
+  
+  
+  <meta name="description" content="转载, 原文地址Redis缓存那点破事 ， 绝杀面试官 25 问">
+<meta name="keywords" content="PHP,Redis,缓存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis缓存那点破事">
+<meta property="og:url" content="http://blog.caoxl.com/2021/12/24/Redis-Something/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="转载, 原文地址Redis缓存那点破事 ， 绝杀面试官 25 问">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-12-24T09:58:25.569Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis缓存那点破事">
+<meta name="twitter:description" content="转载, 原文地址Redis缓存那点破事 ， 绝杀面试官 25 问">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="https://source.unsplash.com/random">
+  <link rel="apple-touch-icon" href="/https://source.unsplash.com/random">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="https://source.unsplash.com/random">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Redis-Something" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Redis缓存那点破事
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2021/12/24/Redis-Something/" class="article-date">
+	  <time datetime="2021-12-24T08:51:06.000Z" itemprop="datePublished">2021-12-24</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/PHP/">PHP</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>转载, 原文地址<a href="https://blog.csdn.net/itomge/article/details/122118060" target="_blank" rel="noopener">Redis缓存那点破事 ， 绝杀面试官 25 问</a></p>
+</blockquote>
+<a id="more"></a>
+<h2 id="Redis-有哪些特性？"><a href="#Redis-有哪些特性？" class="headerlink" title="Redis 有哪些特性？"></a>Redis 有哪些特性？</h2><ul>
+<li>性能高， 读的速度是100000次/s，写的速度是80000次/s</li>
+<li>数据持久化，支持RDB 、AOF</li>
+<li>支持事务。通过<code>MULTI</code>和<code>EXEC</code>指令包起来。</li>
+<li>多种数据结构类型</li>
+<li>主从复制</li>
+<li>其他特性：发布/订阅、通知、key过期等</li>
+</ul>
+<h2 id="Redis-为什么这么快？"><a href="#Redis-为什么这么快？" class="headerlink" title="Redis 为什么这么快？"></a>Redis 为什么这么快？</h2><ul>
+<li>完全基于内存，没有磁盘IO上的开销，异步持久化除外</li>
+<li>单线程，避免多个线程切换的性能损耗</li>
+<li>非阻塞的IO多路复用机制</li>
+<li>底层的数据存储结构优化，使用原生的数据结构提升性能。</li>
+</ul>
+<h2 id="Redis-底层的基础数据结构有哪些？"><a href="#Redis-底层的基础数据结构有哪些？" class="headerlink" title="Redis 底层的基础数据结构有哪些？"></a>Redis 底层的基础数据结构有哪些？</h2><ul>
+<li>字符串。没有采用C语言的传统字符串，而是自己实现的一个简单动态字符串SDS的抽象类型，并保存了长度信息。</li>
+<li>链表（linkedlist）。双向无环链表结构，每个链表的节点由一个listNode结构来表示，每个节点都有前置和后置节点的指针</li>
+<li>字典（hashtable）。保存键值对的抽象数据结构，底层使用hash表，每个字典带有两个hash表，供平时使用和rehash时使用。</li>
+<li>跳跃表（skiplist）。跳跃表是有序集合的底层实现之一。redis跳跃表由zskiplist和zskiplistNode组成，zskiplist用于保存跳跃表 信息(表头、表尾节点、⻓度等)，zskiplistNode用于表示表跳跃节点，每个跳跃表的层高都是1- 32的随机数，在同一个跳跃表中，多个节点可以包含相同的分值，但是每个节点的成员对象必须是唯一的，节点按照分值大小排序，如果分值相同，则按照成员对象的大小排序。</li>
+<li>整数集合（intset）。用于保存整数值的集合抽象数据结构，不会出现重复元素，底层实现为数组。</li>
+<li>压缩列表（ziplist）。为节约内存而开发的顺序性数据结构，可以包含多个节点，每个节点可以保存一个字节数组或者整数值。</li>
+</ul>
+<h2 id="Redis-支持哪些数据类型？"><a href="#Redis-支持哪些数据类型？" class="headerlink" title="Redis 支持哪些数据类型？"></a>Redis 支持哪些数据类型？</h2><p>五种常用数据类型：<code>String</code>、<code>Hash</code>、<code>Set</code>、<code>List</code>、<code>SortedSet</code>。三种特殊的数据类型：<code>Bitmap</code>、<code>HyperLogLog</code>、<code>Geospatial</code>，其中<code>Bitmap</code>、<code>HyperLogLog</code>的底层都是 <code>String</code> 数据类型，<code>Geospatial</code> 底层是 <code>Sorted Set</code> 数据类型。</p>
+<ul>
+<li>字符串对象string：int整数、embstr编码的简单动态字符串、raw简单动态字符串</li>
+<li>列表对象list：ziplist、linkedlist</li>
+<li>哈希对象hash：ziplist、hashtable</li>
+<li>集合对象set：intset、hashtable</li>
+<li>有序集合对象zset：ziplist、skiplist</li>
+</ul>
+<h2 id="Redis-常用的-5-种数据结构和应用场景？"><a href="#Redis-常用的-5-种数据结构和应用场景？" class="headerlink" title="Redis 常用的 5 种数据结构和应用场景？"></a>Redis 常用的 5 种数据结构和应用场景？</h2><ul>
+<li><code>String</code>：缓存、计数器、分布式锁等</li>
+<li><code>List</code>：链表、队列、微博关注人时间轴列表等</li>
+<li><code>List</code>：链表、队列、微博关注人时间轴列表等</li>
+<li><code>Set</code>：去重、赞、踩、共同好友等</li>
+<li><code>Zset</code>：访问量排行榜、点击量排行榜等</li>
+</ul>
+<h2 id="为什么采用单线程？"><a href="#为什么采用单线程？" class="headerlink" title="为什么采用单线程？"></a>为什么采用单线程？</h2><p>官方回复，CPU不会成为Redis的制约瓶颈，Redis主要受内存、网络限制。例如，在一个普通的 Linux 系统上，使用pipelining 可以每秒传递 100 万个请求，所以如果您的应用程序主要使用 O(N) 或 O(log(N)) 命令，则几乎不会使用太多 CPU，属于IO密集型系统。</p>
+<h2 id="Redis-6-0-之后又改用多线程呢"><a href="#Redis-6-0-之后又改用多线程呢" class="headerlink" title="Redis 6.0 之后又改用多线程呢?"></a>Redis 6.0 之后又改用多线程呢?</h2><p>Redis的多线程主要是处理数据的读写、协议解析。执行命令还是采用单线程顺序执行。</p>
+<p>主要是因为redis的性能瓶颈在于网络IO而非CPU，使用多线程进行一些周边预处理，提升了IO的读写效率，从而提高了整体的吞吐量。antirez 在 RedisConf 2019 分享时提到，Redis 6 引入的多线程 IO 对性能提升至少一倍以上。</p>
+<h2 id="过期键Key-的删除策略有哪些？"><a href="#过期键Key-的删除策略有哪些？" class="headerlink" title="过期键Key 的删除策略有哪些？"></a>过期键Key 的删除策略有哪些？</h2><p>有3种过期删除策略。惰性删除、定期删除、定时删除</p>
+<ul>
+<li><code>惰性删除</code>。使用key时才进行检查，如果已经过期，则删除。缺点：过期的key如果没有被访问到，一直无法删除，一直占用内存，造成空间浪费。</li>
+<li><code>定期删除</code>。每隔一段时间做一次检查，删除过期的key，每次只是随机取一些key去检查。</li>
+<li><code>定时删除</code>。为每个key设置过期时间，同时创建一个定时器。一旦到期，立即执行删除。缺点：如果过期键比较多时，占用CPU较多，对服务的性能有很大影响。</li>
+</ul>
+<h2 id="如果Redis的内存空间不足，淘汰机制"><a href="#如果Redis的内存空间不足，淘汰机制" class="headerlink" title="如果Redis的内存空间不足，淘汰机制?"></a>如果Redis的内存空间不足，淘汰机制?</h2><ul>
+<li><code>volatile-lru</code>：从已设置过期时间的key中，移出最近最少使用的key进行淘汰</li>
+<li><code>allkeys-lru</code>：当内存不足以容纳新写入数据时，在键空间中，移除最近最少使用的key（这个是最常用的）</li>
+<li><code>volatile-ttl</code>：从已设置过期时间的key中，移出将要过期的key</li>
+<li><code>volatile-random</code>：从已设置过期时间的key中，随机选择key淘汰</li>
+<li><code>allkeys-random</code>：从key中随机选择key进行淘汰</li>
+<li><code>no-eviction</code>：禁止淘汰数据。当内存达到阈值的时候，新写入操作报错</li>
+<li><code>volatile-lfu</code>：从已设置过期时间的数据集(server.db[i].expires)中挑选最不经常使用的数据淘汰(LFU(Least Frequently Used)算法，也就是最频繁被访问的数据将来最有可能被访问到)</li>
+<li><code>allkeys-lfu</code>：当内存不足以容纳新写入数据时，在键空间中，移除最不经常使用的key。</li>
+</ul>
+<h2 id="Redis-突然挂了怎么解决？"><a href="#Redis-突然挂了怎么解决？" class="headerlink" title="Redis 突然挂了怎么解决？"></a>Redis 突然挂了怎么解决？</h2><ul>
+<li>从系统可用性角度思考，Redis Cluster引入主备机制，当主节点挂了后，自动切换到备用节点，继续提供服务</li>
+<li>Client端引入本地缓存，通过开关切换，避免Redis突然挂掉，高并发流量把数据库打挂。</li>
+</ul>
+<h2 id="Redis-持久化有哪些方式？"><a href="#Redis-持久化有哪些方式？" class="headerlink" title="Redis 持久化有哪些方式？"></a>Redis 持久化有哪些方式？</h2><ul>
+<li>快照<code>RDB</code>。将某个时间点上的数据库状态保存到<code>RDB</code>文件中，<code>RDB</code>文件是一个压缩的二进制文件，保存在磁盘上。当Redis崩溃时，可用于恢复数据。通过<code>SAVE</code>或<code>BGSAVE</code>来生成<code>RDB</code>文件。<ul>
+<li><code>SAVE</code>：会阻塞redis进程，直到RDB文件创建完毕，在进程阻塞期间，redis不能处理任何命令请求。</li>
+<li><code>BGSAVE</code>：会fork出一个子进程，然后由子进程去负责生成RDB文件，父进程还可以继续处理命令请求，不会阻塞进程。</li>
+</ul>
+</li>
+<li>只追加文件<code>AOF</code>。以日志的形式记录每个写操作（非读操作）。当不同节点同步数据时，读取日志文件的内容将写指令从前到后执行一次，即可完成数据恢复。</li>
+</ul>
+<h2 id="Redis-常用场景"><a href="#Redis-常用场景" class="headerlink" title="Redis 常用场景"></a>Redis 常用场景</h2><ul>
+<li>1、缓存，有句话说的好，「性能不够，缓存来凑」</li>
+<li>2、分布式锁，利用Redis 的 <code>setnx</code></li>
+<li>3、分布式session</li>
+<li>4、计数器，通过incr命令</li>
+<li>5、排行榜，Redis 的 有序集合</li>
+<li>6、其他</li>
+</ul>
+<h2 id="Redis-缓存要注意的七大经典问题？"><a href="#Redis-缓存要注意的七大经典问题？" class="headerlink" title="Redis 缓存要注意的七大经典问题？"></a>Redis 缓存要注意的七大经典问题？</h2><p>列举了亿级系统，高访问量情况下Redis缓存可能会遇到哪些问题？以及对应的解决方案。</p>
+<ul>
+<li>1、缓存集中失效</li>
+<li>2、缓存穿透</li>
+<li>3、缓存雪崩</li>
+<li>4、缓存热点</li>
+<li>5、缓存大Key</li>
+<li>6、缓存数据的一致性</li>
+<li>7、数据并发竞争预热</li>
+</ul>
+<h2 id="Redis-集群方案有哪几种？"><a href="#Redis-集群方案有哪几种？" class="headerlink" title="Redis 集群方案有哪几种？"></a>Redis 集群方案有哪几种？</h2><ul>
+<li>主从复制模式</li>
+<li>Sentinel（哨兵）模式</li>
+<li>Redis Cluster模式</li>
+</ul>
+<h2 id="Redis-主从数据同步（主从复制）的过程？"><a href="#Redis-主从数据同步（主从复制）的过程？" class="headerlink" title="Redis 主从数据同步（主从复制）的过程？"></a>Redis 主从数据同步（主从复制）的过程？</h2><ul>
+<li>1、slave启动后，向master发送sync命令</li>
+<li>2、master收到sync之后，执行bgsave保存快照，生成RDB全量文件</li>
+<li>3、master把slave的写命令记录到缓存</li>
+<li>4、bgsave执行完毕之后，发送RDB文件到slave，slave执行</li>
+<li>5、master发送缓冲区的写命令给slave，slave接收命令并执行，完成复制初始化。</li>
+<li>6、此后，master每次执行一个写命令都会同步发送给slave，保持master与slave之间数据的一致性</li>
+</ul>
+<h2 id="主从复制的优缺点？"><a href="#主从复制的优缺点？" class="headerlink" title="主从复制的优缺点？"></a>主从复制的优缺点？</h2><ul>
+<li>优点:<ul>
+<li>master能自动将数据同步到slave，可以进行读写分离，分担master的读压力</li>
+<li>master、slave之间的同步是以非阻塞的方式进行的，同步期间，客户端仍然可以提交查询或更新请求</li>
+</ul>
+</li>
+<li>缺点:<ul>
+<li>不具备自动容错与恢复功能，master 节点宕机后，需要手动指定新的 master</li>
+<li>master宕机，如果宕机前数据没有同步完，则切换IP后会存在数据不一致的问题</li>
+<li>难以支持在线扩容，Redis的容量受限于单机配置</li>
+</ul>
+</li>
+</ul>
+<h2 id="Sentinel（哨兵）模式的优缺点？"><a href="#Sentinel（哨兵）模式的优缺点？" class="headerlink" title="Sentinel（哨兵）模式的优缺点？"></a>Sentinel（哨兵）模式的优缺点？</h2><p>哨兵模式基于主从复制模式，增加了<strong>哨兵来监控</strong>与<strong>自动处理故障</strong>。</p>
+<ul>
+<li>优点:<ul>
+<li>哨兵模式基于主从复制模式，所以主从复制模式有的优点，哨兵模式也有</li>
+<li>master 挂掉可以自动进行切换，系统可用性更高</li>
+</ul>
+</li>
+<li>缺点:<ul>
+<li>Redis的容量受限于单机配置</li>
+<li>需要额外的资源来启动sentinel进程</li>
+</ul>
+</li>
+</ul>
+<h2 id="Redis-Cluster-模式的优缺点？"><a href="#Redis-Cluster-模式的优缺点？" class="headerlink" title="Redis Cluster 模式的优缺点？"></a>Redis Cluster 模式的优缺点？</h2><p>实现了Redis的分布式存储，即每台节点存储不同的内容，来解决在线扩容的问题。</p>
+<ul>
+<li>优点:<ul>
+<li>无中心架构，数据按照slot分布在多个节点</li>
+<li>集群中的每个节点都是平等的，每个节点都保存各自的数据和整个集群的状态。每个节点都和其他所有节点连接，而且这些连接保持活跃，这样就保证了我们只需要连接集群中的任意一个节点，就可以获取到其他节点的数据。</li>
+<li>可线性扩展到1000多个节点，节点可动态添加或删除</li>
+<li>能够实现自动故障转移，节点之间通过gossip协议交换状态信息，用投票机制完成slave到master的角色转换</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>数据通过异步复制，不保证数据的强一致性</li>
+<li>slave充当 “冷备”，不对外提供读、写服务，只作为故障转移使用。</li>
+<li>批量操作限制，目前只支持具有相同slot值的key执行批量操作，对mset、mget、sunion等操作支持不友好</li>
+<li>key事务操作支持有限，只支持多key在同一节点的事务操作，多key分布在不同节点时无法使用事务功能</li>
+<li>不支持多数据库空间，一台redis可以支持16个db，集群模式下只能使用一个，即db 0。Redis Cluster模式不建议使用pipeline和multi-keys操作，减少max redirect产生的场景。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Redis-如何做扩容？"><a href="#Redis-如何做扩容？" class="headerlink" title="Redis 如何做扩容？"></a>Redis 如何做扩容？</h2><p>为了避免数据迁移失效，通常使用一致性哈希实现动态扩容缩容，有效减少需要迁移的Key数量。</p>
+<p>但是Cluster 模式，采用固定Slot槽位方式（16384个），对每个key计算CRC16值，然后对16384取模，然后根据slot值找到目标机器，扩容时，我们只需要迁移一部分的slot到新节点即可。</p>
+<h2 id="Redis-的集群原理"><a href="#Redis-的集群原理" class="headerlink" title="Redis 的集群原理?"></a>Redis 的集群原理?</h2><p>一个redis集群由多个节点<code>node</code>组成，而多个<code>node</code>之间通过<code>cluster meet</code>命令来进行连接，组成一个集群。</p>
+<p>数据存储通过分片的形式，整个集群分成了<code>16384</code>个slot，每个节点负责一部分槽位。整个槽位的信息会同步到所有节点中。</p>
+<p>key与slot的映射关系：</p>
+<ul>
+<li>健值对 key，进行 <code>CRC16</code> 计算，计算出一个 16 bit 的值</li>
+<li>将 16 bit 的值对 16384 取模，得到 0 ～ 16383 的数表示 key 对应的哈希槽</li>
+</ul>
+<h2 id="Redis-如何做到高可用？"><a href="#Redis-如何做到高可用？" class="headerlink" title="Redis 如何做到高可用？"></a>Redis 如何做到高可用？</h2><p>哨兵机制。具有自动故障转移、集群监控、消息通知等功能。</p>
+<p>哨兵可以同时监视所有的主、从服务器，当某个master下线时，自动提升对应的slave为master，然后由新master对外提供服务。</p>
+<h2 id="什么是-Redis-事务？"><a href="#什么是-Redis-事务？" class="headerlink" title="什么是 Redis 事务？"></a>什么是 Redis 事务？</h2><p>Redis事务是一组命令的集合，将多个命令打包，然后把这些命令按顺序添加到队列中，并且按顺序执行这些命令。</p>
+<p>Redis事务中没有像Mysql关系型数据库事务隔离级别的概念，不能保证原子性操作，也没有像Mysql那样执行事务失败会进行回滚操作</p>
+<h2 id="Redis-事务执行流程？"><a href="#Redis-事务执行流程？" class="headerlink" title="Redis 事务执行流程？"></a>Redis 事务执行流程？</h2><p>通过<code>MULTI</code>、<code>EXEC</code>、<code>WATCH</code>等命令来实现事务机制，事务执行过程将一系列多个命令按照顺序一次性执行，在执行期间，事务不会被中断，也不会去执行客户端的其他请求，直到所有命令执行完毕。</p>
+<p>具体过程：</p>
+<ul>
+<li>服务端收到客户端请求，事务以<code>MULTI</code>开始</li>
+<li>如果正处于事务状态时，则会把后续命令放入队列同时返回给客户端<code>QUEUED</code>，反之则直接执行这 个命令</li>
+<li>当收到客户端的<code>EXEC</code>命令时，才会将队列里的命令取出、顺序执行，执行完将当前状态从事务状态改为非事务状态</li>
+<li>如果收到 <code>DISCARD</code> 命令，放弃执行队列中的命令，可以理解为Mysql的回滚操作，并且将当前的状态从事务状态改为非事务状态</li>
+</ul>
+<h2 id="如何实现一个分布式锁？"><a href="#如何实现一个分布式锁？" class="headerlink" title="如何实现一个分布式锁？"></a>如何实现一个分布式锁？</h2><ul>
+<li>1、数据库表，性能比较差</li>
+<li>2、使用Lua脚本 (包含 SETNX + EXPIRE 两条指令)</li>
+<li>3、SET的扩展命令（SET key value [EX][PX] [NX|XX]）</li>
+<li>4、Redlock 框架</li>
+<li>5、Zookeeper Curator框架提供了现成的分布式锁</li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2021/12/24/Redis-Something/" target="_blank" title="Redis缓存那点破事">http://blog.caoxl.com/2021/12/24/Redis-Something/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/">Redis</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/缓存/">缓存</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/07/07/RabbitMQ-Learn-More-II/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">RabbitMQ 再深入 II</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-有哪些特性？"><span class="nav-number">1.</span> <span class="nav-text">Redis 有哪些特性？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-为什么这么快？"><span class="nav-number">2.</span> <span class="nav-text">Redis 为什么这么快？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-底层的基础数据结构有哪些？"><span class="nav-number">3.</span> <span class="nav-text">Redis 底层的基础数据结构有哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-支持哪些数据类型？"><span class="nav-number">4.</span> <span class="nav-text">Redis 支持哪些数据类型？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-常用的-5-种数据结构和应用场景？"><span class="nav-number">5.</span> <span class="nav-text">Redis 常用的 5 种数据结构和应用场景？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么采用单线程？"><span class="nav-number">6.</span> <span class="nav-text">为什么采用单线程？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-6-0-之后又改用多线程呢"><span class="nav-number">7.</span> <span class="nav-text">Redis 6.0 之后又改用多线程呢?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过期键Key-的删除策略有哪些？"><span class="nav-number">8.</span> <span class="nav-text">过期键Key 的删除策略有哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如果Redis的内存空间不足，淘汰机制"><span class="nav-number">9.</span> <span class="nav-text">如果Redis的内存空间不足，淘汰机制?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-突然挂了怎么解决？"><span class="nav-number">10.</span> <span class="nav-text">Redis 突然挂了怎么解决？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-持久化有哪些方式？"><span class="nav-number">11.</span> <span class="nav-text">Redis 持久化有哪些方式？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-常用场景"><span class="nav-number">12.</span> <span class="nav-text">Redis 常用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-缓存要注意的七大经典问题？"><span class="nav-number">13.</span> <span class="nav-text">Redis 缓存要注意的七大经典问题？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-集群方案有哪几种？"><span class="nav-number">14.</span> <span class="nav-text">Redis 集群方案有哪几种？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-主从数据同步（主从复制）的过程？"><span class="nav-number">15.</span> <span class="nav-text">Redis 主从数据同步（主从复制）的过程？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主从复制的优缺点？"><span class="nav-number">16.</span> <span class="nav-text">主从复制的优缺点？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sentinel（哨兵）模式的优缺点？"><span class="nav-number">17.</span> <span class="nav-text">Sentinel（哨兵）模式的优缺点？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-Cluster-模式的优缺点？"><span class="nav-number">18.</span> <span class="nav-text">Redis Cluster 模式的优缺点？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-如何做扩容？"><span class="nav-number">19.</span> <span class="nav-text">Redis 如何做扩容？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-的集群原理"><span class="nav-number">20.</span> <span class="nav-text">Redis 的集群原理?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-如何做到高可用？"><span class="nav-number">21.</span> <span class="nav-text">Redis 如何做到高可用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是-Redis-事务？"><span class="nav-number">22.</span> <span class="nav-text">什么是 Redis 事务？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-事务执行流程？"><span class="nav-number">23.</span> <span class="nav-text">Redis 事务执行流程？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何实现一个分布式锁？"><span class="nav-number">24.</span> <span class="nav-text">如何实现一个分布式锁？</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2021 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2021 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
