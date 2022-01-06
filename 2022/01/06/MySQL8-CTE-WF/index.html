@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>mysql8 cte和窗口函数的用法 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="MySQL8CTE窗口函数">
+  
+  
+  
+  
+  <meta name="description" content="普通统计函数在每个分组内只能返回一条记录。而新增加的窗口函数和CTE函数可以一个分组返回多条函数。">
+<meta name="keywords" content="MySQL8,CTE,窗口函数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL8 CTE和窗口函数的用法">
+<meta property="og:url" content="http://blog.caoxl.com/2022/01/06/MySQL8-CTE-WF/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="普通统计函数在每个分组内只能返回一条记录。而新增加的窗口函数和CTE函数可以一个分组返回多条函数。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2022-01-06T06:15:08.846Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL8 CTE和窗口函数的用法">
+<meta name="twitter:description" content="普通统计函数在每个分组内只能返回一条记录。而新增加的窗口函数和CTE函数可以一个分组返回多条函数。">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="https://source.unsplash.com/random">
+  <link rel="apple-touch-icon" href="/https://source.unsplash.com/random">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="https://source.unsplash.com/random">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-MySQL8-CTE-WF" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      MySQL8 CTE和窗口函数的用法
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2022/01/06/MySQL8-CTE-WF/" class="article-date">
+	  <time datetime="2022-01-06T02:00:34.000Z" itemprop="datePublished">2022-01-06</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <p>普通统计函数在每个分组内只能返回一条记录。而新增加的窗口函数和CTE函数可以一个分组返回多条函数。</p>
+<a id="more"></a>
+<h1 id="窗口函数-amp-CTE实操"><a href="#窗口函数-amp-CTE实操" class="headerlink" title="窗口函数&amp;CTE实操"></a>窗口函数&amp;CTE实操</h1><ul>
+<li>一张表结构如下</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; desc mytest;</span><br><span class="line">+--------+------------------+------+-----+---------+----------------+</span><br><span class="line">| Field  | Type             | Null | Key | Default | Extra          |</span><br><span class="line">+--------+------------------+------+-----+---------+----------------+</span><br><span class="line">| id     | int(11) unsigned | NO   | PRI | NULL    | auto_increment |</span><br><span class="line">| name   | varchar(255)     | NO   |     | NULL    |                |</span><br><span class="line">| course | varchar(255)     | NO   |     | NULL    |                |</span><br><span class="line">| score  | decimal(10,0)    | NO   |     | NULL    |                |</span><br><span class="line">+--------+------------------+------+-----+---------+----------------+</span><br><span class="line">4 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>它有以下数据</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from mytest;</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">| id | name   | course | score |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">|  1 | 汤姆 | 数学 | 100   |</span><br><span class="line">|  2 | 汤姆 | 语文 | 90    |</span><br><span class="line">|  3 | 汤姆 | 英语 | 80    |</span><br><span class="line">|  4 | 汤姆 | 化学 | 100   |</span><br><span class="line">|  5 | 汤姆 | 物理 | 99    |</span><br><span class="line">|  6 | 杰克 | 数学 | 90    |</span><br><span class="line">|  7 | 杰克 | 语文 | 100   |</span><br><span class="line">|  8 | 杰克 | 英语 | 80    |</span><br><span class="line">|  9 | 杰克 | 化学 | 90    |</span><br><span class="line">| 10 | 杰克 | 物理 | 70    |</span><br><span class="line">| 11 | 可可 | 数学 | 90    |</span><br><span class="line">| 12 | 可可 | 语文 | 92    |</span><br><span class="line">| 13 | 可可 | 英语 | 93    |</span><br><span class="line">| 14 | 可可 | 化学 | 94    |</span><br><span class="line">| 15 | 可可 | 物理 | 75    |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">15 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<p>问题: 要查询出每一科最高分学生的学号，姓名，成绩和科目。在MySQL8之前主要是通过下面的方式来实现。</p>
+<p>答案1: MySql 8之前的方法</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">   SELECT x.id,x.NAME,x.course,x.score FROM</span><br><span class="line">(</span><br><span class="line">SELECT</span><br><span class="line"><span class="code">	t.*,</span></span><br><span class="line">IF</span><br><span class="line"><span class="code">	( @_course = t.course, @rn := @rn + 1, @rn := 1 ) AS rn,</span></span><br><span class="line"><span class="code">	@_course := t.course AS _course </span></span><br><span class="line">FROM</span><br><span class="line"><span class="code">	( SELECT t.* FROM mytest t ORDER BY course, score DESC ) t,</span></span><br><span class="line"><span class="code">	( SELECT @rn := 0 rn, @_course := '' ) b </span></span><br><span class="line">) x </span><br><span class="line">   WHERE rn = 1 ORDER BY course;</span><br><span class="line">   </span><br><span class="line">   +----+--------+--------+-------+</span><br><span class="line">   | id | NAME   | course | score |</span><br><span class="line">   +----+--------+--------+-------+</span><br><span class="line">   |  4 | 汤姆   | 化学   |   100 |</span><br><span class="line">   |  1 | 汤姆   | 数学   |   100 |</span><br><span class="line">   |  5 | 汤姆   | 物理   |    99 |</span><br><span class="line">   | 13 | 可可   | 英语   |    93 |</span><br><span class="line">   |  7 | 杰克   | 语文   |   100 |</span><br><span class="line">   +----+--------+--------+-------+</span><br><span class="line">   5 rows in set, 5 warnings (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>这个sql虽然高效，但是可读性不强。接下来我们来看看窗口函数怎么实现</p>
+<p>答案2: 使用窗口函数ROW_NUMBER</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line"> id,name,course,score </span><br><span class="line">FROM</span><br><span class="line"><span class="code">    ( SELECT *,row_number() over ( PARTITION BY course ORDER BY score DESC ) AS rn FROM mytest ) t </span></span><br><span class="line">WHERE</span><br><span class="line"><span class="code">    rn = 1;</span></span><br><span class="line"><span class="code">    </span></span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">| id | name   | course | score |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">|  4 | 汤姆   | 化学   |   100 |</span><br><span class="line">|  1 | 汤姆   | 数学   |   100 |</span><br><span class="line">|  5 | 汤姆   | 物理   |    99 |</span><br><span class="line">| 13 | 可可   | 英语   |    93 |</span><br><span class="line">|  7 | 杰克   | 语文   |   100 |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">5 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<p>答案3: 使用CTE方式</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">WITH cte AS ( SELECT *,row_number() over ( PARTITION BY course ORDER BY score DESC ) AS rn FROM mytest ) </span><br><span class="line">SELECT id,name,course,score FROM cte WHERE rn = 1;</span><br><span class="line"></span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">| id | name   | course | score |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">|  4 | 汤姆   | 化学   |   100 |</span><br><span class="line">|  1 | 汤姆   | 数学   |   100 |</span><br><span class="line">|  5 | 汤姆   | 物理   |    99 |</span><br><span class="line">| 13 | 可可   | 英语   |    93 |</span><br><span class="line">|  7 | 杰克   | 语文   |   100 |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">5 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<p>通过对比上面的三种答案，发现CTE和窗口函数极大简化了我们的sql语句。我们的sql更容易读懂。</p>
+<h1 id="通用表表达式（Common-Table-Expressions）"><a href="#通用表表达式（Common-Table-Expressions）" class="headerlink" title="通用表表达式（Common Table Expressions）"></a>通用表表达式（Common Table Expressions）</h1><p>复杂的查询会使用嵌入式表，例如：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">   SELECT t1.<span class="emphasis">*,t2.*</span> FROM</span><br><span class="line">( SELECT col1 FROM table1 ) t1,</span><br><span class="line">( SELECT col2 FROM table2 ) t2;</span><br></pre></td></tr></table></figure>
+<p>而有了 CTE，我们可以这样写：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">WITH</span><br><span class="line">t1 AS (SELECT col1 FROM table1),</span><br><span class="line">t2 AS (SELECT col2 FROM table2)</span><br><span class="line">SELECT t1.<span class="emphasis">*, t2.*</span> FROM t1, t2;</span><br></pre></td></tr></table></figure>
+<p>这样看上去层次和区域都更加分明，改起来也更清晰的知道要改哪一部分。</p>
+<h1 id="窗口函数"><a href="#窗口函数" class="headerlink" title="窗口函数"></a>窗口函数</h1><h2 id="什么是窗口函数"><a href="#什么是窗口函数" class="headerlink" title="什么是窗口函数"></a>什么是窗口函数</h2><p>窗口函数引入的其实不只是几个函数，而是一套完整的语法，窗口函数是此语法中的一部分。</p>
+<blockquote>
+<p>窗口函数 over 窗口表达式。</p>
+</blockquote>
+<p>over是窗口函数语法的关键字。</p>
+<h2 id="窗口函数-1"><a href="#窗口函数-1" class="headerlink" title="窗口函数"></a>窗口函数</h2><ul>
+<li><ol>
+<li>序号函数: <code>row_number()</code>, <code>rank()</code>, <code>dense_rank()</code></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>分布函数: <code>percent_rank()</code>, <code>cume_dist()</code></li>
+</ol>
+</li>
+<li><ol start="3">
+<li>前后函数: <code>lead()</code>, <code>lag()</code></li>
+</ol>
+</li>
+<li><ol start="4">
+<li>头尾函数: <code>fist_val()</code>, <code>last_val()</code></li>
+</ol>
+</li>
+<li><ol start="5">
+<li>其他函数: <code>nth_value()</code>, <code>nfile()</code></li>
+</ol>
+</li>
+</ul>
+<h3 id="窗口函数的两种写法"><a href="#窗口函数的两种写法" class="headerlink" title="窗口函数的两种写法"></a>窗口函数的两种写法</h3><ol>
+<li>over关键词后直接定义窗口</li>
+</ol>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">select</span><br><span class="line">  row<span class="emphasis">_number() over (partition by user_</span>no order by amount desc),</span><br><span class="line">  order_id</span><br><span class="line">from order_tab;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>over关键字后使用窗口别名：</li>
+</ol>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">select </span><br><span class="line"><span class="code">    row_number() over w,</span></span><br><span class="line"><span class="code">    order_id</span></span><br><span class="line">from order_tab</span><br><span class="line">WINDOW w AS (partition by user_no order by amount desc);</span><br></pre></td></tr></table></figure>
+<h2 id="窗口表达式语法"><a href="#窗口表达式语法" class="headerlink" title="窗口表达式语法"></a>窗口表达式语法</h2><h3 id="PARTITION-BY子句"><a href="#PARTITION-BY子句" class="headerlink" title="PARTITION BY子句"></a>PARTITION BY子句</h3><p>PARTITION BY子句是用来分组的，从字面上来看，应该叫分区。理解上可以类比group by。</p>
+<p>某行记录所在的分区就是这行对应的窗口。一个窗口可以包含多行，就像group by分的组一样。</p>
+<blockquote>
+<p>PARTITION BY &lt;<code>expression</code>&gt;[{,&lt;<code>expression</code>&gt;…}]</p>
+</blockquote>
+<p>其中的<code>expression</code>表达式，可以是列名，也可以是某个计算结果。如果是列名，就代表简单的按照列的值分区。<br>可以支持按照多个表达式或列来分区。<br>根据每行记录的值，可以确定每行属于哪个分区，也就是哪个窗口。</p>
+<h3 id="ORDER-BY子句"><a href="#ORDER-BY子句" class="headerlink" title="ORDER BY子句"></a>ORDER BY子句</h3><p>order by子句是排序用的，决定了属于同一个窗口的行记录的排序方式。语法很简单：</p>
+<blockquote>
+<p>ORDER BY &lt;<code>expression</code>&gt; [ASC|DESC] [{,&lt;<code>expression</code>&gt;…}]</p>
+</blockquote>
+<p>和MySQL中原有的order by关键字意思差不多。原有的order by关键字是所有查询结果一起排序，窗口函数的order by子句是对某个窗口中的行记录进行排序。</p>
+<h3 id="frame子句"><a href="#frame子句" class="headerlink" title="frame子句"></a>frame子句</h3><p>frame子句定义了窗口中的一个子窗口，子集。这个稍微麻烦点，语法是：</p>
+<blockquote>
+<p>frame_unit {&lt;<code>frame_start</code>&gt;|&lt;<code>frame_between</code>&gt;}</p>
+</blockquote>
+<ul>
+<li><code>frame_unit</code>有两种选择，<strong>ROWS</strong>和<strong>RANGE</strong>，ROWS代表按起止位置标识子集，RANGE代表按起止值标识子集。</li>
+<li><code>frame_start</code>标识子窗口的开始位置，结束位置默认是当前行。</li>
+<li><code>frame_between</code>是用BETWEEN AND关键字来标识子窗口的起止位置。</li>
+</ul>
+<h2 id="窗口函数介绍"><a href="#窗口函数介绍" class="headerlink" title="窗口函数介绍"></a>窗口函数介绍</h2><h3 id="序号函数-row-number-rank-dense-rank"><a href="#序号函数-row-number-rank-dense-rank" class="headerlink" title="序号函数: row_number(), rank(), dense_rank()"></a>序号函数: <code>row_number()</code>, <code>rank()</code>, <code>dense_rank()</code></h3><blockquote>
+<p>序号函数的作用是显示分区中每行的行号。</p>
+</blockquote>
+<ul>
+<li><code>row_number()</code>：排序字段相同时，行号随机排，下一行行号正常加1。显然此函数得到的行号是连续的。</li>
+<li><code>rank()</code>：排序字段相同时，行号相同，下一行行号按照排名确定。这个逻辑比较像是现实中的排名规则，当出现并列冠军时，第三个人排名第三，没有亚军。显然此函数得到的行号是不连续的。</li>
+<li><code>dense_rank()</code>：排序字段相同时，行号相同，下一行行号顺序加1。也就是出现冠军时，第三个人排名是第二。显然此函数得到的行号是连续的。</li>
+</ul>
+<h3 id="分布函数-percent-rank-cume-dist"><a href="#分布函数-percent-rank-cume-dist" class="headerlink" title="分布函数: percent_rank(), cume_dist()"></a>分布函数: <code>percent_rank()</code>, <code>cume_dist()</code></h3><blockquote>
+<p>分布函数得到的是一个百分比，计算公式用到rank()函数。</p>
+</blockquote>
+<ul>
+<li><code>percent_rank()</code>: 实际计算公式：(rank()-1)/(rows-1)</li>
+<li><code>cume_dist()</code>: 实际计算公式：rank()/rows</li>
+</ul>
+<h3 id="前后函数-lead-lag"><a href="#前后函数-lead-lag" class="headerlink" title="前后函数: lead(), lag()"></a>前后函数: <code>lead()</code>, <code>lag()</code></h3><ul>
+<li><code>lead(expr,n)</code>: 代表当前行前面第n行记录的expr表达式（或字段值）。</li>
+<li><code>lag(expr,n)</code>: 代表当前行后面的第n行记录的expr表达式（或字段值）。</li>
+</ul>
+<p>比如lead(add_time,1)就代表当前行前面一行的add_time字段。</p>
+<h3 id="头尾函数-fist-val-last-val"><a href="#头尾函数-fist-val-last-val" class="headerlink" title="头尾函数: fist_val(), last_val()"></a>头尾函数: <code>fist_val()</code>, <code>last_val()</code></h3><ul>
+<li><code>first_val(expr)</code>: 代表分区第一行记录的expr表达式（或字段值）。</li>
+<li><code>last_val(expr)</code>: 代表分区最后一行记录的expr表达式（或字段值）。</li>
+</ul>
+<h3 id="其他函数-nth-value-nfile"><a href="#其他函数-nth-value-nfile" class="headerlink" title="其他函数: nth_value(), nfile()"></a>其他函数: <code>nth_value()</code>, <code>nfile()</code></h3><ul>
+<li><code>nth_value(expr,n)</code>: 代表区间第n条记录的expr表达式（或字段值）。<br>比如：nth_value(amount,2)代表区间第二行的amount字段。</li>
+<li><code>nfile(n)</code>: 代表把区间列分为n个组，返回组号。  </li>
+</ul>
+<h1 id="文档"><a href="#文档" class="headerlink" title="文档"></a>文档</h1><ul>
+<li><a href="https://mysql.bookhub.zone/#/README" target="_blank" rel="noopener">MySQL 8.0 中文手册</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/with.html" target="_blank" rel="noopener">MySQL8 WITH (Common Table Expressions)</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/window-function-descriptions.html" target="_blank" rel="noopener">MySQL8 窗口函数</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2022/01/06/MySQL8-CTE-WF/" target="_blank" title="MySQL8 CTE和窗口函数的用法">http://blog.caoxl.com/2022/01/06/MySQL8-CTE-WF/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CTE/">CTE</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL8/">MySQL8</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/窗口函数/">窗口函数</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/12/24/Redis-Something/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Redis缓存那点破事</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#窗口函数-amp-CTE实操"><span class="nav-number">1.</span> <span class="nav-text">窗口函数&amp;CTE实操</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#通用表表达式（Common-Table-Expressions）"><span class="nav-number">2.</span> <span class="nav-text">通用表表达式（Common Table Expressions）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#窗口函数"><span class="nav-number">3.</span> <span class="nav-text">窗口函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是窗口函数"><span class="nav-number">3.1.</span> <span class="nav-text">什么是窗口函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#窗口函数-1"><span class="nav-number">3.2.</span> <span class="nav-text">窗口函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#窗口函数的两种写法"><span class="nav-number">3.2.1.</span> <span class="nav-text">窗口函数的两种写法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#窗口表达式语法"><span class="nav-number">3.3.</span> <span class="nav-text">窗口表达式语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PARTITION-BY子句"><span class="nav-number">3.3.1.</span> <span class="nav-text">PARTITION BY子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ORDER-BY子句"><span class="nav-number">3.3.2.</span> <span class="nav-text">ORDER BY子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#frame子句"><span class="nav-number">3.3.3.</span> <span class="nav-text">frame子句</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#窗口函数介绍"><span class="nav-number">3.4.</span> <span class="nav-text">窗口函数介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#序号函数-row-number-rank-dense-rank"><span class="nav-number">3.4.1.</span> <span class="nav-text">序号函数: row_number(), rank(), dense_rank()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分布函数-percent-rank-cume-dist"><span class="nav-number">3.4.2.</span> <span class="nav-text">分布函数: percent_rank(), cume_dist()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前后函数-lead-lag"><span class="nav-number">3.4.3.</span> <span class="nav-text">前后函数: lead(), lag()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#头尾函数-fist-val-last-val"><span class="nav-number">3.4.4.</span> <span class="nav-text">头尾函数: fist_val(), last_val()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他函数-nth-value-nfile"><span class="nav-number">3.4.5.</span> <span class="nav-text">其他函数: nth_value(), nfile()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文档"><span class="nav-number">4.</span> <span class="nav-text">文档</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
