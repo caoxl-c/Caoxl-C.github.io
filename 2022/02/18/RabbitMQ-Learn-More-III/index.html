@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>rabbitmq 死信队列 延迟队列 惰性队列 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="RabbitMQ死信队列延迟队列惰性队列">
+  
+  
+  
+  
+  <meta name="description" content="本篇是RabbitMQ 再深入III">
+<meta name="keywords" content="RabbitMQ,死信队列,延迟队列,惰性队列">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RabbitMQ 死信队列 延迟队列 惰性队列">
+<meta property="og:url" content="http://blog.caoxl.com/2022/02/18/RabbitMQ-Learn-More-III/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="本篇是RabbitMQ 再深入III">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2022-02-18T09:41:21.899Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RabbitMQ 死信队列 延迟队列 惰性队列">
+<meta name="twitter:description" content="本篇是RabbitMQ 再深入III">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="https://images.unsplash.com/photo-1643801026603-63d4f50be313?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=767&q=80">
+  <link rel="apple-touch-icon" href="/https://images.unsplash.com/photo-1643801026603-63d4f50be313?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=767&q=80">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="https://images.unsplash.com/photo-1643801026603-63d4f50be313?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=767&q=80">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-RabbitMQ-Learn-More-III" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      RabbitMQ 死信队列 延迟队列 惰性队列
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2022/02/18/RabbitMQ-Learn-More-III/" class="article-date">
+	  <time datetime="2022-02-18T09:08:42.000Z" itemprop="datePublished">2022-02-18</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>本篇是RabbitMQ 再深入III</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="死信队列"><a href="#死信队列" class="headerlink" title="死信队列"></a>死信队列</h1><blockquote>
+<p>死信队列: DLX, dead-letter-exchange</p>
+</blockquote>
+<h2 id="死信队列的产生"><a href="#死信队列的产生" class="headerlink" title="死信队列的产生"></a>死信队列的产生</h2><ol>
+<li>消息被拒绝(<code>basic.reject</code> / <code>basic.nack</code>)，并且<code>requeue = false</code></li>
+<li>消息TTL过期</li>
+<li>队列达到最大长度</li>
+</ol>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">RabbitMQ</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Exception</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PhpAmqpLib</span>\<span class="title">Connection</span>\<span class="title">AMQPStreamConnection</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PhpAmqpLib</span>\<span class="title">Message</span>\<span class="title">AMQPMessage</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PhpAmqpLib</span>\<span class="title">Wire</span>\<span class="title">AMQPTable</span>;</span></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Class RabbitMQ</span><br><span class="line"> * @package RabbitMQ</span><br><span class="line"><span class="php"> */</span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">RabbitMQ</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line">    /**</span><br><span class="line">     * 生产延迟消息队列</span><br><span class="line">     * @param array $message_data</span><br><span class="line">     * @param int $ttl 单位: 秒</span><br><span class="line">     * @param int $max_delay_second 单位: 秒</span><br><span class="line">     * @param bool $need_time_suffix</span><br><span class="line">     * @throws Exception</span><br><span class="line"><span class="php">     */</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">delayProduce</span><span class="params">(array $message_data, int $ttl, int $max_delay_second = <span class="number">0</span>, bool $need_time_suffix = false)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $connection = <span class="keyword">new</span> AMQPStreamConnection(<span class="string">'rabbitmq'</span>, <span class="number">5672</span>, <span class="string">'banana'</span>, <span class="string">'123456'</span>, <span class="string">'banana'</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $channel = $connection-&gt;channel();</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $queue = <span class="string">'dead_letter_queue'</span>;</span></span><br><span class="line"><span class="php">        $exchange_name = <span class="string">'dead_letter_exchange'</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $delay_table = <span class="keyword">new</span> AMQPTable();</span></span><br><span class="line"><span class="php">        <span class="comment">// 设置死信交换机</span></span></span><br><span class="line"><span class="php">        $delay_table-&gt;set(<span class="string">'x-dead-letter-exchange'</span>, <span class="string">"delay_$exchange_name"</span>);</span></span><br><span class="line"><span class="php">        <span class="comment">// 设置死信路由键</span></span></span><br><span class="line"><span class="php">        $delay_table-&gt;set(<span class="string">'x-dead-letter-routing-key'</span>, <span class="string">"delay_$queue"</span>);</span></span><br><span class="line"><span class="php">        <span class="comment">// 死信队列消息存活时间, 单位: 毫秒</span></span></span><br><span class="line"><span class="php">        $delay_table-&gt;set(<span class="string">'x-message-ttl'</span>, $max_delay_second * <span class="number">1000</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $suffix = $need_time_suffix ? <span class="string">"_&#123;$ttl&#125;"</span> : <span class="string">''</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="comment">// 普通队列, 消息过期写入死信队列</span></span></span><br><span class="line"><span class="php">        $channel-&gt;queue_declare(<span class="string">"ttl_&#123;$queue&#125;&#123;$suffix&#125;"</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, $delay_table);</span></span><br><span class="line"><span class="php">        <span class="comment">// 这里是ttl队列, 所以交换机这里要durable是false</span></span></span><br><span class="line"><span class="php">        $channel-&gt;exchange_declare(<span class="string">"ttl_&#123;$exchange_name&#125;&#123;$suffix&#125;"</span>, <span class="string">'direct'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span></span><br><span class="line"><span class="php">        $channel-&gt;queue_bind(<span class="string">"ttl_&#123;$queue&#125;&#123;$suffix&#125;"</span>,  <span class="string">"ttl_&#123;$exchange_name&#125;&#123;$suffix&#125;"</span>, <span class="string">"ttl_&#123;$queue&#125;&#123;$suffix&#125;"</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="comment">// 死信队列, 正常消耗</span></span></span><br><span class="line"><span class="php">        $channel-&gt;queue_declare(<span class="string">"delay_$queue"</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span></span><br><span class="line"><span class="php">        $channel-&gt;exchange_declare(<span class="string">"delay_&#123;$exchange_name&#125;"</span>, <span class="string">'direct'</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>);</span></span><br><span class="line"><span class="php">        $channel-&gt;queue_bind(<span class="string">"delay_&#123;$queue&#125;"</span>, <span class="string">"delay_&#123;$exchange_name&#125;"</span>, <span class="string">"delay_&#123;$queue&#125;"</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="comment">// 消息过期时间</span></span></span><br><span class="line"><span class="php">        <span class="comment">// 1. 若消息在队列头: 消息过期时间与队列消息过期时间取最小值</span></span></span><br><span class="line"><span class="php">        <span class="comment">// 例如: x-message-ttl=30000, expiration=5000, 则5秒过期</span></span></span><br><span class="line"><span class="php">        <span class="comment">// 2. 若消息在队列中: 先消耗之前的消息,才能消耗,即使已过期也继续等待</span></span></span><br><span class="line"><span class="php">        <span class="comment">// 例如: x-message-ttl=30000 expiration: 消息1=25000 消息2=5000, 则两个消息均25秒过期</span></span></span><br><span class="line"><span class="php">        $message = <span class="keyword">new</span> AMQPMessage(</span></span><br><span class="line"><span class="php">            serialize($message_data),</span></span><br><span class="line"><span class="php">            [</span></span><br><span class="line"><span class="php">                <span class="string">'content_type'</span> =&gt; <span class="string">'text/plain'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'expiration'</span> =&gt; $ttl * <span class="number">1000</span>, <span class="comment">// 单位: 毫秒</span></span></span><br><span class="line"><span class="php">                <span class="string">'delivery_mode'</span> =&gt; AMQPMessage::DELIVERY_MODE_PERSISTENT</span></span><br><span class="line"><span class="php">            ]</span></span><br><span class="line"><span class="php">        );</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $channel-&gt;basic_publish($message, <span class="string">"ttl_&#123;$exchange_name&#125;&#123;$suffix&#125;"</span>, <span class="string">"ttl_&#123;$queue&#125;&#123;$suffix&#125;"</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $channel-&gt;close();</span></span><br><span class="line"><span class="php">        $connection-&gt;close();</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$message_data = [<span class="string">'Test Dead Letter'</span>];</span></span><br><span class="line"><span class="php">$ttl = <span class="number">5</span>;</span></span><br><span class="line"><span class="php">$max_delay_second = <span class="number">30</span>;</span></span><br><span class="line"><span class="php">$need_time_suffix = <span class="keyword">false</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">try</span> &#123;</span></span><br><span class="line"><span class="php">    (<span class="keyword">new</span> RabbitMQ())-&gt;delayProduce($message_data, $ttl, $max_delay_second, $need_time_suffix);</span></span><br><span class="line"><span class="php">&#125; <span class="keyword">catch</span> (<span class="keyword">Exception</span> $e) &#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">echo</span> <span class="string">"异常消息: "</span> . $e-&gt;getMessage();</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<h1 id="延迟队列"><a href="#延迟队列" class="headerlink" title="延迟队列"></a>延迟队列</h1><p>使用DLX（死信交换机）+TTL（消息超时时间）实现</p>
+<blockquote>
+<p>假如一条消息需要延迟 30 分钟执行，我们就设置这条消息的有效期为 30 分钟，同时为这条消息配置死信交换机和死信 routing_key，并且不为这个消息队列设置消费者，那么 30 分钟后，这条消息由于没有被消费者消费而进入死信队列，此时我们有一个消费者就在“蹲点”这个死信队列，消息一进入死信队列，就立马被消费了。</p>
+</blockquote>
+<h1 id="惰性队列"><a href="#惰性队列" class="headerlink" title="惰性队列"></a>惰性队列</h1><blockquote>
+<p>惰性队列会尽可能的将消息存入磁盘中，在消费者消费到相应的消息时才会被加载到内存中。</p>
+</blockquote>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$table = new AMQPTable();</span><br><span class="line">$table-&gt;set('x-queue-mode', "lazy");</span><br><span class="line">$channel-&gt;queue_declare($queueName, false, true, false, false, false, $table);</span><br><span class="line">$channel-&gt;queue_bind($queueName, $exchangeName, $routingKey);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>优点</p>
+<ul>
+<li><ol>
+<li>它可以存储更多消息支持更长队列因为消息在硬盘中。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>惰性队列可以避免消息堆积导致的内存崩溃。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li><ol>
+<li>需要i/o 增加磁盘i/o。</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://codeantenna.com/a/hleDRA33XX" target="_blank" rel="noopener">RabbitMQ 惰性队列</a></li>
+</ul>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2022/02/18/RabbitMQ-Learn-More-III/" target="_blank" title="RabbitMQ 死信队列 延迟队列 惰性队列">http://blog.caoxl.com/2022/02/18/RabbitMQ-Learn-More-III/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RabbitMQ/">RabbitMQ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/延迟队列/">延迟队列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/惰性队列/">惰性队列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/死信队列/">死信队列</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/01/06/MySQL8-CTE-WF/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">MySQL8 CTE和窗口函数的用法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#死信队列"><span class="nav-number">1.</span> <span class="nav-text">死信队列</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#死信队列的产生"><span class="nav-number">1.1.</span> <span class="nav-text">死信队列的产生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">1.2.</span> <span class="nav-text">代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#延迟队列"><span class="nav-number">2.</span> <span class="nav-text">延迟队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#惰性队列"><span class="nav-number">3.</span> <span class="nav-text">惰性队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
