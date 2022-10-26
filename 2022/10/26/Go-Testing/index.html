@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>go 单元测试 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="单元测试Golang基准测试模糊测试">
+  
+  
+  
+  
+  <meta name="description" content="本文讲Go的几种单元测试">
+<meta name="keywords" content="单元测试,Golang,基准测试,模糊测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go 单元测试">
+<meta property="og:url" content="http://blog.caoxl.com/2022/10/26/Go-Testing/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="本文讲Go的几种单元测试">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://uploader.shimo.im/f/vJj1CBKfjxtchaaF.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/7nYodXNsPGy2iiZH.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/i4NUicQyrcsFh8gq.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/uKUNYxbKlcQEXpx7.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/du3Qu0Rxao4KAEPE.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/M0Q2d18BKHuHcqAk.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/iMZr0tJYzbvCNdwY.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/H2IQdDkPd9jw8MmR.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/IVrdm4zqf4fiRwIg.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/PNITx1KLEGOBkDEh.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/8fQPVLYqpXx240sP.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:image" content="https://uploader.shimo.im/f/vloFe9tjF3vt9Cnm.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+<meta property="og:updated_time" content="2022-10-26T09:55:09.722Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go 单元测试">
+<meta name="twitter:description" content="本文讲Go的几种单元测试">
+<meta name="twitter:image" content="https://uploader.shimo.im/f/vJj1CBKfjxtchaaF.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="https://images.unsplash.com/photo-1643801026603-63d4f50be313?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=767&q=80">
+  <link rel="apple-touch-icon" href="/https://images.unsplash.com/photo-1643801026603-63d4f50be313?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=767&q=80">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css">
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css">
+  
+
+  
+  
+  
+
+</head>
+</html>
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="https://images.unsplash.com/photo-1643801026603-63d4f50be313?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=767&q=80">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Go-Testing" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Go 单元测试
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2022/10/26/Go-Testing/" class="article-date">
+	  <time datetime="2022-10-26T09:38:16.000Z" itemprop="datePublished">2022-10-26</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Golang/">Golang</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>本文讲Go的几种单元测试</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h1><ul>
+<li><a href="https://pkg.go.dev/testing" target="_blank" rel="noopener">单元测试 官方</a></li>
+<li><a href="http://cngolib.com/testing.html" target="_blank" rel="noopener">单元测试 中文</a></li>
+</ul>
+<p>Go 官方的 <code>testing</code> 包</p>
+<blockquote>
+<p>要编写一个测试文件，需要创建一个名称以 <code>_test.go</code> 结尾的文件，该文件包含 <code>TestXxx</code> 函数，如上所述。 将该文件放在与被测试文件相同的包中。该文件将被排除在正常的程序包之外，但在运行 <code>go test</code> 命令时将被包含</p>
+</blockquote>
+<p><img src="https://uploader.shimo.im/f/vJj1CBKfjxtchaaF.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="单元测试"></p>
+<ul>
+<li>运行结果</li>
+</ul>
+<p><img src="https://uploader.shimo.im/f/7nYodXNsPGy2iiZH.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="单元测试-运行结果"></p>
+<p>这里介绍几个常用的参数：</p>
+<ul>
+<li><code>-bench regexp</code>: 执行相应的 <code>benchmarks</code>，例如 <code>-bench=</code> （基准测试）</li>
+<li><code>-cover</code>: 开启测试覆盖率</li>
+<li><code>-run regexp</code>: 只运行 <code>regexp</code>  匹配的函数，例如 <code>-run=Array</code> 那么就执行包含有 Array 开头的函数；</li>
+<li><code>-v</code> 显示测试的详细命令</li>
+</ul>
+<h1 id="基准测试"><a href="#基准测试" class="headerlink" title="基准测试"></a>基准测试</h1><blockquote>
+<p><code>benchmark</code> 和普通的单元测试用例一样，都位于 <code>_test.go</code> 文件中。<br>函数名以 <code>Benchmark</code> 开头，参数是 <code>b *testing.B</code>。</p>
+</blockquote>
+<h2 id="运行用例"><a href="#运行用例" class="headerlink" title="运行用例"></a>运行用例</h2><blockquote>
+<p><code>go test &lt;module name&gt;/&lt;package name&gt;</code> 用来运行某个 package 内的所有测试用例。</p>
+</blockquote>
+<ul>
+<li>运行当前 <code>package</code> 内的用例：<code>go test example</code> 或 <code>go test .</code></li>
+<li>运行子 <code>package</code> 内的用例： <code>go test example/&lt;package name&gt;</code> 或 <code>go test ./&lt;package name&gt;</code></li>
+<li>如果想递归测试当前目录下的所有的 <code>package：go test ./...</code> 或 <code>go test example/...</code></li>
+</ul>
+<p><img src="https://uploader.shimo.im/f/i4NUicQyrcsFh8gq.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="基准测试"></p>
+<h2 id="查看内存分配"><a href="#查看内存分配" class="headerlink" title="查看内存分配"></a>查看内存分配</h2><p><img src="https://uploader.shimo.im/f/uKUNYxbKlcQEXpx7.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="代码示例"></p>
+<p><img src="https://uploader.shimo.im/f/du3Qu0Rxao4KAEPE.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="运行结果"></p>
+<p>可以看到生成 <code>100w</code> 个数字的随机序列，<code>GenerateWithCap</code> 的耗时比 <code>Generate</code> 少 <strong>20%</strong></p>
+<ul>
+<li>使用 <code>-benchmem</code> 参数看到内存分配的情况：</li>
+</ul>
+<p><img src="https://uploader.shimo.im/f/M0Q2d18BKHuHcqAk.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="内存分配"></p>
+<p><code>Generate</code> 分配的内存是 <code>GenerateWithCap</code> 的 5 倍，设置了切片容量，内存只分配一次，而不设置切片容量，内存分配了 <code>38</code> 次。</p>
+<h1 id="模糊测试"><a href="#模糊测试" class="headerlink" title="模糊测试"></a>模糊测试</h1><blockquote>
+<p>Go模糊测试会调用<code>f.Add</code>函数和<code>f.Fuzz</code>函数</p>
+</blockquote>
+<ul>
+<li><code>f.Add</code>函数把指定输入作为模糊测试的种子语料库(seed corpus)，<code>fuzzing</code>基于种子语料库生成随机输入。</li>
+<li><code>f.Fuzz</code>函数接收一个<code>fuzz target</code>函数作为入参。<code>fuzz target</code>函数有多个参数，第一个参数是<code>*testing.T</code>，其它参数是被模糊的类型</li>
+</ul>
+<p><img src="https://uploader.shimo.im/f/iMZr0tJYzbvCNdwY.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="代码示例"></p>
+<p><img src="https://uploader.shimo.im/f/H2IQdDkPd9jw8MmR.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="运行结果"></p>
+<p>上面的<code>fuzzing</code>测试结果是<strong>FAIL</strong>，引起<strong>FAIL</strong>的输入数据被写到了一个语料库文件里。下次运行<code>go test</code>命令的时候，即使没有<code>-fuzz</code>参数，这个语料库文件里的测试数据也会被用到。</p>
+<p>可以用文本编辑器打开<code>testdata/fuzz/FuzzReverse</code>目录下的文件，看看引起<code>Fuzzing</code>测试失败的测试数据长什么样</p>
+<p><img src="https://uploader.shimo.im/f/IVrdm4zqf4fiRwIg.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="测试数据"></p>
+<p>发现问题,试着修改BUG</p>
+<p><img src="https://uploader.shimo.im/f/PNITx1KLEGOBkDEh.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="修改BUG"></p>
+<p>在Go语言里，<strong>字符串是只读的字节切片</strong>(<code>In Go, a string is a read only slice of bytes</code>)，字节切片里的每个字节不一定都是有效的UTF-8编码的字节，详情可以参考<a href="https://link.segmentfault.com/?enc=B3kcESuUAVJF4D0X44hUMw%3D%3D.bmCkSvG4A%2B68HkD28A2qI0BTpCMCKz9E7D%2BHxvJagOc%3D" target="_blank" rel="noopener">a string is a read only slice of bytes</a></p>
+<p><img src="https://uploader.shimo.im/f/8fQPVLYqpXx240sP.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="模糊测试"></p>
+<p><img src="https://uploader.shimo.im/f/vloFe9tjF3vt9Cnm.png!thumbnail?accessToken=eyJhbGciOiJIUzI1NiIsImtpZCI6ImRlZmF1bHQiLCJ0eXAiOiJKV1QifQ.eyJleHAiOjE2NjY3NzczMTMsImZpbGVHVUlEIjoiWEtxNE1WckdvYWZ5MVFrTiIsImlhdCI6MTY2Njc3NzAxMywiaXNzIjoidXBsb2FkZXJfYWNjZXNzX3Jlc291cmNlIiwidXNlcklkIjoxMzg4MjAwNH0.S-n43ThSgOm-egKKVqiZMWtlKPWrXi7quWv4AzKTBOg" alt="优化代码后-模糊测试"></p>
+<p>运行模糊测试 <code>go test -fuzz=Fuzz</code>，执行几秒后，使用 <code>ctrl-C</code> 结束测试。</p>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2022/10/26/Go-Testing/" target="_blank" title="Go 单元测试">http://blog.caoxl.com/2022/10/26/Go-Testing/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/单元测试/">单元测试</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/基准测试/">基准测试</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/模糊测试/">模糊测试</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/10/26/Golang-RabbitMQ/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Go RabbitMQ 简单示例</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#单元测试"><span class="nav-number">1.</span> <span class="nav-text">单元测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基准测试"><span class="nav-number">2.</span> <span class="nav-text">基准测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#运行用例"><span class="nav-number">2.1.</span> <span class="nav-text">运行用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看内存分配"><span class="nav-number">2.2.</span> <span class="nav-text">查看内存分配</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模糊测试"><span class="nav-number">3.</span> <span class="nav-text">模糊测试</span></a></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
