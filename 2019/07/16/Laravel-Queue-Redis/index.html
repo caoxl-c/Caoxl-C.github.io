@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>laravel 中队列的应用 「redis」 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="LaravelRedisQueue">
+  <meta name="keywords" content="LaravelRedisQueue" />
   
   
   
   
   <meta name="description" content="Laravel Horizon  Horizon 队列管理工具 (工欲善其事必先利其器)这里直接安装官方走即可: Laravel Horizon  安装失败请看文末的FAQ">
-<meta name="keywords" content="Laravel,Redis,Queue">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Laravel 中队列的应用 「redis」">
 <meta property="og:url" content="http://blog.caoxl.com/2019/07/16/Laravel-Queue-Redis/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="Laravel Horizon  Horizon 队列管理工具 (工欲善其事必先利其器)这里直接安装官方走即可: Laravel Horizon  安装失败请看文末的FAQ">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T06:32:12.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-16T01:59:33.000Z">
+<meta property="article:modified_time" content="2019-08-22T06:32:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="Queue">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Laravel 中队列的应用 「redis」">
-<meta name="twitter:description" content="Laravel Horizon  Horizon 队列管理工具 (工欲善其事必先利其器)这里直接安装官方走即可: Laravel Horizon  安装失败请看文末的FAQ">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +44,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +183,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +223,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+    <a class="article-category-link" href="/categories/%E5%BF%85%E5%A4%87%E6%8A%80%E8%83%BD/">必备技能</a>
 
       
 	<a class="article-views">
@@ -197,26 +239,29 @@
         
         
           <h2 id="Laravel-Horizon"><a href="#Laravel-Horizon" class="headerlink" title="Laravel Horizon"></a>Laravel Horizon</h2><blockquote>
-<p> Horizon 队列管理工具 (工欲善其事必先利其器)<br>这里直接安装官方走即可: <a href="https://learnku.com/docs/laravel/5.8/horizon/3945" target="_blank" rel="noopener">Laravel Horizon</a></p>
+<p> Horizon 队列管理工具 (工欲善其事必先利其器)<br>这里直接安装官方走即可: <a target="_blank" rel="noopener" href="https://learnku.com/docs/laravel/5.8/horizon/3945">Laravel Horizon</a></p>
 </blockquote>
 <p><strong>安装失败请看文末的FAQ</strong></p>
-<a id="more"></a>
+<span id="more"></span>
+
 <h2 id="Laravel-Queue"><a href="#Laravel-Queue" class="headerlink" title="Laravel Queue"></a>Laravel Queue</h2><p>待续…</p>
 <h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><ul>
-<li><code>laravel/horizon v1.1.0 requires ext-pcntl * -&gt; the requested PHP extension pcntl is missing from your system</code>?</li>
+<li><code>laravel/horizon v1.1.0 requires ext-pcntl * -&gt; the requested PHP extension pcntl is missing from your system </code>?</li>
 </ul>
 <p>在<code>composer.json</code>中添加以下代码</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"config"</span>: &#123;</span><br><span class="line">  <span class="string">"platform"</span>: &#123;</span><br><span class="line">    <span class="string">"ext-pcntl"</span>: <span class="string">"7.2"</span>,</span><br><span class="line">    <span class="string">"ext-posix"</span>: <span class="string">"7.2"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;config&quot;</span>: &#123;</span><br><span class="line">  <span class="string">&quot;platform&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;ext-pcntl&quot;</span>: <span class="string">&quot;7.2&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ext-posix&quot;</span>: <span class="string">&quot;7.2&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li><code>Call to undefined function Laravel\Horizon\Console\pcntl_async_signals()</code></li>
+<li><code> Call to undefined function Laravel\Horizon\Console\pcntl_async_signals()</code></li>
 </ul>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer <span class="keyword">require</span> ext-pcntl ext-posix</span><br></pre></td></tr></table></figure>
+
 <blockquote>
-<p>这个模块没有非Unix平台可用的函数（即非Unix类系统不支持此模块）。(Windows 没戏)<br><a href="https://php.net/manual/zh/pcntl.installation.php" target="_blank" rel="noopener">https://php.net/manual/zh/pcntl.installation.php</a></p>
+<p>这个模块没有非Unix平台可用的函数（即非Unix类系统不支持此模块）。(Windows 没戏)<br><a target="_blank" rel="noopener" href="https://php.net/manual/zh/pcntl.installation.php">https://php.net/manual/zh/pcntl.installation.php</a></p>
 </blockquote>
 <p>然后执行 <code>composer install --ignore-platform-reqs</code>, 即可继续<code>composer require laravel/horizon</code></p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
-<li><a href="https://stackoverflow.com/questions/48577465/how-can-i-solve-laravel-horizon-v1-1-0-requires-ext-pcntl-the-requested-ph" target="_blank" rel="noopener">laravel/horizon requires ext-pcntl</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/48577465/how-can-i-solve-laravel-horizon-v1-1-0-requires-ext-pcntl-the-requested-ph">laravel&#x2F;horizon requires ext-pcntl</a></li>
 </ul>
 
         
@@ -249,7 +294,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Queue/">Queue</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/">Redis</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/" rel="tag">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Queue/" rel="tag">Queue</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
 
       
 
@@ -285,7 +330,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel-Horizon"><span class="nav-number">1.</span> <span class="nav-text">Laravel Horizon</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel-Queue"><span class="nav-number">2.</span> <span class="nav-text">Laravel Queue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FAQ"><span class="nav-number">3.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel-Horizon"><span class="nav-number">1.</span> <span class="nav-text">Laravel Horizon</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel-Queue"><span class="nav-number">2.</span> <span class="nav-text">Laravel Queue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FAQ"><span class="nav-number">3.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -300,7 +345,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -380,12 +425,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -453,7 +502,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>redis 更深入一点 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Redis">
+  <meta name="keywords" content="Redis" />
   
   
   
   
   <meta name="description" content="Redis 更深入一点 问的更深一点">
-<meta name="keywords" content="Redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis 更深入一点">
 <meta property="og:url" content="http://blog.caoxl.com/2019/09/04/Redis-More-In-Depth-Study/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="Redis 更深入一点 问的更深一点">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-04T07:31:27.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-09-04T02:09:12.000Z">
+<meta property="article:modified_time" content="2019-09-04T07:31:27.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Redis 更深入一点">
-<meta name="twitter:description" content="Redis 更深入一点 问的更深一点">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +42,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +181,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +221,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+    <a class="article-category-link" href="/categories/%E5%8A%A0%E5%88%86%E6%8A%80%E8%83%BD/">加分技能</a>
 
       
 	<a class="article-views">
@@ -199,16 +239,20 @@
           <blockquote>
 <p>Redis 更深入一点 问的更深一点</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h2 id="Redis-管道-Pipelining"><a href="#Redis-管道-Pipelining" class="headerlink" title="Redis 管道(Pipelining)"></a>Redis 管道(Pipelining)</h2><blockquote>
-<p>Redis是一种基于客户端-服务端模型以及请求/响应协议的TCP服务。</p>
+<p>Redis是一种基于客户端-服务端模型以及请求&#x2F;响应协议的TCP服务。</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Post</span>("/test_pipelie")</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test_pipelie</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $pipe = <span class="keyword">$this</span>-&gt;redis-&gt;multi(RedisTool::PIPELINE);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; <span class="number">100</span>; $i++) &#123;</span><br><span class="line">        $pipe-&gt;set(<span class="string">"key::$i"</span>, str_pad($i, <span class="number">4</span>, <span class="string">'0'</span>, <span class="number">0</span>));</span><br><span class="line">        $pipe-&gt;get(<span class="string">"key::$i"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    $res = $pipe-&gt;exec();</span><br><span class="line">    print_r($res);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Post</span>(&quot;/test_pipelie&quot;)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">test_pipelie</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="variable">$pipe</span> = <span class="variable language_">$this</span>-&gt;redis-&gt;<span class="title function_ invoke__">multi</span>(<span class="title class_">RedisTool</span>::<span class="variable constant_">PIPELINE</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; <span class="number">100</span>; <span class="variable">$i</span>++) &#123;</span><br><span class="line">        <span class="variable">$pipe</span>-&gt;<span class="title function_ invoke__">set</span>(<span class="string">&quot;key::<span class="subst">$i</span>&quot;</span>, <span class="title function_ invoke__">str_pad</span>(<span class="variable">$i</span>, <span class="number">4</span>, <span class="string">&#x27;0&#x27;</span>, <span class="number">0</span>));</span><br><span class="line">        <span class="variable">$pipe</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="string">&quot;key::<span class="subst">$i</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="variable">$res</span> = <span class="variable">$pipe</span>-&gt;<span class="title function_ invoke__">exec</span>();</span><br><span class="line">    <span class="title function_ invoke__">print_r</span>(<span class="variable">$res</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="Redis-内存优化"><a href="#Redis-内存优化" class="headerlink" title="Redis 内存优化"></a>Redis 内存优化</h2><blockquote>
 <p>Redis2.2版本及以后，存储集合数据的时候会采用内存压缩技术，以使用更少的内存存储更多的数据。如Hashes,Lists,Sets和Sorted Sets，当这些集合中的所有数都小于一个给定的元素，并且集合中元素数量小于某个值时，存储的数据会被以一种非常节省内存的方式进行编码，使用这种编码理论上至少会节省10倍以上内存（平均节省5倍以上内存）。并且这种编码技术对用户和redis api透明。因为使用这种编码是用CPU换内存，所以我们提供了更改阈值的方法，只需在redis.conf里面进行修改即可.</p>
 </blockquote>
-<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hash-max-</span><span class="string">zipmap-entries </span><span class="string">64 </span>(2.6以上使用<span class="string">hash-max-</span><span class="string">ziplist-entries)</span></span><br><span class="line"><span class="string">hash-max-</span><span class="string">zipmap-value </span><span class="string">512 </span> (2.6以上使用<span class="string">hash-max-</span><span class="string">ziplist-value)</span></span><br><span class="line"><span class="built_in">list-max-ziplist-entries</span> <span class="string">512</span></span><br><span class="line"><span class="string">list-</span><span class="string">max-ziplist-</span><span class="string">value </span><span class="string">64</span></span><br><span class="line"><span class="string">zset-</span><span class="string">max-ziplist-</span><span class="string">entries </span><span class="string">128</span></span><br><span class="line"><span class="string">zset-</span><span class="string">max-ziplist-</span><span class="string">value </span><span class="string">64</span></span><br><span class="line"><span class="string">set-</span><span class="string">max-intset-</span><span class="string">entries </span><span class="string">512</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @Post(<span class="string">"/test_memory"</span>)</span><br><span class="line"> * $redis-&gt;<span class="built_in">config</span>(<span class="string">"GET"</span>, <span class="string">"*max-*-entries*"</span>);</span><br><span class="line"> * $redis-&gt;<span class="built_in">config</span>(<span class="string">"SET"</span>, <span class="string">"dir"</span>, <span class="string">"/var/run/redis/dumps/"</span>);</span><br><span class="line"> */</span><br><span class="line">public <span class="function"><span class="keyword">function</span> <span class="title">test_memory</span><span class="params">()</span></span></span><br><span class="line">&#123;</span><br><span class="line">    // hash-<span class="built_in">max</span>-zipmap-entries <span class="number">256</span></span><br><span class="line">    $this-&gt;redis-&gt;<span class="built_in">config</span>(<span class="string">'set'</span>, <span class="string">'hash-max-zipmap-entries'</span>,<span class="number">256</span>);</span><br><span class="line"></span><br><span class="line">    // 相应的最大键值长度设置:</span><br><span class="line">    // hash-<span class="built_in">max</span>-zipmap-value <span class="number">1024</span></span><br><span class="line">    $this-&gt;redis-&gt;<span class="built_in">config</span>(<span class="string">'set'</span>, <span class="string">'hash-max-zipmap-value'</span>,<span class="number">1024</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hash-max-zipmap-entries</span> <span class="string">64</span> (<span class="string">2</span>.<span class="string">6</span>以上使用<span class="string">hash-max-ziplist-entries</span>)</span><br><span class="line"><span class="string">hash-max-zipmap-value</span> <span class="string">512</span>  (<span class="string">2</span>.<span class="string">6</span>以上使用<span class="string">hash-max-ziplist-value</span>)</span><br><span class="line"><span class="built_in">list-max-ziplist-entries</span> <span class="string">512</span></span><br><span class="line"><span class="built_in">list-max-ziplist-value</span> <span class="string">64</span></span><br><span class="line"><span class="string">zset-max-ziplist-entries</span> <span class="string">128</span></span><br><span class="line"><span class="string">zset-max-ziplist-value</span> <span class="string">64</span></span><br><span class="line"><span class="built_in">set-max-intset-entries</span> <span class="string">512</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * @Post(<span class="string">&quot;/test_memory&quot;</span>)</span><br><span class="line"> * <span class="variable">$redis</span>-&gt;config(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;*max-*-entries*&quot;</span>);</span><br><span class="line"> * <span class="variable">$redis</span>-&gt;config(<span class="string">&quot;SET&quot;</span>, <span class="string">&quot;dir&quot;</span>, <span class="string">&quot;/var/run/redis/dumps/&quot;</span>);</span><br><span class="line"> */</span><br><span class="line">public <span class="keyword">function</span> test_memory()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="regexp">//</span> hash-max-zipmap-entries <span class="number">256</span></span><br><span class="line">    <span class="variable">$this</span>-&gt;redis-&gt;config(<span class="string">&#x27;set&#x27;</span>, <span class="string">&#x27;hash-max-zipmap-entries&#x27;</span>,<span class="number">256</span>);</span><br><span class="line"></span><br><span class="line">    <span class="regexp">//</span> 相应的最大键值长度设置:</span><br><span class="line">    <span class="regexp">//</span> hash-max-zipmap-value <span class="number">1024</span></span><br><span class="line">    <span class="variable">$this</span>-&gt;redis-&gt;config(<span class="string">&#x27;set&#x27;</span>, <span class="string">&#x27;hash-max-zipmap-value&#x27;</span>,<span class="number">1024</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="Redis-事务"><a href="#Redis-事务" class="headerlink" title="Redis 事务"></a>Redis 事务</h2><blockquote>
 <p><code>MULTI</code> 、 <code>EXEC</code> 、 <code>DISCARD</code> 和 <code>WATCH</code> 是 Redis 事务相关的命令。事务可以一次执行多个命令， 并且带有以下两个重要的保证：</p>
 <ul>
@@ -216,7 +260,8 @@
 <li>事务是一个原子操作：事务中的命令要么全部被执行，要么全部都不执行。</li>
 </ul>
 </blockquote>
-<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * @Post("/test_transaction")</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> public function test_transaction()</span><br><span class="line"> &#123;</span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>watch(<span class="string">'number'</span>);</span><br><span class="line">    </span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>multi();</span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>set(<span class="string">'favorite_fruit'</span>, <span class="string">'cherry'</span>);</span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>incrBy(<span class="string">'number'</span>, <span class="number">3</span>);</span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>get(<span class="string">'favorite_fruit'</span>);</span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>ping();</span><br><span class="line">     <span class="comment">// $this-&gt;redis-&gt;discard();  // 取消事务</span></span><br><span class="line">     <span class="function"><span class="title">dd</span>($this-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>exec());</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/* array:4 [</span></span><br><span class="line"><span class="comment">   0 =&gt; true</span></span><br><span class="line"><span class="comment">   1 =&gt; 3</span></span><br><span class="line"><span class="comment">   2 =&gt; "cherry"</span></span><br><span class="line"><span class="comment">   3 =&gt; "+PONG"</span></span><br><span class="line"><span class="comment"> ] */</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * @Post(&quot;/test_transaction&quot;)</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> public function test_transaction()</span><br><span class="line"> &#123;</span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>watch(<span class="string">&#x27;number&#x27;</span>);</span><br><span class="line">    </span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>multi();</span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>set(<span class="string">&#x27;favorite_fruit&#x27;</span>, <span class="string">&#x27;cherry&#x27;</span>);</span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>incrBy(<span class="string">&#x27;number&#x27;</span>, <span class="number">3</span>);</span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>get(<span class="string">&#x27;favorite_fruit&#x27;</span>);</span><br><span class="line">     $<span class="function"><span class="title">this</span>-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>ping();</span><br><span class="line">     <span class="comment">// $this-&gt;redis-&gt;discard();  // 取消事务</span></span><br><span class="line">     <span class="function"><span class="title">dd</span>($this-&gt;</span><span class="function"><span class="title">redis</span>-&gt;</span>exec());</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/* array:4 [</span></span><br><span class="line"><span class="comment">   0 =&gt; true</span></span><br><span class="line"><span class="comment">   1 =&gt; 3</span></span><br><span class="line"><span class="comment">   2 =&gt; &quot;cherry&quot;</span></span><br><span class="line"><span class="comment">   3 =&gt; &quot;+PONG&quot;</span></span><br><span class="line"><span class="comment"> ] */</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>WATCH</code>: 用于监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断</li>
 <li><code>UNATCH</code>: 用于取消 WATCH 命令对所有 key 的监视。</li>
@@ -236,15 +281,15 @@
 <p>有种观点认为 Redis 处理事务的做法会产生 bug ， 然而需要注意的是， 在通常情况下， 回滚并不能解决编程错误带来的问题。 举个例子， 如果你本来想通过 INCR 命令将键的值加上 1 ， 却不小心加上了 2 ， 又或者对错误类型的键执行了 INCR ， 回滚是没有办法处理这些情况的。</p>
 </blockquote>
 <blockquote>
-<p>原文地址: <a href="http://www.redis.cn/topics/transactions.html" target="_blank" rel="noopener">为什么 Redis 不支持回滚（roll back）</a></p>
+<p>原文地址: <a target="_blank" rel="noopener" href="http://www.redis.cn/topics/transactions.html">为什么 Redis 不支持回滚（roll back）</a></p>
 </blockquote>
 <h2 id="Redis-分布式锁"><a href="#Redis-分布式锁" class="headerlink" title="Redis 分布式锁"></a>Redis 分布式锁</h2><blockquote>
-<p>分布式锁在很多场景中是非常有用的原语， 不同的进程必须以独占资源的方式实现资源共享就是一个典型的例子。<br>这个页面试图提供一个使用Redis实现分布式锁的规范算法。我们提出一种算法，叫<strong>Redlock</strong><br><a href="https://github.com/ronnylt/redlock-php" target="_blank" rel="noopener">Redlock-PHP</a></p>
+<p>分布式锁在很多场景中是非常有用的原语， 不同的进程必须以独占资源的方式实现资源共享就是一个典型的例子。<br>这个页面试图提供一个使用Redis实现分布式锁的规范算法。我们提出一种算法，叫<strong>Redlock</strong><br><a target="_blank" rel="noopener" href="https://github.com/ronnylt/redlock-php">Redlock-PHP</a></p>
 </blockquote>
 <ul>
 <li>算法只需具备3个特性就可以实现一个最低保障的分布式锁。<ul>
 <li><ol>
-<li>安全属性 (<code>Safety property</code>): <strong>独享(相互排斥)</strong>。在任意一个时刻，只有一个客户端持有锁</li>
+<li>安全属性 (<code>Safety property</code>): **独享(相互排斥)**。在任意一个时刻，只有一个客户端持有锁</li>
 </ol>
 </li>
 <li><ol start="2">
@@ -258,15 +303,18 @@
 </ul>
 </li>
 </ul>
-<h2 id="Redis-发布-订阅-Pub-Sub"><a href="#Redis-发布-订阅-Pub-Sub" class="headerlink" title="Redis 发布/订阅(Pub/Sub)"></a>Redis 发布/订阅(Pub/Sub)</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"><span class="bullet"> * </span>Redis-发布订阅</span><br><span class="line"><span class="bullet"> * </span>@Post("/test<span class="emphasis">_pub_</span>sub")</span><br><span class="line"> */</span><br><span class="line">public function test<span class="emphasis">_pub_</span>sub()</span><br><span class="line">&#123;</span><br><span class="line"><span class="code">    // 将信息 message 发送到指定的频道 channel 。</span></span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;publish('channel', 'message');</span></span><br><span class="line"></span><br><span class="line"><span class="code">    // 订阅给定的一个或多个频道的信息。</span></span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;subscribe(['channel'], 'callback');</span></span><br><span class="line"></span><br><span class="line"><span class="code">    // 订阅一个或多个符合给定模式的频道</span></span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;psubscribe(['msg*'], 'callback');</span></span><br><span class="line"></span><br><span class="line"><span class="code">    // PUBSUB 是一个查看订阅与发布系统状态的内省命令， 它由数个不同格式的子命令组成， 以下将分别对这些子命令进行介绍。</span></span><br><span class="line"><span class="code">    // 列出当前的活跃频道。</span></span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;pubsub('keyword', 'argument');</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Redis-发布-x2F-订阅-Pub-x2F-Sub"><a href="#Redis-发布-x2F-订阅-Pub-x2F-Sub" class="headerlink" title="Redis 发布&#x2F;订阅(Pub&#x2F;Sub)"></a>Redis 发布&#x2F;订阅(Pub&#x2F;Sub)</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"><span class="bullet"> *</span> Redis-发布订阅</span><br><span class="line"><span class="bullet"> *</span> @Post(&quot;/test<span class="emphasis">_pub_</span>sub&quot;)</span><br><span class="line"> <span class="emphasis">*/</span></span><br><span class="line"><span class="emphasis">public function test_pub_sub()</span></span><br><span class="line"><span class="emphasis">&#123;</span></span><br><span class="line"><span class="emphasis">    // 将信息 message 发送到指定的频道 channel 。</span></span><br><span class="line"><span class="emphasis">    $this-&gt;redis-&gt;publish(&#x27;channel&#x27;, &#x27;message&#x27;);</span></span><br><span class="line"><span class="emphasis"></span></span><br><span class="line"><span class="emphasis">    // 订阅给定的一个或多个频道的信息。</span></span><br><span class="line"><span class="emphasis">    $this-&gt;redis-&gt;subscribe([&#x27;channel&#x27;], &#x27;callback&#x27;);</span></span><br><span class="line"><span class="emphasis"></span></span><br><span class="line"><span class="emphasis">    // 订阅一个或多个符合给定模式的频道</span></span><br><span class="line"><span class="emphasis">    $this-&gt;redis-&gt;psubscribe([&#x27;msg*</span>&#x27;], &#x27;callback&#x27;);</span><br><span class="line"></span><br><span class="line"><span class="code">    // PUBSUB 是一个查看订阅与发布系统状态的内省命令， 它由数个不同格式的子命令组成， 以下将分别对这些子命令进行介绍。</span></span><br><span class="line"><span class="code">    // 列出当前的活跃频道。</span></span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;pubsub(&#x27;keyword&#x27;, &#x27;argument&#x27;);</span></span><br><span class="line"><span class="code">&#125;</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>发布</li>
 </ul>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"><span class="bullet"> * </span>发布</span><br><span class="line"><span class="bullet"> * </span>@Post("/test_publish")</span><br><span class="line"> */</span><br><span class="line">public function test_publish()</span><br><span class="line">&#123;</span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;publish('msg', '来自MSG频道的推送');</span></span><br><span class="line"><span class="code">    echo "MSG频道消息推送成功 \n";</span></span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;close();</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"><span class="bullet"> *</span> 发布</span><br><span class="line"><span class="bullet"> *</span> @Post(&quot;/test<span class="emphasis">_publish&quot;)</span></span><br><span class="line"><span class="emphasis"> */</span></span><br><span class="line"><span class="emphasis">public function test_</span>publish()</span><br><span class="line">&#123;</span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;publish(&#x27;msg&#x27;, &#x27;来自MSG频道的推送&#x27;);</span></span><br><span class="line"><span class="code">    echo &quot;MSG频道消息推送成功 \n&quot;;</span></span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;close();</span></span><br><span class="line"><span class="code">&#125;</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>订阅</li>
 </ul>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"><span class="bullet"> * </span>订阅</span><br><span class="line"><span class="bullet"> * </span>@Post("/test_subscribe")</span><br><span class="line"> */</span><br><span class="line">public function test_subscribe()</span><br><span class="line">&#123;</span><br><span class="line"><span class="code">    // ini_set('default_socket_timeout', -1);</span></span><br><span class="line"></span><br><span class="line"><span class="code">    echo "订阅MSG频道, 等待消息推送...\n";</span></span><br><span class="line"></span><br><span class="line"><span class="code">    $callback = function ($msg) &#123;</span></span><br><span class="line"><span class="code">        echo $msg;</span></span><br><span class="line"><span class="code">    &#125;;</span></span><br><span class="line"></span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;subscribe(['msg'], $callback);</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"><span class="bullet"> *</span> 订阅</span><br><span class="line"><span class="bullet"> *</span> @Post(&quot;/test<span class="emphasis">_subscribe&quot;)</span></span><br><span class="line"><span class="emphasis"> */</span></span><br><span class="line"><span class="emphasis">public function test_</span>subscribe()</span><br><span class="line">&#123;</span><br><span class="line"><span class="code">    // ini_set(&#x27;default_socket_timeout&#x27;, -1);</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">    echo &quot;订阅MSG频道, 等待消息推送...\n&quot;;</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">    $callback = function ($msg) &#123;</span></span><br><span class="line"><span class="code">        echo $msg;</span></span><br><span class="line"><span class="code">    &#125;;</span></span><br><span class="line"><span class="code"></span></span><br><span class="line"><span class="code">    $this-&gt;redis-&gt;subscribe([&#x27;msg&#x27;], $callback);</span></span><br><span class="line"><span class="code">&#125;</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="Redis-主从复制"><a href="#Redis-主从复制" class="headerlink" title="Redis 主从复制"></a>Redis 主从复制</h2><blockquote>
 <p>在 Redis 复制的基础上，使用和配置主从复制非常简单，能使得从 Redis 服务器（下文称 slave）能精确得复制主 Redis 服务器（下文称 master）的内容。每次当 slave 和 master 之间的连接断开时， slave 会自动重连到 master 上，并且无论这期间 master 发生了什么， slave 都将尝试让自身成为 master 的精确副本。</p>
 </blockquote>
@@ -284,22 +332,23 @@
 </ul>
 <blockquote>
 <p>使用正常模式的Redis 客户端执行大量数据插入不是一个好主意：因为一个个的插入会有大量的时间浪费在每一个命令往返时间上。使用管道（pipelining）是一种可行的办法，但是在大量插入数据的同时又需要执行其他新命令时，这时读取数据的同时需要确保请可能快的的写入数据。</p>
-<p>只有一小部分的客户端支持非阻塞输入/输出(non-blocking I/O),并且并不是所有客户端能以最大限度的提高吞吐量的高效的方式来分析答复。</p>
+<p>只有一小部分的客户端支持非阻塞输入&#x2F;输出(non-blocking I&#x2F;O),并且并不是所有客户端能以最大限度的提高吞吐量的高效的方式来分析答复。</p>
 </blockquote>
 <ul>
 <li>生成Redis协议</li>
 </ul>
 <blockquote>
-<p>它会非常简单的生成和解析Redis协议，Redis协议文档请参考<a href="http://www.redis.cn/topics/protocol.html" target="_blank" rel="noopener">Redis协议说明</a>。 但是为了生成大量数据插入的目标，你需要了解每一个细节协议，每个命令会用如下方式表示：</p>
+<p>它会非常简单的生成和解析Redis协议，Redis协议文档请参考<a target="_blank" rel="noopener" href="http://www.redis.cn/topics/protocol.html">Redis协议说明</a>。 但是为了生成大量数据插入的目标，你需要了解每一个细节协议，每个命令会用如下方式表示：</p>
 </blockquote>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">*<span class="tag">&lt;<span class="name">args</span>&gt;</span><span class="tag">&lt;<span class="name">cr</span>&gt;</span><span class="tag">&lt;<span class="name">lf</span>&gt;</span></span><br><span class="line">$<span class="tag">&lt;<span class="name">len</span>&gt;</span><span class="tag">&lt;<span class="name">cr</span>&gt;</span><span class="tag">&lt;<span class="name">lf</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">arg0</span>&gt;</span><span class="tag">&lt;<span class="name">cr</span>&gt;</span><span class="tag">&lt;<span class="name">lf</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">arg1</span>&gt;</span><span class="tag">&lt;<span class="name">cr</span>&gt;</span><span class="tag">&lt;<span class="name">lf</span>&gt;</span></span><br><span class="line">...</span><br><span class="line"><span class="tag">&lt;<span class="name">argN</span>&gt;</span><span class="tag">&lt;<span class="name">cr</span>&gt;</span><span class="tag">&lt;<span class="name">lf</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <blockquote>
-<p>这里的<cr>是”\r”（或者是ASCII的13）、<lf>是”\n”（或者是ASCII的10）。</lf></cr></p>
+<p>这里的<cr>是”\r”（或者是ASCII的13）、<lf>是”\n”（或者是ASCII的10）。</p>
 </blockquote>
 <h2 id="Redis-集群"><a href="#Redis-集群" class="headerlink" title="Redis 集群"></a>Redis 集群</h2><p>Redis 集群是一个提供在<strong>多个Redis间节点间共享数据</strong>的程序集</p>
 <ul>
-<li><a href="http://www.redis.cn/topics/cluster-tutorial.html" target="_blank" rel="noopener">Redis 集群教程</a>: 入门级的Redis集群使用指南。</li>
-<li><a href="http://www.redis.cn/topics/cluster-spec.html" target="_blank" rel="noopener">Redis 集群规范</a>: 进阶版的Redis集群使用规范。</li>
+<li><a target="_blank" rel="noopener" href="http://www.redis.cn/topics/cluster-tutorial.html">Redis 集群教程</a>: 入门级的Redis集群使用指南。</li>
+<li><a target="_blank" rel="noopener" href="http://www.redis.cn/topics/cluster-spec.html">Redis 集群规范</a>: 进阶版的Redis集群使用规范。</li>
 </ul>
 
         
@@ -332,7 +381,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/">Redis</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
 
       
 
@@ -368,7 +417,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-管道-Pipelining"><span class="nav-number">1.</span> <span class="nav-text">Redis 管道(Pipelining)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-内存优化"><span class="nav-number">2.</span> <span class="nav-text">Redis 内存优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-事务"><span class="nav-number">3.</span> <span class="nav-text">Redis 事务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么-Redis-不支持回-roll-back"><span class="nav-number">3.1.</span> <span class="nav-text">为什么 Redis 不支持回 (roll back) ?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-分布式锁"><span class="nav-number">4.</span> <span class="nav-text">Redis 分布式锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-发布-订阅-Pub-Sub"><span class="nav-number">5.</span> <span class="nav-text">Redis 发布/订阅(Pub/Sub)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-主从复制"><span class="nav-number">6.</span> <span class="nav-text">Redis 主从复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-大量写入数据"><span class="nav-number">7.</span> <span class="nav-text">Redis 大量写入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-集群"><span class="nav-number">8.</span> <span class="nav-text">Redis 集群</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E7%AE%A1%E9%81%93-Pipelining"><span class="nav-number">1.</span> <span class="nav-text">Redis 管道(Pipelining)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">Redis 内存优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E4%BA%8B%E5%8A%A1"><span class="nav-number">3.</span> <span class="nav-text">Redis 事务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-Redis-%E4%B8%8D%E6%94%AF%E6%8C%81%E5%9B%9E-roll-back"><span class="nav-number">3.1.</span> <span class="nav-text">为什么 Redis 不支持回 (roll back) ?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">4.</span> <span class="nav-text">Redis 分布式锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E5%8F%91%E5%B8%83-x2F-%E8%AE%A2%E9%98%85-Pub-x2F-Sub"><span class="nav-number">5.</span> <span class="nav-text">Redis 发布&#x2F;订阅(Pub&#x2F;Sub)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="nav-number">6.</span> <span class="nav-text">Redis 主从复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E5%A4%A7%E9%87%8F%E5%86%99%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-number">7.</span> <span class="nav-text">Redis 大量写入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E9%9B%86%E7%BE%A4"><span class="nav-number">8.</span> <span class="nav-text">Redis 集群</span></a></li></ol>
     
     </div>
   </aside>
@@ -383,7 +432,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -463,12 +512,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -536,7 +589,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

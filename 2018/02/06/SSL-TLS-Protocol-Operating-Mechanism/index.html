@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>ssl/tls协议 运行机制 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="SSLTLS">
+  <meta name="keywords" content="SSLTLS" />
   
   
   
   
-  <meta name="description" content="互联网的通信安全，建立在SSL/TLS协议之上。 本文简要介绍SSL/TLS协议的运行机制。文章的重点是设计思想和运行过程，不涉及具体的实现细节。如果想了解这方面的内容，请参阅 RFC文档。">
-<meta name="keywords" content="SSL,TLS">
+  <meta name="description" content="互联网的通信安全，建立在SSL&#x2F;TLS协议之上。 本文简要介绍SSL&#x2F;TLS协议的运行机制。文章的重点是设计思想和运行过程，不涉及具体的实现细节。如果想了解这方面的内容，请参阅 RFC文档。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SSL&#x2F;TLS协议 运行机制">
 <meta property="og:url" content="http://blog.caoxl.com/2018/02/06/SSL-TLS-Protocol-Operating-Mechanism/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
-<meta property="og:description" content="互联网的通信安全，建立在SSL/TLS协议之上。 本文简要介绍SSL/TLS协议的运行机制。文章的重点是设计思想和运行过程，不涉及具体的实现细节。如果想了解这方面的内容，请参阅 RFC文档。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:description" content="互联网的通信安全，建立在SSL&#x2F;TLS协议之上。 本文简要介绍SSL&#x2F;TLS协议的运行机制。文章的重点是设计思想和运行过程，不涉及具体的实现细节。如果想了解这方面的内容，请参阅 RFC文档。">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201402/bg2014020502.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201402/bg2014020503.gif">
-<meta property="og:updated_time" content="2019-08-22T03:45:47.000Z">
+<meta property="article:published_time" content="2018-02-06T03:20:13.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:45:47.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="SSL">
+<meta property="article:tag" content="TLS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SSL&#x2F;TLS协议 运行机制">
-<meta name="twitter:description" content="互联网的通信安全，建立在SSL/TLS协议之上。 本文简要介绍SSL/TLS协议的运行机制。文章的重点是设计思想和运行过程，不涉及具体的实现细节。如果想了解这方面的内容，请参阅 RFC文档。">
 <meta name="twitter:image" content="http://www.ruanyifeng.com/blogimg/asset/201402/bg2014020502.png">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
@@ -45,30 +46,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -146,7 +185,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -184,7 +225,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%BF%85%E5%A4%87/">计算机专业必备</a>
 
       
 	<a class="article-views">
@@ -200,8 +241,9 @@
         
         
           <p>互联网的通信安全，建立在<code>SSL/TLS</code>协议之上。</p>
-<p>本文简要介绍<code>SSL/TLS</code>协议的运行机制。文章的重点是设计思想和运行过程，不涉及具体的实现细节。如果想了解这方面的内容，请参阅 <u><a href="https://tools.ietf.org/html/rfc5246" target="_blank" rel="noopener">RFC文档</a></u>。</p>
-<a id="more"></a>
+<p>本文简要介绍<code>SSL/TLS</code>协议的运行机制。文章的重点是设计思想和运行过程，不涉及具体的实现细节。如果想了解这方面的内容，请参阅 <u><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc5246">RFC文档</a></u>。</p>
+<span id="more"></span>
+
 <h1 id="一、作用"><a href="#一、作用" class="headerlink" title="一、作用"></a>一、作用</h1><p>不使用<code>SSL/TLS</code>的<code>HTTP</code>通信，就是不加密的通信。所有信息明文传播，带来了三大风险。</p>
 <blockquote>
 <ul>
@@ -220,23 +262,25 @@
 </blockquote>
 <p>互联网是开放环境，通信双方都是未知身份，这为协议的设计带来了很大的难度。而且，协议还必须能够经受所有匪夷所思的攻击，这使得<code>SSL/TLS</code>协议变得异常复杂。</p>
 <h1 id="二、历史"><a href="#二、历史" class="headerlink" title="二、历史"></a>二、历史</h1><p>互联网加密通信协议的历史，几乎与互联网一样长。</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1994</span>年，NetScape公司设计了SSL协议（Secure Sockets Layer）的<span class="number">1.0</span>版，但是未发布。</span><br><span class="line"></span><br><span class="line"><span class="number">1995</span>年，NetScape公司发布SSL <span class="number">2.0</span>版，很快发现有严重漏洞。</span><br><span class="line"></span><br><span class="line"><span class="number">1996</span>年，SSL <span class="number">3.0</span>版问世，得到大规模应用。</span><br><span class="line"></span><br><span class="line"><span class="number">1999</span>年，互联网标准化组织ISOC接替NetScape公司，发布了SSL的升级版TLS <span class="number">1.0</span>版。</span><br><span class="line"></span><br><span class="line"><span class="number">2006</span>年和<span class="number">2008</span>年，TLS进行了两次升级，分别为TLS <span class="number">1.1</span>版和TLS <span class="number">1.2</span>版。最新的变动是<span class="number">2011</span>年TLS <span class="number">1.2</span>的修订版。</span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">1994</span>年，NetScape公司设计了SSL协议（Secure Sockets Layer）的<span class="number">1</span>.<span class="number">0</span>版，但是未发布。</span><br><span class="line"></span><br><span class="line"><span class="attribute">1995</span>年，NetScape公司发布SSL <span class="number">2</span>.<span class="number">0</span>版，很快发现有严重漏洞。</span><br><span class="line"></span><br><span class="line"><span class="attribute">1996</span>年，SSL <span class="number">3</span>.<span class="number">0</span>版问世，得到大规模应用。</span><br><span class="line"></span><br><span class="line"><span class="attribute">1999</span>年，互联网标准化组织ISOC接替NetScape公司，发布了SSL的升级版TLS <span class="number">1</span>.<span class="number">0</span>版。</span><br><span class="line"></span><br><span class="line"><span class="attribute">2006</span>年和<span class="number">2008</span>年，TLS进行了两次升级，分别为TLS <span class="number">1</span>.<span class="number">1</span>版和TLS <span class="number">1</span>.<span class="number">2</span>版。最新的变动是<span class="number">2011</span>年TLS <span class="number">1</span>.<span class="number">2</span>的修订版。</span><br></pre></td></tr></table></figure>
+
 <p>目前，应用最广泛的是TLS 1.0，接下来是SSL 3.0。但是，主流浏览器都已经实现了TLS 1.2的支持。</p>
 <p>TLS 1.0通常被标示为SSL 3.1，TLS 1.1为SSL 3.2，TLS 1.2为SSL 3.3。</p>
-<h1 id="三、基本的运行过程"><a href="#三、基本的运行过程" class="headerlink" title="三、基本的运行过程"></a>三、基本的运行过程</h1><p><code>SSL/TLS</code>协议的基本思路是采用<a href="http://en.wikipedia.org/wiki/Public-key_cryptography" target="_blank" rel="noopener">公钥加密法</a>，也就是说，</p>
+<h1 id="三、基本的运行过程"><a href="#三、基本的运行过程" class="headerlink" title="三、基本的运行过程"></a>三、基本的运行过程</h1><p><code>SSL/TLS</code>协议的基本思路是采用<a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Public-key_cryptography">公钥加密法</a>，也就是说，</p>
 <p><strong>客户端先向服务器端索要公钥，然后用公钥加密信息，服务器收到密文后，用自己的私钥解密</strong></p>
 <p>但是，这里有两个问题。</p>
 <ul>
 <li><strong>（1）如何保证公钥不被篡改？</strong></li>
 </ul>
 <blockquote>
-<p>解决方法：将公钥放在<a href="https://en.wikipedia.org/wiki/Public_key_certificate" target="_blank" rel="noopener">数字证书</a>中。只要证书是可信的，公钥就是可信的。</p>
+<p>解决方法：将公钥放在<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Public_key_certificate">数字证书</a>中。只要证书是可信的，公钥就是可信的。</p>
 </blockquote>
 <ul>
 <li><strong>（2）公钥加密计算量太大，如何减少耗用的时间？</strong></li>
 </ul>
-<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">解决方法：每一次对话（<span class="keyword">session</span>），客户端和服务器端都生成一个"对话密钥"（<span class="keyword">session</span> key），用它来加密信息。由于"对话密钥"是对称加密，所以运算速度非常快，而服务器公钥只用于加密"对话密钥"本身，这样就减少了加密运算的消耗时间。</span><br></pre></td></tr></table></figure>
-<p>因此，SSL/TLS协议的基本过程是这样的：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">解决方法：每一次对话（<span class="keyword">session</span>），客户端和服务器端都生成一个&quot;对话密钥&quot;（<span class="keyword">session</span> key），用它来加密信息。由于&quot;对话密钥&quot;是对称加密，所以运算速度非常快，而服务器公钥只用于加密&quot;对话密钥&quot;本身，这样就减少了加密运算的消耗时间。</span><br></pre></td></tr></table></figure>
+
+<p>因此，SSL&#x2F;TLS协议的基本过程是这样的：</p>
 <blockquote>
 <ul>
 <li>（1） 客户端向服务器端索要并验证公钥。</li>
@@ -244,22 +288,25 @@
 <li>（3） 双方采用”对话密钥”进行加密通信。</li>
 </ul>
 </blockquote>
-<p>上面过程的前两步，又称为<strong>“握手阶段”</strong>（handshake）。</p>
+<p>上面过程的前两步，又称为**”握手阶段”**（handshake）。</p>
 <h1 id="四、握手阶段的详细过程"><a href="#四、握手阶段的详细过程" class="headerlink" title="四、握手阶段的详细过程"></a>四、握手阶段的详细过程</h1><p><img src="http://www.ruanyifeng.com/blogimg/asset/201402/bg2014020502.png" alt="握手"></p>
 <p>“握手阶段”涉及四次通信，我们一个个来看。需要注意的是，”握手阶段”的所有通信都是明文的。</p>
 <h2 id="客户端发出请求（ClientHello）"><a href="#客户端发出请求（ClientHello）" class="headerlink" title="客户端发出请求（ClientHello）"></a>客户端发出请求（ClientHello）</h2><p>首先，客户端（通常是浏览器）先向服务器发出加密通信的请求，这被叫做ClientHello请求。</p>
 <p>在这一步，客户端主要向服务器提供以下信息。</p>
-<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>） 支持的协议版本，比如TLS <span class="number">1.0</span>版。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>） 一个客户端生成的随机数，稍后用于生成<span class="string">"对话密钥"</span>。</span><br><span class="line"></span><br><span class="line">（<span class="number">3</span>） 支持的加密方法，比如RSA公钥加密。</span><br><span class="line"></span><br><span class="line">（<span class="number">4</span>） 支持的压缩方法。</span><br></pre></td></tr></table></figure>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>） 支持的协议版本，比如TLS <span class="number">1.0</span>版。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>） 一个客户端生成的随机数，稍后用于生成<span class="string">&quot;对话密钥&quot;</span>。</span><br><span class="line"></span><br><span class="line">（<span class="number">3</span>） 支持的加密方法，比如RSA公钥加密。</span><br><span class="line"></span><br><span class="line">（<span class="number">4</span>） 支持的压缩方法。</span><br></pre></td></tr></table></figure>
+
 <p>这里需要注意的是，客户端发送的信息之中不包括服务器的域名。也就是说，<strong>理论上服务器只能包含一个网站</strong>，否则会分不清应该向客户端提供哪一个网站的数字证书。这就是为什么通常一台服务器只能有一张数字证书的原因。</p>
-<p>对于虚拟主机的用户来说，这当然很不方便。2006年，TLS协议加入了一个<a href="http://tools.ietf.org/html/rfc4366" target="_blank" rel="noopener">Server Name Indication扩展</a>，允许客户端向服务器提供它所请求的域名。</p>
+<p>对于虚拟主机的用户来说，这当然很不方便。2006年，TLS协议加入了一个<a target="_blank" rel="noopener" href="http://tools.ietf.org/html/rfc4366">Server Name Indication扩展</a>，允许客户端向服务器提供它所请求的域名。</p>
 <h2 id="服务器回应（SeverHello）"><a href="#服务器回应（SeverHello）" class="headerlink" title="服务器回应（SeverHello）"></a>服务器回应（SeverHello）</h2><p>服务器收到客户端请求后，向客户端发出回应，这叫做SeverHello。服务器的回应包含以下内容。</p>
-<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>） 确认使用的加密通信协议版本，比如TLS <span class="number">1.0</span>版本。如果浏览器与服务器支持的版本不一致，服务器关闭加密通信。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>） 一个服务器生成的随机数，稍后用于生成<span class="string">"对话密钥"</span>。</span><br><span class="line"></span><br><span class="line">（<span class="number">3</span>） 确认使用的加密方法，比如RSA公钥加密。</span><br><span class="line"></span><br><span class="line">（<span class="number">4</span>） 服务器证书。</span><br></pre></td></tr></table></figure>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>） 确认使用的加密通信协议版本，比如TLS <span class="number">1.0</span>版本。如果浏览器与服务器支持的版本不一致，服务器关闭加密通信。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>） 一个服务器生成的随机数，稍后用于生成<span class="string">&quot;对话密钥&quot;</span>。</span><br><span class="line"></span><br><span class="line">（<span class="number">3</span>） 确认使用的加密方法，比如RSA公钥加密。</span><br><span class="line"></span><br><span class="line">（<span class="number">4</span>） 服务器证书。</span><br></pre></td></tr></table></figure>
+
 <p>除了上面这些信息，如果服务器需要确认客户端的身份，就会再包含一项请求，要求客户端提供”客户端证书”。比如，金融机构往往只允许认证客户连入自己的网络，就会向正式客户提供USB密钥，里面就包含了一张客户端证书。</p>
 <h2 id="客户端回应"><a href="#客户端回应" class="headerlink" title="客户端回应"></a>客户端回应</h2><p>客户端收到服务器回应以后，首先验证服务器证书。如果证书不是可信机构颁布、或者证书中的域名与实际域名不一致、或者证书已经过期，就会向访问者显示一个警告，由其选择是否还要继续通信。</p>
 <p>如果证书没有问题，客户端就会从证书中取出服务器的公钥。然后，向服务器发送下面三项信息。</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>） 一个随机数。该随机数用服务器公钥加密，防止被窃听。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>） 编码改变通知，表示随后的信息都将用双方商定的加密方法和密钥发送。</span><br><span class="line"></span><br><span class="line">（<span class="number">3</span>） 客户端握手结束通知，表示客户端的握手阶段已经结束。这一项同时也是前面发送的所有内容的hash值，用来供服务器校验。</span><br></pre></td></tr></table></figure>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>） 一个随机数。该随机数用服务器公钥加密，防止被窃听。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>） 编码改变通知，表示随后的信息都将用双方商定的加密方法和密钥发送。</span><br><span class="line"></span><br><span class="line">（<span class="number">3</span>） 客户端握手结束通知，表示客户端的握手阶段已经结束。这一项同时也是前面发送的所有内容的<span class="built_in">hash</span>值，用来供服务器校验。</span><br></pre></td></tr></table></figure>
+
 <p>上面第一项的随机数，是整个握手阶段出现的第三个随机数，又称<code>&quot;pre-master key&quot;</code>。有了它以后，客户端和服务器就同时有了三个随机数，接着双方就用事先商定的加密方法，各自生成本次会话所用的同一把”会话密钥”。</p>
-<p>至于为什么一定要用三个随机数，来生成”会话密钥”，<a href="http://blog.csdn.net/dog250/article/details/5717162" target="_blank" rel="noopener">dog250</a>解释得很好：</p>
+<p>至于为什么一定要用三个随机数，来生成”会话密钥”，<a target="_blank" rel="noopener" href="http://blog.csdn.net/dog250/article/details/5717162">dog250</a>解释得很好：</p>
 <blockquote>
 <p>“不管是客户端还是服务器，都需要随机数，这样生成的密钥才不会每次都一样。由于SSL协议中证书是静态的，因此十分有必要引入一种随机因素来保证协商出来的密钥的随机性。</p>
 <p>对于RSA密钥交换算法来说，pre-master-key本身就是一个随机数，再加上hello消息中的随机，三个随机数通过一个密钥导出器最终导出一个对称密钥。</p>
@@ -267,11 +314,12 @@
 </blockquote>
 <p>此外，如果前一步，服务器要求客户端证书，客户端会在这一步发送证书及相关信息。</p>
 <h2 id="此外，如果前一步，服务器要求客户端证书，客户端会在这一步发送证书及相关信息。"><a href="#此外，如果前一步，服务器要求客户端证书，客户端会在这一步发送证书及相关信息。" class="headerlink" title="此外，如果前一步，服务器要求客户端证书，客户端会在这一步发送证书及相关信息。"></a>此外，如果前一步，服务器要求客户端证书，客户端会在这一步发送证书及相关信息。</h2><p>服务器收到客户端的第三个随机数pre-master key之后，计算生成本次会话所用的”会话密钥”。然后，向客户端最后发送下面信息。</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>）编码改变通知，表示随后的信息都将用双方商定的加密方法和密钥发送。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>）服务器握手结束通知，表示服务器的握手阶段已经结束。这一项同时也是前面发送的所有内容的hash值，用来供客户端校验。</span><br></pre></td></tr></table></figure>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>）编码改变通知，表示随后的信息都将用双方商定的加密方法和密钥发送。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>）服务器握手结束通知，表示服务器的握手阶段已经结束。这一项同时也是前面发送的所有内容的<span class="built_in">hash</span>值，用来供客户端校验。</span><br></pre></td></tr></table></figure>
+
 <p>至此，整个握手阶段全部结束。接下来，客户端与服务器进入加密通信，就完全是使用普通的HTTP协议，只不过用”会话密钥”加密内容。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/201402/bg2014020503.gif" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201402/bg2014020503.gif"></p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html" target="_blank" rel="noopener">SSL/TLS协议运行机制的概述</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">SSL&#x2F;TLS协议运行机制的概述</a></li>
 </ul>
 
         
@@ -304,7 +352,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL/">SSL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS/">TLS</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL/" rel="tag">SSL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS/" rel="tag">TLS</a></li></ul>
 
       
 
@@ -340,7 +388,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、作用"><span class="nav-number">1.</span> <span class="nav-text">一、作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、历史"><span class="nav-number">2.</span> <span class="nav-text">二、历史</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、基本的运行过程"><span class="nav-number">3.</span> <span class="nav-text">三、基本的运行过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、握手阶段的详细过程"><span class="nav-number">4.</span> <span class="nav-text">四、握手阶段的详细过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端发出请求（ClientHello）"><span class="nav-number">4.1.</span> <span class="nav-text">客户端发出请求（ClientHello）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器回应（SeverHello）"><span class="nav-number">4.2.</span> <span class="nav-text">服务器回应（SeverHello）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端回应"><span class="nav-number">4.3.</span> <span class="nav-text">客户端回应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#此外，如果前一步，服务器要求客户端证书，客户端会在这一步发送证书及相关信息。"><span class="nav-number">4.4.</span> <span class="nav-text">此外，如果前一步，服务器要求客户端证书，客户端会在这一步发送证书及相关信息。</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BD%9C%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">一、作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%8E%86%E5%8F%B2"><span class="nav-number">2.</span> <span class="nav-text">二、历史</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%9F%BA%E6%9C%AC%E7%9A%84%E8%BF%90%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">三、基本的运行过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%8F%A1%E6%89%8B%E9%98%B6%E6%AE%B5%E7%9A%84%E8%AF%A6%E7%BB%86%E8%BF%87%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">四、握手阶段的详细过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%8F%91%E5%87%BA%E8%AF%B7%E6%B1%82%EF%BC%88ClientHello%EF%BC%89"><span class="nav-number">4.1.</span> <span class="nav-text">客户端发出请求（ClientHello）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%9B%9E%E5%BA%94%EF%BC%88SeverHello%EF%BC%89"><span class="nav-number">4.2.</span> <span class="nav-text">服务器回应（SeverHello）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%9B%9E%E5%BA%94"><span class="nav-number">4.3.</span> <span class="nav-text">客户端回应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A4%E5%A4%96%EF%BC%8C%E5%A6%82%E6%9E%9C%E5%89%8D%E4%B8%80%E6%AD%A5%EF%BC%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A6%81%E6%B1%82%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AF%81%E4%B9%A6%EF%BC%8C%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BC%9A%E5%9C%A8%E8%BF%99%E4%B8%80%E6%AD%A5%E5%8F%91%E9%80%81%E8%AF%81%E4%B9%A6%E5%8F%8A%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF%E3%80%82"><span class="nav-number">4.4.</span> <span class="nav-text">此外，如果前一步，服务器要求客户端证书，客户端会在这一步发送证书及相关信息。</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -355,7 +403,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -435,12 +483,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -508,7 +560,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

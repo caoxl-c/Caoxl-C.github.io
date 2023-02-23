@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>mysql 优化 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="MySQL优化">
+  <meta name="keywords" content="MySQL优化" />
   
   
   
   
   <meta name="description" content="主要从概念上总结下 MySQL 优化的思路。  数据库优化简介Why ?避免出现页面访问错误 数据库连接 timeout 发生 50x 错误 由于慢查询造成页面无法加载 由于阻塞造成数据无法提交">
-<meta name="keywords" content="MySQL,优化">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL 优化">
 <meta property="og:url" content="http://blog.caoxl.com/2018/01/19/MySQL-Optimization/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="主要从概念上总结下 MySQL 优化的思路。  数据库优化简介Why ?避免出现页面访问错误 数据库连接 timeout 发生 50x 错误 由于慢查询造成页面无法加载 由于阻塞造成数据无法提交">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T06:29:39.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-19T04:58:48.000Z">
+<meta property="article:modified_time" content="2019-08-22T06:29:39.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="优化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL 优化">
-<meta name="twitter:description" content="主要从概念上总结下 MySQL 优化的思路。  数据库优化简介Why ?避免出现页面访问错误 数据库连接 timeout 发生 50x 错误 由于慢查询造成页面无法加载 由于阻塞造成数据无法提交">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +222,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
 
       
 	<a class="article-views">
@@ -204,17 +245,18 @@
 <li>由于慢查询造成页面无法加载</li>
 <li>由于阻塞造成数据无法提交</li>
 </ul>
-<a id="more"></a>  
+<span id="more"></span>  
+
 <h3 id="增加数据库的稳定性"><a href="#增加数据库的稳定性" class="headerlink" title="增加数据库的稳定性"></a>增加数据库的稳定性</h3><p>很多数据库问题都是由低效的查询引起的。</p>
 <h3 id="优化用户体验"><a href="#优化用户体验" class="headerlink" title="优化用户体验"></a>优化用户体验</h3><ul>
 <li>页面的流畅访问</li>
 <li>网站功能的良好体验</li>
 </ul>
-<h2 id="How"><a href="#How" class="headerlink" title="How ?"></a>How ?</h2><h3 id="硬件"><a href="#硬件" class="headerlink" title="硬件"></a>硬件</h3><p>CPU 核数、更多的内存和更快的 I/O(固态硬盘等)，但是 CPU 并不是越多越好，因为 MySQL 的有些查询只能是单核完成。</p>
-<p>此外，I/O 越快也并不能保证减少数据库锁的问题，因为锁是 MySQL 等多数数据库内部为保证数据完整性的一种机制，因此无法完全避免掉阻塞。</p>
+<h2 id="How"><a href="#How" class="headerlink" title="How ?"></a>How ?</h2><h3 id="硬件"><a href="#硬件" class="headerlink" title="硬件"></a>硬件</h3><p>CPU 核数、更多的内存和更快的 I&#x2F;O(固态硬盘等)，但是 CPU 并不是越多越好，因为 MySQL 的有些查询只能是单核完成。</p>
+<p>此外，I&#x2F;O 越快也并不能保证减少数据库锁的问题，因为锁是 MySQL 等多数数据库内部为保证数据完整性的一种机制，因此无法完全避免掉阻塞。</p>
 <p>可见，硬件的优化是成本最高但是效果最差的，如果底层的优化不够，产生了 太多的慢查询和阻塞，那么就会带来高并发， 高并发的场景下，再好的硬件也会有很高的 loading。</p>
 <h3 id="系统配置"><a href="#系统配置" class="headerlink" title="系统配置"></a>系统配置</h3><p>MySQL 的运行环境大部分都是 Linux 系统，所以会受到 Linux 系统本身的一些限制。</p>
-<p>此外， TCP/IP 连接数、打开的文件数(I/O操作频率)，也是会对 MySQL 的性能造成限制。</p>
+<p>此外， TCP&#x2F;IP 连接数、打开的文件数(I&#x2F;O操作频率)，也是会对 MySQL 的性能造成限制。</p>
 <h3 id="数据库表结构"><a href="#数据库表结构" class="headerlink" title="数据库表结构"></a>数据库表结构</h3><p>良好的表结构是写出良好的 SQL 语句的基础，我们要根据数据库设计范式来设计表结构，尽量考虑如何设计表结构才有利于查询，尽量简洁明了，尽量减少数据的冗余。</p>
 <h3 id="SQL-及索引"><a href="#SQL-及索引" class="headerlink" title="SQL 及索引"></a>SQL 及索引</h3><p>这是最常见的优化方式，我们需要根据需求写出结构良好的 SQL，然后写出结构良好的 SQL 语句。因为同一个业务可能可以用多种 SQL 来完成，但是尽量选择结构最好的 SQL。</p>
 <blockquote>
@@ -239,12 +281,12 @@
 <ul>
 <li>频率高的单核同样能提高性能</li>
 </ul>
-<h2 id="Disk-I-O-优化"><a href="#Disk-I-O-优化" class="headerlink" title="Disk I/O 优化"></a>Disk I/O 优化</h2><h3 id="常用-RAID-级别"><a href="#常用-RAID-级别" class="headerlink" title="常用 RAID 级别"></a>常用 RAID 级别</h3><h4 id="RAID0"><a href="#RAID0" class="headerlink" title="RAID0"></a>RAID0</h4><p>也称“条带”，就是把多个磁盘连接成一个硬盘使用，这个级别的 IO 最好。</p>
+<h2 id="Disk-I-x2F-O-优化"><a href="#Disk-I-x2F-O-优化" class="headerlink" title="Disk I&#x2F;O 优化"></a>Disk I&#x2F;O 优化</h2><h3 id="常用-RAID-级别"><a href="#常用-RAID-级别" class="headerlink" title="常用 RAID 级别"></a>常用 RAID 级别</h3><h4 id="RAID0"><a href="#RAID0" class="headerlink" title="RAID0"></a>RAID0</h4><p>也称“条带”，就是把多个磁盘连接成一个硬盘使用，这个级别的 IO 最好。</p>
 <h4 id="RAID1"><a href="#RAID1" class="headerlink" title="RAID1"></a>RAID1</h4><p>也称“镜像”，要求至少有两个磁盘，每组磁盘存储的数据相同。</p>
 <h4 id="RAID5"><a href="#RAID5" class="headerlink" title="RAID5"></a>RAID5</h4><p>即把多个（最少 3 个）的硬盘，合并成 1 个逻辑盘使用，数据读写时会建立奇偶校验信息，并且奇偶校验信息和相对应的数据分别存储在不同的磁盘上。</p>
 <p>当 RAID5 的一个磁盘数据发生损坏后，利用剩下的数据和相应的奇偶校验信息去恢复被破坏的数据。</p>
 <h4 id="RAID1-0"><a href="#RAID1-0" class="headerlink" title="RAID1+0"></a>RAID1+0</h4><p>即 RAID1 和 RAID0 的结合，同时具备两个级别的优缺点。</p>
-<p>由于 RAID0 安全性不好，RAID1 I/O 不好，因此，一般数据库都是使用这个级别。</p>
+<p>由于 RAID0 安全性不好，RAID1 I&#x2F;O 不好，因此，一般数据库都是使用这个级别。</p>
 <h3 id="SNA-和-NAT"><a href="#SNA-和-NAT" class="headerlink" title="SNA 和 NAT"></a>SNA 和 NAT</h3><blockquote>
 <p>SNA 和 NAT 是否适合数据库？</p>
 </blockquote>
@@ -253,17 +295,20 @@
 <li>常用于高可用解决方案</li>
 <li>顺序读写效率高（但是随机读写差）</li>
 </ul>
-<p>这两种适合做磁盘矩阵，容灾性很好，但是从提升数据库 I/O 性能的角度来看，并不适合数据库读写的特点，因为数据库随机读写的比率很高。</p>
+<p>这两种适合做磁盘矩阵，容灾性很好，但是从提升数据库 I&#x2F;O 性能的角度来看，并不适合数据库读写的特点，因为数据库随机读写的比率很高。</p>
 <p>因此，对于网络存储设备，需要测试后才决定是否采用。</p>
 <h1 id="系统配置优化"><a href="#系统配置优化" class="headerlink" title="系统配置优化"></a>系统配置优化</h1><h2 id="操作系统配置优化"><a href="#操作系统配置优化" class="headerlink" title="操作系统配置优化"></a>操作系统配置优化</h2><p>数据库是基于 OS 的，所以 OS 的一些参数配置是影响 MySQL 性能的基础。</p>
-<p>目前 MySQL 主要都安装在 GUN/Linux 上，因此下面说的都是在说 Linux，其常用的系统配置如下：</p>
+<p>目前 MySQL 主要都安装在 GUN&#x2F;Linux 上，因此下面说的都是在说 Linux，其常用的系统配置如下：</p>
 <h3 id="网络方面"><a href="#网络方面" class="headerlink" title="网络方面"></a>网络方面</h3><p>修改 <code>/etc/sysctl.conf</code>：</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 增加 TCP 支持的队列数</span></span><br><span class="line"><span class="attr">net.ipv4.tcp_max_syn_backlog</span> = <span class="number">65535</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 减少断开连接时的资源回收</span></span><br><span class="line"><span class="attr">net.ipv4.tcp_max_tw_buckets</span> = <span class="number">8000</span></span><br><span class="line"><span class="attr">net.ipv4.tcp_tw_reuse</span> = <span class="number">1</span></span><br><span class="line"><span class="attr">net.ipv4.tcp_tw_recycle</span> = <span class="number">1</span></span><br><span class="line"><span class="attr">net.ipv4.tcp_fin_timeout</span> = <span class="number">10</span></span><br></pre></td></tr></table></figure>
-<h3 id="打开文件数限制"><a href="#打开文件数限制" class="headerlink" title="打开文件数限制"></a>打开文件数限制</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 查看目录的各位限制</span></span><br><span class="line">ulimit -a</span><br><span class="line"></span><br><span class="line"><span class="section"># 修改 /etc/security/limits.conf 修改系统对打开文件数的限制</span></span><br><span class="line"><span class="bullet">* </span>soft nofile 65535</span><br><span class="line"><span class="bullet">* </span>hard nofile 65535</span><br></pre></td></tr></table></figure>
-<h3 id="防火墙等安全工具"><a href="#防火墙等安全工具" class="headerlink" title="防火墙等安全工具"></a>防火墙等安全工具</h3><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在 MySQL 服务器上最好关闭 iptables/<span class="keyword">selinux </span>等防火墙软件，因为对 MySQL 服务器来说，最好使用硬件防火墙来屏蔽而不是使用软件防火墙。</span><br></pre></td></tr></table></figure>
+
+<h3 id="打开文件数限制"><a href="#打开文件数限制" class="headerlink" title="打开文件数限制"></a>打开文件数限制</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 查看目录的各位限制</span></span><br><span class="line">ulimit -a</span><br><span class="line"></span><br><span class="line"><span class="section"># 修改 /etc/security/limits.conf 修改系统对打开文件数的限制</span></span><br><span class="line"><span class="bullet">*</span> soft nofile 65535</span><br><span class="line"><span class="bullet">*</span> hard nofile 65535</span><br></pre></td></tr></table></figure>
+
+<h3 id="防火墙等安全工具"><a href="#防火墙等安全工具" class="headerlink" title="防火墙等安全工具"></a>防火墙等安全工具</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在 MySQL 服务器上最好关闭 iptables/selinux 等防火墙软件，因为对 MySQL 服务器来说，最好使用硬件防火墙来屏蔽而不是使用软件防火墙。</span><br></pre></td></tr></table></figure>
+
 <h3 id="文件系统类型"><a href="#文件系统类型" class="headerlink" title="文件系统类型"></a>文件系统类型</h3><p>选择文件系统类型参考以下因素：</p>
 <ul>
-<li>I/O 操作性能</li>
+<li>I&#x2F;O 操作性能</li>
 <li>并发支持</li>
 <li>多文件下工作</li>
 <li>文件切片</li>
@@ -277,7 +322,8 @@
 <li>使用配置文件启动</li>
 </ul>
 <p>大多数情况下，MySQL 的配置文件位于 <code>/etc/my.cnf</code>、<code>/etc/mysql/my.cnf</code>、<code>C:/windows/my.ini</code>，可以手动查找配置文件顺序：</p>
-<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/sbin/mysqld --<span class="keyword">verbose</span> --<span class="keyword">help</span> | <span class="keyword">grep</span> -A <span class="string">'Default options'</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">/usr/</span>sbin/mysqld --verbose --help | <span class="keyword">grep</span> -A <span class="string">&#x27;Default options&#x27;</span></span><br></pre></td></tr></table></figure>
+
 <p>配置文件顺序以最后的为准，即如果存在多个配置文件时，后面配置的会覆盖前面的配置。</p>
 <h3 id="Innodb-常用配置选项参数"><a href="#Innodb-常用配置选项参数" class="headerlink" title="Innodb 常用配置选项参数"></a>Innodb 常用配置选项参数</h3><ul>
 <li><strong>innodb_buffer_pool_size</strong></li>
@@ -285,8 +331,9 @@
 <p>用于配置 Innodb 缓冲池。</p>
 <p>如果数据库中只有 Innodb 表，则推荐配置量为总内存的 75%。</p>
 <p><strong>举例说明：</strong></p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">select engine,</span><br><span class="line">round(SUM(data_length + index_length)/1024/1024, 1) as <span class="string">'Total MB'</span>,</span><br><span class="line"><span class="keyword">from</span> information_schema.TABLES</span><br><span class="line">where table_schema <span class="keyword">not</span> <span class="keyword">in</span> (<span class="string">'information_schema'</span>, <span class="string">'performance_schema'</span>)</span><br><span class="line">group by engine;</span><br></pre></td></tr></table></figure>
-<p>innodb_buffer_pool_size 通常需要 &gt;= 这个查询结果中的 <code>Total MB</code>。</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> engine,</span><br><span class="line">round(SUM(data_length + index_length)/<span class="number">1024</span>/<span class="number">1024</span>, <span class="number">1</span>) <span class="keyword">as</span> <span class="string">&#x27;Total MB&#x27;</span>,</span><br><span class="line"><span class="keyword">from</span> information_schema.<span class="keyword">TABLES</span></span><br><span class="line"><span class="keyword">where</span> table_schema <span class="keyword">not</span> <span class="keyword">in</span> (<span class="string">&#x27;information_schema&#x27;</span>, <span class="string">&#x27;performance_schema&#x27;</span>)</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> engine;</span><br></pre></td></tr></table></figure>
+
+<p>innodb_buffer_pool_size 通常需要 &gt;&#x3D; 这个查询结果中的 <code>Total MB</code>。</p>
 <p><code>Total MB</code> 代表的是所有 Innodb 表的大小+索引的大小之和，当系统内存有限时，该值需要尽可能的大。</p>
 <ul>
 <li><strong>innodb_buffer_pool_instances</strong></li>
@@ -294,7 +341,7 @@
 <p>这是 MySQL 5.5 中新增的参数，可以控制缓冲池的个数。（默认情况下只有一个）</p>
 <p>在 MySQL 中有些资源是被独占的，比如缓冲池。增加缓冲池的个数有利于提高并发性能，降低阻塞的频率。</p>
 <blockquote>
-<p><strong>每个缓冲池实例的大小 = innodb_buffer_pool_size / innodb_buffer_pool_instances。</strong></p>
+<p><strong>每个缓冲池实例的大小 &#x3D; innodb_buffer_pool_size &#x2F; innodb_buffer_pool_instances。</strong></p>
 </blockquote>
 <ul>
 <li><strong>innodb_log_buffer_size</strong></li>
@@ -310,20 +357,20 @@
 <ul>
 <li>为 0：表示每次提交不进行刷新，每一秒才把变更刷新一次</li>
 <li>为 1：表示每次提交都会把变更刷新到磁盘( 最安全 )</li>
-<li>为 2：表示每次提交只是把变更刷新到缓冲区，然后每一秒从缓冲区刷新到磁盘，最多丢失 1 秒的提交(为了 I/O 性能一般都是设置为 2)</li>
+<li>为 2：表示每次提交只是把变更刷新到缓冲区，然后每一秒从缓冲区刷新到磁盘，最多丢失 1 秒的提交(为了 I&#x2F;O 性能一般都是设置为 2)</li>
 </ul>
-<p>关键参数之一，对于 Innodb 的 I/O 效率影响很大。</p>
+<p>关键参数之一，对于 Innodb 的 I&#x2F;O 效率影响很大。</p>
 <p>默认为 1，可以取 0、1、2 三个值，一般为 2，如果对数据安全性要求高则使用默认值 1。</p>
 <ul>
 <li><strong>innodb_read_io_threads</strong> 和 <strong>innodb_write_io_threads</strong></li>
 </ul>
-<p>这两个参数决定了 Innodb 表的读写 I/O 进程数，默认为 4。</p>
+<p>这两个参数决定了 Innodb 表的读写 I&#x2F;O 进程数，默认为 4。</p>
 <p>该参数在 5.5 后可以人为地进行调整，当然也要考虑读写负载的实际情况考虑，以提高 Innodb 并发读写的线程数。</p>
 <ul>
 <li><strong>innodb_file_per_table</strong></li>
 </ul>
 <p>控制 Innodb 表的每个表使用的独立表空间，默认为 <code>OFF</code>，表示默认所有表都会建立在共享表空间中。关键参数之一。</p>
-<p>虽然默认是没启用的，但是建议设置为 On。如果所有 Innodb 表都使用共享表空间，那么也会带来 I/O 瓶颈，因为是顺序读写共享表空间的其次，Innodb 的共享表空间是无法单独收缩的，所以如果删除了一个很大的表，这时 候如果想收缩该共享表空间的话，只能先导出所有数据再重新导入进去。</p>
+<p>虽然默认是没启用的，但是建议设置为 On。如果所有 Innodb 表都使用共享表空间，那么也会带来 I&#x2F;O 瓶颈，因为是顺序读写共享表空间的其次，Innodb 的共享表空间是无法单独收缩的，所以如果删除了一个很大的表，这时 候如果想收缩该共享表空间的话，只能先导出所有数据再重新导入进去。</p>
 <p>如果每张表使用的磁盘空间都是独立的，那么当对某张表进行了删除等操作，MySQL 就会马上回收这部分磁盘空间，另外，由于对多个表文件的读写分开了，也提高了读写 的并发性。</p>
 <ul>
 <li><strong>innodb_stats_on_metadata</strong></li>
@@ -333,21 +380,23 @@
 <p>默认情况，MySQL 在查询表结构的时候( <code>show create table / show table status</code> ) 都会刷新表的统计信息，而这是不必的，所以这种情况下是不必启用的，通常情况对该统计信息的刷新都是在数据库闲时进行手动刷新的，这样也可以保持数据库的性能。</p>
 <p>为维护配置文件效率比较低，也可以借助第三方配置工具来完成的。</p>
 <h3 id="第三方配置工具"><a href="#第三方配置工具" class="headerlink" title="第三方配置工具"></a>第三方配置工具</h3><ul>
-<li><u><a href="https://tools.percona.com/sign-in" target="_blank" rel="noopener">Percon Configuration Wizard</a></u></li>
+<li><u><a target="_blank" rel="noopener" href="https://tools.percona.com/sign-in">Percon Configuration Wizard</a></u></li>
 </ul>
 <p>这里可以手动选择配置选项，然后根据你的选择为你生成一份配置文件，并发送到你的邮箱。</p>
 <h1 id="数据库结构优化"><a href="#数据库结构优化" class="headerlink" title="数据库结构优化"></a>数据库结构优化</h1><h2 id="如何选择合适的数据类型"><a href="#如何选择合适的数据类型" class="headerlink" title="如何选择合适的数据类型"></a>如何选择合适的数据类型</h2><ul>
-<li>使用可以存下数据的最小的数据类型（增加单页数据量，减少 I/O 次数）</li>
-<li>使用简单的数据类型（mysql 处理 int 要比 char/varchar 简单）</li>
+<li>使用可以存下数据的最小的数据类型（增加单页数据量，减少 I&#x2F;O 次数）</li>
+<li>使用简单的数据类型（mysql 处理 int 要比 char&#x2F;varchar 简单）</li>
 <li>尽可能使用 not null 定义字段（Innodb 表字段为 NULL 时会占用额外的高位，从而减少实际存储空间）</li>
 <li>尽量少用 text 类型，非用不可时最好考虑分表（text 和 blob 类型往往专门存储在附加表中）</li>
 </ul>
 <h2 id="应用举例"><a href="#应用举例" class="headerlink" title="应用举例"></a>应用举例</h2><h3 id="使用-int-存储日期和时间"><a href="#使用-int-存储日期和时间" class="headerlink" title="使用 int 存储日期和时间"></a>使用 int 存储日期和时间</h3><p>同时，使用 from_unixtime() 和 unix_timestamp() 来转换，两者往往配合使用。</p>
-<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select from_unixtime(<span class="name">unix_timestamp</span>())<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">select</span> <span class="title">from_unixtime</span>(<span class="params">unix_timestamp(</span>))</span>;</span><br></pre></td></tr></table></figure>
+
 <h3 id="使用-bitint-来存-IP-地址"><a href="#使用-bitint-来存-IP-地址" class="headerlink" title="使用 bitint 来存 IP 地址"></a>使用 bitint 来存 IP 地址</h3><p>同时，使用 inet_aton() 和 inet_ntoa() 来转换，两者往往互逆使用。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">inet_aton</span>(<span class="string">'192.168.0.1'</span>);    <span class="comment">-- 3232235521</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">inet_ntoa</span>(<span class="number">3232235521</span>);       <span class="comment">-- 192.168.0.1</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">select</span> <span class="title">inet_aton</span>(<span class="params"><span class="string">&#x27;192.168.0.1&#x27;</span></span>)</span>;    -- <span class="number">3232235521</span></span><br><span class="line"><span class="function"><span class="keyword">select</span> <span class="title">inet_ntoa</span>(<span class="params"><span class="number">3232235521</span></span>)</span>;       -- <span class="number">192.168</span><span class="number">.0</span><span class="number">.1</span></span><br></pre></td></tr></table></figure>
+
 <p>一个 IPv4 地址最多占用 15 个字节，而 bigint 占用 8 个字节，还是很划算的。</p>
-<p>使用 bigint 比 char/varchar 类型更高效，因为数字比字符计算速度快。</p>
+<p>使用 bigint 比 char&#x2F;varchar 类型更高效，因为数字比字符计算速度快。</p>
 <h2 id="表的范式化和反范式化"><a href="#表的范式化和反范式化" class="headerlink" title="表的范式化和反范式化"></a>表的范式化和反范式化</h2><h3 id="范式化"><a href="#范式化" class="headerlink" title="范式化"></a>范式化</h3><p>范式化是指设计数据库时候需要遵从的规范，目前说到数据库范式大部分情况指的都是<code>第三范式（3NF）</code>：</p>
 <ul>
 <li>首先必须满足 <code>1NF</code> 和 <code>2NF</code></li>
@@ -374,23 +423,28 @@
 <ul>
 <li>创建 3 张结构完全一样的字表</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb0 <span class="keyword">like</span> tb;</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb1 <span class="keyword">like</span> tb;</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb2 <span class="keyword">like</span> tb;</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb0 <span class="keyword">like</span> tb;</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb1 <span class="keyword">like</span> tb;</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb2 <span class="keyword">like</span> tb;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>对大表主键取余数，然后将余数相同的记录保存到同一张子表</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb0 (<span class="keyword">select</span> * <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="keyword">mod</span>(<span class="keyword">id</span>, <span class="number">3</span>) = <span class="number">0</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb1 (<span class="keyword">select</span> * <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="keyword">mod</span>(<span class="keyword">id</span>, <span class="number">3</span>) = <span class="number">1</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb2 (<span class="keyword">select</span> * <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="keyword">mod</span>(<span class="keyword">id</span>, <span class="number">3</span>) = <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb0 (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="built_in">mod</span>(id, <span class="number">3</span>) <span class="operator">=</span> <span class="number">0</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb1 (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="built_in">mod</span>(id, <span class="number">3</span>) <span class="operator">=</span> <span class="number">1</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb2 (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="built_in">mod</span>(id, <span class="number">3</span>) <span class="operator">=</span> <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>也可以查询后直接创建子表</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb0 (<span class="keyword">select</span> * <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="keyword">mod</span>(<span class="keyword">id</span>, <span class="number">3</span>) = <span class="number">0</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb1 (<span class="keyword">select</span> * <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="keyword">mod</span>(<span class="keyword">id</span>, <span class="number">3</span>) = <span class="number">1</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb2 (<span class="keyword">select</span> * <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="keyword">mod</span>(<span class="keyword">id</span>, <span class="number">3</span>) = <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb0 (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="built_in">mod</span>(id, <span class="number">3</span>) <span class="operator">=</span> <span class="number">0</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb1 (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="built_in">mod</span>(id, <span class="number">3</span>) <span class="operator">=</span> <span class="number">1</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb2 (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb <span class="keyword">where</span> <span class="built_in">mod</span>(id, <span class="number">3</span>) <span class="operator">=</span> <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>对主键取余，获得拆分后的子表</li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mod(1024,</span> <span class="number">3</span><span class="string">);</span>    <span class="string">//</span> <span class="number">1</span> <span class="string">=&gt;</span> <span class="string">代表</span> <span class="string">id</span> <span class="string">为</span> <span class="number">1024</span> <span class="string">的记录在拆分后的第</span> <span class="number">1</span> <span class="string">张子表</span> <span class="string">tb1</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">mod</span>(<span class="number">1024</span>, <span class="number">3</span>);    // <span class="number">1</span> =&gt; 代表 id 为 <span class="number">1024</span> 的记录在拆分后的第 <span class="number">1</span> 张子表 tb1</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>针对不同的余数 CRUD 不同的子表</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> tb1 <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">1024</span>;</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> tb1 <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">1024</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">select * <span class="keyword">from</span> tb1 <span class="keyword">where</span> <span class="built_in">id</span> = <span class="number">1024</span>;</span><br><span class="line">delete <span class="keyword">from</span> tb1 <span class="keyword">where</span> <span class="built_in">id</span> = <span class="number">1024</span>;</span><br></pre></td></tr></table></figure>
+
 <p>为了区分业务，不至于造成影响，建议前台用拆分后的表，后台使用汇总表。</p>
 <h1 id="SQL-及索引优化"><a href="#SQL-及索引优化" class="headerlink" title="SQL 及索引优化"></a>SQL 及索引优化</h1><h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><h3 id="如何选择合适的列建立索引？"><a href="#如何选择合适的列建立索引？" class="headerlink" title="如何选择合适的列建立索引？"></a>如何选择合适的列建立索引？</h3><ul>
 <li>在 where、group by、order by、on 从句中出现的列</li>
@@ -399,7 +453,7 @@
 <ul>
 <li>大小越小的字段，最好是数字</li>
 </ul>
-<p>同样是出于较少 I/O 次数的考虑：<code>MySQL</code> 中存储数据的单位是页，单页中存储的数据越多，查询效率更高。</p>
+<p>同样是出于较少 I&#x2F;O 次数的考虑：<code>MySQL</code> 中存储数据的单位是页，单页中存储的数据越多，查询效率更高。</p>
 <ul>
 <li>离散度大的列放到联合索引的前面</li>
 </ul>
@@ -408,6 +462,7 @@
 <h3 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h3><p>当一个索引中包含了查询中的所有数据列，那么这种索引就是覆盖索引。这种查询场景下不需要回表操作，因此效率很高。</p>
 <p>当查询的频率很高，而且表中包含的列比较少的时候，往往采取覆盖索引来获取查询结果。</p>
 <h3 id="如何判断字段的离散度？"><a href="#如何判断字段的离散度？" class="headerlink" title="如何判断字段的离散度？"></a>如何判断字段的离散度？</h3><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>( <span class="keyword">distinct</span> a ) <span class="keyword">as</span> res_a, <span class="built_in">count</span>(<span class="keyword">distinct</span> b) <span class="keyword">as</span> res_b <span class="keyword">from</span> tb;</span><br></pre></td></tr></table></figure>
+
 <p><strong>如果 res_a 大于 res_b 则说明字段 a 的离散度更大。</strong></p>
 <blockquote>
 <p><strong>离散度越大，过滤的数据越多。</strong></p>
@@ -416,21 +471,27 @@
 <h4 id="重复索引"><a href="#重复索引" class="headerlink" title="重复索引"></a>重复索引</h4><p>是指，相同的列以相同的顺序建立的同类型的索引。</p>
 <p>比如，id 字在声明了主键索引 <code>primary key</code> 后已经是唯一类型，如果在手动增加一个索引 <code>unique(id)</code> 的话，和 <code>primary key</code> 就属于重复索引。</p>
 <h4 id="冗余索引"><a href="#冗余索引" class="headerlink" title="冗余索引"></a>冗余索引</h4><p>指的是，多个索引的前缀列相同，或是在联合索引中包含了主键的索引。举例说明：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb (</span><br><span class="line">	<span class="keyword">id</span> <span class="built_in">int</span> <span class="keyword">not</span> <span class="literal">null</span> primary <span class="keyword">key</span>,</span><br><span class="line">	<span class="keyword">name</span> <span class="built_in">varchar</span>(<span class="number">10</span>) <span class="keyword">not</span> <span class="literal">null</span>,</span><br><span class="line">	<span class="keyword">key</span>(<span class="keyword">name</span>, <span class="keyword">id</span>)</span><br><span class="line">) <span class="keyword">engine</span> = <span class="keyword">innodb</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb (</span><br><span class="line">	id <span class="type">int</span> <span class="keyword">not</span> <span class="keyword">null</span> <span class="keyword">primary key</span>,</span><br><span class="line">	<span class="type">name</span> <span class="type">varchar</span>(<span class="number">10</span>) <span class="keyword">not</span> <span class="keyword">null</span>,</span><br><span class="line">	key(<span class="type">name</span>, id)</span><br><span class="line">) engine = innodb;</span><br></pre></td></tr></table></figure>
+
 <p>这里由于主键默认情况下就是 id 字段上的索引，所以，<strong>没有必要再在主键上建立索引。</strong></p>
-<h4 id="查找重复、冗余索引"><a href="#查找重复、冗余索引" class="headerlink" title="查找重复、冗余索引"></a>查找重复、冗余索引</h4><h5 id="通过-SQL"><a href="#通过-SQL" class="headerlink" title="通过 SQL"></a>通过 SQL</h5><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">use information_schema;</span><br><span class="line"><span class="keyword">select</span> a.TABLE_SCHEMA <span class="keyword">as</span> <span class="string">'数据名'</span></span><br><span class="line">, a.<span class="built_in">table_name</span> <span class="keyword">as</span> <span class="string">'表名'</span></span><br><span class="line">, a.index_name <span class="keyword">as</span> <span class="string">'索引1'</span></span><br><span class="line">, b.index_name <span class="keyword">as</span> <span class="string">'索引2'</span></span><br><span class="line">, a.<span class="built_in">column_name</span> <span class="keyword">as</span> <span class="string">'重复列名'</span></span><br><span class="line"><span class="keyword">from</span> <span class="keyword">statistics</span> a</span><br><span class="line"><span class="keyword">join</span> <span class="keyword">statistics</span> b</span><br><span class="line"><span class="keyword">on</span> a.table_schema = b.table_schema</span><br><span class="line"><span class="keyword">and</span> a.<span class="built_in">table_name</span> = b.<span class="built_in">table_name</span></span><br><span class="line"><span class="keyword">and</span> a.seo_in_index = b.seo_in_index</span><br><span class="line"><span class="keyword">and</span> a.<span class="built_in">column_name</span> = b.<span class="built_in">column_name</span></span><br><span class="line"><span class="keyword">where</span> a.seo_in_index = <span class="number">1</span></span><br><span class="line"><span class="keyword">and</span> a.index_name &lt;&gt; b.index_name;</span><br></pre></td></tr></table></figure>
+<h4 id="查找重复、冗余索引"><a href="#查找重复、冗余索引" class="headerlink" title="查找重复、冗余索引"></a>查找重复、冗余索引</h4><h5 id="通过-SQL"><a href="#通过-SQL" class="headerlink" title="通过 SQL"></a>通过 SQL</h5><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">use information_schema;</span><br><span class="line"><span class="keyword">select</span> a.TABLE_SCHEMA <span class="keyword">as</span> <span class="string">&#x27;数据名&#x27;</span></span><br><span class="line">, a.<span class="built_in">table_name</span> <span class="keyword">as</span> <span class="string">&#x27;表名&#x27;</span></span><br><span class="line">, a.index_name <span class="keyword">as</span> <span class="string">&#x27;索引1&#x27;</span></span><br><span class="line">, b.index_name <span class="keyword">as</span> <span class="string">&#x27;索引2&#x27;</span></span><br><span class="line">, a.<span class="built_in">column_name</span> <span class="keyword">as</span> <span class="string">&#x27;重复列名&#x27;</span></span><br><span class="line"><span class="keyword">from</span> <span class="keyword">statistics</span> a</span><br><span class="line"><span class="keyword">join</span> <span class="keyword">statistics</span> b</span><br><span class="line"><span class="keyword">on</span> a.table_schema = b.table_schema</span><br><span class="line"><span class="keyword">and</span> a.<span class="built_in">table_name</span> = b.<span class="built_in">table_name</span></span><br><span class="line"><span class="keyword">and</span> a.seo_in_index = b.seo_in_index</span><br><span class="line"><span class="keyword">and</span> a.<span class="built_in">column_name</span> = b.<span class="built_in">column_name</span></span><br><span class="line"><span class="keyword">where</span> a.seo_in_index = <span class="number">1</span></span><br><span class="line"><span class="keyword">and</span> a.index_name &lt;&gt; b.index_name;</span><br></pre></td></tr></table></figure>
+
 <h5 id="通过工具-pt-duplicate-key-checker"><a href="#通过工具-pt-duplicate-key-checker" class="headerlink" title="通过工具 pt-duplicate-key-checker"></a>通过工具 pt-duplicate-key-checker</h5><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pt-duplicate-key-checker \</span><br><span class="line"><span class="deletion">-h www.myapp.com</span></span><br><span class="line"><span class="deletion">-uroot \</span></span><br><span class="line"><span class="deletion">-p</span></span><br></pre></td></tr></table></figure>
+
 <h5 id="通过工具-pt-index-usage"><a href="#通过工具-pt-index-usage" class="headerlink" title="通过工具 pt-index-usage"></a>通过工具 pt-index-usage</h5><p>目前 MySQL 中没有记录索引的使用情况，只能通过慢查询日志配合 <code>pt-index-usage</code> 工具来分析索引使用情况。</p>
-<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pt-<span class="keyword">index</span>-<span class="keyword">usage</span> \</span><br><span class="line">-uroot -p <span class="string">''</span>\</span><br><span class="line">mysql-slow.<span class="keyword">log</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pt-<span class="keyword">index</span>-<span class="keyword">usage</span> \</span><br><span class="line">-uroot -p <span class="string">&#x27;&#x27;</span>\</span><br><span class="line">mysql-slow.<span class="keyword">log</span></span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>PerconMySQL 和 MariaDB 中可以通过 INDEX_STATISTICS 表来查看哪些索引未使用。</p>
 </blockquote>
-<h3 id="删除无用索引"><a href="#删除无用索引" class="headerlink" title="删除无用索引"></a>删除无用索引</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> tb <span class="keyword">drop</span> <span class="keyword">index</span> <span class="string">`useless`</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="删除无用索引"><a href="#删除无用索引" class="headerlink" title="删除无用索引"></a>删除无用索引</h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> tb <span class="keyword">drop</span> <span class="keyword">index</span> `useless`;</span><br></pre></td></tr></table></figure>
+
 <h2 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h2><h3 id="如何分析-SQL-查询？"><a href="#如何分析-SQL-查询？" class="headerlink" title="如何分析 SQL 查询？"></a>如何分析 SQL 查询？</h3><h4 id="使用-explain"><a href="#使用-explain" class="headerlink" title="使用 explain"></a>使用 explain</h4><p>查询 SQL 的执行计划。使用方式：</p>
 <figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> tb_name;</span><br></pre></td></tr></table></figure>
+
 <h4 id="explain-返回列解释"><a href="#explain-返回列解释" class="headerlink" title="explain 返回列解释"></a>explain 返回列解释</h4><ul>
 <li><strong>table：</strong> 显示这一行的数据是关于哪张表的</li>
-<li><strong>type：</strong> 显示连接使用了何种类型。从最好到最差的连接类型为：const =&gt; eq_reg =&gt; ref =&gt; range =&gt; index =&gt; all</li>
+<li><strong>type：</strong> 显示连接使用了何种类型。从最好到最差的连接类型为：const &#x3D;&gt; eq_reg &#x3D;&gt; ref &#x3D;&gt; range &#x3D;&gt; index &#x3D;&gt; all</li>
 <li><strong>possible_keys：</strong> 显示可能应用在这张表中的索引，为空则可能没有索引。</li>
 <li><strong>key：</strong> 实际使用的索引，为 NULL，则没有使用索引。</li>
 <li><strong>key_len：</strong> 使用的索引的长度。在不损失精确性的情况下，长度越短越好。</li>
@@ -443,9 +504,11 @@
 </li>
 </ul>
 <h3 id="慢查询"><a href="#慢查询" class="headerlink" title="慢查询"></a>慢查询</h3><h4 id="慢查询日志的设置"><a href="#慢查询日志的设置" class="headerlink" title="慢查询日志的设置"></a>慢查询日志的设置</h4><p>MySQL 慢查询日志监控了有效率问题的 SQL。下面是对慢查询日志的设置：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'slow_query_log'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 开启慢查询</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> slow_query_log = <span class="keyword">on</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 指定了慢查询日 志文件的存储路径</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> slow_query_log_file = <span class="string">'/data/mysql/log/mysql-slow.log'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 设置是否开启把没有使用索引的 SQL 记录到慢查询日志中，由于通常情况下对数据库的优化主要就是优化索引和查询的 使用方式，因此这里必须开启，方便分析</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> log_queries_not_using_indexes = <span class="keyword">on</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 设置把超过多少秒的慢查询记录到日志中，实际应用中一般 100 ms</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> long_query_time = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;slow_query_log&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 开启慢查询</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> slow_query_log = <span class="keyword">on</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 指定了慢查询日 志文件的存储路径</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> slow_query_log_file = <span class="string">&#x27;/data/mysql/log/mysql-slow.log&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 设置是否开启把没有使用索引的 SQL 记录到慢查询日志中，由于通常情况下对数据库的优化主要就是优化索引和查询的 使用方式，因此这里必须开启，方便分析</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> log_queries_not_using_indexes = <span class="keyword">on</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 设置把超过多少秒的慢查询记录到日志中，实际应用中一般 100 ms</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> long_query_time = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
 <p>设置好后，可以进行查询测试，然后观察慢日志的监控：</p>
-<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -<span class="number">10</span> /<span class="built_in">var</span>/<span class="built_in">log</span>/mysql/mysql-slow.<span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -<span class="number">10</span> <span class="regexp">/var/</span>log<span class="regexp">/mysql/my</span>sql-slow.log</span><br></pre></td></tr></table></figure>
+
 <h4 id="慢查询日志包含的内容"><a href="#慢查询日志包含的内容" class="headerlink" title="慢查询日志包含的内容"></a>慢查询日志包含的内容</h4><ul>
 <li>执行 SQL 的主机信息</li>
 <li>SQL 的执行信息</li>
@@ -455,11 +518,13 @@
 <h4 id="慢查询日志分析工具"><a href="#慢查询日志分析工具" class="headerlink" title="慢查询日志分析工具"></a>慢查询日志分析工具</h4><ul>
 <li>mysqldumpslow：安装 MySQL 之后自带的分析工具。</li>
 </ul>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询服务器中查询最慢的 3 条 SQL</span></span><br><span class="line">mysqldumpslow -t <span class="number">3</span> /var/<span class="built_in">log</span>/mysql/mysql-slow.<span class="built_in">log</span> | more    <span class="comment"># more 是滚动符</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询服务器中查询最慢的 3 条 SQL</span></span><br><span class="line">mysqldumpslow -t <span class="number">3</span> <span class="regexp">/var/</span>log<span class="regexp">/mysql/my</span>sql-slow.log | more    <span class="comment"># more 是滚动符</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>pt-query-digest</li>
 </ul>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载安装</span></span><br><span class="line">apt-<span class="builtin-name">get</span> install percona-tookit -y</span><br><span class="line">pt-query-digest --help</span><br><span class="line">pt-query-digest /var/log/mysql/mysql-slow.log | more</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出到文件</span></span><br><span class="line">pt-query-digest slow-log &gt; slow_log.report</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出到数据库</span></span><br><span class="line">pt-query-digest slow.log -review \</span><br><span class="line"><span class="attribute">h</span>=127.0.0.1, <span class="attribute">D</span>=test, <span class="attribute">p</span>=root, <span class="attribute">P</span>=3306, <span class="attribute">u</span>=root, <span class="attribute">t</span>=query_review \</span><br><span class="line">--create-reviewtable \</span><br><span class="line">--review-history t = hostname_slow</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载安装</span></span><br><span class="line">apt-<span class="built_in">get</span> install percona-tookit -y</span><br><span class="line">pt-query-digest --help</span><br><span class="line">pt-query-digest /var/log/mysql/mysql-slow.log | more</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出到文件</span></span><br><span class="line">pt-query-digest slow-log &gt; slow_log.report</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出到数据库</span></span><br><span class="line">pt-query-digest slow.log -review \</span><br><span class="line"><span class="attribute">h</span>=127.0.0.1, <span class="attribute">D</span>=test, <span class="attribute">p</span>=root, <span class="attribute">P</span>=3306, <span class="attribute">u</span>=root, <span class="attribute">t</span>=query_review \</span><br><span class="line">--create-reviewtable \</span><br><span class="line">--review-history t = hostname_slow</span><br></pre></td></tr></table></figure>
+
 <p>在 pt-query-digest 的分析结果中，主要关注：</p>
 <ul>
 <li>查询次数多且每次查询占用时间长的 SQL：通常为 pt-query-digest 分析的前几个查询。</li>
@@ -470,53 +535,66 @@
 <ul>
 <li>错误的查询：</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 无法分开计算</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(k1=<span class="string">'v1'</span> <span class="keyword">or</span> k2=<span class="string">'v2'</span>) <span class="keyword">from</span> tb;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 逻辑错误</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> tb <span class="keyword">where</span> k1=<span class="string">'v1'</span> <span class="keyword">and</span> k2=<span class="string">'v2'</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 无法分开计算</span></span><br><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(k1<span class="operator">=</span><span class="string">&#x27;v1&#x27;</span> <span class="keyword">or</span> k2<span class="operator">=</span><span class="string">&#x27;v2&#x27;</span>) <span class="keyword">from</span> tb;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 逻辑错误</span></span><br><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> tb <span class="keyword">where</span> k1<span class="operator">=</span><span class="string">&#x27;v1&#x27;</span> <span class="keyword">and</span> k2<span class="operator">=</span><span class="string">&#x27;v2&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>正确的查询：</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(k1=<span class="string">'v1'</span> <span class="keyword">or</span> <span class="literal">null</span>) <span class="keyword">as</span> <span class="string">'res1'</span></span><br><span class="line">, (k2=<span class="string">'v2'</span> <span class="keyword">or</span> <span class="literal">null</span>) <span class="keyword">as</span> <span class="string">'res2'</span> <span class="keyword">from</span> tb;</span><br></pre></td></tr></table></figure>
-<h4 id="count-和-count-字段"><a href="#count-和-count-字段" class="headerlink" title="count(*) 和 count(字段)"></a>count(*) 和 count(字段)</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb(<span class="keyword">id</span> <span class="built_in">int</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb <span class="keyword">values</span> (<span class="number">1</span>), (<span class="number">2</span>), (<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*), <span class="keyword">count</span>(<span class="keyword">id</span>) <span class="keyword">from</span> tb;</span><br><span class="line"><span class="comment">-- count(*): 3</span></span><br><span class="line"><span class="comment">-- count(id): 2</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(k1=<span class="string">&#x27;v1&#x27;</span> or <span class="literal">null</span>) <span class="keyword">as</span> <span class="string">&#x27;res1&#x27;</span></span><br><span class="line">, (k2=<span class="string">&#x27;v2&#x27;</span> or <span class="literal">null</span>) <span class="keyword">as</span> <span class="string">&#x27;res2&#x27;</span> <span class="keyword">from</span> tb;</span><br></pre></td></tr></table></figure>
+
+<h4 id="count-和-count-字段"><a href="#count-和-count-字段" class="headerlink" title="count(*) 和 count(字段)"></a>count(*) 和 count(字段)</h4><figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> table tb(id int)<span class="punctuation">;</span></span><br><span class="line">insert <span class="keyword">into</span> tb values (<span class="number">1</span>), (<span class="number">2</span>), (null)<span class="punctuation">;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> count<span class="comment">(*), count(id) from tb;</span></span><br><span class="line"><span class="comment">-- count(*)</span>: <span class="number">3</span></span><br><span class="line">-- count(id): <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
 <p>可见，<code>count(*)</code> 会返回含 NULL 的记录，而 count(字段) 的结果是不包括 null 的结果。</p>
 <h4 id="max"><a href="#max" class="headerlink" title="max()"></a>max()</h4><p>对 max() 的优化可以体现在创建索引的基础上。</p>
 <p>举例说明，为 max() 函数的求值字段创建覆盖索引前后的对比：</p>
 <figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">explian <span class="keyword">select</span> <span class="built_in">max</span>(age) <span class="keyword">from</span> <span class="keyword">user</span>\G</span><br><span class="line"><span class="keyword">create</span> idx_age <span class="keyword">on</span> <span class="keyword">user</span>(age);</span><br><span class="line">explian <span class="keyword">select</span> <span class="built_in">max</span>(age) <span class="keyword">from</span> <span class="keyword">user</span>\G</span><br></pre></td></tr></table></figure>
+
 <p>对比创建索引前后，明显的差别是，Extra 字段中从空到 <code>‘Select tables optimized away’</code>，type 从 all 到 null，表明创建索引后查询操作只是通过索引来得到结果的，而没有进行表的操作，从而减少了 <code>I/O</code> 操作。</p>
 <blockquote>
 <p>根据索引来查询的效率是比较恒定的。</p>
 </blockquote>
 <h4 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h4><p>通常情况下，需要把子查询优化为 join 查询，但是在优化时要注意关联键是否有一对多的关系，<strong>要注意重复记录。</strong></p>
 <p><strong>举例说明:</strong></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t1 (<span class="keyword">id</span> <span class="built_in">int</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t2 (<span class="keyword">id</span> <span class="built_in">int</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 子查询</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">in</span> (<span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> t2);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- join 查询</span></span><br><span class="line"><span class="keyword">select</span> t1.id <span class="keyword">from</span> t1 <span class="keyword">join</span> t2 <span class="keyword">on</span> t1.id = t2.id;</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t1 (id <span class="type">int</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t2 (id <span class="type">int</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 子查询</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">where</span> id <span class="keyword">in</span> (<span class="keyword">select</span> id <span class="keyword">from</span> t2);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- join 查询</span></span><br><span class="line"><span class="keyword">select</span> t1.id <span class="keyword">from</span> t1 <span class="keyword">join</span> t2 <span class="keyword">on</span> t1.id = t2.id;</span><br></pre></td></tr></table></figure>
+
 <p>当关联的字段有一对多的关系时，比如：</p>
 <figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t1 <span class="keyword">values</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t2 <span class="keyword">values</span>(<span class="number">1</span>), (<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-<p>这时 t1 的 id = 1 的情况下，使用子查询是由一条记录，而使用 join 查询有 2 条记录。因此，如果不想要重复记录，则需要使用 distinct 去重。</p>
+
+<p>这时 t1 的 id &#x3D; 1 的情况下，使用子查询是由一条记录，而使用 join 查询有 2 条记录。因此，如果不想要重复记录，则需要使用 distinct 去重。</p>
 <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select <span class="keyword">distinct </span><span class="built_in">t1</span>.id from <span class="built_in">t1</span> <span class="keyword">join </span><span class="built_in">t2</span> on <span class="built_in">t1</span>.id = <span class="built_in">t2</span>.id;</span><br></pre></td></tr></table></figure>
+
 <p>注意：on 关联的左右字段不是一对一时，是一个比较出错的地方。</p>
-<h4 id="group-by"><a href="#group-by" class="headerlink" title="group by"></a>group by</h4><p>如果 explain 的结果 Extra 中使用了临时表和文件排序等 I/O 操作，则有必要进行这种优化( 也是使用索引的思想 )，尽量避免使用临时表和文件排序，group by 什么字段就 using 什么字段。</p>
+<h4 id="group-by"><a href="#group-by" class="headerlink" title="group by"></a>group by</h4><p>如果 explain 的结果 Extra 中使用了临时表和文件排序等 I&#x2F;O 操作，则有必要进行这种优化( 也是使用索引的思想 )，尽量避免使用临时表和文件排序，group by 什么字段就 using 什么字段。</p>
 <p>当然，也可以增加一些过滤条件实现同样的效果和性能，不过需要注意在子查询中增加过滤条件。</p>
 <p>使用 sakila 数据库举例说明：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 优化前</span></span><br><span class="line"><span class="keyword">explain</span></span><br><span class="line"><span class="keyword">select</span> actor.first_name, actor.last_name, <span class="keyword">count</span>(*)</span><br><span class="line"><span class="keyword">from</span> sakila.film_actor</span><br><span class="line"><span class="keyword">inner</span> <span class="keyword">join</span> sakila.actor <span class="keyword">using</span>(actor_id)</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> film_actor.actor_id;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 优化后( 减少连接表中不必要的字段 )</span></span><br><span class="line"><span class="keyword">explain</span></span><br><span class="line"><span class="keyword">select</span> actor.first_name, actor.last_name, c.cnt</span><br><span class="line"><span class="keyword">from</span> sakila.film_actor</span><br><span class="line"><span class="keyword">inner</span> <span class="keyword">join</span> (</span><br><span class="line">  <span class="keyword">select</span> actor_id, <span class="keyword">count</span>(*) <span class="keyword">as</span> cnt</span><br><span class="line">  <span class="keyword">from</span> sakila.film_acotr</span><br><span class="line">  <span class="keyword">group</span> <span class="keyword">by</span> actor_id</span><br><span class="line">) <span class="keyword">as</span> c <span class="keyword">using</span>(actor_id)</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 优化前</span></span><br><span class="line"><span class="keyword">explain</span></span><br><span class="line"><span class="keyword">select</span> actor.first_name, actor.last_name, count(*)</span><br><span class="line"><span class="keyword">from</span> sakila.film_actor</span><br><span class="line"><span class="keyword">inner</span> <span class="keyword">join</span> sakila.actor <span class="keyword">using</span>(actor_id)</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> film_actor.actor_id;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 优化后( 减少连接表中不必要的字段 )</span></span><br><span class="line"><span class="keyword">explain</span></span><br><span class="line"><span class="keyword">select</span> actor.first_name, actor.last_name, c.cnt</span><br><span class="line"><span class="keyword">from</span> sakila.film_actor</span><br><span class="line"><span class="keyword">inner</span> <span class="keyword">join</span> (</span><br><span class="line">  <span class="keyword">select</span> actor_id, count(*) <span class="keyword">as</span> cnt</span><br><span class="line">  <span class="keyword">from</span> sakila.film_acotr</span><br><span class="line">  <span class="keyword">group</span> <span class="keyword">by</span> actor_id</span><br><span class="line">) <span class="keyword">as</span> c <span class="keyword">using</span>(actor_id)</span><br></pre></td></tr></table></figure>
+
 <h4 id="limit"><a href="#limit" class="headerlink" title="limit"></a>limit</h4><p>limit 常用语分页处理，和 order by 从句共同使用，因此经常使用 <code>Filesorts</code> 这样的，会造成大量的 <code>I/O</code> 操作的问题。</p>
 <p><strong>举例说明：</strong></p>
 <ul>
 <li>优化前</li>
 </ul>
 <figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> film_id, description</span><br><span class="line"><span class="keyword">from</span> sakila.film</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> <span class="built_in">title</span></span><br><span class="line"><span class="keyword">limit</span> <span class="number">50</span>, <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>优化后</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 1. 使用有索引的列或者主键进行 order by 操作</span></span><br><span class="line"><span class="keyword">select</span> film_id, description</span><br><span class="line"><span class="keyword">from</span> sakila.film</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> film_id</span><br><span class="line"><span class="keyword">limit</span> <span class="number">50</span>, <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 2. 记录上次返回的主键, 下次查询时使用主键过滤</span></span><br><span class="line"><span class="keyword">select</span> film_id, description</span><br><span class="line"><span class="keyword">from</span> sakila.film</span><br><span class="line"><span class="keyword">where</span> film_id &gt; <span class="number">55</span></span><br><span class="line"><span class="keyword">and</span> film_id &lt;= <span class="number">60</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> film_id</span><br><span class="line"><span class="keyword">limit</span> <span class="number">1</span>, <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 1. 使用有索引的列或者主键进行 order by 操作</span></span><br><span class="line"><span class="keyword">select</span> film_id, description</span><br><span class="line"><span class="keyword">from</span> sakila.film</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> film_id</span><br><span class="line"><span class="keyword">limit</span> <span class="number">50</span>, <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 2. 记录上次返回的主键, 下次查询时使用主键过滤</span></span><br><span class="line"><span class="keyword">select</span> film_id, description</span><br><span class="line"><span class="keyword">from</span> sakila.film</span><br><span class="line"><span class="keyword">where</span> film_id &gt; <span class="number">55</span></span><br><span class="line"><span class="keyword">and</span> film_id &lt;= <span class="number">60</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> film_id</span><br><span class="line"><span class="keyword">limit</span> <span class="number">1</span>, <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
 <p>使用第二种优化方式时，可以避免数据量过大时扫描过多的记录。</p>
 <p>不过，有个前提条件就是主键要是连续增长的，如果不是连续，那么很可能列出的记录数量不符合预期的情况。如果不满足这个前提条件，可以新增一个附加列（自增，并建立好索引），然后根据这个附加列查找。</p>
 <h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><h2 id="MySQL-提供的测试数据库"><a href="#MySQL-提供的测试数据库" class="headerlink" title="MySQL 提供的测试数据库"></a>MySQL 提供的测试数据库</h2><ul>
 <li>查看 MySQL 版本是否大于 5.5：<code>select @@version</code>;（版本不同优化器有差别）</li>
-<li>下载、导入 <u><a href="http://dev.mysql.com/doc/index-other.html" target="_blank" rel="noopener">sakila</a></u> 数据库</li>
+<li>下载、导入 <u><a target="_blank" rel="noopener" href="http://dev.mysql.com/doc/index-other.html">sakila</a></u> 数据库</li>
 </ul>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">unzip sakila.zip</span><br><span class="line">mysql -uroot -p</span><br><span class="line">source sakila-db/sakila-<span class="keyword">schema</span>.<span class="keyword">sql</span></span><br><span class="line">source sakila-db/sakila-data.<span class="keyword">sql</span></span><br><span class="line">use sakila;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">tables</span>;    <span class="comment">-- 23 rows</span></span><br></pre></td></tr></table></figure>
-<h2 id="可能用到的-Linux-命令"><a href="#可能用到的-Linux-命令" class="headerlink" title="可能用到的 Linux 命令"></a>可能用到的 Linux 命令</h2><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find / -<span class="built_in">name</span> <span class="built_in">log</span></span><br><span class="line">tail <span class="number">-50</span> /path/<span class="keyword">to</span>/<span class="built_in">file</span>.<span class="built_in">log</span></span><br><span class="line">mysqldumpslow -h</span><br></pre></td></tr></table></figure>
+
+<h2 id="可能用到的-Linux-命令"><a href="#可能用到的-Linux-命令" class="headerlink" title="可能用到的 Linux 命令"></a>可能用到的 Linux 命令</h2><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find / -<span class="type">name</span> <span class="keyword">log</span></span><br><span class="line">tail <span class="number">-50</span> /<span class="type">path</span>/<span class="keyword">to</span>/file.<span class="keyword">log</span></span><br><span class="line">mysqldumpslow -h</span><br></pre></td></tr></table></figure>
+
+
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://www.lifewire.com/san-vs-nas-818005" target="_blank" rel="noopener">SAN vs. NAS: What Is the Difference?</a></li>
-<li><a href="http://blog.cjli.info/2016/02/04/MySQL-Optimization/" target="_blank" rel="noopener">MySQL 优化</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.lifewire.com/san-vs-nas-818005">SAN vs. NAS: What Is the Difference?</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.cjli.info/2016/02/04/MySQL-Optimization/">MySQL 优化</a></li>
 </ul>
 
         
@@ -549,7 +627,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BC%98%E5%8C%96/" rel="tag">优化</a></li></ul>
 
       
 
@@ -585,7 +663,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库优化简介"><span class="nav-number">1.</span> <span class="nav-text">数据库优化简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Why"><span class="nav-number">1.1.</span> <span class="nav-text">Why ?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#避免出现页面访问错误"><span class="nav-number">1.1.1.</span> <span class="nav-text">避免出现页面访问错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#增加数据库的稳定性"><span class="nav-number">1.1.2.</span> <span class="nav-text">增加数据库的稳定性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化用户体验"><span class="nav-number">1.1.3.</span> <span class="nav-text">优化用户体验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How"><span class="nav-number">1.2.</span> <span class="nav-text">How ?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#硬件"><span class="nav-number">1.2.1.</span> <span class="nav-text">硬件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#系统配置"><span class="nav-number">1.2.2.</span> <span class="nav-text">系统配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库表结构"><span class="nav-number">1.2.3.</span> <span class="nav-text">数据库表结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL-及索引"><span class="nav-number">1.2.4.</span> <span class="nav-text">SQL 及索引</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务器硬件优化"><span class="nav-number">2.</span> <span class="nav-text">服务器硬件优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何选择-CPU"><span class="nav-number">2.1.</span> <span class="nav-text">如何选择 CPU</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Disk-I-O-优化"><span class="nav-number">2.2.</span> <span class="nav-text">Disk I/O 优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常用-RAID-级别"><span class="nav-number">2.2.1.</span> <span class="nav-text">常用 RAID 级别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RAID0"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">RAID0</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RAID1"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">RAID1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RAID5"><span class="nav-number">2.2.1.3.</span> <span class="nav-text">RAID5</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RAID1-0"><span class="nav-number">2.2.1.4.</span> <span class="nav-text">RAID1+0</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SNA-和-NAT"><span class="nav-number">2.2.2.</span> <span class="nav-text">SNA 和 NAT</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#系统配置优化"><span class="nav-number">3.</span> <span class="nav-text">系统配置优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#操作系统配置优化"><span class="nav-number">3.1.</span> <span class="nav-text">操作系统配置优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络方面"><span class="nav-number">3.1.1.</span> <span class="nav-text">网络方面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#打开文件数限制"><span class="nav-number">3.1.2.</span> <span class="nav-text">打开文件数限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#防火墙等安全工具"><span class="nav-number">3.1.3.</span> <span class="nav-text">防火墙等安全工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件系统类型"><span class="nav-number">3.1.4.</span> <span class="nav-text">文件系统类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-配置"><span class="nav-number">3.2.</span> <span class="nav-text">MySQL 配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件"><span class="nav-number">3.2.1.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Innodb-常用配置选项参数"><span class="nav-number">3.2.2.</span> <span class="nav-text">Innodb 常用配置选项参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三方配置工具"><span class="nav-number">3.2.3.</span> <span class="nav-text">第三方配置工具</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库结构优化"><span class="nav-number">4.</span> <span class="nav-text">数据库结构优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何选择合适的数据类型"><span class="nav-number">4.1.</span> <span class="nav-text">如何选择合适的数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用举例"><span class="nav-number">4.2.</span> <span class="nav-text">应用举例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-int-存储日期和时间"><span class="nav-number">4.2.1.</span> <span class="nav-text">使用 int 存储日期和时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-bitint-来存-IP-地址"><span class="nav-number">4.2.2.</span> <span class="nav-text">使用 bitint 来存 IP 地址</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#表的范式化和反范式化"><span class="nav-number">4.3.</span> <span class="nav-text">表的范式化和反范式化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#范式化"><span class="nav-number">4.3.1.</span> <span class="nav-text">范式化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#违背范式化设计带来的问题"><span class="nav-number">4.3.2.</span> <span class="nav-text">违背范式化设计带来的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反范式化"><span class="nav-number">4.3.3.</span> <span class="nav-text">反范式化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#表的拆分"><span class="nav-number">4.4.</span> <span class="nav-text">表的拆分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#垂直拆分"><span class="nav-number">4.4.1.</span> <span class="nav-text">垂直拆分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#水平拆分"><span class="nav-number">4.4.2.</span> <span class="nav-text">水平拆分</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL-及索引优化"><span class="nav-number">5.</span> <span class="nav-text">SQL 及索引优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#索引"><span class="nav-number">5.1.</span> <span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何选择合适的列建立索引？"><span class="nav-number">5.1.1.</span> <span class="nav-text">如何选择合适的列建立索引？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#覆盖索引"><span class="nav-number">5.1.2.</span> <span class="nav-text">覆盖索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何判断字段的离散度？"><span class="nav-number">5.1.3.</span> <span class="nav-text">如何判断字段的离散度？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引并非“银弹”"><span class="nav-number">5.1.4.</span> <span class="nav-text">索引并非“银弹”</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#重复索引"><span class="nav-number">5.1.4.1.</span> <span class="nav-text">重复索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#冗余索引"><span class="nav-number">5.1.4.2.</span> <span class="nav-text">冗余索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查找重复、冗余索引"><span class="nav-number">5.1.4.3.</span> <span class="nav-text">查找重复、冗余索引</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#通过-SQL"><span class="nav-number">5.1.4.3.1.</span> <span class="nav-text">通过 SQL</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#通过工具-pt-duplicate-key-checker"><span class="nav-number">5.1.4.3.2.</span> <span class="nav-text">通过工具 pt-duplicate-key-checker</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#通过工具-pt-index-usage"><span class="nav-number">5.1.4.3.3.</span> <span class="nav-text">通过工具 pt-index-usage</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除无用索引"><span class="nav-number">5.1.5.</span> <span class="nav-text">删除无用索引</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询优化"><span class="nav-number">5.2.</span> <span class="nav-text">查询优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如何分析-SQL-查询？"><span class="nav-number">5.2.1.</span> <span class="nav-text">如何分析 SQL 查询？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用-explain"><span class="nav-number">5.2.1.1.</span> <span class="nav-text">使用 explain</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#explain-返回列解释"><span class="nav-number">5.2.1.2.</span> <span class="nav-text">explain 返回列解释</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#慢查询"><span class="nav-number">5.2.2.</span> <span class="nav-text">慢查询</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#慢查询日志的设置"><span class="nav-number">5.2.2.1.</span> <span class="nav-text">慢查询日志的设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#慢查询日志包含的内容"><span class="nav-number">5.2.2.2.</span> <span class="nav-text">慢查询日志包含的内容</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#慢查询日志分析工具"><span class="nav-number">5.2.2.3.</span> <span class="nav-text">慢查询日志分析工具</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见优化场景"><span class="nav-number">5.2.3.</span> <span class="nav-text">常见优化场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#count"><span class="nav-number">5.2.3.1.</span> <span class="nav-text">count()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#count-和-count-字段"><span class="nav-number">5.2.3.2.</span> <span class="nav-text">count(*) 和 count(字段)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#max"><span class="nav-number">5.2.3.3.</span> <span class="nav-text">max()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#子查询"><span class="nav-number">5.2.3.4.</span> <span class="nav-text">子查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#group-by"><span class="nav-number">5.2.3.5.</span> <span class="nav-text">group by</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#limit"><span class="nav-number">5.2.3.6.</span> <span class="nav-text">limit</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他"><span class="nav-number">6.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-提供的测试数据库"><span class="nav-number">6.1.</span> <span class="nav-text">MySQL 提供的测试数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可能用到的-Linux-命令"><span class="nav-number">6.2.</span> <span class="nav-text">可能用到的 Linux 命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BC%98%E5%8C%96%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">数据库优化简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Why"><span class="nav-number">1.1.</span> <span class="nav-text">Why ?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E5%87%BA%E7%8E%B0%E9%A1%B5%E9%9D%A2%E8%AE%BF%E9%97%AE%E9%94%99%E8%AF%AF"><span class="nav-number">1.1.1.</span> <span class="nav-text">避免出现页面访问错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E7%A8%B3%E5%AE%9A%E6%80%A7"><span class="nav-number">1.1.2.</span> <span class="nav-text">增加数据库的稳定性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E7%94%A8%E6%88%B7%E4%BD%93%E9%AA%8C"><span class="nav-number">1.1.3.</span> <span class="nav-text">优化用户体验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How"><span class="nav-number">1.2.</span> <span class="nav-text">How ?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AC%E4%BB%B6"><span class="nav-number">1.2.1.</span> <span class="nav-text">硬件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.2.</span> <span class="nav-text">系统配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.3.</span> <span class="nav-text">数据库表结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL-%E5%8F%8A%E7%B4%A2%E5%BC%95"><span class="nav-number">1.2.4.</span> <span class="nav-text">SQL 及索引</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%A1%AC%E4%BB%B6%E4%BC%98%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">服务器硬件优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9-CPU"><span class="nav-number">2.1.</span> <span class="nav-text">如何选择 CPU</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Disk-I-x2F-O-%E4%BC%98%E5%8C%96"><span class="nav-number">2.2.</span> <span class="nav-text">Disk I&#x2F;O 优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8-RAID-%E7%BA%A7%E5%88%AB"><span class="nav-number">2.2.1.</span> <span class="nav-text">常用 RAID 级别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RAID0"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">RAID0</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RAID1"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">RAID1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RAID5"><span class="nav-number">2.2.1.3.</span> <span class="nav-text">RAID5</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RAID1-0"><span class="nav-number">2.2.1.4.</span> <span class="nav-text">RAID1+0</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SNA-%E5%92%8C-NAT"><span class="nav-number">2.2.2.</span> <span class="nav-text">SNA 和 NAT</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE%E4%BC%98%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">系统配置优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE%E4%BC%98%E5%8C%96"><span class="nav-number">3.1.</span> <span class="nav-text">操作系统配置优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E6%96%B9%E9%9D%A2"><span class="nav-number">3.1.1.</span> <span class="nav-text">网络方面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E5%BC%80%E6%96%87%E4%BB%B6%E6%95%B0%E9%99%90%E5%88%B6"><span class="nav-number">3.1.2.</span> <span class="nav-text">打开文件数限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99%E7%AD%89%E5%AE%89%E5%85%A8%E5%B7%A5%E5%85%B7"><span class="nav-number">3.1.3.</span> <span class="nav-text">防火墙等安全工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.1.4.</span> <span class="nav-text">文件系统类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text">MySQL 配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">3.2.1.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Innodb-%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E9%80%89%E9%A1%B9%E5%8F%82%E6%95%B0"><span class="nav-number">3.2.2.</span> <span class="nav-text">Innodb 常用配置选项参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9%E9%85%8D%E7%BD%AE%E5%B7%A5%E5%85%B7"><span class="nav-number">3.2.3.</span> <span class="nav-text">第三方配置工具</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84%E4%BC%98%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">数据库结构优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%90%88%E9%80%82%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.1.</span> <span class="nav-text">如何选择合适的数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E4%B8%BE%E4%BE%8B"><span class="nav-number">4.2.</span> <span class="nav-text">应用举例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-int-%E5%AD%98%E5%82%A8%E6%97%A5%E6%9C%9F%E5%92%8C%E6%97%B6%E9%97%B4"><span class="nav-number">4.2.1.</span> <span class="nav-text">使用 int 存储日期和时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-bitint-%E6%9D%A5%E5%AD%98-IP-%E5%9C%B0%E5%9D%80"><span class="nav-number">4.2.2.</span> <span class="nav-text">使用 bitint 来存 IP 地址</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E7%9A%84%E8%8C%83%E5%BC%8F%E5%8C%96%E5%92%8C%E5%8F%8D%E8%8C%83%E5%BC%8F%E5%8C%96"><span class="nav-number">4.3.</span> <span class="nav-text">表的范式化和反范式化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8C%83%E5%BC%8F%E5%8C%96"><span class="nav-number">4.3.1.</span> <span class="nav-text">范式化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9D%E8%83%8C%E8%8C%83%E5%BC%8F%E5%8C%96%E8%AE%BE%E8%AE%A1%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">4.3.2.</span> <span class="nav-text">违背范式化设计带来的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E8%8C%83%E5%BC%8F%E5%8C%96"><span class="nav-number">4.3.3.</span> <span class="nav-text">反范式化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E7%9A%84%E6%8B%86%E5%88%86"><span class="nav-number">4.4.</span> <span class="nav-text">表的拆分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9E%82%E7%9B%B4%E6%8B%86%E5%88%86"><span class="nav-number">4.4.1.</span> <span class="nav-text">垂直拆分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B0%B4%E5%B9%B3%E6%8B%86%E5%88%86"><span class="nav-number">4.4.2.</span> <span class="nav-text">水平拆分</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL-%E5%8F%8A%E7%B4%A2%E5%BC%95%E4%BC%98%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">SQL 及索引优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95"><span class="nav-number">5.1.</span> <span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%90%88%E9%80%82%E7%9A%84%E5%88%97%E5%BB%BA%E7%AB%8B%E7%B4%A2%E5%BC%95%EF%BC%9F"><span class="nav-number">5.1.1.</span> <span class="nav-text">如何选择合适的列建立索引？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95"><span class="nav-number">5.1.2.</span> <span class="nav-text">覆盖索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E5%AD%97%E6%AE%B5%E7%9A%84%E7%A6%BB%E6%95%A3%E5%BA%A6%EF%BC%9F"><span class="nav-number">5.1.3.</span> <span class="nav-text">如何判断字段的离散度？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E5%B9%B6%E9%9D%9E%E2%80%9C%E9%93%B6%E5%BC%B9%E2%80%9D"><span class="nav-number">5.1.4.</span> <span class="nav-text">索引并非“银弹”</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E7%B4%A2%E5%BC%95"><span class="nav-number">5.1.4.1.</span> <span class="nav-text">重复索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%97%E4%BD%99%E7%B4%A2%E5%BC%95"><span class="nav-number">5.1.4.2.</span> <span class="nav-text">冗余索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E9%87%8D%E5%A4%8D%E3%80%81%E5%86%97%E4%BD%99%E7%B4%A2%E5%BC%95"><span class="nav-number">5.1.4.3.</span> <span class="nav-text">查找重复、冗余索引</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%9A%E8%BF%87-SQL"><span class="nav-number">5.1.4.3.1.</span> <span class="nav-text">通过 SQL</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E5%B7%A5%E5%85%B7-pt-duplicate-key-checker"><span class="nav-number">5.1.4.3.2.</span> <span class="nav-text">通过工具 pt-duplicate-key-checker</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E5%B7%A5%E5%85%B7-pt-index-usage"><span class="nav-number">5.1.4.3.3.</span> <span class="nav-text">通过工具 pt-index-usage</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%97%A0%E7%94%A8%E7%B4%A2%E5%BC%95"><span class="nav-number">5.1.5.</span> <span class="nav-text">删除无用索引</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="nav-number">5.2.</span> <span class="nav-text">查询优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%86%E6%9E%90-SQL-%E6%9F%A5%E8%AF%A2%EF%BC%9F"><span class="nav-number">5.2.1.</span> <span class="nav-text">如何分析 SQL 查询？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-explain"><span class="nav-number">5.2.1.1.</span> <span class="nav-text">使用 explain</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#explain-%E8%BF%94%E5%9B%9E%E5%88%97%E8%A7%A3%E9%87%8A"><span class="nav-number">5.2.1.2.</span> <span class="nav-text">explain 返回列解释</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%85%A2%E6%9F%A5%E8%AF%A2"><span class="nav-number">5.2.2.</span> <span class="nav-text">慢查询</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97%E7%9A%84%E8%AE%BE%E7%BD%AE"><span class="nav-number">5.2.2.1.</span> <span class="nav-text">慢查询日志的设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97%E5%8C%85%E5%90%AB%E7%9A%84%E5%86%85%E5%AE%B9"><span class="nav-number">5.2.2.2.</span> <span class="nav-text">慢查询日志包含的内容</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7"><span class="nav-number">5.2.2.3.</span> <span class="nav-text">慢查询日志分析工具</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E4%BC%98%E5%8C%96%E5%9C%BA%E6%99%AF"><span class="nav-number">5.2.3.</span> <span class="nav-text">常见优化场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#count"><span class="nav-number">5.2.3.1.</span> <span class="nav-text">count()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#count-%E5%92%8C-count-%E5%AD%97%E6%AE%B5"><span class="nav-number">5.2.3.2.</span> <span class="nav-text">count(*) 和 count(字段)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#max"><span class="nav-number">5.2.3.3.</span> <span class="nav-text">max()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%90%E6%9F%A5%E8%AF%A2"><span class="nav-number">5.2.3.4.</span> <span class="nav-text">子查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#group-by"><span class="nav-number">5.2.3.5.</span> <span class="nav-text">group by</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#limit"><span class="nav-number">5.2.3.6.</span> <span class="nav-text">limit</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">6.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL-%E6%8F%90%E4%BE%9B%E7%9A%84%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">6.1.</span> <span class="nav-text">MySQL 提供的测试数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%83%BD%E7%94%A8%E5%88%B0%E7%9A%84-Linux-%E5%91%BD%E4%BB%A4"><span class="nav-number">6.2.</span> <span class="nav-text">可能用到的 Linux 命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -600,7 +678,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -680,12 +758,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -753,7 +835,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

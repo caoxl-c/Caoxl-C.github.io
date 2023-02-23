@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>消息队列之 kafka | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="QueueKafka">
+  <meta name="keywords" content="QueueKafka" />
   
   
   
   
   <meta name="description" content="简介 Kafka是由Apache软件基金会开发的一个开源流处理平台，由Scala和Java编写。该项目的目标是为处理实时数据提供一个统一、高吞吐、低延迟的平台。">
-<meta name="keywords" content="Queue,Kafka">
 <meta property="og:type" content="article">
 <meta property="og:title" content="消息队列之 Kafka">
 <meta property="og:url" content="http://blog.caoxl.com/2019/08/28/Message-Queue-Kafka/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="简介 Kafka是由Apache软件基金会开发的一个开源流处理平台，由Scala和Java编写。该项目的目标是为处理实时数据提供一个统一、高吞吐、低延迟的平台。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-29T08:06:32.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-28T03:52:51.000Z">
+<meta property="article:modified_time" content="2019-08-29T08:06:32.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Queue">
+<meta property="article:tag" content="Kafka">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="消息队列之 Kafka">
-<meta name="twitter:description" content="简介 Kafka是由Apache软件基金会开发的一个开源流处理平台，由Scala和Java编写。该项目的目标是为处理实时数据提供一个统一、高吞吐、低延迟的平台。">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +222,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+    <a class="article-category-link" href="/categories/%E5%8A%A0%E5%88%86%E6%8A%80%E8%83%BD/">加分技能</a>
 
       
 	<a class="article-views">
@@ -199,9 +240,10 @@
           <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><blockquote>
 <p>Kafka是由Apache软件基金会开发的一个开源流处理平台，由Scala和Java编写。该项目的目标是为处理实时数据提供一个统一、高吞吐、低延迟的平台。</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <blockquote>
-<p>待续: <a href="http://kafka.apachecn.org/quickstart.html" target="_blank" rel="noopener">http://kafka.apachecn.org/quickstart.html</a></p>
+<p>待续: <a target="_blank" rel="noopener" href="http://kafka.apachecn.org/quickstart.html">http://kafka.apachecn.org/quickstart.html</a></p>
 </blockquote>
 
         
@@ -234,7 +276,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kafka/">Kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Queue/">Queue</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Queue/" rel="tag">Queue</a></li></ul>
 
       
 
@@ -270,7 +312,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li></ol>
     
     </div>
   </aside>
@@ -285,7 +327,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -365,12 +407,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -438,7 +484,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

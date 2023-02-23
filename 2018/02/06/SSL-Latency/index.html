@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>ssl延迟有多大？ | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="SSL">
+  <meta name="keywords" content="SSL" />
   
   
   
   
   <meta name="description" content="据说，Netscape公司当年设计SSL协议的时候，有人提过，将互联网所有链接都变成HTTPs开头的加密链接。 这个建议没有得到采纳，原因之一是HTTPs链接比不加密的HTTP链接慢很多。（另一个原因好像是，HTTPs链接默认不能缓存。） 自从我知道这个掌故以后，脑袋中就有一个观念：HTTPs链接很慢。但是，它到底有多慢，我并没有一个精确的概念。直到今天我从一篇文章中，学到了测量HTTPs链接耗时">
-<meta name="keywords" content="SSL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SSL延迟有多大？">
 <meta property="og:url" content="http://blog.caoxl.com/2018/02/06/SSL-Latency/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="据说，Netscape公司当年设计SSL协议的时候，有人提过，将互联网所有链接都变成HTTPs开头的加密链接。 这个建议没有得到采纳，原因之一是HTTPs链接比不加密的HTTP链接慢很多。（另一个原因好像是，HTTPs链接默认不能缓存。） 自从我知道这个掌故以后，脑袋中就有一个观念：HTTPs链接很慢。但是，它到底有多慢，我并没有一个精确的概念。直到今天我从一篇文章中，学到了测量HTTPs链接耗时">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092402.png">
-<meta property="og:updated_time" content="2019-08-22T03:46:04.000Z">
+<meta property="article:published_time" content="2018-02-06T06:47:27.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:46:04.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="SSL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SSL延迟有多大？">
-<meta name="twitter:description" content="据说，Netscape公司当年设计SSL协议的时候，有人提过，将互联网所有链接都变成HTTPs开头的加密链接。 这个建议没有得到采纳，原因之一是HTTPs链接比不加密的HTTP链接慢很多。（另一个原因好像是，HTTPs链接默认不能缓存。） 自从我知道这个掌故以后，脑袋中就有一个观念：HTTPs链接很慢。但是，它到底有多慢，我并没有一个精确的概念。直到今天我从一篇文章中，学到了测量HTTPs链接耗时">
 <meta name="twitter:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092402.png">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
@@ -44,30 +44,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -145,7 +183,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -183,7 +223,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%BF%85%E5%A4%87/">计算机专业必备</a>
 
       
 	<a class="article-views">
@@ -200,22 +240,25 @@
         
           <p>据说，Netscape公司当年设计<u><a href="http://blog.caoxl.com/2018/02/06/SSL-TLS-Protocol-Operating-Mechanism/">SSL协议</a></u>的时候，有人提过，将互联网所有链接都变成HTTPs开头的加密链接。</p>
 <p>这个建议没有得到采纳，原因之一是HTTPs链接比不加密的HTTP链接慢很多。（另一个原因好像是，HTTPs链接默认不能缓存。）</p>
-<p>自从我知道这个掌故以后，脑袋中就有一个观念：HTTPs链接很慢。但是，它到底有多慢，我并没有一个精确的概念。直到今天我从一篇<a href="http://www.semicomplete.com/blog/geekery/ssl-latency.html" target="_blank" rel="noopener">文章</a>中，学到了测量HTTPs链接耗时的方法。</p>
-<a id="more"></a>
+<p>自从我知道这个掌故以后，脑袋中就有一个观念：HTTPs链接很慢。但是，它到底有多慢，我并没有一个精确的概念。直到今天我从一篇<a target="_blank" rel="noopener" href="http://www.semicomplete.com/blog/geekery/ssl-latency.html">文章</a>中，学到了测量HTTPs链接耗时的方法。</p>
+<span id="more"></span>
+
 <blockquote>
-<p>原文地址: <a href="http://www.ruanyifeng.com/blog/2014/09/ssl-latency.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2014/09/ssl-latency.html</a></p>
+<p>原文地址: <a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2014/09/ssl-latency.html">http://www.ruanyifeng.com/blog/2014/09/ssl-latency.html</a></p>
 </blockquote>
 <p>首先我解释一下，为什么HTTPs链接比较慢。</p>
 <p>HTTPs链接和HTTP链接都建立在TCP协议之上。HTTP链接比较单纯，使用三个握手数据包建立连接之后，就可以发送内容数据了。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092402.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092402.png"></p>
 <p>上图中，客户端首先发送<code>SYN</code>数据包，然后服务器发送<code>SYN+ACK</code>数据包，最后客户端发送<code>ACK</code>数据包，接下来就可以发送内容了。这三个数据包的发送过程，叫做<strong>TCP握手</strong>。</p>
 <p>再来看HTTPs链接，它也采用TCP协议发送数据，所以它也需要上面的这三步握手过程。而且，在这三步结束以后，它还有一个<a href="http://blog.caoxl.com/2018/02/06/SSL-TLS-Protocol-Operating-Mechanism/">SSL握手</a>。</p>
 <p>总结一下，就是下面这两个式子。</p>
-<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HTTP耗时 = TCP握手</span><br><span class="line"></span><br><span class="line">HTTPs耗时 = TCP握手 + SSL握手</span><br></pre></td></tr></table></figure>
+<figure class="highlight fix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">HTTP耗时 </span>=<span class="string"> TCP握手</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">HTTPs耗时 = TCP握手 + SSL握手</span></span><br></pre></td></tr></table></figure>
+
 <p>所以，<code>HTTPs</code>肯定比<code>HTTP</code>耗时，这就叫<strong>SSL延迟</strong>。</p>
 <p>命令行工具<a href="http://blog.caoxl.com/2018/02/02/cURL-Notes/">curl</a>有一个w参数，可以用来测量<code>TCP握手</code>和<code>SSL握手</code>的具体耗时，以访问支付宝为例。</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ curl -w <span class="string">"TCP handshake: %&#123;time_connect&#125;, SSL handshake: %&#123;time_appconnect&#125;\n"</span> -so <span class="regexp">/dev/</span><span class="literal">null</span> <span class="string">https:</span><span class="comment">//www.alipay.com</span></span><br><span class="line"></span><br><span class="line">TCP <span class="string">handshake:</span> <span class="number">0.022</span>, SSL <span class="string">handshake:</span> <span class="number">0.064</span></span><br></pre></td></tr></table></figure>
-<p>上面命令中的w参数表示指定输出格式，<code>time_connect</code>变量表示TCP握手的耗时，<code>time_appconnect</code>变量表示<strong>SSL握手</strong>的耗时（更多变量请查看<a href="https://curl.haxx.se/docs/manpage.html" target="_blank" rel="noopener">文档</a>和<a href="https://blog.josephscott.org/2011/10/14/timing-details-with-curl/" target="_blank" rel="noopener">实例</a>），s参数和o参数用来关闭标准输出。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ curl -w <span class="string">&quot;TCP handshake: %&#123;time_connect&#125;, SSL handshake: %&#123;time_appconnect&#125;\n&quot;</span> -so <span class="regexp">/dev/</span>null https:<span class="regexp">//</span>www.alipay.com</span><br><span class="line"></span><br><span class="line">TCP handshake: <span class="number">0.022</span>, SSL handshake: <span class="number">0.064</span></span><br></pre></td></tr></table></figure>
+
+<p>上面命令中的w参数表示指定输出格式，<code>time_connect</code>变量表示TCP握手的耗时，<code>time_appconnect</code>变量表示<strong>SSL握手</strong>的耗时（更多变量请查看<a target="_blank" rel="noopener" href="https://curl.haxx.se/docs/manpage.html">文档</a>和<a target="_blank" rel="noopener" href="https://blog.josephscott.org/2011/10/14/timing-details-with-curl/">实例</a>），s参数和o参数用来关闭标准输出。</p>
 <p>从运行结果可以看到，<strong>SSL握手的耗时（64毫秒）大概是TCP握手（22毫秒）的三倍</strong>。也就是说，在建立连接的阶段，HTTPs链接比HTTP链接要长3倍的时间，具体数字取决于CPU的快慢和网络状况。</p>
 <p>所以，如果是对安全性要求不高的场合，为了提高网页性能，建议不要采用保密强度很高的数字证书。一般场合下，<strong>1024位的证书已经足够了，2048位和4096位的证书将进一步延长SSL握手的耗时</strong>。</p>
 
@@ -249,7 +292,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL/">SSL</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL/" rel="tag">SSL</a></li></ul>
 
       
 
@@ -300,7 +343,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -380,12 +423,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -453,7 +500,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

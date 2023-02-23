@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>nginx 反向代理 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Nginx">
+  <meta name="keywords" content="Nginx" />
   
   
   
   
   <meta name="description" content="或名：不同域名通过一台服务器上的 80 端口访问同一台服务器上的不同站点。  环境和需求 一台 CentOS 主机上同时运行着 3 台服务器：Nginx、Apache、Tomcat，分别监听 80、8000、8080 端口，其中 Apache 托管了一个 PHP 站点 A，Tomcat 托管了一个 Java 站点 B。  现有域名 test.com 和 demo.com，需要实现的是：   在浏">
-<meta name="keywords" content="Nginx">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Nginx 反向代理">
 <meta property="og:url" content="http://blog.caoxl.com/2018/01/22/Nginx-Reverse-Proxy/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="或名：不同域名通过一台服务器上的 80 端口访问同一台服务器上的不同站点。  环境和需求 一台 CentOS 主机上同时运行着 3 台服务器：Nginx、Apache、Tomcat，分别监听 80、8000、8080 端口，其中 Apache 托管了一个 PHP 站点 A，Tomcat 托管了一个 Java 站点 B。  现有域名 test.com 和 demo.com，需要实现的是：   在浏">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-22T06:50:19.000Z">
+<meta property="article:modified_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Nginx">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Nginx 反向代理">
-<meta name="twitter:description" content="或名：不同域名通过一台服务器上的 80 端口访问同一台服务器上的不同站点。  环境和需求 一台 CentOS 主机上同时运行着 3 台服务器：Nginx、Apache、Tomcat，分别监听 80、8000、8080 端口，其中 Apache 托管了一个 PHP 站点 A，Tomcat 托管了一个 Java 站点 B。  现有域名 test.com 和 demo.com，需要实现的是：   在浏">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +42,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +181,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -206,18 +246,21 @@
 </li>
 </ul>
 <p>在浏览器中输入 test.com 后直接(不加额外端口号) 访问站点 A；输入 demo.com 后直接访问站点 B。</p>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="具体配置"><a href="#具体配置" class="headerlink" title="具体配置"></a>具体配置</h1><ul>
 <li>vi <code>/etc/nginx/nginx.conf</code></li>
 </ul>
 <p>不全，但是都是会改动的地方，不同的环境下的配置可能会有些许不同。参考如下：</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">worker_rlimit_nofile</span> <span class="number">1024</span>;</span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">use</span> <span class="literal">epoll</span>;</span><br><span class="line">    <span class="attribute">worker_connections</span>  <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>       /etc/nginx/mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line">    <span class="attribute">log_format</span>  main  <span class="string">'<span class="variable">$remote_addr</span> - <span class="variable">$remote_user</span> [<span class="variable">$time_local</span>] "<span class="variable">$request</span>" '</span></span><br><span class="line">                      <span class="string">'<span class="variable">$status</span> <span class="variable">$body_bytes_sent</span> "<span class="variable">$http_referer</span>" '</span></span><br><span class="line">                      <span class="string">'"<span class="variable">$http_user_agent</span>" "<span class="variable">$http_x_forwarded_for</span>"'</span>;</span><br><span class="line">    <span class="attribute">access_log</span>  /var/log/nginx/access.log  main;</span><br><span class="line">    <span class="attribute">sendfile</span>        <span class="literal">on</span>;</span><br><span class="line">    <span class="comment">#tcp_nopush     on;</span></span><br><span class="line">    <span class="comment">#keepalive_timeout  0;</span></span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line">    <span class="attribute">gzip</span>  <span class="literal">on</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># reverse proxy configuration changed by @cjli in 2016-03-13 14:50:21</span></span><br><span class="line"><span class="comment"># ----------------------------------------------- start ----------------------------------------------</span></span><br><span class="line">    <span class="attribute">client_max_body_size</span> <span class="number">50m</span>; <span class="comment"># 缓冲区代理缓冲用户端请求的最大字节数,可以理解为保存到本地再传给用户</span></span><br><span class="line">    <span class="attribute">client_body_buffer_size</span> <span class="number">256k</span>;</span><br><span class="line">    <span class="attribute">client_header_timeout</span> <span class="number">3m</span>;</span><br><span class="line">    <span class="attribute">client_body_timeout</span> <span class="number">3m</span>;</span><br><span class="line">    <span class="attribute">send_timeout</span> <span class="number">3m</span>;</span><br><span class="line">    <span class="attribute">proxy_connect_timeout</span> <span class="number">300s</span>; <span class="comment"># nginx跟后端服务器连接超时时间(代理连接超时)</span></span><br><span class="line">    <span class="attribute">proxy_read_timeout</span> <span class="number">300s</span>; <span class="comment"># 连接成功后，后端服务器响应时间(代理接收超时)</span></span><br><span class="line">    <span class="attribute">proxy_send_timeout</span> <span class="number">300s</span>;</span><br><span class="line">    <span class="attribute">proxy_buffer_size</span> <span class="number">64k</span>; <span class="comment"># 设置代理服务器（nginx）保存用户头信息的缓冲区大小</span></span><br><span class="line">    <span class="attribute">proxy_buffers</span> <span class="number">4</span> <span class="number">32k</span>; <span class="comment"># proxy_buffers缓冲区，网页平均在32k以下的话，这样设置</span></span><br><span class="line">    <span class="attribute">proxy_busy_buffers_size</span> <span class="number">64k</span>; <span class="comment"># 高负荷下缓冲大小（proxy_buffers*2）</span></span><br><span class="line">    <span class="attribute">proxy_temp_file_write_size</span> <span class="number">64k</span>; <span class="comment"># 设定缓存文件夹大小，大于这个值，将从upstream服务器传递请求，而不缓冲到磁盘</span></span><br><span class="line">    <span class="attribute">proxy_ignore_client_abort</span> <span class="literal">on</span>; <span class="comment"># 不允许代理端主动关闭连接</span></span><br><span class="line"><span class="comment"># ----------------------------------------------- end -----------------------------------------------</span></span><br><span class="line">  <span class="comment"># PHP conf here ...</span></span><br><span class="line">  <span class="comment"># Load config files from the /etc/nginx/conf.d directory</span></span><br><span class="line">    <span class="attribute">include</span> /etc/nginx/conf.d/<span class="regexp">*.conf</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">worker_rlimit_nofile</span> <span class="number">1024</span>;</span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">use</span> <span class="literal">epoll</span>;</span><br><span class="line">    <span class="attribute">worker_connections</span>  <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>       /etc/nginx/mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line">    <span class="attribute">log_format</span>  main  <span class="string">&#x27;<span class="variable">$remote_addr</span> - <span class="variable">$remote_user</span> [<span class="variable">$time_local</span>] &quot;<span class="variable">$request</span>&quot; &#x27;</span></span><br><span class="line">                      <span class="string">&#x27;<span class="variable">$status</span> <span class="variable">$body_bytes_sent</span> &quot;<span class="variable">$http_referer</span>&quot; &#x27;</span></span><br><span class="line">                      <span class="string">&#x27;&quot;<span class="variable">$http_user_agent</span>&quot; &quot;<span class="variable">$http_x_forwarded_for</span>&quot;&#x27;</span>;</span><br><span class="line">    <span class="attribute">access_log</span>  /var/log/nginx/access.log  main;</span><br><span class="line">    <span class="attribute">sendfile</span>        <span class="literal">on</span>;</span><br><span class="line">    <span class="comment">#tcp_nopush     on;</span></span><br><span class="line">    <span class="comment">#keepalive_timeout  0;</span></span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line">    <span class="attribute">gzip</span>  <span class="literal">on</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># reverse proxy configuration changed by @cjli in 2016-03-13 14:50:21</span></span><br><span class="line"><span class="comment"># ----------------------------------------------- start ----------------------------------------------</span></span><br><span class="line">    <span class="attribute">client_max_body_size</span> <span class="number">50m</span>; <span class="comment"># 缓冲区代理缓冲用户端请求的最大字节数,可以理解为保存到本地再传给用户</span></span><br><span class="line">    <span class="attribute">client_body_buffer_size</span> <span class="number">256k</span>;</span><br><span class="line">    <span class="attribute">client_header_timeout</span> <span class="number">3m</span>;</span><br><span class="line">    <span class="attribute">client_body_timeout</span> <span class="number">3m</span>;</span><br><span class="line">    <span class="attribute">send_timeout</span> <span class="number">3m</span>;</span><br><span class="line">    <span class="attribute">proxy_connect_timeout</span> <span class="number">300s</span>; <span class="comment"># nginx跟后端服务器连接超时时间(代理连接超时)</span></span><br><span class="line">    <span class="attribute">proxy_read_timeout</span> <span class="number">300s</span>; <span class="comment"># 连接成功后，后端服务器响应时间(代理接收超时)</span></span><br><span class="line">    <span class="attribute">proxy_send_timeout</span> <span class="number">300s</span>;</span><br><span class="line">    <span class="attribute">proxy_buffer_size</span> <span class="number">64k</span>; <span class="comment"># 设置代理服务器（nginx）保存用户头信息的缓冲区大小</span></span><br><span class="line">    <span class="attribute">proxy_buffers</span> <span class="number">4</span> <span class="number">32k</span>; <span class="comment"># proxy_buffers缓冲区，网页平均在32k以下的话，这样设置</span></span><br><span class="line">    <span class="attribute">proxy_busy_buffers_size</span> <span class="number">64k</span>; <span class="comment"># 高负荷下缓冲大小（proxy_buffers*2）</span></span><br><span class="line">    <span class="attribute">proxy_temp_file_write_size</span> <span class="number">64k</span>; <span class="comment"># 设定缓存文件夹大小，大于这个值，将从upstream服务器传递请求，而不缓冲到磁盘</span></span><br><span class="line">    <span class="attribute">proxy_ignore_client_abort</span> <span class="literal">on</span>; <span class="comment"># 不允许代理端主动关闭连接</span></span><br><span class="line"><span class="comment"># ----------------------------------------------- end -----------------------------------------------</span></span><br><span class="line">  <span class="comment"># PHP conf here ...</span></span><br><span class="line">  <span class="comment"># Load config files from the /etc/nginx/conf.d directory</span></span><br><span class="line">    <span class="attribute">include</span> /etc/nginx/conf.d/<span class="regexp">*.conf</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>vi <code>/etc/nginx/conf.d/reverse_proxy.conf</code></li>
 </ul>
 <p>由于 <code>nginx.conf</code> 的末尾已经有<code>include /etc/nginx/conf.d/*.conf</code> 了，因此可以在 <code>conf.d</code> 目录下创建不同需求的配置文件，这样方便管理。</p>
 <p><em>反向代理服务器的配置参考如下：</em></p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">server</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> test.com;</span><br><span class="line">    <span class="attribute">location</span> / &#123;</span><br><span class="line">        <span class="attribute">proxy_redirect</span> <span class="literal">off</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> Host <span class="variable">$host</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Real-IP <span class="variable">$remote_addr</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://127.0.0.1:8000;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="attribute">access_log</span> /var/log/nginx/test.log;</span><br><span class="line">&#125;</span><br><span class="line">server</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> demo.com;</span><br><span class="line">    <span class="attribute">location</span> / &#123;</span><br><span class="line">        <span class="attribute">proxy_redirect</span> <span class="literal">off</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> Host <span class="variable">$host</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Real-IP <span class="variable">$remote_addr</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://127.0.0.1:8080;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="attribute">access_log</span> /var/log/nginx/demo.log;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> test.com;</span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">proxy_redirect</span> <span class="literal">off</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> Host <span class="variable">$host</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Real-IP <span class="variable">$remote_addr</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://127.0.0.1:8000;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="attribute">access_log</span> /var/log/nginx/test.log;</span><br><span class="line">&#125;</span><br><span class="line"><span class="section">server</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> demo.com;</span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">proxy_redirect</span> <span class="literal">off</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> Host <span class="variable">$host</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Real-IP <span class="variable">$remote_addr</span>;</span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://127.0.0.1:8080;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="attribute">access_log</span> /var/log/nginx/demo.log;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="说明与注意事项"><a href="#说明与注意事项" class="headerlink" title="说明与注意事项"></a>说明与注意事项</h1><ul>
 <li><strong>nginx -s reload 后报错？</strong></li>
 </ul>
@@ -227,14 +270,16 @@
 </ul>
 <p>Tomcat 默认监听的是 <code>8080</code>，在这里并不影响，但是目前没怎么配置过 <code>Linux</code> 下的 Tomcat，所以当做个笔记。</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">find / -<span class="type">name</span> <span class="keyword">server</span>.xml</span><br><span class="line">vi /<span class="type">path</span>/<span class="keyword">to</span>/<span class="keyword">server</span>.xml</span><br></pre></td></tr></table></figure>
+
 <p>找到 <strong>Connector</strong> 标签，更改其 port 属性值为所需端口号即可。</p>
 <ul>
 <li><strong>启动语关闭 Tomcat</strong></li>
 </ul>
 <p><code>CentOS/Linux</code> 下安装好 <code>Tomcat</code> 后，如果执行 <code>service tomcat start</code> 等相关命令如果提示找不到服务名的话，可能需要进入 Tomcat 的安装目录下的 <code>bin/</code> 目录手动执行：</p>
-<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./startup.sh</span></span><br><span class="line"><span class="string">./shutdown.sh</span></span><br><span class="line"><span class="comment"># ...</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./startup.sh</span><br><span class="line">./shutdown.sh</span><br><span class="line"><span class="comment"># ...</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://www.ttlsa.com/nginx/use-nginx-proxy/" target="_blank" rel="noopener">搭建nginx反向代理用做内网域名转发</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ttlsa.com/nginx/use-nginx-proxy/">搭建nginx反向代理用做内网域名转发</a></li>
 </ul>
 
         
@@ -267,7 +312,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/">Nginx</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li></ul>
 
       
 
@@ -303,7 +348,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#环境和需求"><span class="nav-number">1.</span> <span class="nav-text">环境和需求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#具体配置"><span class="nav-number">2.</span> <span class="nav-text">具体配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#说明与注意事项"><span class="nav-number">3.</span> <span class="nav-text">说明与注意事项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#附录：CentOS-下-Tomcat-的配置"><span class="nav-number">4.</span> <span class="nav-text">附录：CentOS 下 Tomcat 的配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%92%8C%E9%9C%80%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">环境和需求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">具体配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">3.</span> <span class="nav-text">说明与注意事项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E5%BD%95%EF%BC%9ACentOS-%E4%B8%8B-Tomcat-%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">附录：CentOS 下 Tomcat 的配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -318,7 +363,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -398,12 +443,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -471,7 +520,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

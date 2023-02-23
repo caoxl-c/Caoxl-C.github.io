@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>mac下安装配置redis | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Redis">
+  <meta name="keywords" content="Redis" />
   
   
   
   
   <meta name="description" content="一、准备工作  二、安装redis服务器  三、redis服务器的启动、使用和退出  四、配置php使用redis服务  五、常见问题">
-<meta name="keywords" content="Redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mac下安装配置Redis">
 <meta property="og:url" content="http://blog.caoxl.com/2018/03/29/Install-redis-in-Mac/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="一、准备工作  二、安装redis服务器  三、redis服务器的启动、使用和退出  四、配置php使用redis服务  五、常见问题">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T06:36:07.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-03-29T08:54:22.000Z">
+<meta property="article:modified_time" content="2019-08-22T06:36:07.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Mac下安装配置Redis">
-<meta name="twitter:description" content="一、准备工作  二、安装redis服务器  三、redis服务器的启动、使用和退出  四、配置php使用redis服务  五、常见问题">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +42,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +181,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +221,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+    <a class="article-category-link" href="/categories/%E5%BF%85%E5%A4%87%E6%8A%80%E8%83%BD/">必备技能</a>
 
       
 	<a class="article-views">
@@ -199,7 +239,8 @@
           <blockquote>
 <p>一、准备工作<br>  二、安装redis服务器<br>  三、redis服务器的启动、使用和退出<br>  四、配置php使用redis服务<br>  五、常见问题</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="一-准备工作"><a href="#一-准备工作" class="headerlink" title="一 准备工作"></a>一 准备工作</h1><ul>
 <li>安装homebrew</li>
 <li>安装php、nginx（或apache）或集成环境</li>
@@ -208,23 +249,28 @@
 <li>通过homebrew安装</li>
 </ul>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install redis</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>直接下载安装</li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">curl -O http:<span class="comment">//redis.googlecode.com/files/redis-2.8.7.tar.gz</span></span><br><span class="line">sudo tar -zxf redis<span class="number">-2.8</span><span class="number">.7</span>.tar.gz</span><br><span class="line">mv redis<span class="number">-2.8</span><span class="number">.7</span> /usr/local/redis</span><br><span class="line">cd redis</span><br><span class="line">sudo make</span><br><span class="line">sudo make test</span><br><span class="line">sudo make install</span><br><span class="line">mv redis.conf /etc/redis.conf</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">curl -O http:<span class="comment">//redis.googlecode.com/files/redis-2.8.7.tar.gz</span></span><br><span class="line">sudo tar -zxf redis-<span class="number">2.8</span>.<span class="number">7</span>.tar.gz</span><br><span class="line">mv redis-<span class="number">2.8</span>.<span class="number">7</span> /usr/local/redis</span><br><span class="line">cd redis</span><br><span class="line">sudo make</span><br><span class="line">sudo make test</span><br><span class="line">sudo make install</span><br><span class="line">mv redis.conf /etc/redis.conf</span><br></pre></td></tr></table></figure>
+
 <h1 id="三-redis服务器的启动、使用和退出"><a href="#三-redis服务器的启动、使用和退出" class="headerlink" title="三 redis服务器的启动、使用和退出"></a>三 redis服务器的启动、使用和退出</h1><ul>
 <li>1 启动redis服务</li>
 </ul>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/bin/redis-server</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>2 查看redis服务是否启动</li>
 </ul>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps aux | grep redis</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>3 使用redis服务</li>
 </ul>
 <p>通过redis-cli命令可以启动redis客户端</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli</span><br></pre></td></tr></table></figure>
+
 <p>常用命令见：上一篇文章</p>
 <ul>
 <li><p>4 退出redis服务</p>
@@ -232,33 +278,40 @@
 <li>客户端退出</li>
 </ul>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli shutdown</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>关闭pid</li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -u jim(替换成你的用户名) -o pid,rss,command | grep redis-server</span><br></pre></td></tr></table></figure>
-</li>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -u <span class="title function_ invoke__">jim</span>(替换成你的用户名) -o pid,rss,command | grep redis-server</span><br></pre></td></tr></table></figure></li>
 </ul>
 <p><strong>如果你的电脑安装了oh my zsh</strong></p>
 <p>那么只需要在终端输入</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill redis</span><br></pre></td></tr></table></figure>
+
 <p>按tab，会自动替换成对应的pid</p>
 <p>再运行:</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill <span class="number">-9</span> 对应的pid</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kill -<span class="number">9</span> 对应的pid</span><br></pre></td></tr></table></figure>
+
+
 <h1 id="四-配置php使用redis服务"><a href="#四-配置php使用redis服务" class="headerlink" title="四 配置php使用redis服务"></a>四 配置php使用redis服务</h1><ul>
 <li>安装php的redis扩展</li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install php71-redis --build-from-source</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install php71-redis --build-<span class="keyword">from</span>-source</span><br></pre></td></tr></table></figure>
+
 <p><code>php71</code>是本机安装的php的版本（7.1）,<code>--build-from-source</code>是让安装的扩展与php的版本保持一致</p>
 <p>查看<code>phpinfo()</code>，出现redis选项说明redis配置成功</p>
 <ul>
 <li>在php代码中使用redis服务</li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$redis = <span class="keyword">new</span> Redis();</span><br><span class="line">$redis-&gt;connect(<span class="string">'127.0.0.1'</span>,<span class="string">'host'</span>);<span class="comment">//redis服务器ip及端口号</span></span><br><span class="line">$redis-&gt;set($key,$value,$timeout);<span class="comment">//设置缓存:键-值-缓存时间</span></span><br><span class="line">$redis-&gt;get($key);<span class="comment">//查找缓存</span></span><br><span class="line">$redis-&gt;del($key);<span class="comment">//删除缓存</span></span><br><span class="line">$redis-&gt;delete($key);<span class="comment">//删除缓存</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$redis</span> = <span class="keyword">new</span> <span class="title class_">Redis</span>();</span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">connect</span>(<span class="string">&#x27;127.0.0.1&#x27;</span>,<span class="string">&#x27;host&#x27;</span>);<span class="comment">//redis服务器ip及端口号</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">set</span>(<span class="variable">$key</span>,<span class="variable">$value</span>,<span class="variable">$timeout</span>);<span class="comment">//设置缓存:键-值-缓存时间</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="variable">$key</span>);<span class="comment">//查找缓存</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">del</span>(<span class="variable">$key</span>);<span class="comment">//删除缓存</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">delete</span>(<span class="variable">$key</span>);<span class="comment">//删除缓存</span></span><br></pre></td></tr></table></figure>
+
+
 <h1 id="五-常见问题"><a href="#五-常见问题" class="headerlink" title="五 常见问题"></a>五 常见问题</h1><ul>
 <li>（1）Redis: Failed opening .rdb for saving: Permission denied</li>
 </ul>
 <p>redis服务器会生成<code>dump.rdb</code>文件存储缓存，如果文件权限不够则无法读写该文件</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/loal/bin</span><br></pre></td></tr></table></figure>
+
 <p>在<code>/usr/local/bin/</code>（默认文件目录）下执行命令</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod <span class="number">777</span> dump.rdb</span><br></pre></td></tr></table></figure>
         
@@ -291,7 +344,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/">Redis</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
 
       
 
@@ -327,7 +380,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一-准备工作"><span class="nav-number">1.</span> <span class="nav-text">一 准备工作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二-安装redis服务器"><span class="nav-number">2.</span> <span class="nav-text">二 安装redis服务器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三-redis服务器的启动、使用和退出"><span class="nav-number">3.</span> <span class="nav-text">三 redis服务器的启动、使用和退出</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四-配置php使用redis服务"><span class="nav-number">4.</span> <span class="nav-text">四 配置php使用redis服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五-常见问题"><span class="nav-number">5.</span> <span class="nav-text">五 常见问题</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">一 准备工作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E5%AE%89%E8%A3%85redis%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">二 安装redis服务器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-redis%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%90%AF%E5%8A%A8%E3%80%81%E4%BD%BF%E7%94%A8%E5%92%8C%E9%80%80%E5%87%BA"><span class="nav-number">3.</span> <span class="nav-text">三 redis服务器的启动、使用和退出</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-%E9%85%8D%E7%BD%AEphp%E4%BD%BF%E7%94%A8redis%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">四 配置php使用redis服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">五 常见问题</span></a></li></ol>
     
     </div>
   </aside>
@@ -342,7 +395,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -422,12 +475,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -495,7 +552,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

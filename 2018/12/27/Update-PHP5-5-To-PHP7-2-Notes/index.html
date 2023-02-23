@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>php5.5 升级到 php7.2日志 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="PHP5.5PHP7.2">
+  <meta name="keywords" content="PHP5.5PHP7.2" />
   
   
   
   
   <meta name="description" content="公司项目将从PHP5.5升级到PHP7.2, 正好抽空做下深入的学习.">
-<meta name="keywords" content="PHP5.5,PHP7.2">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP5.5 升级到 PHP7.2日志">
 <meta property="og:url" content="http://blog.caoxl.com/2018/12/27/Update-PHP5-5-To-PHP7-2-Notes/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="公司项目将从PHP5.5升级到PHP7.2, 正好抽空做下深入的学习.">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-12-27T10:11:18.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-12-27T03:47:20.000Z">
+<meta property="article:modified_time" content="2018-12-27T10:11:18.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="PHP5.5">
+<meta property="article:tag" content="PHP7.2">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PHP5.5 升级到 PHP7.2日志">
-<meta name="twitter:description" content="公司项目将从PHP5.5升级到PHP7.2, 正好抽空做下深入的学习.">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -199,11 +240,12 @@
           <blockquote>
 <p>公司项目将从PHP5.5升级到PHP7.2, 正好抽空做下深入的学习.</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="升级到7-2后可用的主要新特性"><a href="#升级到7-2后可用的主要新特性" class="headerlink" title="升级到7.2后可用的主要新特性"></a>升级到7.2后可用的主要新特性</h1><ol>
 <li><p>支持使用<strong>表达式定义常量</strong>。如：<code>const TWO = ONE * 2;</code>【5.6+】</p>
 </li>
-<li><p>新增语法糖：<strong>使用 <code>...</code> 运算符定义变长参数函数</strong>。如：<code>function fn($a, $b = null, ...$params) {}</code>【5.6+】</p>
+<li><p>新增语法糖：<strong>使用 <code>...</code> 运算符定义变长参数函数</strong>。如：<code>function fn($a, $b = null, ...$params) &#123;&#125;</code>【5.6+】</p>
 </li>
 <li><p>新增语法糖：<strong>使用 <code>...</code> 运算符进行参数展开</strong>。类似 Ruby 中的连接运算符特性。【5.6+】</p>
 </li>
@@ -211,7 +253,7 @@
 </li>
 <li><p>扩展 <code>use</code> 运算符用以支持在类中导入外部的函数和常量。【5.6+】</p>
 </li>
-<li><p><code>SAPI</code> 模块中实现了一个交互式调试器<a href="https://phpdbg.room11.org/introduction.html" target="_blank" rel="noopener">phpdbg</a>。【5.6+】</p>
+<li><p><code>SAPI</code> 模块中实现了一个交互式调试器<a target="_blank" rel="noopener" href="https://phpdbg.room11.org/introduction.html">phpdbg</a>。【5.6+】</p>
 </li>
 <li><p>支持 <code>php://input</code> 可以多次打开并读取。【5.6+】</p>
 </li>
@@ -233,7 +275,7 @@
 </li>
 <li><p>新增的函数 <code>intdiv()</code> 用来进行整数的除法运算。 【7.0+】</p>
 </li>
-<li><p><strong>支持标量类型声明</strong>（有两种模式: 强制 (默认) 和 严格模式）。如 <code>function fn(int $a){}</code>【7.0+】</p>
+<li><p><strong>支持标量类型声明</strong>（有两种模式: 强制 (默认) 和 严格模式）。如 <code>function fn(int $a)&#123;&#125;</code>【7.0+】</p>
 </li>
 <li><p><strong>支持返回值类型声明</strong>。如声明返回类型为array： <code>function fn(int $a): array</code>【7.0+】</p>
 </li>
@@ -253,13 +295,13 @@
 </li>
 <li><p>新增 <code>IntlChar</code> 类用于暴露出更多的 <code>ICU</code> 功能。这个类自身定义了许多静态方法用于操作多字符集的 <code>unicode</code> 字符。【7.0+】</p>
 </li>
-<li><p><strong>放宽了保留词限制，允许全局保留词用于类/接口/Trait 中的属性、常量和方法名</strong>。 在引入新关键词时，此变更减少了对向后兼容的破坏，避免了 API 命名的限制。<br>如：<code>Project::new(&#39;Project Name&#39;)-&gt;private()-&gt;for(&#39;purpose here&#39;)-&gt;with(&#39;username here&#39;);// 之前是不可以的</code>【7.0+】</p>
+<li><p><strong>放宽了保留词限制，允许全局保留词用于类&#x2F;接口&#x2F;Trait 中的属性、常量和方法名</strong>。 在引入新关键词时，此变更减少了对向后兼容的破坏，避免了 API 命名的限制。<br>如：<code>Project::new(&#39;Project Name&#39;)-&gt;private()-&gt;for(&#39;purpose here&#39;)-&gt;with(&#39;username here&#39;);// 之前是不可以的</code>【7.0+】</p>
 </li>
-<li><p><strong>可为空（Nullable）类型</strong>，参数以及返回值的类型现在可以通过在类型前加上一个问号使之允许为空。<br>如：<code>function fn(?string $name): ?string{}</code>【7.1+】</p>
+<li><p><strong>可为空（Nullable）类型</strong>，参数以及返回值的类型现在可以通过在类型前加上一个问号使之允许为空。<br>如：<code>function fn(?string $name): ?string&#123;&#125;</code>【7.1+】</p>
 </li>
-<li><p><strong>新增返回值类型void</strong>。如：<code>function swap(&amp;$left, &amp;$right) : void{}</code>【7.1+】</p>
+<li><p><strong>新增返回值类型void</strong>。如：<code>function swap(&amp;$left, &amp;$right) : void&#123;&#125;</code>【7.1+】</p>
 </li>
-<li><p>短数组语法“[]”现在作为list()语法的一个备选项，可以用于将数组的值赋给一些变量（包括在foreach中）。<br>如：<code>[$id1, $name1] = $data[0]; foreach ($data as list($id, $name)) {}</code>【7.1+】</p>
+<li><p>短数组语法“[]”现在作为list()语法的一个备选项，可以用于将数组的值赋给一些变量（包括在foreach中）。<br>如：<code>[$id1, $name1] = $data[0]; foreach ($data as list($id, $name)) &#123;&#125;</code>【7.1+】</p>
 </li>
 <li><p>新增支持设置类常量的可见性。如：<code>public const A = 1;protected const B = 2;private const C = 3;</code>【7.1+】</p>
 </li>
@@ -277,7 +319,7 @@
 </li>
 <li><p>新增 <code>HTTP/2 server push support in ext/curl</code>。【7.1+】</p>
 </li>
-<li><p>新增对象类型 <code>object</code>, 引进了可用于逆变<code>（contravariant）</code>参数输入和协变<code>（covariant）</code>返回任何对象类型。<br>如：<code>function fn(object $obj) : object{}</code>【7.2+】</p>
+<li><p>新增对象类型 <code>object</code>, 引进了可用于逆变<code>（contravariant）</code>参数输入和协变<code>（covariant）</code>返回任何对象类型。<br>如：<code>function fn(object $obj) : object&#123;&#125;</code>【7.2+】</p>
 </li>
 <li><p>新增可通过名称加载扩展。【7.2+】</p>
 </li>
@@ -291,155 +333,153 @@
 </li>
 <li><p><code>sockets</code> 扩展添加了地址信息。【7.2+】</p>
 </li>
-<li><p><strong>支持允许分组命名空间的尾部逗号</strong>。如：<code>use Foo\Bar\{Foo,Bar,Baz,};</code>【7.2+】</p>
+<li><p><strong>支持允许分组命名空间的尾部逗号</strong>。如：<code>use Foo\Bar\&#123;Foo,Bar,Baz,&#125;;</code>【7.2+】</p>
 </li>
 </ol>
 <h1 id="主要不兼容函数列表"><a href="#主要不兼容函数列表" class="headerlink" title="主要不兼容函数列表"></a>主要不兼容函数列表</h1><table>
 <thead>
 <tr>
-<th style="text-align:left">函数名</th>
-<th style="text-align:left">备注</th>
+<th align="left">函数名</th>
+<th align="left">备注</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:left"><code>ldap_sort()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<tbody><tr>
+<td align="left"><code>ldap_sort()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>xml_set_object()</code></td>
-<td style="text-align:left">7.0.0+为了避免内存泄露，该函数在执行结束时需要手动清除 $parse</td>
+<td align="left"><code>xml_set_object()</code></td>
+<td align="left">7.0.0+为了避免内存泄露，该函数在执行结束时需要手动清除 $parse</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>shmop_open()</code></td>
-<td style="text-align:left">7.0.0+现在返回一个资源而非一个int</td>
+<td align="left"><code>shmop_open()</code></td>
+<td align="left">7.0.0+现在返回一个资源而非一个int</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>exec() &amp; system() &amp; passthru()</code></td>
-<td style="text-align:left">7.0.0+对 NULL 增加了保护</td>
+<td align="left"><code>exec() &amp; system() &amp; passthru()</code></td>
+<td align="left">7.0.0+对 NULL 增加了保护</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>setlocale()</code></td>
-<td style="text-align:left">7.0.0+不再接受 category 传入字符串。 应当使用 LC_* 常量</td>
+<td align="left"><code>setlocale()</code></td>
+<td align="left">7.0.0+不再接受 category 传入字符串。 应当使用 LC_* 常量</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>preg_replace()</code></td>
-<td style="text-align:left">7.0.0+不再支持 “e” (PREG_REPLACE_EVAL). 应当使用 preg_replace_callback() 替代</td>
+<td align="left"><code>preg_replace()</code></td>
+<td align="left">7.0.0+不再支持 “e” (PREG_REPLACE_EVAL). 应当使用 preg_replace_callback() 替代</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>mktime() &amp; gmmktime()</code></td>
-<td style="text-align:left">7.0.0+不再接受 is_dst 参数</td>
+<td align="left"><code>mktime() &amp; gmmktime()</code></td>
+<td align="left">7.0.0+不再接受 is_dst 参数</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>imagepsbbox()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>imagepsbbox()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>imagepsencodefont()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>imagepsencodefont()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>imagepsextendfont()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>imagepsextendfont()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>imagepsfreefont()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>imagepsfreefont()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>imagepsloadfont()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>imagepsloadfont()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>imagepsslantfont()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>imagepsslantfont()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>imagepstext()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>imagepstext()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>dl()</code></td>
-<td style="text-align:left">7.0.0+在PHP-FPM模式下已移除</td>
+<td align="left"><code>dl()</code></td>
+<td align="left">7.0.0+在PHP-FPM模式下已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>set_magic_quotes_runtime()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>set_magic_quotes_runtime()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>magic_quotes_runtime()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>magic_quotes_runtime()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>set_socket_blocking()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>set_socket_blocking()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>mcrypt_generic_end()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>mcrypt_generic_end()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>mcrypt_ecb()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>mcrypt_ecb()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>mcrypt_cbc()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>mcrypt_cbc()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>mcrypt_cfb()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>mcrypt_cfb()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>mcrypt_ofb()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>mcrypt_ofb()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>call_user_method()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>call_user_method()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>call_user_method_array()</code></td>
-<td style="text-align:left">7.0.0+已移除</td>
+<td align="left"><code>call_user_method_array()</code></td>
+<td align="left">7.0.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>ereg* 系列函数</code></td>
-<td style="text-align:left">7.0.0+已移除，建议使用PCRE系列函数代替</td>
+<td align="left"><code>ereg* 系列函数</code></td>
+<td align="left">7.0.0+已移除，建议使用PCRE系列函数代替</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>__autoload()</code></td>
-<td style="text-align:left">7.2.0+已移除</td>
+<td align="left"><code>__autoload()</code></td>
+<td align="left">7.2.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>assert()</code></td>
-<td style="text-align:left">7.2.0+废弃了字符串的 assert()，最好提供 bool 的表达式</td>
+<td align="left"><code>assert()</code></td>
+<td align="left">7.2.0+废弃了字符串的 assert()，最好提供 bool 的表达式</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>png2wbmp() 和 jpeg2wbmp()</code></td>
-<td style="text-align:left">7.2.0+已移除</td>
+<td align="left"><code>png2wbmp() 和 jpeg2wbmp()</code></td>
+<td align="left">7.2.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>create_function()</code></td>
-<td style="text-align:left">7.2.0+已移除</td>
+<td align="left"><code>create_function()</code></td>
+<td align="left">7.2.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>parse_str()</code></td>
-<td style="text-align:left">7.2.0+需要加第二个参数成为必选项</td>
+<td align="left"><code>parse_str()</code></td>
+<td align="left">7.2.0+需要加第二个参数成为必选项</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>each()</code></td>
-<td style="text-align:left">7.2.0+已移除</td>
+<td align="left"><code>each()</code></td>
+<td align="left">7.2.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>gmp_random()</code></td>
-<td style="text-align:left">7.2.0+已移除</td>
+<td align="left"><code>gmp_random()</code></td>
+<td align="left">7.2.0+已移除</td>
 </tr>
 <tr>
-<td style="text-align:left"><code>read_exif_data()</code></td>
-<td style="text-align:left">7.2.0+已移除，使用 <code>exif_read_data()</code> 代替</td>
+<td align="left"><code>read_exif_data()</code></td>
+<td align="left">7.2.0+已移除，使用 <code>exif_read_data()</code> 代替</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h1 id="其他主要不兼容点"><a href="#其他主要不兼容点" class="headerlink" title="其他主要不兼容点"></a>其他主要不兼容点</h1><ul>
 <li><strong>【5.6.x+】cURL 文件上传</strong></li>
 </ul>
@@ -453,7 +493,8 @@
 <li><strong>【5.6.x+】使用数组标识符为类定义数组类型的属性时，数组的键不会被覆盖</strong></li>
 </ul>
 <p>在 PHP 5.6 之前的版本中，为类定义数组类型的属性时，如果数组中同时使用了显式数组键和隐式数组键，并且显式的键和隐式的序列键相同，那么数组的键将被覆盖。如：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> ONE = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">public</span> $array = [</span><br><span class="line">        <span class="keyword">self</span>::ONE =&gt; <span class="string">'foo'</span>,</span><br><span class="line">        <span class="string">'bar'</span>,</span><br><span class="line">        <span class="string">'foobar'</span>,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var_dump((<span class="keyword">new</span> C)-&gt;array);</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="variable constant_">ONE</span> = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$array</span> = [</span><br><span class="line">        <span class="built_in">self</span>::<span class="variable constant_">ONE</span> =&gt; <span class="string">&#x27;foo&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;bar&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;foobar&#x27;</span>,</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">var_dump</span>((<span class="keyword">new</span> C)-&gt;<span class="keyword">array</span>);</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>【5.6.x+】从不兼容的上下文调用方法</strong></li>
 </ul>
@@ -467,173 +508,219 @@
 </ul>
 <p><code>iconv</code> 和 <code>mbstring</code> 配置选项中 和编码相关的选项都已废弃， 请使用 <code>default_charset</code>。 废弃的选项有：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">iconv.input_encoding</span><br><span class="line">iconv.output_encoding</span><br><span class="line">iconv.internal_encoding</span><br><span class="line">mbstring.http_input</span><br><span class="line">mbstring.http_output</span><br><span class="line">mbstring.internal_encoding</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>【7.0.x+】错误和异常处理相关的变更</strong></li>
 </ul>
 <p>在 PHP 7 中，很多致命错误以及可恢复的致命错误，都被转换为异常来处理了。 这些异常继承自 <code>Error</code> 类，此类实现了 <code>Throwable</code> 接口 （所有异常都实现了这个基础接口）。</p>
 <p>这也意味着，当发生错误的时候，以前代码中的一些错误处理的代码将无法被触发。 因为在 PHP 7 版本中，已经使用抛出异常的错误处理机制了。 （如果代码中没有捕获 Error 异常，那么会引发致命错误）。</p>
 <ul>
-<li>1) <code>set_exception_handler()</code> 不再保证收到的一定是 <code>Exception</code> 对象： </li>
+<li><ol>
+<li><code>set_exception_handler()</code> 不再保证收到的一定是 <code>Exception</code> 对象：</li>
+</ol>
+</li>
 </ul>
 <p>抛出 <code>Error</code> 对象时，如果 <code>set_exception_handler()</code> 里的异常处理代码声明了类型 <code>Exception</code> ，将会导致 <code>fatal error</code>。</p>
 <p>想要异常处理器同时支持 <strong>PHP5</strong> 和 <strong>PHP7</strong>，应该删掉异常处理器里的类型声明。如果代码仅仅是升级到 PHP7，则可以把类型 <code>Exception</code> 替换成 <code>Throwable</code>。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// PHP 5 时代的代码将会出现问题</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handler</span><span class="params">(Exception $e)</span> </span>&#123; ... &#125;</span><br><span class="line">set_exception_handler(<span class="string">'handler'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 兼容 PHP 5 和 7</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handler</span><span class="params">($e)</span> </span>&#123; ... &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 仅支持 PHP 7</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handler</span><span class="params">(Throwable $e)</span> </span>&#123; ... &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// PHP 5 时代的代码将会出现问题</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handler</span>(<span class="params"><span class="built_in">Exception</span> <span class="variable">$e</span></span>) </span>&#123; ... &#125;</span><br><span class="line"><span class="title function_ invoke__">set_exception_handler</span>(<span class="string">&#x27;handler&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 兼容 PHP 5 和 7</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handler</span>(<span class="params"><span class="variable">$e</span></span>) </span>&#123; ... &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 仅支持 PHP 7</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handler</span>(<span class="params"><span class="built_in">Throwable</span> <span class="variable">$e</span></span>) </span>&#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>2) <code>当内部构造器失败的时候，总是抛出异常</code>：</li>
+<li><ol start="2">
+<li><code>当内部构造器失败的时候，总是抛出异常</code>：</li>
+</ol>
+</li>
 </ul>
 <p>在之前版本中，如果内部类的构造器出错，会返回 NULL 或者一个不可用的对象。 从 PHP 7 开始，如果内部类构造器发生错误， 那么会抛出异常。</p>
 <ul>
-<li>3) <code>解析错误会抛出 ParseError 异常</code>：</li>
+<li><ol start="3">
+<li><code>解析错误会抛出 ParseError 异常</code>：</li>
+</ol>
+</li>
 </ul>
 <p>解析错误会抛出 <code>ParseError</code> 异常。 对于 <code>eval()</code> 函数，需要将其包含到一个 <code>catch</code> 代码块中来处理解析错误。</p>
 <ul>
-<li>4) <code>E_STRICT 警告级别变更</code>：</li>
+<li><ol start="4">
+<li><code>E_STRICT 警告级别变更</code>：</li>
+</ol>
+</li>
 </ul>
 <p>原有的 <code>E_STRICT</code> 警告都被迁移到其他级别。 <code>E_STRICT</code> 常量会被保留，所以调用 <code>error_reporting(E_ALL|E_STRICT)</code> 不会引发错误。</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:left">场景</th>
-<th style="text-align:left">新的级别/行为</th>
+<th align="left">场景</th>
+<th align="left">新的级别&#x2F;行为</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:left">将资源类型的变量用作键来进行索引</td>
-<td style="text-align:left"><code>E_NOTICE</code></td>
+<tbody><tr>
+<td align="left">将资源类型的变量用作键来进行索引</td>
+<td align="left"><code>E_NOTICE</code></td>
 </tr>
 <tr>
-<td style="text-align:left">抽象静态方法</td>
-<td style="text-align:left">不再警告，会引发错误</td>
+<td align="left">抽象静态方法</td>
+<td align="left">不再警告，会引发错误</td>
 </tr>
 <tr>
-<td style="text-align:left">重复定义构造器函数</td>
-<td style="text-align:left">不再警告，会引发错误</td>
+<td align="left">重复定义构造器函数</td>
+<td align="left">不再警告，会引发错误</td>
 </tr>
 <tr>
-<td style="text-align:left">在继承的时候，方法签名不匹配</td>
-<td style="text-align:left"><code>E_WARNING</code></td>
+<td align="left">在继承的时候，方法签名不匹配</td>
+<td align="left"><code>E_WARNING</code></td>
 </tr>
 <tr>
-<td style="text-align:left">在两个 trait 中包含相同的（兼容的）属性</td>
-<td style="text-align:left">不再警告，会引发错误</td>
+<td align="left">在两个 trait 中包含相同的（兼容的）属性</td>
+<td align="left">不再警告，会引发错误</td>
 </tr>
 <tr>
-<td style="text-align:left">以非静态调用的方式访问静态属性</td>
-<td style="text-align:left"><code>E_NOTICE</code></td>
+<td align="left">以非静态调用的方式访问静态属性</td>
+<td align="left"><code>E_NOTICE</code></td>
 </tr>
 <tr>
-<td style="text-align:left">变量应该以引用的方式赋值</td>
-<td style="text-align:left"><code>E_NOTICE</code></td>
+<td align="left">变量应该以引用的方式赋值</td>
+<td align="left"><code>E_NOTICE</code></td>
 </tr>
 <tr>
-<td style="text-align:left">变量应该以引用的方式传递（到函数参数中）</td>
-<td style="text-align:left"><code>E_NOTICE</code></td>
+<td align="left">变量应该以引用的方式传递（到函数参数中）</td>
+<td align="left"><code>E_NOTICE</code></td>
 </tr>
 <tr>
-<td style="text-align:left">以静态方式调用实例方法</td>
-<td style="text-align:left"><code>E_DEPRECATED</code></td>
+<td align="left">以静态方式调用实例方法</td>
+<td align="left"><code>E_DEPRECATED</code></td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <ul>
 <li><strong>【7.0.x+】关于变量处理的变化</strong></li>
 </ul>
 <p>PHP 7 现在使用了抽象语法树来解析源代码。这为语言带来了许多改进，由于之前的 PHP 的解释器的限制所不可能实现的但出于一致性的原因导致了一些特殊例子的变动，而这些变动打破了向后兼容。</p>
 <ul>
-<li>1) <code>关于间接使用变量、属性和方法的变化</code>：</li>
+<li><ol>
+<li><code>关于间接使用变量、属性和方法的变化</code>：</li>
+</ol>
+</li>
 </ul>
 <p>对变量、属性和方法的间接调用现在将严格遵循从左到右的顺序来解析，而不是之前的混杂着几个特殊案例的情况。 下面这张表说明了这个解析顺序的变化。</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:left">表达式</th>
-<th style="text-align:left">PHP5的解析方式</th>
-<th style="text-align:left">PHP7的解析方式</th>
+<th align="left">表达式</th>
+<th align="left">PHP5的解析方式</th>
+<th align="left">PHP7的解析方式</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:left"><code>$$foo&#39;bar&#39;</code></td>
-<td style="text-align:left"><code>${$foo&#39;bar&#39;}</code></td>
-<td style="text-align:left"><code>($$foo)&#39;bar&#39;</code></td>
+<tbody><tr>
+<td align="left"><code>$$foo&#39;bar&#39;</code></td>
+<td align="left"><code>$&#123;$foo&#39;bar&#39;&#125;</code></td>
+<td align="left"><code>($$foo)&#39;bar&#39;</code></td>
 </tr>
 <tr>
-<td style="text-align:left"><code>$foo-&gt;$bar[&#39;baz&#39;]</code></td>
-<td style="text-align:left"><code>$foo-&gt;{$bar[&#39;baz&#39;]}</code></td>
-<td style="text-align:left"><code>($foo-&gt;$bar)[&#39;baz&#39;]</code></td>
+<td align="left"><code>$foo-&gt;$bar[&#39;baz&#39;]</code></td>
+<td align="left"><code>$foo-&gt;&#123;$bar[&#39;baz&#39;]&#125;</code></td>
+<td align="left"><code>($foo-&gt;$bar)[&#39;baz&#39;]</code></td>
 </tr>
 <tr>
-<td style="text-align:left"><code>$foo-&gt;$bar[&#39;baz&#39;]()</code></td>
-<td style="text-align:left"><code>$foo-&gt;{$bar[&#39;baz&#39;]}()</code></td>
-<td style="text-align:left"><code>($foo-&gt;$bar)[&#39;baz&#39;]()</code></td>
+<td align="left"><code>$foo-&gt;$bar[&#39;baz&#39;]()</code></td>
+<td align="left"><code>$foo-&gt;&#123;$bar[&#39;baz&#39;]&#125;()</code></td>
+<td align="left"><code>($foo-&gt;$bar)[&#39;baz&#39;]()</code></td>
 </tr>
 <tr>
-<td style="text-align:left"><code>Foo::$bar[&#39;baz&#39;]()</code></td>
-<td style="text-align:left"><code>Foo::{$bar[&#39;baz&#39;]}()</code></td>
-<td style="text-align:left"><code>(Foo::$bar)[&#39;baz&#39;]()</code></td>
+<td align="left"><code>Foo::$bar[&#39;baz&#39;]()</code></td>
+<td align="left"><code>Foo::&#123;$bar[&#39;baz&#39;]&#125;()</code></td>
+<td align="left"><code>(Foo::$bar)[&#39;baz&#39;]()</code></td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <ul>
-<li>2) <code>list() 不再以反向的顺序来进行赋值</code>：</li>
+<li><ol start="2">
+<li><code>list() 不再以反向的顺序来进行赋值</code>：</li>
+</ol>
+</li>
 </ul>
 <p>list() 现在会按照变量定义的顺序来给他们进行赋值，而非反过来的顺序。 通常来说，这只会影响list() 与数组的[]操作符一起使用的案例，如下所示：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">list</span>($a[], $a[], $a[]) = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">var_dump($a);</span><br><span class="line"><span class="comment">// php5 -&gt; [3, 2, 1]</span></span><br><span class="line"><span class="comment">// php7 -&gt; [1, 2, 3]</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">list</span>(<span class="variable">$a</span>[], <span class="variable">$a</span>[], <span class="variable">$a</span>[]) = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="title function_ invoke__">var_dump</span>(<span class="variable">$a</span>);</span><br><span class="line"><span class="comment">// php5 -&gt; [3, 2, 1]</span></span><br><span class="line"><span class="comment">// php7 -&gt; [1, 2, 3]</span></span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>3) <code>空的list()赋值支持已经被移除</code>：</li>
+<li><ol start="3">
+<li><code>空的list()赋值支持已经被移除</code>：</li>
+</ol>
+</li>
 </ul>
 <p>list() 结构现在不再能是空的。如下的例子不再被允许：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">list</span>() = $a;</span><br><span class="line"><span class="keyword">list</span>(,,) = $a;</span><br><span class="line"><span class="keyword">list</span>($x, <span class="keyword">list</span>(), $y) = $a;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">list</span>() = <span class="variable">$a</span>;</span><br><span class="line"><span class="keyword">list</span>(,,) = <span class="variable">$a</span>;</span><br><span class="line"><span class="keyword">list</span>(<span class="variable">$x</span>, <span class="keyword">list</span>(), <span class="variable">$y</span>) = <span class="variable">$a</span>;</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>4) <code>list()不再能解开string</code>：</li>
+<li><ol start="4">
+<li><code>list()不再能解开string</code>：</li>
+</ol>
+</li>
 </ul>
 <p>list() 不再能解开字符串（string）变量。可以使用str_split()来代替。</p>
 <ul>
-<li>5) <code>global 只接受简单变量</code>：</li>
+<li><ol start="5">
+<li><code>global 只接受简单变量</code>：</li>
+</ol>
+</li>
 </ul>
 <p>可变变量不再能够与 global 关键字一起使用。 如果需要的话可以使用圆括号来模拟之前的行为。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Valid in PHP 5 only.</span></span><br><span class="line">    <span class="keyword">global</span> $$foo-&gt;bar;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Valid in PHP 5 and 7.</span></span><br><span class="line">    <span class="keyword">global</span> $&#123;$foo-&gt;bar&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// Valid in PHP 5 only.</span></span><br><span class="line">    <span class="keyword">global</span> <span class="variable">$$foo</span>-&gt;bar;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Valid in PHP 5 and 7.</span></span><br><span class="line">    <span class="keyword">global</span> $&#123;<span class="variable">$foo</span>-&gt;bar&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>作为一个通用的准则，global 一个除了裸的变量以外的任何东西都是不被推荐的。</p>
 <ul>
 <li><strong>【7.0.x+】foreach的变化</strong></li>
 </ul>
 <p>【7.0.x+】foreach发生了细微的变化，控制结构， 主要围绕阵列的内部数组指针和迭代处理的修改。</p>
 <ul>
-<li>1) <code>foreach不再改变内部数组指针</code>：</li>
+<li><ol>
+<li><code>foreach不再改变内部数组指针</code>：</li>
+</ol>
+</li>
 </ul>
 <p>在PHP7之前，当数组通过 foreach 迭代时，数组指针会移动。现在开始，不再如此，如：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$array = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line"><span class="keyword">foreach</span> ($array <span class="keyword">as</span> &amp;$val) </span><br><span class="line">&#123;</span><br><span class="line">    var_dump(current($array));</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// php7 下会打印3次：int(0)，而 php5 会打印：int(0), int(1), int(2)</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$array</span> = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>];</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$array</span> <span class="keyword">as</span> &amp;<span class="variable">$val</span>) </span><br><span class="line">&#123;</span><br><span class="line">    <span class="title function_ invoke__">var_dump</span>(<span class="title function_ invoke__">current</span>(<span class="variable">$array</span>));</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// php7 下会打印3次：int(0)，而 php5 会打印：int(0), int(1), int(2)</span></span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>2) <code>foreach 通过值遍历时，操作的值为数组的副本</code>：</li>
+<li><ol start="2">
+<li><code>foreach 通过值遍历时，操作的值为数组的副本</code>：</li>
+</ol>
+</li>
 </ul>
 <p>当默认使用通过值遍历数组时，foreach 实际操作的是数组的迭代副本，而非数组本身。这就意味着，foreach 中的操作不会修改原数组的值。</p>
 <ul>
-<li>3) <code>foreach通过引用遍历时，有更好的迭代特性：</code></li>
+<li><ol start="3">
+<li><code>foreach通过引用遍历时，有更好的迭代特性：</code></li>
+</ol>
+</li>
 </ul>
 <p>当使用引用遍历数组时，现在 foreach 在迭代中能更好的跟踪变化。例如，在迭代中添加一个迭代值到数组中，如：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$array = [<span class="number">0</span>];</span><br><span class="line"><span class="keyword">foreach</span> ($array <span class="keyword">as</span> &amp;$val) &#123;</span><br><span class="line">    var_dump($val);</span><br><span class="line">    $array[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// php5 输出 int(0)，php7 输出：int(0), int(1)</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$array</span> = [<span class="number">0</span>];</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$array</span> <span class="keyword">as</span> &amp;<span class="variable">$val</span>) &#123;</span><br><span class="line">    <span class="title function_ invoke__">var_dump</span>(<span class="variable">$val</span>);</span><br><span class="line">    <span class="variable">$array</span>[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// php5 输出 int(0)，php7 输出：int(0), int(1)</span></span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>4) <code>非Traversable 对象的遍历</code>：</li>
+<li><ol start="4">
+<li><code>非Traversable 对象的遍历</code>：</li>
+</ol>
+</li>
 </ul>
 <p>迭代一个非Traversable对象将会与迭代一个引用数组的行为相同。 这将导致在对象添加或删除属性时，foreach通过引用遍历时，有更好的迭代特性也能被应用</p>
 <ul>
 <li><strong>【7.0.x+】new 操作符创建的对象不能以引用方式赋值给变量</strong></li>
 </ul>
 <p>new 语句创建的对象不能 以引用的方式赋值给变量。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123;&#125;</span><br><span class="line">$c =&amp; <span class="keyword">new</span> C;</span><br><span class="line"><span class="comment">// php5: Deprecated: Assigning the return value of new by reference is deprecated in /tmp/test.php on line 3</span></span><br><span class="line"><span class="comment">// php7: Parse error: syntax error, unexpected 'new' (T_NEW) in /tmp/test.php on line 3</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> </span>&#123;&#125;</span><br><span class="line"><span class="variable">$c</span> =&amp; <span class="keyword">new</span> C;</span><br><span class="line"><span class="comment">// php5: Deprecated: Assigning the return value of new by reference is deprecated in /tmp/test.php on line 3</span></span><br><span class="line"><span class="comment">// php7: Parse error: syntax error, unexpected &#x27;new&#x27; (T_NEW) in /tmp/test.php on line 3</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>【7.0.x+】无效的类、接口以及 trait 命名</strong></li>
 </ul>
 <p>不能以下列名字来命名类、接口以及 trait：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">bool</span><br><span class="line">int</span><br><span class="line">float</span><br><span class="line">string</span><br><span class="line"><span class="keyword">NULL</span></span><br><span class="line"><span class="keyword">TRUE</span></span><br><span class="line"><span class="keyword">FALSE</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span></span><br><span class="line"><span class="keyword">int</span></span><br><span class="line"><span class="keyword">float</span></span><br><span class="line"><span class="keyword">string</span></span><br><span class="line"><span class="literal">NULL</span></span><br><span class="line"><span class="literal">TRUE</span></span><br><span class="line"><span class="literal">FALSE</span></span><br></pre></td></tr></table></figure>
+
 <p>此外，也不要使用下列的名字来命名类、接口以及 trait。虽然在 PHP 7.0 中， 这并不会引发错误， 但是这些名字是保留给将来使用的。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">resource</span><br><span class="line">object</span><br><span class="line">mixed</span><br><span class="line">numeric</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">resource</span><br><span class="line"><span class="keyword">object</span></span><br><span class="line"><span class="keyword">mixed</span></span><br><span class="line">numeric</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>【7.0.x+】移除了 ASP 和 script PHP 标签</strong></li>
 </ul>
 <p>使用类似 ASP 的标签，以及 script 标签来区分 PHP 代码的方式被移除。受到影响的标签有：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;% %&gt;</span><br><span class="line">&lt;%= %&gt;</span><br><span class="line">&lt;script language=<span class="string">"php"</span>&gt; &lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;% %&gt;</span><br><span class="line">&lt;%= %&gt;</span><br><span class="line">&lt;script language=<span class="string">&quot;php&quot;</span>&gt; &lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>【7.0.x+】string处理上的调整</strong></li>
 </ul>
@@ -641,24 +728,28 @@
 <ul>
 <li><strong>【7.0.x+】yield 变更为右联接运算符</strong></li>
 </ul>
-<p>在使用 yield 关键字的时候，不再需要括号， 并且它变更为右联接操作符，其运算符优先级介于 print 和 =&gt; 之间。 这可能导致现有代码的行为发生改变：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">echo</span> <span class="keyword">yield</span> <span class="number">-1</span>;</span><br><span class="line"><span class="comment">// 在之前版本中会被解释为：</span></span><br><span class="line"><span class="keyword">echo</span> (<span class="keyword">yield</span>) - <span class="number">1</span>;</span><br><span class="line"><span class="comment">// 现在，它将被解释为：</span></span><br><span class="line"><span class="keyword">echo</span> <span class="keyword">yield</span> (<span class="number">-1</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">yield</span> $foo <span class="keyword">or</span> <span class="keyword">die</span>;</span><br><span class="line"><span class="comment">// 在之前版本中会被解释为：</span></span><br><span class="line"><span class="keyword">yield</span> ($foo <span class="keyword">or</span> <span class="keyword">die</span>);</span><br><span class="line"><span class="comment">// 现在，它将被解释为：</span></span><br><span class="line">(<span class="keyword">yield</span> $foo) <span class="keyword">or</span> <span class="keyword">die</span>;</span><br></pre></td></tr></table></figure>
-<p><strong><em>可以通过使用括号来消除歧义</em></strong></p>
+<p>在使用 yield 关键字的时候，不再需要括号， 并且它变更为右联接操作符，其运算符优先级介于 print 和 &#x3D;&gt; 之间。 这可能导致现有代码的行为发生改变：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">echo</span> <span class="keyword">yield</span> -<span class="number">1</span>;</span><br><span class="line"><span class="comment">// 在之前版本中会被解释为：</span></span><br><span class="line"><span class="keyword">echo</span> (<span class="keyword">yield</span>) - <span class="number">1</span>;</span><br><span class="line"><span class="comment">// 现在，它将被解释为：</span></span><br><span class="line"><span class="keyword">echo</span> <span class="keyword">yield</span> (-<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">yield</span> <span class="variable">$foo</span> <span class="keyword">or</span> <span class="keyword">die</span>;</span><br><span class="line"><span class="comment">// 在之前版本中会被解释为：</span></span><br><span class="line"><span class="keyword">yield</span> (<span class="variable">$foo</span> <span class="keyword">or</span> <span class="keyword">die</span>);</span><br><span class="line"><span class="comment">// 现在，它将被解释为：</span></span><br><span class="line">(<span class="keyword">yield</span> <span class="variable">$foo</span>) <span class="keyword">or</span> <span class="keyword">die</span>;</span><br></pre></td></tr></table></figure>
+
+<p><em><strong>可以通过使用括号来消除歧义</strong></em></p>
 <ul>
 <li><strong>【7.0.x+】函数定义不可以包含多个同名参数</strong></li>
 </ul>
 <p>在函数定义中，不可以包含两个或多个同名的参数。 例如，下面代码中的函数定义会触发 <code>E_COMPILE_ERROR</code> 错误：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span><span class="params">($a, $b, $unused, $unused)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"><span class="variable">$a</span>, <span class="variable">$b</span>, <span class="variable">$unused</span>, <span class="variable">$unused</span></span>) </span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>【7.0.x+】Switch 语句不可以包含多个 default 块</strong></li>
 </ul>
 <p>在 switch 语句中，两个或者多个 default 块的代码已经不再被支持。 例如，下面代码中的 switch 语句会触发 <code>E_COMPILE_ERROR</code> 错误：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">switch</span> (<span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>【7.0.x+】在函数中检视参数值会返回当前的值</strong></li>
 </ul>
 <p>当在函数代码中使用 <code>func_get_arg()</code> 或 <code>func_get_args()</code> 函数来检视参数值， 或者使用 <code>debug_backtrace()</code> 函数查看回溯跟踪， 以及在异常回溯中所报告的参数值是指参数当前的值（有可能是已经被函数内的代码改变过的值）， 而不再是参数被传入函数时候的原始值了。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span><span class="params">($x)</span> </span>&#123;</span><br><span class="line">    $x++;</span><br><span class="line">    var_dump(func_get_arg(<span class="number">0</span>));</span><br><span class="line">&#125;</span><br><span class="line">foo(<span class="number">1</span>);<span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">// php5 -&gt; 1; php7 -&gt; 2</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"><span class="variable">$x</span></span>) </span>&#123;</span><br><span class="line">    <span class="variable">$x</span>++;</span><br><span class="line">    <span class="title function_ invoke__">var_dump</span>(<span class="title function_ invoke__">func_get_arg</span>(<span class="number">0</span>));</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_ invoke__">foo</span>(<span class="number">1</span>);<span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">// php5 -&gt; 1; php7 -&gt; 2</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>【7.0.x+】$HTTP_RAW_POST_DATA 被移除</strong></li>
 </ul>
@@ -715,6 +806,7 @@
 </ul>
 <p>移除了以下ini选项：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">session.entropy_file</span><br><span class="line">session.entropy_length</span><br><span class="line">session.hash_function</span><br><span class="line">session.hash_bits_per_character</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>【7.1.x+】mcrypt扩展</strong></li>
 </ul>
@@ -731,13 +823,15 @@
 <li><strong>【7.1.x+】禁止对自我检查范围的函数进行动态调用</strong></li>
 </ul>
 <p>涉及的函数有：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">assert() - with a string <span class="keyword">as</span> the first argument</span><br><span class="line">compact()</span><br><span class="line">extract()</span><br><span class="line">func_get_args()</span><br><span class="line">func_get_arg()</span><br><span class="line">func_num_args()</span><br><span class="line">get_defined_vars()</span><br><span class="line">mb_parse_str() - with one arg</span><br><span class="line">parse_str() - with one arg</span><br></pre></td></tr></table></figure>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="string">'func_num_args'</span>();  <span class="comment">// Warning: Cannot call func_num_args() dynamically in %s on line %d</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">assert</span>() - with a <span class="keyword">string</span> <span class="keyword">as</span> the first argument</span><br><span class="line"><span class="title function_ invoke__">compact</span>()</span><br><span class="line"><span class="title function_ invoke__">extract</span>()</span><br><span class="line"><span class="title function_ invoke__">func_get_args</span>()</span><br><span class="line"><span class="title function_ invoke__">func_get_arg</span>()</span><br><span class="line"><span class="title function_ invoke__">func_num_args</span>()</span><br><span class="line"><span class="title function_ invoke__">get_defined_vars</span>()</span><br><span class="line"><span class="title function_ invoke__">mb_parse_str</span>() - with one arg</span><br><span class="line"><span class="title function_ invoke__">parse_str</span>() - with one arg</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="string">&#x27;func_num_args&#x27;</span>();  <span class="comment">// Warning: Cannot call func_num_args() dynamically in %s on line %d</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
 <h1 id="兼容性检测工具"><a href="#兼容性检测工具" class="headerlink" title="兼容性检测工具"></a>兼容性检测工具</h1><ul>
-<li><a href="https://github.com/sstalle/php7cc" target="_blank" rel="noopener">PHP7 兼容性检测工具 php7cc：</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/sstalle/php7cc">PHP7 兼容性检测工具 php7cc：</a></li>
 </ul>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="http://www.syyong.com/php/Php5-5-upgrade-to-php7-2.html" target="_blank" rel="noopener">php5.5 升级到 php7.2</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.syyong.com/php/Php5-5-upgrade-to-php7-2.html">php5.5 升级到 php7.2</a></li>
 </ul>
 
         
@@ -770,7 +864,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP5-5/">PHP5.5</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP7-2/">PHP7.2</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP5-5/" rel="tag">PHP5.5</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP7-2/" rel="tag">PHP7.2</a></li></ul>
 
       
 
@@ -806,7 +900,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#升级到7-2后可用的主要新特性"><span class="nav-number">1.</span> <span class="nav-text">升级到7.2后可用的主要新特性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#主要不兼容函数列表"><span class="nav-number">2.</span> <span class="nav-text">主要不兼容函数列表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他主要不兼容点"><span class="nav-number">3.</span> <span class="nav-text">其他主要不兼容点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#兼容性检测工具"><span class="nav-number">4.</span> <span class="nav-text">兼容性检测工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%87%E7%BA%A7%E5%88%B07-2%E5%90%8E%E5%8F%AF%E7%94%A8%E7%9A%84%E4%B8%BB%E8%A6%81%E6%96%B0%E7%89%B9%E6%80%A7"><span class="nav-number">1.</span> <span class="nav-text">升级到7.2后可用的主要新特性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E4%B8%8D%E5%85%BC%E5%AE%B9%E5%87%BD%E6%95%B0%E5%88%97%E8%A1%A8"><span class="nav-number">2.</span> <span class="nav-text">主要不兼容函数列表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E4%B8%BB%E8%A6%81%E4%B8%8D%E5%85%BC%E5%AE%B9%E7%82%B9"><span class="nav-number">3.</span> <span class="nav-text">其他主要不兼容点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7"><span class="nav-number">4.</span> <span class="nav-text">兼容性检测工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -821,7 +915,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -901,12 +995,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -974,7 +1072,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

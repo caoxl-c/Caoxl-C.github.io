@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>linux 命令行测试websocket | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="LinuxWebSocket">
+  <meta name="keywords" content="LinuxWebSocket" />
   
   
   
   
   <meta name="description" content="Linux环境下，分别使用curl和wscat命令测试websocket连接。">
-<meta name="keywords" content="Linux,WebSocket">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux 命令行测试WebSocket">
 <meta property="og:url" content="http://blog.caoxl.com/2019/10/29/Linux-Testing-WebSocket/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="Linux环境下，分别使用curl和wscat命令测试websocket连接。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-29T03:52:10.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-29T03:36:37.000Z">
+<meta property="article:modified_time" content="2019-10-29T03:52:10.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="WebSocket">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Linux 命令行测试WebSocket">
-<meta name="twitter:description" content="Linux环境下，分别使用curl和wscat命令测试websocket连接。">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +222,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+    <a class="article-category-link" href="/categories/%E5%BF%85%E5%A4%87%E6%8A%80%E8%83%BD/">必备技能</a>
 
       
 	<a class="article-views">
@@ -199,24 +240,30 @@
           <blockquote>
 <p><code>Linux</code>环境下，分别使用<code>curl</code>和<code>wscat</code>命令测试<code>websocket</code>连接。</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h2 id="websocket"><a href="#websocket" class="headerlink" title="websocket"></a>websocket</h2><blockquote>
 <p>这里用swoole搭建一个websocket server</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建WebSocket服务器对象, 监听0.0.0.0:9502</span></span><br><span class="line">$web_socket = <span class="keyword">new</span> swoole_websocket_server(<span class="string">'0.0.0.0'</span>, <span class="number">9502</span>);</span><br><span class="line"></span><br><span class="line">$web_socket-&gt;on(<span class="string">'start'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($web_socket)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"WebSocket server is started at http://127.0.0.1:9502\n"</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听WebSocket连接打开事件</span></span><br><span class="line">$web_socket-&gt;on(<span class="string">'open'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($web_socket, $request)</span> </span>&#123;</span><br><span class="line">    var_dump($request-&gt;fd, <span class="string">"Hello, Welcome client-&#123;$fd&#125;\n"</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听WebSocket消息事件</span></span><br><span class="line">$web_socket-&gt;on(<span class="string">'message'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($web_socket, $frame)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"received message: &#123;$frame-&gt;data&#125;\n"</span>;</span><br><span class="line">    $web_socket-&gt;push($frame-&gt;fd, <span class="string">"server: &#123;$frame-&gt;data&#125;"</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听WebSocket连接关闭事件</span></span><br><span class="line">$web_socket-&gt;on(<span class="string">'close'</span>, <span class="function"><span class="keyword">function</span> <span class="params">($web_socket, $fd)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"client-&#123;$fd&#125; is closed\n"</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 开启服务</span></span><br><span class="line">$web_socket-&gt;start();</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建WebSocket服务器对象, 监听0.0.0.0:9502</span></span><br><span class="line"><span class="variable">$web_socket</span> = <span class="keyword">new</span> <span class="title function_ invoke__">swoole_websocket_server</span>(<span class="string">&#x27;0.0.0.0&#x27;</span>, <span class="number">9502</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$web_socket</span>-&gt;<span class="title function_ invoke__">on</span>(<span class="string">&#x27;start&#x27;</span>, function (<span class="variable">$web_socket</span>) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;WebSocket server is started at http://127.0.0.1:9502\n&quot;</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听WebSocket连接打开事件</span></span><br><span class="line"><span class="variable">$web_socket</span>-&gt;<span class="title function_ invoke__">on</span>(<span class="string">&#x27;open&#x27;</span>, function (<span class="variable">$web_socket</span>, <span class="variable">$request</span>) &#123;</span><br><span class="line">    <span class="title function_ invoke__">var_dump</span>(<span class="variable">$request</span>-&gt;fd, <span class="string">&quot;Hello, Welcome client-<span class="subst">&#123;$fd&#125;</span>\n&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听WebSocket消息事件</span></span><br><span class="line"><span class="variable">$web_socket</span>-&gt;<span class="title function_ invoke__">on</span>(<span class="string">&#x27;message&#x27;</span>, function (<span class="variable">$web_socket</span>, <span class="variable">$frame</span>) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;received message: <span class="subst">&#123;$frame-&gt;data&#125;</span>\n&quot;</span>;</span><br><span class="line">    <span class="variable">$web_socket</span>-&gt;<span class="title function_ invoke__">push</span>(<span class="variable">$frame</span>-&gt;fd, <span class="string">&quot;server: <span class="subst">&#123;$frame-&gt;data&#125;</span>&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听WebSocket连接关闭事件</span></span><br><span class="line"><span class="variable">$web_socket</span>-&gt;<span class="title function_ invoke__">on</span>(<span class="string">&#x27;close&#x27;</span>, function (<span class="variable">$web_socket</span>, <span class="variable">$fd</span>) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;client-<span class="subst">&#123;$fd&#125;</span> is closed\n&quot;</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 开启服务</span></span><br><span class="line"><span class="variable">$web_socket</span>-&gt;<span class="title function_ invoke__">start</span>();</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>开启<code>websocket server</code></li>
 </ul>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl Start]<span class="comment"># php websocket_server.php </span></span><br><span class="line">WebSocket server is started at http:<span class="comment">//127.0.0.1:950</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="wscat"><a href="#wscat" class="headerlink" title="wscat"></a>wscat</h2><blockquote>
 <p>wscat是一个用来连接websocket的命令行工具，nodejs开发的。</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl Start]<span class="comment"># npm install -g wscat</span></span><br><span class="line">/root/.nvm/versions/node/v11<span class="number">.1</span><span class="number">.0</span>/bin/wscat -&gt; /root/.nvm/versions/node/v11<span class="number">.1</span><span class="number">.0</span>/lib/node_modules/wscat/bin/wscat</span><br><span class="line">+ wscat@<span class="number">3.0</span><span class="number">.0</span></span><br><span class="line">added <span class="number">12</span> packages from <span class="number">9</span> contributors in <span class="number">8.03</span>s</span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试一下</span></span><br><span class="line">[root@caoxl Start]<span class="comment"># wscat -V</span></span><br><span class="line"><span class="number">3.0</span><span class="number">.0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl Start]<span class="comment"># npm install -g wscat</span></span><br><span class="line">/root/.nvm/versions/node/v11.<span class="number">1.0</span>/bin/wscat -&gt; /root/.nvm/versions/node/v11.<span class="number">1.0</span>/lib/node_modules/wscat/bin/wscat</span><br><span class="line">+ wscat@<span class="number">3.0</span>.<span class="number">0</span></span><br><span class="line">added <span class="number">12</span> packages <span class="keyword">from</span> <span class="number">9</span> contributors in <span class="number">8.03</span>s</span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试一下</span></span><br><span class="line">[root@caoxl Start]<span class="comment"># wscat -V</span></span><br><span class="line"><span class="number">3.0</span>.<span class="number">0</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>使用wscat测试WebSocket</li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; [root@caoxl Start]<span class="comment"># wscat -c ws://127.0.0.1:9502</span></span><br><span class="line">Connected (press CTRL+C to quit)</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="curl"><a href="#curl" class="headerlink" title="curl"></a>curl</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">curl --<span class="keyword">include</span> \</span><br><span class="line">     --no-buffer \</span><br><span class="line">     --header <span class="string">"Connection: Upgrade"</span> \</span><br><span class="line">     --header <span class="string">"Upgrade: websocket"</span> \</span><br><span class="line">     --header <span class="string">"Host: http://127.0.0.1:9502"</span> \</span><br><span class="line">     --header <span class="string">"Origin: http://www.caoxl.com"</span> \</span><br><span class="line">     --header <span class="string">"Sec-WebSocket-Key: NVwjmQUcWCenfWu98asDmg=="</span> \</span><br><span class="line">     --header <span class="string">"Sec-WebSocket-Version: 13"</span> \</span><br><span class="line">     http:<span class="comment">//127.0.0.1:9502</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; [root@caoxl Start]<span class="comment"># wscat -c ws://127.0.0.1:9502</span></span><br><span class="line"><span class="title function_ invoke__">Connected</span> (press CTRL+C to quit)</span><br><span class="line">&gt; </span><br></pre></td></tr></table></figure>
+
+<h2 id="curl"><a href="#curl" class="headerlink" title="curl"></a>curl</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">curl --<span class="keyword">include</span> \</span><br><span class="line">     --no-buffer \</span><br><span class="line">     --header <span class="string">&quot;Connection: Upgrade&quot;</span> \</span><br><span class="line">     --header <span class="string">&quot;Upgrade: websocket&quot;</span> \</span><br><span class="line">     --header <span class="string">&quot;Host: http://127.0.0.1:9502&quot;</span> \</span><br><span class="line">     --header <span class="string">&quot;Origin: http://www.caoxl.com&quot;</span> \</span><br><span class="line">     --header <span class="string">&quot;Sec-WebSocket-Key: NVwjmQUcWCenfWu98asDmg==&quot;</span> \</span><br><span class="line">     --header <span class="string">&quot;Sec-WebSocket-Version: 13&quot;</span> \</span><br><span class="line">     http:<span class="comment">//127.0.0.1:9502</span></span><br></pre></td></tr></table></figure>
+
 <p>注意这里不需要特定的密钥（<code>Sec-WebSocket-Key</code>），所以随便取一个都可以。该头文件的作用是防止缓存<code>websocket</code>请求。</p>
 <ul>
 <li>正常情况下输出如下：</li>
@@ -252,7 +299,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WebSocket/">WebSocket</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WebSocket/" rel="tag">WebSocket</a></li></ul>
 
       
 
@@ -303,7 +350,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -383,12 +430,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -456,7 +507,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

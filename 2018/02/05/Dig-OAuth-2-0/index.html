@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>理解 oauth 2.0 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="OAuth 2.0">
+  <meta name="keywords" content="OAuth 2.0" />
   
   
   
   
   <meta name="description" content="OAuth是一个关于授权（authorization）的开放网络标准，在全世界得到广泛应用，目前的版本是2.0版。 本文对OAuth 2.0的设计思路和运行流程，做一个简明通俗的解释，主要参考材料为RFC 6749。">
-<meta name="keywords" content="OAuth 2.0">
 <meta property="og:type" content="article">
 <meta property="og:title" content="理解 OAuth 2.0">
 <meta property="og:url" content="http://blog.caoxl.com/2018/02/05/Dig-OAuth-2-0/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="OAuth是一个关于授权（authorization）的开放网络标准，在全世界得到广泛应用，目前的版本是2.0版。 本文对OAuth 2.0的设计思路和运行流程，做一个简明通俗的解释，主要参考材料为RFC 6749。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051203.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051204.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051205.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051206.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051207.png">
-<meta property="og:updated_time" content="2019-08-22T03:46:48.000Z">
+<meta property="article:published_time" content="2018-02-05T03:18:41.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:46:48.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="OAuth 2.0">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="理解 OAuth 2.0">
-<meta name="twitter:description" content="OAuth是一个关于授权（authorization）的开放网络标准，在全世界得到广泛应用，目前的版本是2.0版。 本文对OAuth 2.0的设计思路和运行流程，做一个简明通俗的解释，主要参考材料为RFC 6749。">
 <meta name="twitter:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051203.png">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
@@ -48,30 +48,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -149,7 +187,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -187,7 +227,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%BF%85%E5%A4%87/">计算机专业必备</a>
 
       
 	<a class="article-views">
@@ -202,14 +242,16 @@
       
         
         
-          <p><a href="https://en.wikipedia.org/wiki/OAuth" target="_blank" rel="noopener">OAuth</a>是一个关于授权（authorization）的开放网络标准，在全世界得到广泛应用，目前的版本是2.0版。</p>
-<p>本文对OAuth 2.0的设计思路和运行流程，做一个简明通俗的解释，主要参考材料为<a href="http://www.rfcreader.com/#rfc6749" target="_blank" rel="noopener">RFC 6749</a>。</p>
-<a id="more"></a>
+          <p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/OAuth">OAuth</a>是一个关于授权（authorization）的开放网络标准，在全世界得到广泛应用，目前的版本是2.0版。</p>
+<p>本文对OAuth 2.0的设计思路和运行流程，做一个简明通俗的解释，主要参考材料为<a target="_blank" rel="noopener" href="http://www.rfcreader.com/#rfc6749">RFC 6749</a>。</p>
+<span id="more"></span>
+
 <h1 id="一、应用场景"><a href="#一、应用场景" class="headerlink" title="一、应用场景"></a>一、应用场景</h1><p>为了理解OAuth的适用场合，让我举一个假设的例子。</p>
 <p>有一个”云冲印”的网站，可以将用户储存在Google的照片，冲印出来。用户为了使用该服务，必须让”云冲印”读取自己储存在Google上的照片。</p>
 <p>问题是只有得到用户的授权，Google才会同意”云冲印”读取这些照片。那么，”云冲印”怎样获得用户的授权呢？</p>
 <p>传统方法是，用户将自己的Google用户名和密码，告诉”云冲印”，后者就可以读取用户的照片了。这样的做法有以下几个严重的缺点。</p>
-<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>）<span class="string">"云冲印"</span>为了后续的服务，会保存用户的密码，这样很不安全。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>）Google不得不部署密码登录，而我们知道，单纯的密码登录并不安全。</span><br><span class="line"></span><br><span class="line">（<span class="number">3</span>）<span class="string">"云冲印"</span>拥有了获取用户储存在Google所有资料的权力，用户没法限制<span class="string">"云冲印"</span>获得授权的范围和有效期。</span><br><span class="line"></span><br><span class="line">（<span class="number">4</span>）用户只有修改密码，才能收回赋予<span class="string">"云冲印"</span>的权力。但是这样做，会使得其他所有获得用户授权的第三方应用程序全部失效。</span><br><span class="line"></span><br><span class="line">（<span class="number">5</span>）只要有一个第三方应用程序被破解，就会导致用户密码泄漏，以及所有被密码保护的数据泄漏。</span><br></pre></td></tr></table></figure>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>）<span class="string">&quot;云冲印&quot;</span>为了后续的服务，会保存用户的密码，这样很不安全。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>）Google不得不部署密码登录，而我们知道，单纯的密码登录并不安全。</span><br><span class="line"></span><br><span class="line">（<span class="number">3</span>）<span class="string">&quot;云冲印&quot;</span>拥有了获取用户储存在Google所有资料的权力，用户没法限制<span class="string">&quot;云冲印&quot;</span>获得授权的范围和有效期。</span><br><span class="line"></span><br><span class="line">（<span class="number">4</span>）用户只有修改密码，才能收回赋予<span class="string">&quot;云冲印&quot;</span>的权力。但是这样做，会使得其他所有获得用户授权的第三方应用程序全部失效。</span><br><span class="line"></span><br><span class="line">（<span class="number">5</span>）只要有一个第三方应用程序被破解，就会导致用户密码泄漏，以及所有被密码保护的数据泄漏。</span><br></pre></td></tr></table></figure>
+
 <p><code>OAuth</code>就是为了解决上面这些问题而诞生的。</p>
 <h1 id="二、名词定义"><a href="#二、名词定义" class="headerlink" title="二、名词定义"></a>二、名词定义</h1><p>在详细讲解OAuth 2.0之前，需要了解几个专用名词。它们对读懂后面的讲解，尤其是几张图，至关重要。</p>
 <blockquote>
@@ -247,7 +289,8 @@
 <p>“客户端”登录授权层以后，”服务提供商”根据令牌的权限范围和有效期，向”客户端”开放用户储存的资料。</p>
 <h1 id="四、运行流程"><a href="#四、运行流程" class="headerlink" title="四、运行流程"></a>四、运行流程</h1><p>OAuth 2.0的运行流程如下图，摘自RFC 6749。</p>
 <p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051203.png" alt="运行流程"></p>
-<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">（A）用户打开客户端以后，客户端要求用户给予授权。</span><br><span class="line"></span><br><span class="line">（<span class="keyword">B）用户同意给予客户端授权。</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword">（C）客户端使用上一步获得的授权，向认证服务器申请令牌。</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword">（D）认证服务器对客户端进行认证以后，确认无误，同意发放令牌。</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword">（E）客户端使用令牌，向资源服务器申请获取资源。</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword">（F）资源服务器确认令牌无误，同意向客户端开放资源。</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">（<span class="variable">A</span>）用户打开客户端以后，客户端要求用户给予授权。</span><br><span class="line"></span><br><span class="line">（<span class="variable">B</span>）用户同意给予客户端授权。</span><br><span class="line"></span><br><span class="line">（<span class="built_in">C</span>）客户端使用上一步获得的授权，向认证服务器申请令牌。</span><br><span class="line"></span><br><span class="line">（<span class="built_in">D</span>）认证服务器对客户端进行认证以后，确认无误，同意发放令牌。</span><br><span class="line"></span><br><span class="line">（<span class="built_in">E</span>）客户端使用令牌，向资源服务器申请获取资源。</span><br><span class="line"></span><br><span class="line">（<span class="variable">F</span>）资源服务器确认令牌无误，同意向客户端开放资源。</span><br></pre></td></tr></table></figure>
+
 <p>不难看出来，上面六个步骤之中，B是关键，即用户怎样才能给于客户端授权。有了这个授权以后，客户端就可以获取令牌，进而凭令牌获取资源。</p>
 <p>下面一一讲解客户端获取授权的<code>四种模式</code>。</p>
 <h1 id="五、客户端的授权模式"><a href="#五、客户端的授权模式" class="headerlink" title="五、客户端的授权模式"></a>五、客户端的授权模式</h1><p>客户端必须得到用户的授权（authorization grant），才能获得令牌（access token）。OAuth 2.0定义了四种授权方式。</p>
@@ -260,7 +303,8 @@
 <h1 id="六、授权码模式"><a href="#六、授权码模式" class="headerlink" title="六、授权码模式"></a>六、授权码模式</h1><p><strong>授权码模式</strong>（authorization code）是功能最完整、流程最严密的授权模式。它的特点就是通过客户端的后台服务器，与”服务提供商”的认证服务器进行互动。</p>
 <p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051204.png" alt="授权码模式"></p>
 <p>它的步骤如下：</p>
-<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">（A）用户访问客户端，后者将前者导向认证服务器。</span><br><span class="line"></span><br><span class="line">（B）用户选择是否给予客户端授权。</span><br><span class="line"></span><br><span class="line">（C）假设用户给予授权，认证服务器将用户导向客户端事先指定的<span class="string">"重定向URI"</span>（redirection URI），同时附上一个授权码。</span><br><span class="line"></span><br><span class="line">（D）客户端收到授权码，附上早先的<span class="string">"重定向URI"</span>，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。</span><br><span class="line"></span><br><span class="line">（E）认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access <span class="keyword">token</span>）和更新令牌（refresh <span class="keyword">token</span>）。</span><br></pre></td></tr></table></figure>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">（<span class="variable">A</span>）用户访问客户端，后者将前者导向认证服务器。</span><br><span class="line"></span><br><span class="line">（<span class="variable">B</span>）用户选择是否给予客户端授权。</span><br><span class="line"></span><br><span class="line">（<span class="built_in">C</span>）假设用户给予授权，认证服务器将用户导向客户端事先指定的<span class="string">&quot;重定向URI&quot;</span>（<span class="variable">redirection</span> <span class="variable">URI</span>），同时附上一个授权码。</span><br><span class="line"></span><br><span class="line">（<span class="built_in">D</span>）客户端收到授权码，附上早先的<span class="string">&quot;重定向URI&quot;</span>，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。</span><br><span class="line"></span><br><span class="line">（<span class="built_in">E</span>）认证服务器核对了授权码和重定向<span class="variable">URI</span>，确认无误后，向客户端发送访问令牌（<span class="variable">access</span> <span class="variable">token</span>）和更新令牌（<span class="variable">refresh</span> <span class="variable">token</span>）。</span><br></pre></td></tr></table></figure>
+
 <p>下面是上面这些步骤所需要的参数。</p>
 <p><strong>A步骤</strong>中，客户端申请认证的 <code>URI</code> ，包含以下参数：</p>
 <ul>
@@ -271,7 +315,8 @@
 <li><code>state</code>：表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。</li>
 </ul>
 <p>下面是一个例子:</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GET /authorize?response_type=code&amp;client_id=s6BhdRkqt3&amp;state=xyz&amp;redirect_uri=https%<span class="number">3</span>A%<span class="number">2</span>F%<span class="number">2</span>Fclient%<span class="number">2</span>Eexample%<span class="number">2</span>Ecom%<span class="number">2</span>Fcb HTTP/<span class="number">1.1</span></span><br><span class="line"></span><br><span class="line">Host: server.example.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">GET</span> /authorize?response_type=code&amp;client_id=s6BhdRkqt3&amp;state=xyz&amp;redirect_uri=https%<span class="number">3</span>A%<span class="number">2</span>F%<span class="number">2</span>Fclient%<span class="number">2</span>Eexample%<span class="number">2</span>Ecom%<span class="number">2</span>Fcb HTTP/<span class="number">1</span>.<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">Host</span>: server.example.com</span><br></pre></td></tr></table></figure>
+
 <p><strong>C步骤</strong>中，服务器回应客户端的URI，包含以下参数：</p>
 <ul>
 <li><p><code>code</code>：表示授权码，必选项。该码的有效期应该很短，通常设为10分钟，客户端只能使用该码一次，否则会被授权服务器拒绝。该码与客户端ID和重定向URI，是一一对应关系。</p>
@@ -280,7 +325,8 @@
 </li>
 </ul>
 <p>下面是一个例子。</p>
-<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HTTP/<span class="number">1.1</span> <span class="number">302</span> Found</span><br><span class="line">Location: https://client.example.com/cb?code=SplxlOBeZQQYbYS6WxSbIA&amp;<span class="keyword">state</span>=xyz</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">302</span> Found</span><br><span class="line"><span class="attribute">Location</span><span class="punctuation">: </span>https://client.example.com/cb?code=SplxlOBeZQQYbYS6WxSbIA&amp;state=xyz</span><br></pre></td></tr></table></figure>
+
 <p><strong>D步骤</strong>中，客户端向认证服务器申请令牌的HTTP请求，包含以下参数：</p>
 <ul>
 <li><code>grant_type</code>：表示使用的授权模式，必选项，此处的值固定为”authorization_code”。</li>
@@ -289,7 +335,8 @@
 <li><code>client_id</code>：表示客户端ID，必选项。</li>
 </ul>
 <p>下面是一个例子。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: server.example.com</span><br><span class="line"><span class="attribute">Authorization</span>: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span>: application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">grant_type=authorization_code&amp;code=SplxlOBeZQQYbYS6WxSbIA</span><br><span class="line">&amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line"><span class="language-llvm">grant_type<span class="operator">=</span>authorization_code&amp;code<span class="operator">=</span>SplxlOBeZQQYbYS<span class="number">6</span>WxSbIA</span></span><br><span class="line"><span class="language-llvm">&amp;redirect_uri<span class="operator">=</span>https<span class="variable">%3</span>A<span class="variable">%2</span>F<span class="variable">%2</span>Fclient<span class="variable">%2</span>Eexample<span class="variable">%2</span>Ecom<span class="variable">%2</span>Fcb</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>E步骤</strong>中，认证服务器发送的HTTP回复，包含以下参数：</p>
 <ul>
 <li><code>access_token</code>：表示访问令牌，必选项。</li>
@@ -299,12 +346,14 @@
 <li><code>scope</code>：表示权限范围，如果与客户端申请的范围一致，此项可省略。</li>
 </ul>
 <p>下面是一个例子。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span>: application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Cache-Control</span>: no-store</span><br><span class="line"><span class="attribute">Pragma</span>: no-cache</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  "access_token":"2YotnFZFEjr1zCsicMWpAA",</span><br><span class="line">  "token_type":"example",</span><br><span class="line">  "expires_in":3600,</span><br><span class="line">  "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA",</span><br><span class="line">  "example_parameter":"example_value"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>no-store</span><br><span class="line"><span class="attribute">Pragma</span><span class="punctuation">: </span>no-cache</span><br><span class="line"></span><br><span class="line"><span class="language-json"><span class="punctuation">&#123;</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;access_token&quot;</span><span class="punctuation">:</span><span class="string">&quot;2YotnFZFEjr1zCsicMWpAA&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;token_type&quot;</span><span class="punctuation">:</span><span class="string">&quot;example&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;expires_in&quot;</span><span class="punctuation">:</span><span class="number">3600</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;refresh_token&quot;</span><span class="punctuation">:</span><span class="string">&quot;tGzv3JOkF0XG5Qx2TlKWIA&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;example_parameter&quot;</span><span class="punctuation">:</span><span class="string">&quot;example_value&quot;</span></span></span><br><span class="line"><span class="language-json"><span class="punctuation">&#125;</span></span></span><br></pre></td></tr></table></figure>
+
 <p>从上面代码可以看到，相关参数使用JSON格式发送（<code>Content-Type: application/json</code>）。此外，HTTP头信息中明确指定不得缓存。</p>
 <h1 id="七、简化模式"><a href="#七、简化模式" class="headerlink" title="七、简化模式"></a>七、简化模式</h1><p><strong>简化模式</strong>（implicit grant type）不通过第三方应用程序的服务器，直接在浏览器中向认证服务器申请令牌，跳过了”授权码”这个步骤，因此得名。所有步骤在浏览器中完成，令牌对访问者是可见的，且客户端不需要认证。</p>
 <p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051205.png" alt="简化模式"></p>
 <p>它的步骤如下：</p>
-<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">（A）客户端将用户导向认证服务器。</span><br><span class="line"></span><br><span class="line">（B）用户决定是否给于客户端授权。</span><br><span class="line"></span><br><span class="line">（C）假设用户给予授权，认证服务器将用户导向客户端指定的<span class="string">"重定向URI"</span>，并在URI的<span class="keyword">Hash</span>部分包含了访问令牌。</span><br><span class="line"></span><br><span class="line">（D）浏览器向资源服务器发出请求，其中不包括上一步收到的<span class="keyword">Hash</span>值。</span><br><span class="line"></span><br><span class="line">（E）资源服务器返回一个网页，其中包含的代码可以获取<span class="keyword">Hash</span>值中的令牌。</span><br><span class="line"></span><br><span class="line">（F）浏览器执行上一步获得的脚本，提取出令牌。</span><br><span class="line"></span><br><span class="line">（G）浏览器将令牌发给客户端。</span><br></pre></td></tr></table></figure>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">（<span class="variable">A</span>）客户端将用户导向认证服务器。</span><br><span class="line"></span><br><span class="line">（<span class="variable">B</span>）用户决定是否给于客户端授权。</span><br><span class="line"></span><br><span class="line">（<span class="built_in">C</span>）假设用户给予授权，认证服务器将用户导向客户端指定的<span class="string">&quot;重定向URI&quot;</span>，并在<span class="variable">URI</span>的<span class="built_in">Hash</span>部分包含了访问令牌。</span><br><span class="line"></span><br><span class="line">（<span class="built_in">D</span>）浏览器向资源服务器发出请求，其中不包括上一步收到的<span class="built_in">Hash</span>值。</span><br><span class="line"></span><br><span class="line">（<span class="built_in">E</span>）资源服务器返回一个网页，其中包含的代码可以获取<span class="built_in">Hash</span>值中的令牌。</span><br><span class="line"></span><br><span class="line">（<span class="variable">F</span>）浏览器执行上一步获得的脚本，提取出令牌。</span><br><span class="line"></span><br><span class="line">（<span class="variable">G</span>）浏览器将令牌发给客户端。</span><br></pre></td></tr></table></figure>
+
 <p>下面是上面这些步骤所需要的参数。</p>
 <p><strong>A步骤</strong>中，客户端发出的HTTP请求，包含以下参数：</p>
 <ul>
@@ -315,7 +364,8 @@
 <li><code>state</code>：表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。</li>
 </ul>
 <p>下面是一个例子。</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GET /authorize?response_type=token&amp;client_id=s6BhdRkqt3&amp;state=xyz&amp;redirect_uri=https%<span class="number">3</span>A%<span class="number">2</span>F%<span class="number">2</span>Fclient%<span class="number">2</span>Eexample%<span class="number">2</span>Ecom%<span class="number">2</span>Fcb HTTP/<span class="number">1.1</span></span><br><span class="line"></span><br><span class="line">Host: server.example.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">GET</span> /authorize?response_type=token&amp;client_id=s6BhdRkqt3&amp;state=xyz&amp;redirect_uri=https%<span class="number">3</span>A%<span class="number">2</span>F%<span class="number">2</span>Fclient%<span class="number">2</span>Eexample%<span class="number">2</span>Ecom%<span class="number">2</span>Fcb HTTP/<span class="number">1</span>.<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">Host</span>: server.example.com</span><br></pre></td></tr></table></figure>
+
 <p><strong>C步骤</strong>中，认证服务器回应客户端的URI，包含以下参数：</p>
 <ul>
 <li><code>access_token</code>：表示访问令牌，必选项。</li>
@@ -325,14 +375,16 @@
 <li><code>state</code>：如果客户端的请求中包含这个参数，认证服务器的回应也必须一模一样包含这个参数。</li>
 </ul>
 <p>下面是一个例子。</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 <span class="number">302</span> Found</span><br><span class="line"></span><br><span class="line"><span class="attribute">Location</span>: http://example.com/cb#access_token=2YotnFZFEjr1zCsicMWpAA&amp;state=xyz&amp;token_type=example&amp;expires_in=3600</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">302</span> Found</span><br><span class="line"></span><br><span class="line"><span class="language-awk">Location: http:<span class="regexp">//</span>example.com/cb<span class="comment">#access_token=2YotnFZFEjr1zCsicMWpAA&amp;state=xyz&amp;token_type=example&amp;expires_in=3600</span></span></span><br></pre></td></tr></table></figure>
+
 <p>在上面的例子中，认证服务器用<code>HTTP</code>头信息的<code>Location</code>栏，指定浏览器重定向的网址。注意，在这个网址的<code>Hash</code>部分包含了令牌。</p>
 <p>根据上面的D步骤，下一步浏览器会访问Location指定的网址，但是Hash部分不会发送。接下来的E步骤，服务提供商的资源服务器发送过来的代码，会提取出Hash中的令牌。</p>
 <h1 id="八、密码模式"><a href="#八、密码模式" class="headerlink" title="八、密码模式"></a>八、密码模式</h1><p><strong>密码模式</strong>（Resource Owner Password Credentials Grant）中，用户向客户端提供自己的用户名和密码。客户端使用这些信息，向”服务商提供商”索要授权。</p>
 <p>在这种模式中，用户必须把自己的密码给客户端，但是客户端不得储存密码。这通常用在用户对客户端高度信任的情况下，比如客户端是操作系统的一部分，或者由一个著名公司出品。而认证服务器只有在其他授权模式无法执行的情况下，才能考虑使用这种模式。</p>
 <p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051206.png" alt="密码模式"></p>
 <p>它的步骤如下：</p>
-<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">（A）用户向客户端提供用户名和密码。</span><br><span class="line"></span><br><span class="line">（<span class="keyword">B）客户端将用户名和密码发给认证服务器，向后者请求令牌。</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword">（C）认证服务器确认无误后，向客户端提供访问令牌。</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">（<span class="selector-tag">A</span>）用户向客户端提供用户名和密码。</span><br><span class="line"></span><br><span class="line">（<span class="selector-tag">B</span>）客户端将用户名和密码发给认证服务器，向后者请求令牌。</span><br><span class="line"></span><br><span class="line">（C）认证服务器确认无误后，向客户端提供访问令牌。</span><br></pre></td></tr></table></figure>
+
 <p><strong>B步骤</strong>中，客户端发出的HTTP请求，包含以下参数：</p>
 <ul>
 <li><code>grant_type</code>：表示授权类型，此处的值固定为”password”，必选项。</li>
@@ -341,24 +393,29 @@
 <li><code>scope</code>：表示权限范围，可选项。</li>
 </ul>
 <p>下面是一个例子。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: server.example.com</span><br><span class="line"><span class="attribute">Authorization</span>: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span>: application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">grant_type=password&amp;username=johndoe&amp;password=A3ddj3w</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line"><span class="language-dts">grant_<span class="attr">type</span><span class="operator">=</span>password<span class="variable">&amp;username</span>=johndoe<span class="variable">&amp;password</span>=A3ddj3w</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>C步骤</strong>中，认证服务器向客户端发送访问令牌，下面是一个例子。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span>: application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Cache-Control</span>: no-store</span><br><span class="line"><span class="attribute">Pragma</span>: no-cache</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  "access_token":"2YotnFZFEjr1zCsicMWpAA",</span><br><span class="line">  "token_type":"example",</span><br><span class="line">  "expires_in":3600,</span><br><span class="line">  "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA",</span><br><span class="line">  "example_parameter":"example_value"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>no-store</span><br><span class="line"><span class="attribute">Pragma</span><span class="punctuation">: </span>no-cache</span><br><span class="line"></span><br><span class="line"><span class="language-json"><span class="punctuation">&#123;</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;access_token&quot;</span><span class="punctuation">:</span><span class="string">&quot;2YotnFZFEjr1zCsicMWpAA&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;token_type&quot;</span><span class="punctuation">:</span><span class="string">&quot;example&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;expires_in&quot;</span><span class="punctuation">:</span><span class="number">3600</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;refresh_token&quot;</span><span class="punctuation">:</span><span class="string">&quot;tGzv3JOkF0XG5Qx2TlKWIA&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;example_parameter&quot;</span><span class="punctuation">:</span><span class="string">&quot;example_value&quot;</span></span></span><br><span class="line"><span class="language-json"><span class="punctuation">&#125;</span></span></span><br></pre></td></tr></table></figure>
+
 <p>上面代码中，各个参数的含义参见《授权码模式》一节。</p>
 <p>整个过程中，客户端不得保存用户的密码。</p>
 <h1 id="九、客户端模式"><a href="#九、客户端模式" class="headerlink" title="九、客户端模式"></a>九、客户端模式</h1><p><strong>客户端模式</strong>（Client Credentials Grant）指客户端以自己的名义，而不是以用户的名义，向”服务提供商”进行认证。严格地说，客户端模式并不属于OAuth框架所要解决的问题。在这种模式中，用户直接向客户端注册，客户端以自己的名义要求”服务提供商”提供服务，其实不存在授权问题。</p>
 <p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014051207.png" alt="客户端模式"></p>
 <p>它的步骤如下：</p>
-<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">（<span class="keyword">A</span>）客户端向认证服务器进行身份认证，并要求一个访问令牌。</span><br><span class="line"></span><br><span class="line">（B）认证服务器确认无误后，向客户端提供访问令牌。</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">（<span class="selector-tag">A</span>）客户端向认证服务器进行身份认证，并要求一个访问令牌。</span><br><span class="line"></span><br><span class="line">（<span class="selector-tag">B</span>）认证服务器确认无误后，向客户端提供访问令牌。</span><br></pre></td></tr></table></figure>
+
 <p><strong>A步骤</strong>中，客户端发出的HTTP请求，包含以下参数：</p>
 <ul>
 <li><code>granttype</code>：表示授权类型，此处的值固定为”clientcredentials”，必选项。</li>
 <li><code>scope</code>：表示权限范围，可选项。</li>
 </ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: server.example.com</span><br><span class="line"><span class="attribute">Authorization</span>: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span>: application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">grant_type=client_credentials</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line"><span class="language-ini"><span class="attr">grant_type</span>=client_credentials</span></span><br></pre></td></tr></table></figure>
+
 <p>认证服务器必须以某种方式，验证客户端身份。</p>
 <p><strong>B步骤</strong>中，认证服务器向客户端发送访问令牌，下面是一个例子。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span>: application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Cache-Control</span>: no-store</span><br><span class="line"><span class="attribute">Pragma</span>: no-cache</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  "access_token":"2YotnFZFEjr1zCsicMWpAA",</span><br><span class="line">  "token_type":"example",</span><br><span class="line">  "expires_in":3600,</span><br><span class="line">  "example_parameter":"example_value"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>no-store</span><br><span class="line"><span class="attribute">Pragma</span><span class="punctuation">: </span>no-cache</span><br><span class="line"></span><br><span class="line"><span class="language-json"><span class="punctuation">&#123;</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;access_token&quot;</span><span class="punctuation">:</span><span class="string">&quot;2YotnFZFEjr1zCsicMWpAA&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;token_type&quot;</span><span class="punctuation">:</span><span class="string">&quot;example&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;expires_in&quot;</span><span class="punctuation">:</span><span class="number">3600</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;example_parameter&quot;</span><span class="punctuation">:</span><span class="string">&quot;example_value&quot;</span></span></span><br><span class="line"><span class="language-json"><span class="punctuation">&#125;</span></span></span><br></pre></td></tr></table></figure>
+
 <p>上面代码中，各个参数的含义参见《授权码模式》一节。</p>
 <h1 id="十、更新令牌"><a href="#十、更新令牌" class="headerlink" title="十、更新令牌"></a>十、更新令牌</h1><p>如果用户访问的时候，客户端的”访问令牌”已经过期，则需要使用”更新令牌”申请一个新的访问令牌。</p>
 <p>客户端发出更新令牌的HTTP请求，包含以下参数：</p>
@@ -368,9 +425,10 @@
 <li><code>scope</code>：表示申请的授权范围，不可以超出上一次申请的范围，如果省略该参数，则表示与上一次一致。</li>
 </ul>
 <p>下面是一个例子。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: server.example.com</span><br><span class="line"><span class="attribute">Authorization</span>: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span>: application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">grant_type=refresh_token&amp;refresh_token=tGzv3JOkF0XG5Qx2TlKWIA</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line"><span class="language-angelscript">grant_type=<span class="built_in">ref</span>resh_token&amp;<span class="built_in">ref</span>resh_token=tGzv3JOkF0XG5Qx2TlKWIA</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html" target="_blank" rel="noopener">理解OAuth 2.0</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html">理解OAuth 2.0</a></li>
 </ul>
 
         
@@ -403,7 +461,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OAuth-2-0/">OAuth 2.0</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OAuth-2-0/" rel="tag">OAuth 2.0</a></li></ul>
 
       
 
@@ -439,7 +497,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、应用场景"><span class="nav-number">1.</span> <span class="nav-text">一、应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、名词定义"><span class="nav-number">2.</span> <span class="nav-text">二、名词定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、OAuth的思路"><span class="nav-number">3.</span> <span class="nav-text">三、OAuth的思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、运行流程"><span class="nav-number">4.</span> <span class="nav-text">四、运行流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五、客户端的授权模式"><span class="nav-number">5.</span> <span class="nav-text">五、客户端的授权模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#六、授权码模式"><span class="nav-number">6.</span> <span class="nav-text">六、授权码模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#七、简化模式"><span class="nav-number">7.</span> <span class="nav-text">七、简化模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#八、密码模式"><span class="nav-number">8.</span> <span class="nav-text">八、密码模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#九、客户端模式"><span class="nav-number">9.</span> <span class="nav-text">九、客户端模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#十、更新令牌"><span class="nav-number">10.</span> <span class="nav-text">十、更新令牌</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">11.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">一、应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%90%8D%E8%AF%8D%E5%AE%9A%E4%B9%89"><span class="nav-number">2.</span> <span class="nav-text">二、名词定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81OAuth%E7%9A%84%E6%80%9D%E8%B7%AF"><span class="nav-number">3.</span> <span class="nav-text">三、OAuth的思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">四、运行流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%8E%88%E6%9D%83%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">五、客户端的授权模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%8E%88%E6%9D%83%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="nav-number">6.</span> <span class="nav-text">六、授权码模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E7%AE%80%E5%8C%96%E6%A8%A1%E5%BC%8F"><span class="nav-number">7.</span> <span class="nav-text">七、简化模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%AF%86%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="nav-number">8.</span> <span class="nav-text">八、密码模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%A8%A1%E5%BC%8F"><span class="nav-number">9.</span> <span class="nav-text">九、客户端模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E6%9B%B4%E6%96%B0%E4%BB%A4%E7%89%8C"><span class="nav-number">10.</span> <span class="nav-text">十、更新令牌</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">11.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -454,7 +512,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -534,12 +592,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -607,7 +669,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

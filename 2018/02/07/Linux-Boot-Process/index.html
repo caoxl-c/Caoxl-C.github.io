@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>linux 的启动流程 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Linux">
+  <meta name="keywords" content="Linux" />
   
   
   
   
-  <meta name="description" content="原文地址: http://www.ruanyifeng.com/blog/2013/08/linux_boot_process.html  今天，探讨操作系统接管硬件以后发生的事情，也就是操作系统的启动流程。">
-<meta name="keywords" content="Linux">
+  <meta name="description" content="原文地址: http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;2013&#x2F;08&#x2F;linux_boot_process.html  今天，探讨操作系统接管硬件以后发生的事情，也就是操作系统的启动流程。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux 的启动流程">
 <meta property="og:url" content="http://blog.caoxl.com/2018/02/07/Linux-Boot-Process/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
-<meta property="og:description" content="原文地址: http://www.ruanyifeng.com/blog/2013/08/linux_boot_process.html  今天，探讨操作系统接管硬件以后发生的事情，也就是操作系统的启动流程。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:description" content="原文地址: http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;2013&#x2F;08&#x2F;linux_boot_process.html  今天，探讨操作系统接管硬件以后发生的事情，也就是操作系统的启动流程。">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081701.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081702.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081703.png">
@@ -27,10 +26,11 @@
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081706.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081707.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081708.png">
-<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:published_time" content="2018-02-07T06:58:32.000Z">
+<meta property="article:modified_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Linux 的启动流程">
-<meta name="twitter:description" content="原文地址: http://www.ruanyifeng.com/blog/2013/08/linux_boot_process.html  今天，探讨操作系统接管硬件以后发生的事情，也就是操作系统的启动流程。">
 <meta name="twitter:image" content="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081701.png">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
@@ -51,30 +51,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -152,7 +190,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -206,43 +246,50 @@
         
         
           <blockquote>
-<p>原文地址: <a href="http://www.ruanyifeng.com/blog/2013/08/linux_boot_process.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2013/08/linux_boot_process.html</a></p>
+<p>原文地址: <a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2013/08/linux_boot_process.html">http://www.ruanyifeng.com/blog/2013/08/linux_boot_process.html</a></p>
 </blockquote>
 <p>今天，探讨操作系统接管硬件以后发生的事情，也就是操作系统的启动流程。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081701.png" alt></p>
-<a id="more"></a>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081701.png"></p>
+<span id="more"></span>
+
 <p>这个部分比较有意思。因为在BIOS阶段，计算机的行为基本上被写死了，程序员可以做的事情并不多；但是，一旦进入操作系统，程序员几乎可以定制所有方面。所以，这个部分与程序员的关系更密切。</p>
-<p>我主要关心的是Linux操作系统，它是目前服务器端的主流操作系统。下面的内容针对的是 <a href="https://en.wikipedia.org/wiki/Debian" target="_blank" rel="noopener">Debian</a> 发行版，因为我对其他发行版不够熟悉。</p>
-<h1 id="第一步、加载内核"><a href="#第一步、加载内核" class="headerlink" title="第一步、加载内核"></a>第一步、加载内核</h1><p>操作系统接管硬件以后，首先读入 /boot 目录下的内核文件。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081702.png" alt></p>
-<p>以我的电脑为例，/boot 目录下面大概是这样一些文件：</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">    　　$ ls /boot</span><br><span class="line">    　　</span><br><span class="line">    　　config<span class="number">-3.2</span><span class="number">.0</span><span class="number">-3</span>-amd64</span><br><span class="line">    　　config<span class="number">-3.2</span><span class="number">.0</span><span class="number">-4</span>-amd64</span><br><span class="line">    　　grub</span><br><span class="line">    　　initrd.img<span class="number">-3.2</span><span class="number">.0</span><span class="number">-3</span>-amd64</span><br><span class="line">    　　initrd.img<span class="number">-3.2</span><span class="number">.0</span><span class="number">-4</span>-amd64</span><br><span class="line">    　　System.map<span class="number">-3.2</span><span class="number">.0</span><span class="number">-3</span>-amd64</span><br><span class="line">    　　System.map<span class="number">-3.2</span><span class="number">.0</span><span class="number">-4</span>-amd64</span><br><span class="line">    　　vmlinuz<span class="number">-3.2</span><span class="number">.0</span><span class="number">-3</span>-amd64</span><br><span class="line">    　　vmlinuz<span class="number">-3.2</span><span class="number">.0</span><span class="number">-4</span>-amd64</span><br></pre></td></tr></table></figure>
+<p>我主要关心的是Linux操作系统，它是目前服务器端的主流操作系统。下面的内容针对的是 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Debian">Debian</a> 发行版，因为我对其他发行版不够熟悉。</p>
+<h1 id="第一步、加载内核"><a href="#第一步、加载内核" class="headerlink" title="第一步、加载内核"></a>第一步、加载内核</h1><p>操作系统接管硬件以后，首先读入 &#x2F;boot 目录下的内核文件。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081702.png"></p>
+<p>以我的电脑为例，&#x2F;boot 目录下面大概是这样一些文件：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">    　　$ ls /boot</span><br><span class="line">    　　</span><br><span class="line">    　　config<span class="string">-3</span>.2.0<span class="string">-3</span>-amd64</span><br><span class="line">    　　config<span class="string">-3</span>.2.0<span class="string">-4</span>-amd64</span><br><span class="line">    　　grub</span><br><span class="line">    　　initrd.img<span class="string">-3</span>.2.0<span class="string">-3</span>-amd64</span><br><span class="line">    　　initrd.img<span class="string">-3</span>.2.0<span class="string">-4</span>-amd64</span><br><span class="line">    　　System.map<span class="string">-3</span>.2.0<span class="string">-3</span>-amd64</span><br><span class="line">    　　System.map<span class="string">-3</span>.2.0<span class="string">-4</span>-amd64</span><br><span class="line">    　　vmlinuz<span class="string">-3</span>.2.0<span class="string">-3</span>-amd64</span><br><span class="line">    　　vmlinuz<span class="string">-3</span>.2.0<span class="string">-4</span>-amd64</span><br></pre></td></tr></table></figure>
+
 <h1 id="第二步、启动初始化进程"><a href="#第二步、启动初始化进程" class="headerlink" title="第二步、启动初始化进程"></a>第二步、启动初始化进程</h1><p>内核文件加载以后，就开始运行第一个程序 <code>/sbin/init</code>，它的作用是初始化系统环境。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081703.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081703.png"></p>
 <p>由于init是第一个运行的程序，它的进程编号（pid）就是1。其他所有进程都从它衍生，都是它的子进程</p>
-<h1 id="第三步、确定运行级别"><a href="#第三步、确定运行级别" class="headerlink" title="第三步、确定运行级别"></a>第三步、确定运行级别</h1><p>许多程序需要开机启动。它们在Windows叫做”服务”（service），在Linux就叫做 <u><a href="https://zh.wikipedia.org/wiki/%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B" target="_blank" rel="noopener">“守护进程”</a></u>（daemon）。</p>
-<p><code>init</code>进程的一大任务，就是去运行这些开机启动的程序。但是，不同的场合需要启动不同的程序，比如用作服务器时，需要启动Apache，用作桌面就不需要。Linux允许为不同的场合，分配不同的开机启动程序，这就叫做 <u><a href="https://zh.wikipedia.org/wiki/%E8%BF%90%E8%A1%8C%E7%BA%A7%E5%88%AB" target="_blank" rel="noopener">“运行级别”</a></u>（runlevel）。也就是说，启动时根据”运行级别”，确定要运行哪些程序。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081704.png" alt></p>
+<h1 id="第三步、确定运行级别"><a href="#第三步、确定运行级别" class="headerlink" title="第三步、确定运行级别"></a>第三步、确定运行级别</h1><p>许多程序需要开机启动。它们在Windows叫做”服务”（service），在Linux就叫做 <u><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B">“守护进程”</a></u>（daemon）。</p>
+<p><code>init</code>进程的一大任务，就是去运行这些开机启动的程序。但是，不同的场合需要启动不同的程序，比如用作服务器时，需要启动Apache，用作桌面就不需要。Linux允许为不同的场合，分配不同的开机启动程序，这就叫做 <u><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%BF%90%E8%A1%8C%E7%BA%A7%E5%88%AB">“运行级别”</a></u>（runlevel）。也就是说，启动时根据”运行级别”，确定要运行哪些程序。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081704.png"></p>
 <p>Linux预置<strong>七种运行级别（0-6）</strong>。一般来说，0是关机，1是单用户模式（也就是维护模式），6是重启。运行级别2-5，各个发行版不太一样，对于Debian来说，都是同样的多用户模式（也就是正常模式）。</p>
 <p><code>init</code>进程首先读取文件 <code>/etc/inittab</code> ，它是运行级别的设置文件。如果你打开它，可以看到第一行是这样的：</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">id</span><span class="selector-pseudo">:2</span><span class="selector-pseudo">:initdefault</span>:</span><br></pre></td></tr></table></figure>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">id:</span><span class="string">2:initdefault</span>:</span><br></pre></td></tr></table></figure>
+
 <p>initdefault的值是2，表明系统启动时的运行级别为2。如果需要指定其他级别，可以手动修改这个值。</p>
 <p>那么，运行级别2有些什么程序呢，系统怎么知道每个级别应该加载哪些程序呢？……回答是每个运行级别在<code>/etc</code>目录下面，都有一个对应的子目录，指定要加载的程序。</p>
 <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">　　<span class="regexp">/etc/</span>rc0.d</span><br><span class="line">　　<span class="regexp">/etc/</span>rc1.d</span><br><span class="line">　　<span class="regexp">/etc/</span>rc2.d</span><br><span class="line">　　<span class="regexp">/etc/</span>rc3.d</span><br><span class="line">　　<span class="regexp">/etc/</span>rc4.d</span><br><span class="line">　　<span class="regexp">/etc/</span>rc5.d</span><br><span class="line">　　<span class="regexp">/etc/</span>rc6.d</span><br></pre></td></tr></table></figure>
+
 <p>上面目录名中的”rc”，表示 <code>run command</code>（运行程序），最后的d表示directory（目录）。下面让我们看看 <code>/etc/rc2.d</code> 目录中到底指定了哪些程序。</p>
 <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">　　$ <span class="keyword">ls</span>  <span class="string">/etc/rc2.d</span></span><br><span class="line">　　</span><br><span class="line">　　README</span><br><span class="line">　　S01motd</span><br><span class="line">　　S13rpcbind</span><br><span class="line">　　S14nfs-common</span><br><span class="line">　　S16binfmt-support</span><br><span class="line">　　S16rsyslog</span><br><span class="line">　　S16sudo</span><br><span class="line">　　S17apache2</span><br><span class="line">　　S18acpid</span><br><span class="line">　　<span class="string">...</span></span><br></pre></td></tr></table></figure>
-<p>可以看到，除了第一个文件<code>README</code>以外，其他文件名都是<strong>“字母S+两位数字+程序名”</strong>的形式。字母<code>S</code>表示<code>Start</code>，也就是启动的意思（启动脚本的运行参数为start），如果这个位置是字母<code>K</code>，就代表<code>Kill</code>（关闭），即如果从其他运行级别切换过来，需要关闭的程序（启动脚本的运行参数为stop）。后面的两位数字表示处理顺序，数字越小越早处理，所以第一个启动的程序是motd，然后是rpcbing、nfs……数字相同时，则按照程序名的字母顺序启动，所以rsyslog会先于sudo启动。</p>
-<p>这个目录里的所有文件（除了<code>README</code>），就是启动时要加载的程序。如果想增加或删除某些程序，不建议手动修改 <code>/etc/rcN.d</code> 目录，最好是用一些专门命令进行管理（参考<a href="http://www.debianadmin.com/manage-linux-init-or-startup-scripts.html" target="_blank" rel="noopener">这里</a>和<a href="http://www.debianadmin.com/remove-unwanted-startup-files-or-services-in-debian.html" target="_blank" rel="noopener">这里</a>）。</p>
+
+<p>可以看到，除了第一个文件<code>README</code>以外，其他文件名都是**”字母S+两位数字+程序名”**的形式。字母<code>S</code>表示<code>Start</code>，也就是启动的意思（启动脚本的运行参数为start），如果这个位置是字母<code>K</code>，就代表<code>Kill</code>（关闭），即如果从其他运行级别切换过来，需要关闭的程序（启动脚本的运行参数为stop）。后面的两位数字表示处理顺序，数字越小越早处理，所以第一个启动的程序是motd，然后是rpcbing、nfs……数字相同时，则按照程序名的字母顺序启动，所以rsyslog会先于sudo启动。</p>
+<p>这个目录里的所有文件（除了<code>README</code>），就是启动时要加载的程序。如果想增加或删除某些程序，不建议手动修改 <code>/etc/rcN.d</code> 目录，最好是用一些专门命令进行管理（参考<a target="_blank" rel="noopener" href="http://www.debianadmin.com/manage-linux-init-or-startup-scripts.html">这里</a>和<a target="_blank" rel="noopener" href="http://www.debianadmin.com/remove-unwanted-startup-files-or-services-in-debian.html">这里</a>）。</p>
 <h1 id="第四步、加载开机启动程序"><a href="#第四步、加载开机启动程序" class="headerlink" title="第四步、加载开机启动程序"></a>第四步、加载开机启动程序</h1><p>前面提到，<strong>七种预设的”运行级别”各自有一个目录</strong>，存放需要开机启动的程序。不难想到，如果多个”运行级别”需要启动同一个程序，那么这个程序的启动脚本，就会在每一个目录里都有一个拷贝。这样会造成管理上的困扰：如果要修改启动脚本，岂不是每个目录都要改一遍？</p>
 <p>Linux的解决办法，就是七个 <code>/etc/rcN.d</code> 目录里列出的程序，都设为链接文件，指向另外一个目录 <code>/etc/init.d</code> ，真正的启动脚本都统一放在这个目录中。init进程逐一加载开机启动程序，其实就是运行这个目录里的启动脚本。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081705.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081705.png"></p>
 <p>下面就是链接文件真正的指向。</p>
-<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">　　$ ls -l /etc/rc2.d</span><br><span class="line">　　</span><br><span class="line">　　README</span><br><span class="line">　　S01<span class="function"><span class="title">motd</span> -&gt;</span> ../init.d/motd</span><br><span class="line">　　S13<span class="function"><span class="title">rpcbind</span> -&gt;</span> ../init.d/rpcbind</span><br><span class="line">　　S14<span class="function"><span class="title">nfs</span>-common -&gt;</span> ../init.d/nfs-common</span><br><span class="line">　　S16<span class="function"><span class="title">binfmt</span>-support -&gt;</span> ../init.d/binfmt-support</span><br><span class="line">　　S16<span class="function"><span class="title">rsyslog</span> -&gt;</span> ../init.d/rsyslog</span><br><span class="line">　　S16<span class="function"><span class="title">sudo</span> -&gt;</span> ../init.d/sudo</span><br><span class="line">　　S17<span class="function"><span class="title">apache2</span> -&gt;</span> ../init.d/apache2</span><br><span class="line">　　S18<span class="function"><span class="title">acpid</span> -&gt;</span> ../init.d/acpid</span><br><span class="line">　　...</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">　　$ ls -l <span class="regexp">/etc/</span>rc2.d</span><br><span class="line">　　</span><br><span class="line">　　README</span><br><span class="line">　　S01motd -&gt; ..<span class="regexp">/init.d/m</span>otd</span><br><span class="line">　　S13rpcbind -&gt; ..<span class="regexp">/init.d/</span>rpcbind</span><br><span class="line">　　S14nfs-common -&gt; ..<span class="regexp">/init.d/</span>nfs-common</span><br><span class="line">　　S16binfmt-support -&gt; ..<span class="regexp">/init.d/</span>binfmt-support</span><br><span class="line">　　S16rsyslog -&gt; ..<span class="regexp">/init.d/</span>rsyslog</span><br><span class="line">　　S16sudo -&gt; ..<span class="regexp">/init.d/</span>sudo</span><br><span class="line">　　S17apache2 -&gt; ..<span class="regexp">/init.d/</span>apache2</span><br><span class="line">　　S18acpid -&gt; ..<span class="regexp">/init.d/</span>acpid</span><br><span class="line">　　...</span><br><span class="line">　　</span><br></pre></td></tr></table></figure>
+
 <p>这样做的另一个好处，就是如果你要手动关闭或重启某个进程，直接到目录 <code>/etc/init.d</code> 中寻找启动脚本即可。比如，我要重启Apache服务器，就运行下面的命令：</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo <span class="regexp">/etc/i</span>nit.d<span class="regexp">/apache2 restart</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo <span class="regexp">/etc/i</span>nit.d/apache2 restart</span><br></pre></td></tr></table></figure>
+
 <p><code>/etc/init.d</code> 这个目录名最后一个字母<code>d</code>，是<code>directory</code>的意思，表示这是一个目录，用来与程序 <code>/etc/init</code> 区分。</p>
 <h1 id="第五步、用户登录"><a href="#第五步、用户登录" class="headerlink" title="第五步、用户登录"></a>第五步、用户登录</h1><p>开机启动程序加载完毕以后，就要让用户登录了。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081706.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081706.png"></p>
 <p>一般来说，用户的登录方式有三种：</p>
 <blockquote>
 <ul>
@@ -261,12 +308,13 @@
 </li>
 </ul>
 <h1 id="第六步、进入-login-shell"><a href="#第六步、进入-login-shell" class="headerlink" title="第六步、进入 login shell"></a>第六步、进入 <code>login shell</code></h1><p>所谓<code>shell</code>，简单说就是命令行界面，让用户可以直接与操作系统对话。用户登录时打开的<code>shell</code>，就叫做<code>login shell</code>。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081707.png" alt></p>
-<p>Debian默认的shell是 <a href="http://zh.wikipedia.org/wiki/Bash" target="_blank" rel="noopener">Bash</a>，它会读入一系列的配置文件。上一步的三种情况，在这一步的处理，也存在差异。</p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081707.png"></p>
+<p>Debian默认的shell是 <a target="_blank" rel="noopener" href="http://zh.wikipedia.org/wiki/Bash">Bash</a>，它会读入一系列的配置文件。上一步的三种情况，在这一步的处理，也存在差异。</p>
 <ul>
-<li>（1）命令行登录：首先读入 /etc/profile，这是对所有用户都有效的配置；然后依次寻找下面三个文件，这是针对当前用户的配置。</li>
+<li>（1）命令行登录：首先读入 &#x2F;etc&#x2F;profile，这是对所有用户都有效的配置；然后依次寻找下面三个文件，这是针对当前用户的配置。</li>
 </ul>
-<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">　　~/.bash_profile</span><br><span class="line">　　~/.bash_login</span><br><span class="line">　　~/.profile</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">　　~/.bash_profile</span><br><span class="line">　　~/.bash_login</span><br><span class="line">　　~/.profile</span><br></pre></td></tr></table></figure>
+
 <p>需要注意的是，这三个文件只要有一个存在，就不再读入后面的文件了。比如，要是 <code>~/.bash_profile</code> 存在，就不会再读入后面两个文件了。</p>
 <ul>
 <li>（2）ssh登录：与第一种情况完全相同。</li>
@@ -274,18 +322,20 @@
 </ul>
 <h1 id="第七步，打开-non-login-shell"><a href="#第七步，打开-non-login-shell" class="headerlink" title="第七步，打开 non-login shell"></a>第七步，打开 non-login shell</h1><p>老实说，上一步完成以后，Linux的启动过程就算结束了，用户已经可以看到命令行提示符或者图形界面了。但是，为了内容的完整，必须再介绍一下这一步。</p>
 <p>用户进入操作系统以后，常常会再手动开启一个shell。这个shell就叫做 <code>non-login shell</code>，意思是它不同于登录时出现的那个<code>shell</code>，不读取<code>/etc/profile</code>和<code>.profile</code>等配置文件。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081708.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/201308/bg2013081708.png"></p>
 <p>non-login shell的重要性，不仅在于它是用户最常接触的那个shell，还在于它会读入用户自己的bash配置文件 <code>~/.bashrc</code>。大多数时候，我们对于bash的定制，都是写在这个文件里面的。</p>
 <p>你也许会问，要是不进入 <code>non-login shell</code>，岂不是<code>.bashrc</code>就不会运行了，因此bash 也就不能完成定制了？事实上，Debian已经考虑到这个问题了，请打开文件 <code>~/.profile</code>，可以看到下面的代码：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">　　if [ -n "$BASH_VERSION" ]; then</span><br><span class="line">　　　　if [ -f "$HOME/.bashrc" ]; then</span><br><span class="line">　　　　　　. "$HOME/.bashrc"</span><br><span class="line">　　　　fi</span><br><span class="line">　　fi</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">　　<span class="attribute">if</span> [ -n <span class="string">&quot;<span class="variable">$BASH_VERSION</span>&quot;</span> ]; <span class="attribute">then</span></span><br><span class="line">　　　　if [ -f <span class="string">&quot;<span class="variable">$HOME</span>/.bashrc&quot;</span> ]; <span class="attribute">then</span></span><br><span class="line">　　　　　　. <span class="string">&quot;<span class="variable">$HOME</span>/.bashrc&quot;</span></span><br><span class="line">　　　　fi</span><br><span class="line">　　fi</span><br><span class="line">　　</span><br></pre></td></tr></table></figure>
+
 <p>上面代码先判断变量 <code>$BASH_VERSION</code> 是否有值，然后判断主目录下是否存在 <code>.bashrc</code> 文件，如果存在就运行该文件。第三行开头的那个点，是<code>source</code>命令的简写形式，表示运行某个文件，写成 <code>&quot;source ~/.bashrc&quot;</code> 也是可以的。</p>
 <p>因此，只要运行 <code>～/.profile</code> 文件，<code>～/.bashrc</code> 文件就会连带运行。但是上一节的第一种情况提到过，如果存在 <code>～/.bash_profile</code> 文件，那么有可能不会运行 <code>～/.profile</code> 文件。解决这个问题很简单，把下面代码写入 <code>.bash_profile</code> 就行了。</p>
-<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">　　<span class="keyword">if</span> [ -f ~<span class="string">/.profile</span> ]; then</span><br><span class="line">　　　　. ~<span class="string">/.profile</span></span><br><span class="line">　　fi</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">　　<span class="keyword">if</span> [ -f ~/.profile ]; <span class="keyword">then</span></span><br><span class="line">　　　　. ~/.profile</span><br><span class="line">　　<span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
 <p>这样一来，不管是哪种情况，<code>.bashrc</code> 都会执行，用户的设置可以放心地都写入这个文件了。</p>
 <p>Bash的设置之所以如此繁琐，是由于历史原因造成的。早期的时候，计算机运行速度很慢，载入配置文件需要很长时间，Bash的作者只好把配置文件分成了几个部分，阶段性载入。系统的通用设置放在 <code>/etc/profile</code>，用户个人的、需要被所有子进程继承的设置放在 <code>.profile</code>，不需要被继承的设置放在<code>.bashrc</code>。</p>
 <p>顺便提一下，除了Linux以外， <strong>Mac OS X 使用的shell也是 Bash</strong>。但是，它只加载<code>.bash_profile</code>，然后在<code>.bash_profile</code>里面调用<code>.bashrc</code>。而且，不管是ssh登录，还是在图形界面里启动shell窗口，都是如此。</p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="http://www.ruanyifeng.com/blog/2013/08/linux_boot_process.html" target="_blank" rel="noopener">Linux 的启动流程</a>,By 阮一峰</li>
+<li><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2013/08/linux_boot_process.html">Linux 的启动流程</a>,By 阮一峰</li>
 </ul>
 
         
@@ -318,7 +368,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li></ul>
 
       
 
@@ -354,7 +404,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#第一步、加载内核"><span class="nav-number">1.</span> <span class="nav-text">第一步、加载内核</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第二步、启动初始化进程"><span class="nav-number">2.</span> <span class="nav-text">第二步、启动初始化进程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三步、确定运行级别"><span class="nav-number">3.</span> <span class="nav-text">第三步、确定运行级别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第四步、加载开机启动程序"><span class="nav-number">4.</span> <span class="nav-text">第四步、加载开机启动程序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第五步、用户登录"><span class="nav-number">5.</span> <span class="nav-text">第五步、用户登录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第六步、进入-login-shell"><span class="nav-number">6.</span> <span class="nav-text">第六步、进入 login shell</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第七步，打开-non-login-shell"><span class="nav-number">7.</span> <span class="nav-text">第七步，打开 non-login shell</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%E3%80%81%E5%8A%A0%E8%BD%BD%E5%86%85%E6%A0%B8"><span class="nav-number">1.</span> <span class="nav-text">第一步、加载内核</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%E3%80%81%E5%90%AF%E5%8A%A8%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%9B%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">第二步、启动初始化进程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%E3%80%81%E7%A1%AE%E5%AE%9A%E8%BF%90%E8%A1%8C%E7%BA%A7%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">第三步、确定运行级别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%E3%80%81%E5%8A%A0%E8%BD%BD%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.</span> <span class="nav-text">第四步、加载开机启动程序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%E3%80%81%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95"><span class="nav-number">5.</span> <span class="nav-text">第五步、用户登录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E6%AD%A5%E3%80%81%E8%BF%9B%E5%85%A5-login-shell"><span class="nav-number">6.</span> <span class="nav-text">第六步、进入 login shell</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%83%E6%AD%A5%EF%BC%8C%E6%89%93%E5%BC%80-non-login-shell"><span class="nav-number">7.</span> <span class="nav-text">第七步，打开 non-login shell</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -369,7 +419,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -449,12 +499,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -522,7 +576,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

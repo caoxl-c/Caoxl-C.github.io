@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>深入mysql锁 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="MySQL锁共享锁排他锁行锁表锁">
+  <meta name="keywords" content="MySQL锁共享锁排他锁行锁表锁" />
   
   
   
   
   <meta name="description" content="高并发场景下锁机制是怎么保证数据的一致性的和事务隔离性的?">
-<meta name="keywords" content="MySQL锁,共享锁,排他锁,行锁,表锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入MySQL锁">
 <meta property="og:url" content="http://blog.caoxl.com/2020/06/23/Deep-Going-MySQL-Lock/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="高并发场景下锁机制是怎么保证数据的一致性的和事务隔离性的?">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-06-23T07:26:48.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-23T03:16:11.000Z">
+<meta property="article:modified_time" content="2020-06-23T07:26:48.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="MySQL锁">
+<meta property="article:tag" content="共享锁">
+<meta property="article:tag" content="排他锁">
+<meta property="article:tag" content="行锁">
+<meta property="article:tag" content="表锁">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="深入MySQL锁">
-<meta name="twitter:description" content="高并发场景下锁机制是怎么保证数据的一致性的和事务隔离性的?">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +46,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +185,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +225,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+    <a class="article-category-link" href="/categories/%E5%BF%85%E5%A4%87%E6%8A%80%E8%83%BD/">必备技能</a>
 
       
 	<a class="article-views">
@@ -199,7 +243,8 @@
           <blockquote>
 <p>高并发场景下锁机制是怎么保证数据的一致性的和事务隔离性的?</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="锁种类"><a href="#锁种类" class="headerlink" title="锁种类"></a>锁种类</h1><blockquote>
 <ul>
 <li>按照<strong>锁的粒度</strong>划分：<code>表锁</code>、<code>页锁</code>、<code>行锁</code>；</li>
@@ -231,32 +276,38 @@
 <h1 id="MyISAM"><a href="#MyISAM" class="headerlink" title="MyISAM"></a>MyISAM</h1><p>MyISAM中默认支持的表级锁有两种：<strong>「共享读锁」</strong> 和 <strong>「独占写锁」</strong>。表级锁在MyISAM和InnoDB的存储引擎中都支持，但是InnoDB默认支持的是行锁。</p>
 <p>Mysql中平时读写操作都是隐式的进行加锁和解锁操作，Mysql已经自动帮我们实现加锁和解锁操作了，若是想要测试锁机制，我们就要显示的自己控制锁机制。</p>
 <p>Mysql中可以通过以下sql来显示的在事务中显式的进行加锁和解锁操作：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 显式的添加表级读锁</span><br><span class="line">LOCK TABLE 表名 READ</span><br><span class="line"></span><br><span class="line">// 显示的添加表级写锁</span><br><span class="line">LOCK TABLE 表名 WRITE</span><br><span class="line"></span><br><span class="line">// 显式的解锁（当一个事务commit的时候也会自动解锁）</span><br><span class="line">unlock tables;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 显式的添加表级读锁</span><br><span class="line">LOCK TABLE 表名 READ</span><br><span class="line"></span><br><span class="line">// 显示的添加表级写锁</span><br><span class="line">LOCK TABLE 表名 WRITE</span><br><span class="line"></span><br><span class="line">// 显式的解锁（当一个事务commit的时候也会自动解锁）</span><br><span class="line">unlock tables;</span><br></pre></td></tr></table></figure>
+
 <p>下面我们就来测试一下MyISAM中的表级锁机制，首先创建一个测试表<code>employee</code> ，这里要指定存储引擎为MyISAM，并插入两条测试数据：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- 创建一个测试表</span><br><span class="line">CREATE TABLE IF NOT EXISTS employee (</span><br><span class="line">    id INT PRIMARY KEY auto_increment,</span><br><span class="line">    name VARCHAR(40),</span><br><span class="line">    money INT</span><br><span class="line">)ENGINE MyISAM;</span><br><span class="line"></span><br><span class="line">-- 插入两条测试数据</span><br><span class="line">INSERT INTO employee(name, money) VALUES(&apos;caoxl&apos;, 8888);</span><br><span class="line">INSERT INTO employee(name, money) VALUES(&apos;lc&apos;, 9999);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- 创建一个测试表</span><br><span class="line">CREATE TABLE IF NOT EXISTS employee (</span><br><span class="line">    id INT PRIMARY KEY auto_increment,</span><br><span class="line">    name VARCHAR(40),</span><br><span class="line">    money INT</span><br><span class="line">)ENGINE MyISAM;</span><br><span class="line"></span><br><span class="line">-- 插入两条测试数据</span><br><span class="line">INSERT INTO employee(name, money) VALUES(&#x27;caoxl&#x27;, 8888);</span><br><span class="line">INSERT INTO employee(name, money) VALUES(&#x27;lc&#x27;, 9999);</span><br></pre></td></tr></table></figure>
+
 <p>查看一下，表结果如下图所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; select * from employee;</span><br><span class="line">+----+-------+-------+</span><br><span class="line">| id | name  | money |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">|  1 | caoxl |  8888 |</span><br><span class="line">|  2 | lc    |  9999 |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">2 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; select * from employee;</span><br><span class="line">+----+-------+-------+</span><br><span class="line">| id | name  | money |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">|  1 | caoxl |  8888 |</span><br><span class="line">|  2 | lc    |  9999 |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">2 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+
 <h2 id="MyISAM表级写锁"><a href="#MyISAM表级写锁" class="headerlink" title="MyISAM表级写锁"></a>MyISAM表级写锁</h2><ul>
 <li><ol>
 <li>与此同时再开启一个session窗口，然后在第一个窗口执行下面的sql，在session1中给表添加写锁：</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; LOCK TABLE employee WRITE;</span><br><span class="line">Query OK, 0 rows affected (0.06 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; LOCK TABLE employee WRITE;</span><br><span class="line">Query OK, 0 rows affected (0.06 sec)</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="2">
 <li>可以在session2中进行查询或者插入、更新该表数据，可以发现都会处于等待状态，也就是session1锁住了整个表，导致session2只能等待：</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; select * from employee;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; select * from employee;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="3">
 <li>在session1中进行查询、插入、更新数据，都可以执行成功：</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">-- 插入</span><br><span class="line">MariaDB [test]&gt; INSERT INTO employee(name, money) VALUES(&apos;caolx&apos;, 1111);</span><br><span class="line">Query OK, 1 row affected (0.02 sec)</span><br><span class="line">-- 更新</span><br><span class="line">MariaDB [test]&gt; UPDATE employee set name=&apos;caoxllc&apos; where id=1; </span><br><span class="line">Query OK, 1 row affected (0.14 sec)</span><br><span class="line">Rows matched: 1  Changed: 1  Warnings: 0</span><br><span class="line">-- 查询</span><br><span class="line">MariaDB [test]&gt; SELECT * FROM employee;</span><br><span class="line">+----+---------+-------+</span><br><span class="line">| id | name    | money |</span><br><span class="line">+----+---------+-------+</span><br><span class="line">|  1 | caoxllc |  8888 |</span><br><span class="line">|  2 | lc      |  9999 |</span><br><span class="line">|  3 | caolx   |  1111 |</span><br><span class="line">+----+---------+-------+</span><br><span class="line">3 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">-- 插入</span><br><span class="line">MariaDB [test]&gt; INSERT INTO employee(name, money) VALUES(&#x27;caolx&#x27;, 1111);</span><br><span class="line">Query OK, 1 row affected (0.02 sec)</span><br><span class="line">-- 更新</span><br><span class="line">MariaDB [test]&gt; UPDATE employee set name=&#x27;caoxllc&#x27; where id=1; </span><br><span class="line">Query OK, 1 row affected (0.14 sec)</span><br><span class="line">Rows matched: 1  Changed: 1  Warnings: 0</span><br><span class="line">-- 查询</span><br><span class="line">MariaDB [test]&gt; SELECT * FROM employee;</span><br><span class="line">+----+---------+-------+</span><br><span class="line">| id | name    | money |</span><br><span class="line">+----+---------+-------+</span><br><span class="line">|  1 | caoxllc |  8888 |</span><br><span class="line">|  2 | lc      |  9999 |</span><br><span class="line">|  3 | caolx   |  1111 |</span><br><span class="line">+----+---------+-------+</span><br><span class="line">3 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+
 <p><strong>「总结：」</strong> 从上面的测试结果显示 <strong>「当一个线程获取到表级写锁后，只能由该线程对表进行读写操作，别的线程必须等待该线程释放锁以后才能操作」</strong>。</p>
 <h2 id="MyISAM表级共享读锁"><a href="#MyISAM表级共享读锁" class="headerlink" title="MyISAM表级共享读锁"></a>MyISAM表级共享读锁</h2><ul>
 <li><ol>
@@ -264,24 +315,28 @@
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; LOCK TABLE employee read;</span><br><span class="line">Query OK, 0 rows affected (0.11 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; LOCK TABLE employee read;</span><br><span class="line">Query OK, 0 rows affected (0.11 sec)</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="2">
 <li>然后在session1中尝试进行插入、更新数据，发现都会报错，只能查询数据。</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">-- 查询</span><br><span class="line">MariaDB [test]&gt; select * from employee;</span><br><span class="line">+----+---------+-------+</span><br><span class="line">| id | name    | money |</span><br><span class="line">+----+---------+-------+</span><br><span class="line">|  1 | caoxllc |  8888 |</span><br><span class="line">|  2 | lc      |  9999 |</span><br><span class="line">|  3 | caolx   |  1111 |</span><br><span class="line">+----+---------+-------+</span><br><span class="line">3 rows in set (7 min 12.28 sec)</span><br><span class="line">-- 插入</span><br><span class="line">MariaDB [test]&gt; INSERT INTO employee(name, money) VALUES(&apos;lxlc&apos;, 2222);</span><br><span class="line">ERROR 1099 (HY000): Table &apos;employee&apos; was locked with a READ lock and can&apos;t be updated</span><br><span class="line">-- 更新</span><br><span class="line">MariaDB [test]&gt; UPDATE employee set name=&apos;lxlc&apos; where id=1;</span><br><span class="line">ERROR 1099 (HY000): Table &apos;employee&apos; was locked with a READ lock and can&apos;t be updated</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">-- 查询</span><br><span class="line">MariaDB [test]&gt; select * from employee;</span><br><span class="line">+----+---------+-------+</span><br><span class="line">| id | name    | money |</span><br><span class="line">+----+---------+-------+</span><br><span class="line">|  1 | caoxllc |  8888 |</span><br><span class="line">|  2 | lc      |  9999 |</span><br><span class="line">|  3 | caolx   |  1111 |</span><br><span class="line">+----+---------+-------+</span><br><span class="line">3 rows in set (7 min 12.28 sec)</span><br><span class="line">-- 插入</span><br><span class="line">MariaDB [test]&gt; INSERT INTO employee(name, money) VALUES(&#x27;lxlc&#x27;, 2222);</span><br><span class="line">ERROR 1099 (HY000): Table &#x27;employee&#x27; was locked with a READ lock and can&#x27;t be updated</span><br><span class="line">-- 更新</span><br><span class="line">MariaDB [test]&gt; UPDATE employee set name=&#x27;lxlc&#x27; where id=1;</span><br><span class="line">ERROR 1099 (HY000): Table &#x27;employee&#x27; was locked with a READ lock and can&#x27;t be updated</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="3">
 <li>最后在session2中尝试进行插入、更新数据，程序都会进入等待状态，只能查询数据，直到session1解锁表session2才能插入、更新数据。</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; INSERT INTO employee(name, money) VALUES(&apos;lxlc&apos;, 2222);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; INSERT INTO employee(name, money) VALUES(&#x27;lxlc&#x27;, 2222);</span><br></pre></td></tr></table></figure>
+
 <p><strong>「总结：」</strong> 从上面的测试结果显示 <strong>「当一个线程获取到表级读锁后，该线程只能读取数据不能修改数据，其它线程也只能加读锁，不能加写锁」</strong>。</p>
 <h2 id="MyISAM表级锁竞争情况"><a href="#MyISAM表级锁竞争情况" class="headerlink" title="MyISAM表级锁竞争情况"></a>MyISAM表级锁竞争情况</h2><p>MyISAM存储引擎中，可以通过查询变量来查看并发场景锁的争夺情况，具体执行下面的sql语句：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; show status like &apos;table%&apos;;</span><br><span class="line">+-----------------------+-------+</span><br><span class="line">| Variable_name         | Value |</span><br><span class="line">+-----------------------+-------+</span><br><span class="line">| Table_locks_immediate | 37    |</span><br><span class="line">| Table_locks_waited    | 2     |</span><br><span class="line">+-----------------------+-------+</span><br><span class="line">2 rows in set (0.27 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; show status like &#x27;table%&#x27;;</span><br><span class="line">+-----------------------+-------+</span><br><span class="line">| Variable_name         | Value |</span><br><span class="line">+-----------------------+-------+</span><br><span class="line">| Table_locks_immediate | 37    |</span><br><span class="line">| Table_locks_waited    | 2     |</span><br><span class="line">+-----------------------+-------+</span><br><span class="line">2 rows in set (0.27 sec)</span><br></pre></td></tr></table></figure>
+
 <p>主要是查看<code>table_locks_waited</code>和<code>table_locks_immediate</code>的值的大小分析锁的竞争情况。</p>
 <ul>
 <li><code>Table_locks_immediate</code>: 表示能够立即获得表级锁的锁请求次数；</li>
@@ -291,7 +346,8 @@
 <p>上面的演示只是为了证明显式的执行事务的过程共享锁和表级写锁的加锁和解锁的特点，实际并不会这么做的。</p>
 <p>在我们平时执行select语句的时候就会隐式的加读锁，执行增、删、改的操作时就会隐式的执行加写锁。<br>MyISAM存储引擎中，虽然读写操作是串行化的，但是它也支持并发插入，这个需要设置内部变量<code>concurrent_insert</code>的值。</p>
 <p>它的值有三个值<code>0</code>、<code>1</code>、<code>2</code>。可以通过以下的sql查看<code>concurrent_insert</code>的默认值为 <strong>「AUTO(或者1)」</strong>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; show variables like &quot;%concurrent_insert&quot;;</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| Variable_name     | Value |</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| concurrent_insert | AUTO  |</span><br><span class="line">+-------------------+-------+</span><br><span class="line">1 row in set (0.25 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; show variables like &quot;%concurrent_insert&quot;;</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| Variable_name     | Value |</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| concurrent_insert | AUTO  |</span><br><span class="line">+-------------------+-------+</span><br><span class="line">1 row in set (0.25 sec)</span><br></pre></td></tr></table></figure>
+
 <p><code>concurrent_insert</code>的值为:</p>
 <ul>
 <li><code>NEVER (or 0)</code>表示不支持比并发插入；</li>
@@ -310,28 +366,32 @@
 <p>若是Mysql觉得执行索引查询还不如全表扫描速度快，那么Mysql就会使用全表扫描来查询，这是即使sql语句中使用了索引，最后还是执行为全表扫描，加的是表锁。</p>
 <h2 id="InnoDB行锁和表锁"><a href="#InnoDB行锁和表锁" class="headerlink" title="InnoDB行锁和表锁"></a>InnoDB行锁和表锁</h2><p>InnoDB的行锁也是分为行级 <strong>「共享读锁（S锁）「和」排它写锁（X锁）」</strong>，原理特点和MyISAM的表级锁两种模式是一样的。</p>
 <p>若想显式的给表加行级读锁和写锁，可以执行下面的sql语句：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 给查询sql显示添加读锁</span><br><span class="line">select ... lock in share mode;</span><br><span class="line"></span><br><span class="line">// 给查询sql显示添加写锁</span><br><span class="line">select ... for update；</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 给查询sql显示添加读锁</span><br><span class="line">select ... lock in share mode;</span><br><span class="line"></span><br><span class="line">// 给查询sql显示添加写锁</span><br><span class="line">select ... for update；</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol>
 <li>下面我们直接进入锁机制的测试阶段，还是创建一个测试表，并插入两条数据：</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 先把原来的MyISAM表给删除了</span><br><span class="line">DROP TABLE IF EXISTS employee;</span><br><span class="line">CREATE TABLE IF NOT EXISTS employee (</span><br><span class="line">    id INT PRIMARY KEY auto_increment,</span><br><span class="line">    name VARCHAR(40),</span><br><span class="line">    money INT</span><br><span class="line">)ENGINE INNODB;</span><br><span class="line"></span><br><span class="line">// 插入测试数据</span><br><span class="line">INSERT INTO employee(name, money) VALUES(&apos;caoxl&apos;, 1000);</span><br><span class="line">INSERT INTO employee(name, money) VALUES(&apos;lc&apos;, 2000);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 先把原来的MyISAM表给删除了</span><br><span class="line">DROP TABLE IF EXISTS employee;</span><br><span class="line">CREATE TABLE IF NOT EXISTS employee (</span><br><span class="line">    id INT PRIMARY KEY auto_increment,</span><br><span class="line">    name VARCHAR(40),</span><br><span class="line">    money INT</span><br><span class="line">)ENGINE INNODB;</span><br><span class="line"></span><br><span class="line">// 插入测试数据</span><br><span class="line">INSERT INTO employee(name, money) VALUES(&#x27;caoxl&#x27;, 1000);</span><br><span class="line">INSERT INTO employee(name, money) VALUES(&#x27;lc&#x27;, 2000);</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="2">
 <li>创建的表中可以看出对表中的字段只有id添加了主键索引，接着就是在session1窗口执行<code>begin</code>开启事务，并执行下面的sql语句：</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">select * from employee where name=&apos;caoxl&apos; for update;</span><br><span class="line">MariaDB [test]&gt; begin;</span><br><span class="line">Query OK, 0 rows affected (0.01 sec)</span><br><span class="line"></span><br><span class="line">-- 使用非索引字段查询，并显式的添加写锁</span><br><span class="line">MariaDB [test]&gt; select * from employee where name=&apos;caolx&apos; for update;</span><br><span class="line">+----+-------+-------+</span><br><span class="line">| id | name  | money |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">|  1 | caolx |  1000 |</span><br><span class="line">|  2 | caolx |  2000 |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">select * from employee where name=&#x27;caoxl&#x27; for update;</span><br><span class="line">MariaDB [test]&gt; begin;</span><br><span class="line">Query OK, 0 rows affected (0.01 sec)</span><br><span class="line"></span><br><span class="line">-- 使用非索引字段查询，并显式的添加写锁</span><br><span class="line">MariaDB [test]&gt; select * from employee where name=&#x27;caolx&#x27; for update;</span><br><span class="line">+----+-------+-------+</span><br><span class="line">| id | name  | money |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">|  1 | caolx |  1000 |</span><br><span class="line">|  2 | caolx |  2000 |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="3">
-<li>然后在session2中执行update语句，上面查询的式id=1的数据行，下面update的是id=1的数据行，会发现程序也会进入等待状态：</li>
+<li>然后在session2中执行update语句，上面查询的式id&#x3D;1的数据行，下面update的是id&#x3D;1的数据行，会发现程序也会进入等待状态：</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; update employee set name=&apos;caoxl&apos; where id = 1;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; update employee set name=&#x27;caoxl&#x27; where id = 1; </span><br></pre></td></tr></table></figure>
+
 <p>可见若是 <strong>「使用非索引查询，直接就是使用的表级锁」</strong>，锁住了整个表。</p>
 <ul>
 <li><ol start="4">
@@ -339,35 +399,37 @@
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; select * from employee where id=&apos;1&apos; for update;  </span><br><span class="line">+----+-------+-------+</span><br><span class="line">| id | name  | money |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">|  1 | caolx |  1000 |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">1 row in set (0.14 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; select * from employee where id=&#x27;1&#x27; for update;  </span><br><span class="line">+----+-------+-------+</span><br><span class="line">| id | name  | money |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">|  1 | caolx |  1000 |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">1 row in set (0.14 sec)</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="5">
 <li>那么session2是可以成功update其它数据行的，但是这里我建议使用数据量大的表进行测试，因为前面我说过了 <strong>「是否执行索引还得看Mysql的执行计划，对于一些小表的操作，可能就直接使用全表扫描」</strong>。</li>
 </ol>
 </li>
-</ul>
-<ul>
 <li><ol start="6">
 <li>还有一种情况就是：假如我们给name字段也加上了普通索引，那么通过普通索引来查询数据，并且查询到多行数据，拿它是锁这多行数据还是锁整个表呢？</li>
 </ol>
 </li>
 </ul>
 <p>下面我们来测试一下，首先给「name字段添加普通索引」，如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; alter table employee add index index_name(name);</span><br><span class="line">Query OK, 0 rows affected (0.22 sec)</span><br><span class="line">Records: 0  Duplicates: 0  Warnings: 0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; alter table employee add index index_name(name);</span><br><span class="line">Query OK, 0 rows affected (0.22 sec)</span><br><span class="line">Records: 0  Duplicates: 0  Warnings: 0</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="7">
-<li>并插入一条新的数据name值与id=2的值相同，并显式的加锁，如下所示：</li>
+<li>并插入一条新的数据name值与id&#x3D;2的值相同，并显式的加锁，如下所示：</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; INSERT INTO employee(name, money) VALUES(&apos;caoxl&apos;, 3000);</span><br><span class="line">Query OK, 1 row affected (0.02 sec)</span><br><span class="line"></span><br><span class="line">MariaDB [test]&gt; select * from employee;                        </span><br><span class="line">+----+-------+-------+</span><br><span class="line">| id | name  | money |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">|  1 | caolx |  1000 |</span><br><span class="line">|  2 | caoxl |  2000 |</span><br><span class="line">|  3 | caoxl |  3000 |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">MariaDB [test]&gt; begin;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">MariaDB [test]&gt; select * from employee where name=&apos;caoxl&apos; for update;</span><br><span class="line">+----+-------+-------+</span><br><span class="line">| id | name  | money |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">|  2 | caoxl |  2000 |</span><br><span class="line">|  3 | caoxl |  3000 |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">2 rows in set (0.03 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; INSERT INTO employee(name, money) VALUES(&#x27;caoxl&#x27;, 3000);</span><br><span class="line">Query OK, 1 row affected (0.02 sec)</span><br><span class="line"></span><br><span class="line">MariaDB [test]&gt; select * from employee;                        </span><br><span class="line">+----+-------+-------+</span><br><span class="line">| id | name  | money |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">|  1 | caolx |  1000 |</span><br><span class="line">|  2 | caoxl |  2000 |</span><br><span class="line">|  3 | caoxl |  3000 |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">MariaDB [test]&gt; begin;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">MariaDB [test]&gt; select * from employee where name=&#x27;caoxl&#x27; for update;</span><br><span class="line">+----+-------+-------+</span><br><span class="line">| id | name  | money |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">|  2 | caoxl |  2000 |</span><br><span class="line">|  3 | caoxl |  3000 |</span><br><span class="line">+----+-------+-------+</span><br><span class="line">2 rows in set (0.03 sec)</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="8">
-<li>当update其它数据行name值不是<code>caoxl</code>的也会进入等待状态，并且通过explain来查看是否name=’caoxl’有执行索引，可以看到sql语句是有执行索引条件的。</li>
+<li>当update其它数据行name值不是<code>caoxl</code>的也会进入等待状态，并且通过explain来查看是否name&#x3D;’caoxl’有执行索引，可以看到sql语句是有执行索引条件的。</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; MariaDB [test]&gt; explain update employee set name=&apos;lc&apos; where id = 1;</span><br><span class="line">+------+-------------+----------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">| id   | select_type | table    | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+------+-------------+----------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">|    1 | SIMPLE      | employee | range | PRIMARY       | PRIMARY | 4       | NULL |    1 | Using where |</span><br><span class="line">+------+-------------+----------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; MariaDB [test]&gt; explain update employee set name=&#x27;lc&#x27; where id = 1;</span><br><span class="line">+------+-------------+----------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">| id   | select_type | table    | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+------+-------------+----------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">|    1 | SIMPLE      | employee | range | PRIMARY       | PRIMARY | 4       | NULL |    1 | Using where |</span><br><span class="line">+------+-------------+----------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
 <h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><ul>
 <li>执行非索引条件查询执行的是表锁。</li>
 <li>执行索引查询是否是加行锁，还得看Mysql的执行计划，可以通过explain关键字来查看。</li>
@@ -377,29 +439,34 @@
 <p>大家大概都知道在事务的四大隔离级别中，不可重复读会产生幻读的现象，只能通过提高隔离级别到串行化来解决幻读现象。</p>
 <p>但是Mysql中的不可重复是已经解决了幻读问题，它通过引入间隙锁的实现来解决幻读，通过给符合条件的间隙加锁，防止再次查询的时候出现新数据产生幻读的问题。</p>
 <p>例如我们执行下面的sql语句，就会对id大于100的记录加锁，在id&gt;100的记录中肯定是有不存在的间隙：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Select * from  employee where id &gt; 100 for update;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Select * from  employee where id &gt; 100 for update;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol>
 <li>接着来测试间隙锁，新增一个字段num，并将num添加为普通索引、修改之前的数据使得num之间的值存在间隙，操作如下sql所示：</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">alter table employee add num int not null default 0;</span><br><span class="line">update employee set num = 1 where id = 1;</span><br><span class="line">update employee set num = 1 where id = 2;</span><br><span class="line">update employee set num = 3 where id = 3;</span><br><span class="line">insert into employee values(4,&apos;kris&apos;,4000,5);</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; select * from employee;                        </span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">| id | name  | money | num |</span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">|  1 | caolx |  1000 |   1 |</span><br><span class="line">|  2 | caoxl |  2000 |   1 |</span><br><span class="line">|  3 | caoxl |  3000 |   3 |</span><br><span class="line">|  4 | kris  |  4000 |   5 |</span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">alter table employee add num int not null default 0;</span><br><span class="line">update employee set num = 1 where id = 1;</span><br><span class="line">update employee set num = 1 where id = 2;</span><br><span class="line">update employee set num = 3 where id = 3;</span><br><span class="line">insert into employee values(4,&#x27;kris&#x27;,4000,5);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; select * from employee;                        </span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">| id | name  | money | num |</span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">|  1 | caolx |  1000 |   1 |</span><br><span class="line">|  2 | caoxl |  2000 |   1 |</span><br><span class="line">|  3 | caoxl |  3000 |   3 |</span><br><span class="line">|  4 | kris  |  4000 |   5 |</span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="2">
 <li>接着在session1的窗口开启事务，并执行下面操作：</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; select * from employee where num=3 for update;</span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">| id | name  | money | num |</span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">|  3 | caoxl |  3000 |   3 |</span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">1 row in set (0.05 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [test]&gt; select * from employee where num=3 for update;</span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">| id | name  | money | num |</span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">|  3 | caoxl |  3000 |   3 |</span><br><span class="line">+----+-------+-------+-----+</span><br><span class="line">1 row in set (0.05 sec)</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><ol start="3">
 <li>同时打开窗口session2，并执行新增语句：</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">insert into employee values(5,&apos;ceshi&apos;,5000,2);  // 程序出现等待</span><br><span class="line">insert into employee values(5,&apos;ceshi&apos;,5000,4);  // 程序出现等待</span><br><span class="line">insert into employee values(5,&apos;ceshi&apos;,5000,6);  // 新增成功</span><br><span class="line">insert into employee values(6,&apos;ceshi&apos;,5000,0);  // 新增成功</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">insert into employee values(5,&#x27;ceshi&#x27;,5000,2);  // 程序出现等待</span><br><span class="line">insert into employee values(5,&#x27;ceshi&#x27;,5000,4);  // 程序出现等待</span><br><span class="line">insert into employee values(5,&#x27;ceshi&#x27;,5000,6);  // 新增成功</span><br><span class="line">insert into employee values(6,&#x27;ceshi&#x27;,5000,0);  // 新增成功</span><br></pre></td></tr></table></figure>
+
 <h1 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h1><p>死锁在InnoDB中才会出现死锁，MyISAM是不会出现死锁，因为MyISAM支持的是表锁，一次性获取了所有得锁，其它的线程只能排队等候。</p>
 <p>而InnoDB默认支持行锁，获取锁是分步的，并不是一次性获取所有得锁，因此在锁竞争的时候就会出现死锁的情况。</p>
 <p>虽然InnoDB会出现死锁，但是并不影响InnoDB最受欢成为迎的存储引擎，MyISAM可以理解为串行化操作，读写有序，因此支持的并发性能低下。</p>
@@ -442,7 +509,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL锁/">MySQL锁</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/共享锁/">共享锁</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/排他锁/">排他锁</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/行锁/">行锁</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/表锁/">表锁</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL%E9%94%81/" rel="tag">MySQL锁</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%85%B1%E4%BA%AB%E9%94%81/" rel="tag">共享锁</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%8E%92%E4%BB%96%E9%94%81/" rel="tag">排他锁</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%A1%8C%E9%94%81/" rel="tag">行锁</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%A1%A8%E9%94%81/" rel="tag">表锁</a></li></ul>
 
       
 
@@ -478,7 +545,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#锁种类"><span class="nav-number">1.</span> <span class="nav-text">锁种类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#按锁的粒度划分"><span class="nav-number">1.1.</span> <span class="nav-text">按锁的粒度划分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#按锁的使用方式划分"><span class="nav-number">1.2.</span> <span class="nav-text">按锁的使用方式划分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#按锁的思想划分"><span class="nav-number">1.3.</span> <span class="nav-text">按锁的思想划分</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MyISAM"><span class="nav-number">2.</span> <span class="nav-text">MyISAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MyISAM表级写锁"><span class="nav-number">2.1.</span> <span class="nav-text">MyISAM表级写锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MyISAM表级共享读锁"><span class="nav-number">2.2.</span> <span class="nav-text">MyISAM表级共享读锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MyISAM表级锁竞争情况"><span class="nav-number">2.3.</span> <span class="nav-text">MyISAM表级锁竞争情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发插入"><span class="nav-number">2.4.</span> <span class="nav-text">并发插入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#锁调度"><span class="nav-number">2.5.</span> <span class="nav-text">锁调度</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#InnoDB"><span class="nav-number">3.</span> <span class="nav-text">InnoDB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB行锁和表锁"><span class="nav-number">3.1.</span> <span class="nav-text">InnoDB行锁和表锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#结论"><span class="nav-number">3.1.1.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB间隙锁"><span class="nav-number">3.2.</span> <span class="nav-text">InnoDB间隙锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#死锁"><span class="nav-number">4.</span> <span class="nav-text">死锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁的解决方案"><span class="nav-number">4.1.</span> <span class="nav-text">死锁的解决方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%94%81%E7%A7%8D%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">锁种类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E9%94%81%E7%9A%84%E7%B2%92%E5%BA%A6%E5%88%92%E5%88%86"><span class="nav-number">1.1.</span> <span class="nav-text">按锁的粒度划分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E9%94%81%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F%E5%88%92%E5%88%86"><span class="nav-number">1.2.</span> <span class="nav-text">按锁的使用方式划分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E9%94%81%E7%9A%84%E6%80%9D%E6%83%B3%E5%88%92%E5%88%86"><span class="nav-number">1.3.</span> <span class="nav-text">按锁的思想划分</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MyISAM"><span class="nav-number">2.</span> <span class="nav-text">MyISAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MyISAM%E8%A1%A8%E7%BA%A7%E5%86%99%E9%94%81"><span class="nav-number">2.1.</span> <span class="nav-text">MyISAM表级写锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MyISAM%E8%A1%A8%E7%BA%A7%E5%85%B1%E4%BA%AB%E8%AF%BB%E9%94%81"><span class="nav-number">2.2.</span> <span class="nav-text">MyISAM表级共享读锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MyISAM%E8%A1%A8%E7%BA%A7%E9%94%81%E7%AB%9E%E4%BA%89%E6%83%85%E5%86%B5"><span class="nav-number">2.3.</span> <span class="nav-text">MyISAM表级锁竞争情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E6%8F%92%E5%85%A5"><span class="nav-number">2.4.</span> <span class="nav-text">并发插入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%81%E8%B0%83%E5%BA%A6"><span class="nav-number">2.5.</span> <span class="nav-text">锁调度</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#InnoDB"><span class="nav-number">3.</span> <span class="nav-text">InnoDB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB%E8%A1%8C%E9%94%81%E5%92%8C%E8%A1%A8%E9%94%81"><span class="nav-number">3.1.</span> <span class="nav-text">InnoDB行锁和表锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">3.1.1.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB%E9%97%B4%E9%9A%99%E9%94%81"><span class="nav-number">3.2.</span> <span class="nav-text">InnoDB间隙锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%BB%E9%94%81"><span class="nav-number">4.</span> <span class="nav-text">死锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%BB%E9%94%81%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">4.1.</span> <span class="nav-text">死锁的解决方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol>
     
     </div>
   </aside>
@@ -493,7 +560,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -573,12 +640,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -646,7 +717,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

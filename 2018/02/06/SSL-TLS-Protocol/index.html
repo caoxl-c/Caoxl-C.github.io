@@ -1,34 +1,35 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>图解ssl/tls协议 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="SSLTLS">
+  <meta name="keywords" content="SSLTLS" />
   
   
   
   
-  <meta name="description" content="Internet,这一分类的内容,均是从各个大神博客转载而来,本想自己总结一番,不过发现前人已经做得足够好了,就不重复造轮子了   原文地址: http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">
-<meta name="keywords" content="SSL,TLS">
+  <meta name="description" content="Internet,这一分类的内容,均是从各个大神博客转载而来,本想自己总结一番,不过发现前人已经做得足够好了,就不重复造轮子了   原文地址: http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;2014&#x2F;09&#x2F;illustration-ssl.html">
 <meta property="og:type" content="article">
 <meta property="og:title" content="图解SSL&#x2F;TLS协议">
 <meta property="og:url" content="http://blog.caoxl.com/2018/02/06/SSL-TLS-Protocol/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
-<meta property="og:description" content="Internet,这一分类的内容,均是从各个大神博客转载而来,本想自己总结一番,不过发现前人已经做得足够好了,就不重复造轮子了   原文地址: http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:description" content="Internet,这一分类的内容,均是从各个大神博客转载而来,本想自己总结一番,不过发现前人已经做得足够好了,就不重复造轮子了   原文地址: http:&#x2F;&#x2F;www.ruanyifeng.com&#x2F;blog&#x2F;2014&#x2F;09&#x2F;illustration-ssl.html">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092013.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092004.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092006.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092008.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092010.png">
 <meta property="og:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092012.png">
-<meta property="og:updated_time" content="2019-08-22T03:45:51.000Z">
+<meta property="article:published_time" content="2018-02-06T03:19:44.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:45:51.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="SSL">
+<meta property="article:tag" content="TLS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="图解SSL&#x2F;TLS协议">
-<meta name="twitter:description" content="Internet,这一分类的内容,均是从各个大神博客转载而来,本想自己总结一番,不过发现前人已经做得足够好了,就不重复造轮子了   原文地址: http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">
 <meta name="twitter:image" content="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092013.png">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
@@ -49,30 +50,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -150,7 +189,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -188,7 +229,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%BF%85%E5%A4%87/">计算机专业必备</a>
 
       
 	<a class="article-views">
@@ -207,41 +248,44 @@
 <p>Internet,这一分类的内容,均是从各个大神博客转载而来,本想自己总结一番,不过发现前人已经做得足够好了,就不重复造轮子了</p>
 </blockquote>
 <blockquote>
-<p>原文地址: <a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html</a></p>
+<p>原文地址: <a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html</a></p>
 </blockquote>
-<a id="more"></a>
-<p> <u><a href="https://www.cloudflare.com/" target="_blank" rel="noopener">CloudFlare</a></u>宣布，开始提供Keyless服务，即你把网站放到它们的CDN上，不用提供自己的私钥，也能使用SSL加密链接。</p>
-<p> 我看了CloudFlare的说明（<a href="https://blog.cloudflare.com/announcing-keyless-ssl-all-the-benefits-of-cloudflare-without-having-to-turn-over-your-private-ssl-keys/" target="_blank" rel="noopener">这里</a>和<a href="https://blog.cloudflare.com/keyless-ssl-the-nitty-gritty-technical-details/" target="_blank" rel="noopener">这里</a>），突然意识到这是绝好的例子，可以用来说明SSL/TLS协议的运行机制。它配有插图，很容易看懂。</p>
+<span id="more"></span>
+
+<p> <u><a target="_blank" rel="noopener" href="https://www.cloudflare.com/">CloudFlare</a></u>宣布，开始提供Keyless服务，即你把网站放到它们的CDN上，不用提供自己的私钥，也能使用SSL加密链接。</p>
+<p> 我看了CloudFlare的说明（<a target="_blank" rel="noopener" href="https://blog.cloudflare.com/announcing-keyless-ssl-all-the-benefits-of-cloudflare-without-having-to-turn-over-your-private-ssl-keys/">这里</a>和<a target="_blank" rel="noopener" href="https://blog.cloudflare.com/keyless-ssl-the-nitty-gritty-technical-details/">这里</a>），突然意识到这是绝好的例子，可以用来说明SSL&#x2F;TLS协议的运行机制。它配有插图，很容易看懂。</p>
 <h1 id="一、SSL协议的握手过程"><a href="#一、SSL协议的握手过程" class="headerlink" title="一、SSL协议的握手过程"></a>一、SSL协议的握手过程</h1><p>开始加密通信之前，<strong>客户端和服务器首先必须建立连接和交换参数</strong>，这个过程叫做<code>握手</code>（handshake）。</p>
 <p>假定<strong>客户端叫做爱丽丝，服务器叫做鲍勃</strong>，整个握手过程可以用下图说明（点击看大图）。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092013.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092013.png"></p>
 <p>握手阶段分成五步。</p>
-<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">第一步，爱丽丝给出协议版本号、一个客户端生成的随机数（<span class="built_in">Client</span> <span class="built_in">random</span>），以及客户端支持的加密方法。</span><br><span class="line"></span><br><span class="line">第二步，鲍勃确认双方使用的加密方法，并给出数字证书、以及一个服务器生成的随机数（<span class="built_in">Server</span> <span class="built_in">random</span>）。</span><br><span class="line"></span><br><span class="line">第三步，爱丽丝确认数字证书有效，然后生成一个新的随机数（Premaster secret），并使用数字证书中的公钥，加密这个随机数，发给鲍勃。</span><br><span class="line"></span><br><span class="line">第四步，鲍勃使用自己的私钥，获取爱丽丝发来的随机数（即Premaster secret）。</span><br><span class="line"></span><br><span class="line">第五步，爱丽丝和鲍勃根据约定的加密方法，使用前面的三个随机数，生成<span class="string">"对话密钥"</span>（session key），用来加密接下来的整个对话过程。</span><br></pre></td></tr></table></figure>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">第一步，爱丽丝给出协议版本号、一个客户端生成的随机数（<span class="built_in">Client</span> random），以及客户端支持的加密方法。</span><br><span class="line"></span><br><span class="line">第二步，鲍勃确认双方使用的加密方法，并给出数字证书、以及一个服务器生成的随机数（<span class="built_in">Server</span> random）。</span><br><span class="line"></span><br><span class="line">第三步，爱丽丝确认数字证书有效，然后生成一个新的随机数（Premaster secret），并使用数字证书中的公钥，加密这个随机数，发给鲍勃。</span><br><span class="line"></span><br><span class="line">第四步，鲍勃使用自己的私钥，获取爱丽丝发来的随机数（即Premaster secret）。</span><br><span class="line"></span><br><span class="line">第五步，爱丽丝和鲍勃根据约定的加密方法，使用前面的三个随机数，生成<span class="string">&quot;对话密钥&quot;</span>（session key），用来加密接下来的整个对话过程。</span><br></pre></td></tr></table></figure>
+
 <p>上面的五步，画成一张图，就是下面这样。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092004.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092004.png"></p>
 <h1 id="二、私钥的作用"><a href="#二、私钥的作用" class="headerlink" title="二、私钥的作用"></a>二、私钥的作用</h1><p>握手阶段有三点需要注意。</p>
-<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>）生成对话密钥一共需要三个随机数。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>）握手之后的对话使用<span class="string">"对话密钥"</span>加密（对称加密），服务器的公钥和私钥只用于加密和解密<span class="string">"对话密钥"</span>（非对称加密），无其他作用。</span><br><span class="line"></span><br><span class="line">（<span class="number">3</span>）服务器公钥放在服务器的数字证书之中。</span><br></pre></td></tr></table></figure>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">（<span class="number">1</span>）生成对话密钥一共需要三个随机数。</span><br><span class="line"></span><br><span class="line">（<span class="number">2</span>）握手之后的对话使用<span class="string">&quot;对话密钥&quot;</span>加密（对称加密），服务器的公钥和私钥只用于加密和解密<span class="string">&quot;对话密钥&quot;</span>（非对称加密），无其他作用。</span><br><span class="line"></span><br><span class="line">（<span class="number">3</span>）服务器公钥放在服务器的数字证书之中。</span><br></pre></td></tr></table></figure>
+
 <p>从上面第二点可知，整个对话过程中（握手阶段和其后的对话），服务器的公钥和私钥只需要用到一次。这就是<code>CloudFlare</code>能够提供<code>Keyless</code>服务的根本原因。</p>
 <p>某些客户（比如银行）想要使用外部CDN，加快自家网站的访问速度，但是出于安全考虑，不能把私钥交给CDN服务商。这时，完全可以把私钥留在自家服务器，只用来解密对话密钥，其他步骤都让CDN服务商去完成。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092006.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092006.png"></p>
 <h1 id="三、DH算法的握手阶段"><a href="#三、DH算法的握手阶段" class="headerlink" title="三、DH算法的握手阶段"></a>三、DH算法的握手阶段</h1><p>整个握手阶段都不加密（也没法加密），都是明文的。因此，如果有人窃听通信，他可以知道双方选择的加密方法，以及三个随机数中的两个。整个通话的安全，只取决于第三个随机数（<code>Premaster secret</code>）能不能被破解。</p>
-<p>虽然理论上，只要服务器的公钥足够长（比如2048位），那么Premaster secret可以保证不被破解。但是为了足够安全，我们可以考虑把握手阶段的算法从默认的<a href="http://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html" target="_blank" rel="noopener">RSA算法</a>，改为 <a href="https://zh.wikipedia.org/wiki/%E8%BF%AA%E8%8F%B2-%E8%B5%AB%E7%88%BE%E6%9B%BC%E5%AF%86%E9%91%B0%E4%BA%A4%E6%8F%9B" target="_blank" rel="noopener">Diffie-Hellman算法</a>（简称DH算法）。</p>
+<p>虽然理论上，只要服务器的公钥足够长（比如2048位），那么Premaster secret可以保证不被破解。但是为了足够安全，我们可以考虑把握手阶段的算法从默认的<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html">RSA算法</a>，改为 <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%BF%AA%E8%8F%B2-%E8%B5%AB%E7%88%BE%E6%9B%BC%E5%AF%86%E9%91%B0%E4%BA%A4%E6%8F%9B">Diffie-Hellman算法</a>（简称DH算法）。</p>
 <p>采用DH算法后，<code>Premaster secret</code>不需要传递，双方只要交换各自的参数，就可以算出这个随机数。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092008.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092008.png"></p>
 <p>上图中，第三步和第四步由传递<code>Premaster secret</code>变成了传递DH算法所需的参数，然后双方各自算出<code>Premaster secret</code>。这样就提高了安全性。</p>
 <h1 id="四、session的恢复"><a href="#四、session的恢复" class="headerlink" title="四、session的恢复"></a>四、session的恢复</h1><p>握手阶段用来建立SSL连接。如果出于某种原因，对话中断，就需要重新握手。</p>
 <p>这时有两种方法可以恢复原来的session：</p>
 <p><strong>一种叫做session ID，另一种叫做session ticket</strong>。</p>
 <p><code>session ID</code>的思想很简单，就是每一次对话都有一个编号（session ID）。如果对话中断，下次重连的时候，只要客户端给出这个编号，且服务器有这个编号的记录，双方就可以重新使用已有的”对话密钥”，而不必重新生成一把。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092010.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092010.png"></p>
 <p>上图中，客户端给出session ID，服务器确认该编号存在，双方就不再进行握手阶段剩余的步骤，而直接用已有的对话密钥进行加密通信。</p>
 <p>session ID是目前所有浏览器都支持的方法，但是它的缺点在于session ID往往只保留在一台服务器上。所以，如果客户端的请求发到另一台服务器，就无法恢复对话。<code>session ticket</code>就是为了解决这个问题而诞生的，目前只有<code>Firefox</code>和<code>Chrome</code>浏览器支持。</p>
-<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092012.png" alt></p>
+<p><img src="http://www.ruanyifeng.com/blogimg/asset/2014/bg2014092012.png"></p>
 <p>上图中，客户端不再发送<code>session ID</code>，而是发送一个服务器在上一次对话中发送过来的<code>session ticket</code>。这个<code>session ticket</code>是加密的，只有服务器才能解密，其中包括本次对话的主要信息，比如对话密钥和加密方法。当服务器收到<code>session ticket</code>以后，解密后就不必重新生成对话密钥了。</p>
 <ul>
 <li><p>参考</p>
 </li>
-<li><p><a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html" target="_blank" rel="noopener">图解SSL/TLS协议</a> ,By 阮一峰</p>
+<li><p><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html">图解SSL&#x2F;TLS协议</a> ,By 阮一峰</p>
 </li>
 </ul>
 
@@ -275,7 +319,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL/">SSL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS/">TLS</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SSL/" rel="tag">SSL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TLS/" rel="tag">TLS</a></li></ul>
 
       
 
@@ -311,7 +355,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、SSL协议的握手过程"><span class="nav-number">1.</span> <span class="nav-text">一、SSL协议的握手过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、私钥的作用"><span class="nav-number">2.</span> <span class="nav-text">二、私钥的作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、DH算法的握手阶段"><span class="nav-number">3.</span> <span class="nav-text">三、DH算法的握手阶段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、session的恢复"><span class="nav-number">4.</span> <span class="nav-text">四、session的恢复</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81SSL%E5%8D%8F%E8%AE%AE%E7%9A%84%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">一、SSL协议的握手过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%A7%81%E9%92%A5%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">二、私钥的作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81DH%E7%AE%97%E6%B3%95%E7%9A%84%E6%8F%A1%E6%89%8B%E9%98%B6%E6%AE%B5"><span class="nav-number">3.</span> <span class="nav-text">三、DH算法的握手阶段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81session%E7%9A%84%E6%81%A2%E5%A4%8D"><span class="nav-number">4.</span> <span class="nav-text">四、session的恢复</span></a></li></ol>
     
     </div>
   </aside>
@@ -326,7 +370,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -406,12 +450,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -479,7 +527,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

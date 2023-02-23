@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>mysql 主从复制 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="MySQL">
+  <meta name="keywords" content="MySQL" />
   
   
   
   
   <meta name="description" content="MySQL数据库自身提供的主从复制功能可以方便的实现数据的多处自动备份，实现数据库的拓展。多个数据备份不仅可以加强数据的安全性，通过实现读写分离还能进一步提升数据库的负载性能。">
-<meta name="keywords" content="MySQL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL 主从复制">
 <meta property="og:url" content="http://blog.caoxl.com/2018/06/08/MySQL-Master-Slave/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="MySQL数据库自身提供的主从复制功能可以方便的实现数据的多处自动备份，实现数据库的拓展。多个数据备份不仅可以加强数据的安全性，通过实现读写分离还能进一步提升数据库的负载性能。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://www.caoxl.com/images/MasterSlave.jpg">
-<meta property="og:image" content="http://www.caoxl.com/images/主从复制.jpg">
-<meta property="og:updated_time" content="2019-08-22T06:28:55.000Z">
+<meta property="og:image" content="http://www.caoxl.com/images/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6.jpg">
+<meta property="article:published_time" content="2018-06-08T06:05:59.000Z">
+<meta property="article:modified_time" content="2019-08-22T06:28:55.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="MySQL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL 主从复制">
-<meta name="twitter:description" content="MySQL数据库自身提供的主从复制功能可以方便的实现数据的多处自动备份，实现数据库的拓展。多个数据备份不仅可以加强数据的安全性，通过实现读写分离还能进一步提升数据库的负载性能。">
 <meta name="twitter:image" content="http://www.caoxl.com/images/MasterSlave.jpg">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
@@ -45,30 +45,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -146,7 +184,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -184,7 +224,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
 
       
 	<a class="article-views">
@@ -202,12 +242,13 @@
           <blockquote>
 <p>MySQL数据库自身提供的主从复制功能可以方便的实现数据的多处自动备份，实现数据库的拓展。<br>多个数据备份不仅可以加强数据的安全性，通过实现读写分离还能进一步提升数据库的负载性能。</p>
 </blockquote>
-<a id="more"></a>
-<h1 id="主从复制-读写分离模型"><a href="#主从复制-读写分离模型" class="headerlink" title="主从复制/读写分离模型"></a>主从复制/读写分离模型</h1><p><img src="http://www.caoxl.com/images/MasterSlave.jpg" alt="Master-Slave"></p>
+<span id="more"></span>
+
+<h1 id="主从复制-x2F-读写分离模型"><a href="#主从复制-x2F-读写分离模型" class="headerlink" title="主从复制&#x2F;读写分离模型"></a>主从复制&#x2F;读写分离模型</h1><p><img src="http://www.caoxl.com/images/MasterSlave.jpg" alt="Master-Slave"></p>
 <p>Mysql主从复制的实现原理图大致如下(来源网络)：</p>
-<p><img src="http://www.caoxl.com/images/主从复制.jpg" alt="主从复制"></p>
+<p><img src="http://www.caoxl.com/images/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6.jpg" alt="主从复制"></p>
 <p>MySQL之间数据复制的基础是二进制日志文件（binary log file）</p>
-<h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><p>一台MySQL数据库一旦启用二进制日志后，其作为<code>master</code>，它的数据库中所有操作都会以“事件”的方式记录在二进制日志中，<br>其他数据库作为<code>slave</code>通过一个I/O线程与主服务器保持通信，并监控<code>master</code>的二进制日志文件的变化，<br>如果发现<code>master</code>二进制日志文件发生变化，则会把变化复制到自己的中继日志中，然后<code>slave</code>的一个SQL线程会把相关的“事件”执行到自己的数据库中，以此实现从数据库和主数据库的一致性，也就实现了主从复制。</p>
+<h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><p>一台MySQL数据库一旦启用二进制日志后，其作为<code>master</code>，它的数据库中所有操作都会以“事件”的方式记录在二进制日志中，<br>其他数据库作为<code>slave</code>通过一个I&#x2F;O线程与主服务器保持通信，并监控<code>master</code>的二进制日志文件的变化，<br>如果发现<code>master</code>二进制日志文件发生变化，则会把变化复制到自己的中继日志中，然后<code>slave</code>的一个SQL线程会把相关的“事件”执行到自己的数据库中，以此实现从数据库和主数据库的一致性，也就实现了主从复制。</p>
 <h1 id="实现配置"><a href="#实现配置" class="headerlink" title="实现配置"></a>实现配置</h1><h2 id="主服务器"><a href="#主服务器" class="headerlink" title="主服务器"></a>主服务器</h2><ul>
 <li>开启二进制日志</li>
 <li>配置唯一的<code>server-id</code></li>
@@ -215,55 +256,66 @@
 <li>创建一个用户<code>slave</code>和<code>master</code>通信的用户账号</li>
 </ul>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">server-id</span>   = <span class="number">1</span></span><br><span class="line"><span class="attr">log_bin</span>     = /var/log/mysql/mysql-bin.log</span><br></pre></td></tr></table></figure>
+
 <h2 id="从服务器"><a href="#从服务器" class="headerlink" title="从服务器"></a>从服务器</h2><ul>
 <li>配置唯一的<code>server-id</code></li>
 <li>使用master分配的用户账号读取master二进制日志</li>
 <li>启用<code>slave</code>服务</li>
 </ul>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">server-id</span> = <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="具体操作"><a href="#具体操作" class="headerlink" title="具体操作"></a>具体操作</h1><h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul>
 <li>主从数据库版本最好一致</li>
 <li>主从数据库内数据保持一致</li>
-<li>主数据库: <code>47.91.221.85</code>/<code>linux</code></li>
-<li>从数据库: <code>106.15.38.11</code>/<code>linux</code></li>
+<li>主数据库: <code>47.91.221.85</code>&#x2F;<code>linux</code></li>
+<li>从数据库: <code>106.15.38.11</code>&#x2F;<code>linux</code></li>
 </ul>
 <h2 id="主服务器master修改"><a href="#主服务器master修改" class="headerlink" title="主服务器master修改"></a>主服务器<code>master</code>修改</h2><ul>
 <li>修改<code>mysql</code>配置</li>
 </ul>
 <p>找到主数据库的配置文件my.cnf(或者my.ini),插入以下数据</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">log-bin</span> = /var/log/mysql/mysql-bin.log <span class="comment">#开启二进制日志</span></span><br><span class="line"><span class="attr">server-id</span> = <span class="number">99</span> <span class="comment">#设置server-id 唯一即可</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>重启<code>mysql</code>, 创建用于同步的用户账号</li>
 </ul>
-<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">service mysql <span class="keyword">restart</span></span><br><span class="line"></span><br><span class="line">// mysql -u root -p 进入mysql</span><br><span class="line">// 创建用户,IP为可访问该master的IP，任意IP就写<span class="string">'%'</span></span><br><span class="line">mysql&gt; <span class="keyword">CREATE</span> <span class="keyword">user</span> <span class="string">'cxl@106.15.38.11'</span> IDENTIFIED <span class="keyword">By</span> <span class="string">'110119'</span>;</span><br><span class="line"></span><br><span class="line">// 分配权限,IP为可访问该 master的IP，任意IP就写<span class="string">'%'</span></span><br><span class="line">mysql&gt; <span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> SLAVE <span class="keyword">On</span> *.* <span class="keyword">TO</span> <span class="string">'cxl@106.15.38.11'</span>;</span><br><span class="line"></span><br><span class="line">// 刷新权限</span><br><span class="line">mysql&gt; flush <span class="keyword">privileges</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">service mysql <span class="keyword">restart</span></span><br><span class="line"></span><br><span class="line">// mysql -u root -p 进入mysql</span><br><span class="line">// 创建用户,IP为可访问该master的IP，任意IP就写<span class="string">&#x27;%&#x27;</span></span><br><span class="line">mysql&gt; <span class="keyword">CREATE</span> <span class="keyword">user</span> <span class="string">&#x27;cxl@106.15.38.11&#x27;</span> IDENTIFIED <span class="keyword">By</span> <span class="string">&#x27;110119&#x27;</span>;</span><br><span class="line"></span><br><span class="line">// 分配权限,IP为可访问该 master的IP，任意IP就写<span class="string">&#x27;%&#x27;</span></span><br><span class="line">mysql&gt; <span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> SLAVE <span class="keyword">On</span> *.* <span class="keyword">TO</span> <span class="string">&#x27;cxl@106.15.38.11&#x27;</span>;</span><br><span class="line"></span><br><span class="line">// 刷新权限</span><br><span class="line">mysql&gt; flush <span class="keyword">privileges</span>;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>查看<code>master</code>状态,记录二进制文件名(mysql-bin.000009)和位置(421)</li>
 </ul>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show master status;</span><br><span class="line"><span class="code">+------------------+</span>----------<span class="code">+--------------+</span>------------------+</span><br><span class="line">| File             | Position | Binlog<span class="emphasis">_Do_</span>DB | Binlog<span class="emphasis">_Ignore_</span>DB |</span><br><span class="line"><span class="code">+------------------+</span>----------<span class="code">+--------------+</span>------------------+</span><br><span class="line">| mysql-bin.000009 |      421 |              |                  |</span><br><span class="line"><span class="code">+------------------+</span>----------<span class="code">+--------------+</span>------------------+</span><br></pre></td></tr></table></figure>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">mysql&gt; show master status;</span></span><br><span class="line"><span class="section">+------------------+----------+--------------+------------------+</span></span><br><span class="line"><span class="section">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span></span><br><span class="line"><span class="section">+------------------+----------+--------------+------------------+</span></span><br><span class="line"><span class="section">| mysql-bin.000009 |      421 |              |                  |</span></span><br><span class="line"><span class="section">+------------------+----------+--------------+------------------+</span></span><br></pre></td></tr></table></figure>
+
+
 <h2 id="从服务器Slave修改"><a href="#从服务器Slave修改" class="headerlink" title="从服务器Slave修改"></a>从服务器<code>Slave</code>修改</h2><ul>
 <li>修改<code>mysql</code>配置</li>
 </ul>
 <p>同样找到<code>my.cnf</code>配置文件，添加<code>server-id</code></p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">server-id</span> = <span class="number">66</span> <span class="comment">#设置server-id，必须唯一</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>重启<code>mysql</code>,打开<code>mysql</code>,执行同步<code>SQL</code>语句</li>
 </ul>
 <p>(需要主服务器主机名，登陆凭据，二进制文件的名称和位置)：</p>
-<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CHANGE MASTER TO</span><br><span class="line">    -&gt;     MASTER_HOST=<span class="string">'47.91.221.85'</span>,  <span class="comment">// 主服务器地址(外网地址)</span></span><br><span class="line">    -&gt;     MASTER_USER=<span class="string">'cxl'</span>,           <span class="comment">// 用户</span></span><br><span class="line">    -&gt;     MASTER_PASSWORD=<span class="string">'110119'</span>,    <span class="comment">// 密码</span></span><br><span class="line">    -&gt;     MASTER_LOG_FILE=<span class="string">'mysql-bin.000009'</span>,</span><br><span class="line">    -&gt;     MASTER_LOG_POS=<span class="number">421</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; CHANGE MASTER TO</span><br><span class="line">    -&gt;     MASTER_HOST=<span class="string">&#x27;47.91.221.85&#x27;</span>,  <span class="comment">// 主服务器地址(外网地址)</span></span><br><span class="line">    -&gt;     MASTER_USER=<span class="string">&#x27;cxl&#x27;</span>,           <span class="comment">// 用户</span></span><br><span class="line">    -&gt;     MASTER_PASSWORD=<span class="string">&#x27;110119&#x27;</span>,    <span class="comment">// 密码</span></span><br><span class="line">    -&gt;     MASTER_LOG_FILE=<span class="string">&#x27;mysql-bin.000009&#x27;</span>,</span><br><span class="line">    -&gt;     MASTER_LOG_POS=<span class="number">421</span>;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>启动<code>slave</code>同步进程</li>
 </ul>
 <figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;<span class="literal">start</span> <span class="literal">slave</span>;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>查看<code>slave</code>状态</li>
 </ul>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mysql&gt;</span> <span class="string">show</span> <span class="string">slave</span> <span class="string">status\G;</span></span><br><span class="line"><span class="string">***************************</span> <span class="number">1</span><span class="string">.</span> <span class="string">row</span> <span class="string">***************************</span></span><br><span class="line">               <span class="attr">Slave_IO_State:</span> <span class="string">Waiting</span> <span class="string">for</span> <span class="string">master</span> <span class="string">to</span> <span class="string">send</span> <span class="string">event</span></span><br><span class="line">                  <span class="attr">Master_Host:</span> <span class="number">47.91</span><span class="number">.221</span><span class="number">.85</span></span><br><span class="line">                  <span class="attr">Master_User:</span> <span class="string">cxl</span></span><br><span class="line">                  <span class="attr">Master_Port:</span> <span class="number">3306</span></span><br><span class="line">                <span class="attr">Connect_Retry:</span> <span class="number">60</span></span><br><span class="line">              <span class="attr">Master_Log_File:</span> <span class="string">mysql-bin.000009</span></span><br><span class="line">          <span class="attr">Read_Master_Log_Pos:</span> <span class="number">11662</span></span><br><span class="line">               <span class="attr">Relay_Log_File:</span> <span class="string">mysqld-relay-bin.000022</span></span><br><span class="line">                <span class="attr">Relay_Log_Pos:</span> <span class="number">11765</span></span><br><span class="line">        <span class="attr">Relay_Master_Log_File:</span> <span class="string">mysql-bin.000013</span></span><br><span class="line">             <span class="attr">Slave_IO_Running:</span> <span class="literal">Yes</span></span><br><span class="line">            <span class="attr">Slave_SQL_Running:</span> <span class="literal">Yes</span></span><br><span class="line">              <span class="attr">Replicate_Do_DB:</span> </span><br><span class="line">          <span class="attr">Replicate_Ignore_DB:</span> </span><br><span class="line">        <span class="string">...</span></span><br></pre></td></tr></table></figure>
+
 <p>当<code>Slave_IO_Running</code>和<code>Slave_SQL_Running</code>都为YES的时候就表示主从同步设置成功了。</p>
 <p><code>master</code>开启二进制日志后默认记录所有库所有表的操作，可以通过配置来指定只记录指定的数据库甚至指定的表的操作，<br>具体在mysql配置文件的<code>[mysqld]</code>可添加修改如下选项：</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 不同步哪些数据库  </span></span><br><span class="line"><span class="attr">binlog-ignore-db</span> = mysql  </span><br><span class="line"><span class="attr">binlog-ignore-db</span> = test  </span><br><span class="line"><span class="attr">binlog-ignore-db</span> = information_schema  </span><br><span class="line">  </span><br><span class="line"><span class="comment"># 只同步哪些数据库，除此之外，其他不同步  </span></span><br><span class="line"><span class="attr">binlog-do-db</span> = game</span><br></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 不同步哪些数据库  </span></span><br><span class="line"><span class="attr">binlog-ignore-db</span> = mysql  </span><br><span class="line"><span class="attr">binlog-ignore-db</span> = test  </span><br><span class="line"><span class="attr">binlog-ignore-db</span> = information_schema  </span><br><span class="line">  </span><br><span class="line"><span class="comment"># 只同步哪些数据库，除此之外，其他不同步  </span></span><br><span class="line"><span class="attr">binlog-do-db</span> = game </span><br></pre></td></tr></table></figure>
+
 <p>查看<code>master</code>状态时就可以看到只记录了<code>test</code>库，忽略了<code>manual</code>和<code>mysql</code>库。</p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://blog.csdn.net/yifanSJ/article/details/79281016" target="_blank" rel="noopener">CentOS下MySQL主从复制(Master-Slave)实践</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/yifanSJ/article/details/79281016">CentOS下MySQL主从复制(Master-Slave)实践</a></li>
 </ul>
 
         
@@ -296,7 +348,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li></ul>
 
       
 
@@ -332,7 +384,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#主从复制-读写分离模型"><span class="nav-number">1.</span> <span class="nav-text">主从复制/读写分离模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现原理"><span class="nav-number">2.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现配置"><span class="nav-number">3.</span> <span class="nav-text">实现配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主服务器"><span class="nav-number">3.1.</span> <span class="nav-text">主服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从服务器"><span class="nav-number">3.2.</span> <span class="nav-text">从服务器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#具体操作"><span class="nav-number">4.</span> <span class="nav-text">具体操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">4.1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主服务器master修改"><span class="nav-number">4.2.</span> <span class="nav-text">主服务器master修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从服务器Slave修改"><span class="nav-number">4.3.</span> <span class="nav-text">从服务器Slave修改</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6-x2F-%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">主从复制&#x2F;读写分离模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">实现配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">3.1.</span> <span class="nav-text">主服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">3.2.</span> <span class="nav-text">从服务器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">具体操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">4.1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E6%9C%8D%E5%8A%A1%E5%99%A8master%E4%BF%AE%E6%94%B9"><span class="nav-number">4.2.</span> <span class="nav-text">主服务器master修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8Slave%E4%BF%AE%E6%94%B9"><span class="nav-number">4.3.</span> <span class="nav-text">从服务器Slave修改</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -347,7 +399,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -427,12 +479,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -500,7 +556,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

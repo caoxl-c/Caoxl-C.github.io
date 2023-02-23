@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>跨域资源共享 cors 详解 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="PHPInternetCORS">
+  <meta name="keywords" content="PHPInternetCORS" />
   
   
   
   
   <meta name="description" content="CORS是一个W3C标准，全称是”跨域资源共享”（Cross-origin resource sharing）。 它允许浏览器向跨源服务器，发出 XMLHttpRequest请求，从而克服了AJAX只能同源使用的限制。 本文详细介绍CORS的内部机制。">
-<meta name="keywords" content="PHP,Internet,CORS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="跨域资源共享 CORS 详解">
 <meta property="og:url" content="http://blog.caoxl.com/2018/02/06/CORS-Cross-Origin-Resource-Sharing/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="CORS是一个W3C标准，全称是”跨域资源共享”（Cross-origin resource sharing）。 它允许浏览器向跨源服务器，发出 XMLHttpRequest请求，从而克服了AJAX只能同源使用的限制。 本文详细介绍CORS的内部机制。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T03:46:15.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-06T02:33:08.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:46:15.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="Internet">
+<meta property="article:tag" content="CORS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="跨域资源共享 CORS 详解">
-<meta name="twitter:description" content="CORS是一个W3C标准，全称是”跨域资源共享”（Cross-origin resource sharing）。 它允许浏览器向跨源服务器，发出 XMLHttpRequest请求，从而克服了AJAX只能同源使用的限制。 本文详细介绍CORS的内部机制。">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +44,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +183,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +223,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%BF%85%E5%A4%87/">计算机专业必备</a>
 
       
 	<a class="article-views">
@@ -197,11 +239,12 @@
         
         
           <p>CORS是一个W3C标准，全称是”跨域资源共享”（Cross-origin resource sharing）。</p>
-<p>它允许浏览器向跨源服务器，发出 <a href="http://www.ruanyifeng.com/blog/2012/09/xmlhttprequest_level_2.html" target="_blank" rel="noopener">XMLHttpRequest</a>请求，从而克服了AJAX只能<a href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" target="_blank" rel="noopener">同源</a>使用的限制。</p>
+<p>它允许浏览器向跨源服务器，发出 <a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2012/09/xmlhttprequest_level_2.html">XMLHttpRequest</a>请求，从而克服了AJAX只能<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html">同源</a>使用的限制。</p>
 <p>本文详细介绍CORS的内部机制。</p>
-<a id="more"></a> 
+<span id="more"></span> 
+
 <blockquote>
-<p>原文地址: <a href="http://www.ruanyifeng.com/blog/2016/04/cors.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2016/04/cors.html</a></p>
+<p>原文地址: <a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2016/04/cors.html">http://www.ruanyifeng.com/blog/2016/04/cors.html</a></p>
 </blockquote>
 <h1 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h1><p>CORS需要浏览器和服务器同时支持。目前，所有浏览器都支持该功能，IE浏览器不能低于IE10。</p>
 <p>整个CORS通信过程，都是浏览器自动完成，不需要用户参与。对于开发者来说，CORS通信与同源的AJAX通信没有差别，代码完全一样。浏览器一旦发现AJAX请求跨源，就会自动添加一些附加的头信息，有时还会多出一次附加的请求，但用户不会有感觉。</p>
@@ -209,15 +252,18 @@
 <h1 id="二、两种请求"><a href="#二、两种请求" class="headerlink" title="二、两种请求"></a>二、两种请求</h1><p>浏览器将CORS请求分成两类：<strong>简单请求</strong>（simple request）和<strong>非简单请求</strong>（not-so-simple request）。</p>
 <p>只要同时满足以下两大条件，就属于简单请求。</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>) 请求方法是以下三种方法之一：</span><br><span class="line"> </span><br><span class="line"> HEAD</span><br><span class="line"> <span class="keyword">GET</span></span><br><span class="line"> POST</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">(<span class="number">2</span>) HTTP的头信息不超出以下几种字段：</span><br><span class="line"> </span><br><span class="line"> Accept</span><br><span class="line"> Accept-<span class="keyword">Language</span></span><br><span class="line"> Content-<span class="keyword">Language</span></span><br><span class="line"> Last-Event-ID</span><br><span class="line"> Content-<span class="keyword">Type</span>：只限于三个值application/x-www-form-urlencoded、multipart/form-data、<span class="type">text</span>/plain</span><br></pre></td></tr></table></figure>
+
 <p>凡是不同时满足上面两个条件，就属于非简单请求。</p>
 <p>浏览器对这两种请求的处理，是不一样的。</p>
 <h1 id="三、简单请求"><a href="#三、简单请求" class="headerlink" title="三、简单请求"></a>三、简单请求</h1><h2 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h2><p>对于简单请求，浏览器直接发出<code>CORS</code>请求。具体来说，就是在头信息之中，增加一个<code>Origin</code>字段。</p>
 <p>下面是一个例子，浏览器发现这次跨源<code>AJAX</code>请求是简单请求，就自动在头信息之中，添加一个<code>Origin</code>字段。</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/cors</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Origin</span>: http://api.bob.com</span><br><span class="line"><span class="attribute">Host</span>: api.alice.com</span><br><span class="line"><span class="attribute">Accept-Language</span>: en-US</span><br><span class="line"><span class="attribute">Connection</span>: keep-alive</span><br><span class="line"><span class="attribute">User-Agent</span>: Mozilla/5.0...</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/cors</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Origin</span><span class="punctuation">: </span>http://api.bob.com</span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>api.alice.com</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>en-US</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>keep-alive</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>Mozilla/5.0...</span><br></pre></td></tr></table></figure>
+
 <p>上面的头信息中，<code>Origin</code>字段用来说明，本次请求来自哪个源（协议 + 域名 + 端口）。服务器根据这个值，决定是否同意这次请求。</p>
 <p>如果<code>Origin</code>指定的源，不在许可范围内，服务器会返回一个正常的HTTP回应。浏览器发现，这个回应的头信息没有包含<code>Access-Control-Allow-Origin</code>字段（详见下文），就知道出错了，从而抛出一个错误，被<code>XMLHttpRequest</code>的<code>onerror</code>回调函数捕获。注意，这种错误无法通过状态码识别，因为<code>HTTP</code>回应的状态码有可能是<code>200</code>。</p>
 <p>如果<code>Origin</code>指定的域名在许可范围内，服务器返回的响应，会多出几个头信息字段。</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Access-Control-Allow-<span class="string">Origin:</span> <span class="string">http:</span><span class="comment">//api.bob.com</span></span><br><span class="line">Access-Control-Allow-<span class="string">Credentials:</span> <span class="literal">true</span></span><br><span class="line">Access-Control-Expose-<span class="string">Headers:</span> FooBar</span><br><span class="line">Content-<span class="string">Type:</span> text/html; charset=utf<span class="number">-8</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Access</span>-Control-Allow-Origin: http://api.bob.com</span><br><span class="line"><span class="keyword">Access</span>-Control-Allow-Credentials: <span class="keyword">true</span></span><br><span class="line"><span class="keyword">Access</span>-Control-Expose-Headers: FooBar</span><br><span class="line">Content-<span class="keyword">Type</span>: <span class="type">text</span>/html; charset=utf<span class="number">-8</span></span><br></pre></td></tr></table></figure>
+
 <p>上面的头信息之中，有三个与<code>CORS</code>请求相关的字段，都以<code>Access-Control-</code>开头</p>
 <ul>
 <li><strong>（1）Access-Control-Allow-Origin</strong></li>
@@ -232,23 +278,28 @@
 </ul>
 <p>该字段可选。CORS请求时，<code>XMLHttpRequest</code>对象的<code>getResponseHeader()</code>方法只能拿到6个基本字段：</p>
 <p><code>Cache-Control</code>、<code>Content-Language</code>、<code>Content-Type</code>、<code>Expires</code>、<code>Last-Modified</code>、<code>Pragma</code>。</p>
-<p>如果想拿到其他字段，就必须在<code>Access-Control-Expose-Headers里面指定。上面的例子指定，</code>getResponseHeader(‘FooBar’)`可以返回FooBar字段的值</p>
+<p>如果想拿到其他字段，就必须在<code>Access-Control-Expose-Headers里面指定。上面的例子指定，</code>getResponseHeader(‘FooBar’)&#96;可以返回FooBar字段的值</p>
 <h2 id="withCredentials-属性"><a href="#withCredentials-属性" class="headerlink" title="withCredentials 属性"></a>withCredentials 属性</h2><p>上面说到，CORS请求默认不发送Cookie和HTTP认证信息。如果要把Cookie发到服务器，一方面要服务器同意，指定<code>Access-Control-Allow-Credentials</code>字段。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">Access-Control-Allow-Credentials:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Access</span>-Control-Allow-Credentials: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
 <p>另一方面，开发者必须在AJAX请求中打开 <code>withCredentials</code> 属性。</p>
-<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> xhr = <span class="keyword">new</span> <span class="type">XMLHttpRequest</span>();</span><br><span class="line">xhr.withCredentials = <span class="literal">true</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var xhr <span class="operator">=</span> new XMLHttpRequest()<span class="comment">;</span></span><br><span class="line">xhr.withCredentials <span class="operator">=</span> true<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+
 <p>否则，即使服务器同意发送Cookie，浏览器也不会发送。或者，服务器要求设置Cookie，浏览器也不会处理。</p>
 <p>但是，如果省略<code>withCredentials</code>设置，有的浏览器还是会一起发送Cookie。这时，可以显式关闭<code>withCredentials</code>。</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">xhr.withCredentials</span> = <span class="literal">false</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+
 <p>需要注意的是，如果要发送Cookie，<code>Access-Control-Allow-Origin</code> 就不能设为星号，必须指定明确的、与请求网页一致的域名。同时，Cookie依然遵循同源政策，只有用服务器域名设置的Cookie才会上传，其他域名的Cookie并不会上传，且（跨源）原网页代码中的 <code>document.cookie</code> 也无法读取服务器域名下的Cookie。</p>
 <h1 id="四、非简单请求"><a href="#四、非简单请求" class="headerlink" title="四、非简单请求"></a>四、非简单请求</h1><h2 id="预检请求"><a href="#预检请求" class="headerlink" title="预检请求"></a>预检请求</h2><p>非简单请求是那种对服务器有特殊要求的请求，比如请求方法是<code>PUT</code>或<code>DELETE</code>，或者<code>Content-Type</code>字段的类型是<code>application/json</code>。</p>
-<p>非简单请求的CORS请求，会在正式通信之前，增加一次HTTP查询请求，称为<strong>“预检”</strong>请求（preflight）。</p>
+<p>非简单请求的CORS请求，会在正式通信之前，增加一次HTTP查询请求，称为**”预检”**请求（preflight）。</p>
 <p>浏览器先询问服务器，当前网页所在的域名是否在服务器的许可名单之中，以及可以使用哪些HTTP动词和头信息字段。只有得到肯定答复，浏览器才会发出正式的<code>XMLHttpRequest</code>请求，否则就报错。</p>
 <p>下面是一段浏览器的JavaScript脚本。</p>
-<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="built_in">url</span> = <span class="string">'http://api.alice.com/cors'</span>;</span><br><span class="line"><span class="keyword">var</span> xhr = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">xhr.open(<span class="string">'PUT'</span>, <span class="built_in">url</span>, <span class="literal">true</span>);</span><br><span class="line">xhr.setRequestHeader(<span class="string">'X-Custom-Header'</span>, <span class="string">'value'</span>);</span><br><span class="line">xhr.send();</span><br></pre></td></tr></table></figure>
+<figure class="highlight qml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="built_in">url</span> = <span class="string">&#x27;http://api.alice.com/cors&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> xhr = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">xhr.open(<span class="string">&#x27;PUT&#x27;</span>, <span class="built_in">url</span>, <span class="literal">true</span>);</span><br><span class="line">xhr.setRequestHeader(<span class="string">&#x27;X-Custom-Header&#x27;</span>, <span class="string">&#x27;value&#x27;</span>);</span><br><span class="line">xhr.send();</span><br></pre></td></tr></table></figure>
+
 <p>上面代码中，HTTP请求的方法是<code>PUT</code>，并且发送一个自定义头信息<code>X-Custom-Header</code>。</p>
 <p>浏览器发现，这是一个非简单请求，就自动发出一个”预检”请求，要求服务器确认可以这样请求。下面是这个”预检”请求的HTTP头信息。</p>
-<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">OPTIONS /cors HTTP/<span class="number">1.1</span></span><br><span class="line">Origin: http:<span class="comment">//api.bob.com</span></span><br><span class="line">Access-Control-Request-<span class="function"><span class="keyword">Method</span>:</span> PUT</span><br><span class="line">Access-Control-Request-Headers: X-Custom-Header</span><br><span class="line">Host: api.alice.com</span><br><span class="line">Accept-Language: en-US</span><br><span class="line">Connection: keep-alive</span><br><span class="line">User-Agent: Mozilla/<span class="number">5.0</span>...</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">OPTIONS</span> <span class="string">/cors</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Origin</span><span class="punctuation">: </span>http://api.bob.com</span><br><span class="line"><span class="attribute">Access-Control-Request-Method</span><span class="punctuation">: </span>PUT</span><br><span class="line"><span class="attribute">Access-Control-Request-Headers</span><span class="punctuation">: </span>X-Custom-Header</span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>api.alice.com</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>en-US</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>keep-alive</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>Mozilla/5.0...</span><br></pre></td></tr></table></figure>
+
 <p>“预检”请求用的请求方法是<code>OPTIONS</code>，表示这个请求是用来询问的。头信息里面，关键字段是<code>Origin</code>，表示请求来自哪个源。</p>
 <p>除了<code>Origin</code>字段，”预检”请求的头信息包括两个特殊字段。</p>
 <ul>
@@ -260,13 +311,17 @@
 </ul>
 <p>该字段是一个逗号分隔的字符串，指定浏览器CORS请求会额外发送的头信息字段，上例是 <code>X-Custom-Header</code>。</p>
 <h2 id="预检请求的回应"><a href="#预检请求的回应" class="headerlink" title="预检请求的回应"></a>预检请求的回应</h2><p>服务器收到”预检”请求以后，检查了<code>Origin</code>、<code>Access-Control-Request-Method</code>和<code>Access-Control-Request-Headers</code>字段以后，确认允许跨源请求，就可以做出回应。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">HTTP/1.1</span> <span class="number">200</span> <span class="string">OK</span></span><br><span class="line"><span class="attr">Date:</span> <span class="string">Mon,</span> <span class="number">01</span> <span class="string">Dec</span> <span class="number">2008</span> <span class="number">01</span><span class="string">:15:39</span> <span class="string">GMT</span></span><br><span class="line"><span class="attr">Server:</span> <span class="string">Apache/2.0.61</span> <span class="string">(Unix)</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Origin:</span> <span class="string">http://api.bob.com</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Methods:</span> <span class="string">GET,</span> <span class="string">POST,</span> <span class="string">PUT</span></span><br><span class="line"><span class="attr">Access-Control-Allow-Headers:</span> <span class="string">X-Custom-Header</span></span><br><span class="line"><span class="attr">Content-Type:</span> <span class="string">text/html;</span> <span class="string">charset=utf-8</span></span><br><span class="line"><span class="attr">Content-Encoding:</span> <span class="string">gzip</span></span><br><span class="line"><span class="attr">Content-Length:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">Keep-Alive:</span> <span class="string">timeout=2,</span> <span class="string">max=100</span></span><br><span class="line"><span class="attr">Connection:</span> <span class="string">Keep-Alive</span></span><br><span class="line"><span class="attr">Content-Type:</span> <span class="string">text/plain</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Date</span><span class="punctuation">: </span>Mon, 01 Dec 2008 01:15:39 GMT</span><br><span class="line"><span class="attribute">Server</span><span class="punctuation">: </span>Apache/2.0.61 (Unix)</span><br><span class="line"><span class="attribute">Access-Control-Allow-Origin</span><span class="punctuation">: </span>http://api.bob.com</span><br><span class="line"><span class="attribute">Access-Control-Allow-Methods</span><span class="punctuation">: </span>GET, POST, PUT</span><br><span class="line"><span class="attribute">Access-Control-Allow-Headers</span><span class="punctuation">: </span>X-Custom-Header</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>text/html; charset=utf-8</span><br><span class="line"><span class="attribute">Content-Encoding</span><span class="punctuation">: </span>gzip</span><br><span class="line"><span class="attribute">Content-Length</span><span class="punctuation">: </span>0</span><br><span class="line"><span class="attribute">Keep-Alive</span><span class="punctuation">: </span>timeout=2, max=100</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>Keep-Alive</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>text/plain</span><br></pre></td></tr></table></figure>
+
 <p>上面的HTTP回应中，关键的是<code>Access-Control-Allow-Origin</code>字段，表示<code>http://api.bob.com</code>可以请求数据。该字段也可以设为<code>星号(*)</code>，表示同意任意跨源请求。</p>
 <figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Access</span>-Control-Allow-Origin: *</span><br></pre></td></tr></table></figure>
+
 <p>如果浏览器否定了”预检”请求，会返回一个正常的HTTP回应，但是没有任何CORS相关的头信息字段。这时，浏览器就会认定，服务器不同意预检请求，因此触发一个错误，被<code>XMLHttpRequest</code>对象的<code>onerror</code>回调函数捕获。控制台会打印出如下的报错信息。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">XMLHttpRequest cannot <span class="keyword">load</span> <span class="keyword">http</span>://api.alice.com.</span><br><span class="line">Origin <span class="keyword">http</span>://api.bob.com <span class="keyword">is</span> <span class="keyword">not</span> allowed <span class="keyword">by</span> <span class="keyword">Access</span>-Control-<span class="keyword">Allow</span>-Origin.</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">XMLHttpRequest cannot load http:<span class="regexp">//</span>api.alice.com.</span><br><span class="line">Origin http:<span class="regexp">//</span>api.bob.com is not allowed by Access-Control-Allow-Origin.</span><br></pre></td></tr></table></figure>
+
 <p>服务器回应的其他CORS相关字段如下。</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Access</span>-Control-Allow-Methods: <span class="keyword">GET</span>, POST, PUT</span><br><span class="line"><span class="keyword">Access</span>-Control-Allow-Headers: X-Custom-<span class="keyword">Header</span></span><br><span class="line"><span class="keyword">Access</span>-Control-Allow-Credentials: <span class="keyword">true</span></span><br><span class="line"><span class="keyword">Access</span>-Control-Max-Age: <span class="number">1728000</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>（1）Access-Control-Allow-Methods</strong></li>
 </ul>
@@ -284,10 +339,12 @@
 </ul>
 <p>该字段可选，用来指定本次预检请求的有效期，单位为秒。上面结果中，有效期是20天（1728000秒），即允许缓存该条回应1728000秒（即20天），在此期间，不用发出另一条预检请求。</p>
 <h2 id="浏览器的正常请求和回应"><a href="#浏览器的正常请求和回应" class="headerlink" title="浏览器的正常请求和回应"></a>浏览器的正常请求和回应</h2><p>一旦服务器通过了”预检”请求，以后每次浏览器正常的<code>CORS</code>请求，就都跟简单请求一样，会有一个<code>Origin</code>头信息字段。服务器的回应，也都会有一个<code>Access-Control-Allow-Origin</code>头信息字段。</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">PUT</span> <span class="string">/cors</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Origin</span>: http://api.bob.com</span><br><span class="line"><span class="attribute">Host</span>: api.alice.com</span><br><span class="line"><span class="attribute">X-Custom-Header</span>: value</span><br><span class="line"><span class="attribute">Accept-Language</span>: en-US</span><br><span class="line"><span class="attribute">Connection</span>: keep-alive</span><br><span class="line"><span class="attribute">User-Agent</span>: Mozilla/5.0...</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">PUT</span> <span class="string">/cors</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Origin</span><span class="punctuation">: </span>http://api.bob.com</span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>api.alice.com</span><br><span class="line"><span class="attribute">X-Custom-Header</span><span class="punctuation">: </span>value</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>en-US</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>keep-alive</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>Mozilla/5.0...</span><br></pre></td></tr></table></figure>
+
 <p>上面头信息的<code>Origin</code>字段是浏览器自动添加的。</p>
 <p>下面是服务器正常的回应。</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Access-Control-Allow-<span class="string">Origin:</span> <span class="string">http:</span><span class="comment">//api.bob.com</span></span><br><span class="line">Content-<span class="string">Type:</span> text/html; charset=utf<span class="number">-8</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Access</span>-Control-Allow-Origin: http://api.bob.com</span><br><span class="line">Content-<span class="keyword">Type</span>: <span class="type">text</span>/html; charset=utf<span class="number">-8</span></span><br></pre></td></tr></table></figure>
+
 <p>上面头信息中，<code>Access-Control-Allow-Origin</code> 字段是每次回应都必定包含的。</p>
 <h1 id="五、与JSONP的比较"><a href="#五、与JSONP的比较" class="headerlink" title="五、与JSONP的比较"></a>五、与JSONP的比较</h1><p><code>CORS</code>与<code>JSONP</code>的使用目的相同，但是比<code>JSONP</code>更强大。</p>
 <p><code>JSONP</code>只支持<code>GET</code>请求，<code>CORS</code>支持所有类型的<code>HTTP</code>请求。</p>
@@ -323,7 +380,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CORS/">CORS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/">Internet</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CORS/" rel="tag">CORS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/" rel="tag">Internet</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li></ul>
 
       
 
@@ -359,7 +416,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、简介"><span class="nav-number">1.</span> <span class="nav-text">一、简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、两种请求"><span class="nav-number">2.</span> <span class="nav-text">二、两种请求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、简单请求"><span class="nav-number">3.</span> <span class="nav-text">三、简单请求</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本流程"><span class="nav-number">3.1.</span> <span class="nav-text">基本流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#withCredentials-属性"><span class="nav-number">3.2.</span> <span class="nav-text">withCredentials 属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、非简单请求"><span class="nav-number">4.</span> <span class="nav-text">四、非简单请求</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#预检请求"><span class="nav-number">4.1.</span> <span class="nav-text">预检请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#预检请求的回应"><span class="nav-number">4.2.</span> <span class="nav-text">预检请求的回应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#浏览器的正常请求和回应"><span class="nav-number">4.3.</span> <span class="nav-text">浏览器的正常请求和回应</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五、与JSONP的比较"><span class="nav-number">5.</span> <span class="nav-text">五、与JSONP的比较</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">一、简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%B8%A4%E7%A7%8D%E8%AF%B7%E6%B1%82"><span class="nav-number">2.</span> <span class="nav-text">二、两种请求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E7%AE%80%E5%8D%95%E8%AF%B7%E6%B1%82"><span class="nav-number">3.</span> <span class="nav-text">三、简单请求</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B"><span class="nav-number">3.1.</span> <span class="nav-text">基本流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#withCredentials-%E5%B1%9E%E6%80%A7"><span class="nav-number">3.2.</span> <span class="nav-text">withCredentials 属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%9D%9E%E7%AE%80%E5%8D%95%E8%AF%B7%E6%B1%82"><span class="nav-number">4.</span> <span class="nav-text">四、非简单请求</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E6%A3%80%E8%AF%B7%E6%B1%82"><span class="nav-number">4.1.</span> <span class="nav-text">预检请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E6%A3%80%E8%AF%B7%E6%B1%82%E7%9A%84%E5%9B%9E%E5%BA%94"><span class="nav-number">4.2.</span> <span class="nav-text">预检请求的回应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%AD%A3%E5%B8%B8%E8%AF%B7%E6%B1%82%E5%92%8C%E5%9B%9E%E5%BA%94"><span class="nav-number">4.3.</span> <span class="nav-text">浏览器的正常请求和回应</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%8EJSONP%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">5.</span> <span class="nav-text">五、与JSONP的比较</span></a></li></ol>
     
     </div>
   </aside>
@@ -374,7 +431,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -454,12 +511,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -527,7 +588,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

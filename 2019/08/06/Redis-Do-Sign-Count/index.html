@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>redis 快速实现签到统计功能 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Redis">
+  <meta name="keywords" content="Redis" />
   
   
   
   
-  <meta name="description" content="触发点 用 MySql 来实现的话虽然简单粗暴，但是也有弊端，比如我们想要做一些复杂的功能就不是太方便了，或者说不是太高性能了，比如，今天是连续签到的第几天，在一定时间内连续签到了多少天。另外一方面，如果按 100 万用户量级来计算，一个用户每年可以产生 365/366 条记录，100 万用户的所有签到记录那就有点恐怖了，查询计算速度也会越来越慢。  准备 Redis 的字符串数据都是以二进制的形">
-<meta name="keywords" content="Redis">
+  <meta name="description" content="触发点 用 MySql 来实现的话虽然简单粗暴，但是也有弊端，比如我们想要做一些复杂的功能就不是太方便了，或者说不是太高性能了，比如，今天是连续签到的第几天，在一定时间内连续签到了多少天。另外一方面，如果按 100 万用户量级来计算，一个用户每年可以产生 365&#x2F;366 条记录，100 万用户的所有签到记录那就有点恐怖了，查询计算速度也会越来越慢。  准备 Redis 的字符串数据都是以">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis 快速实现签到统计功能">
 <meta property="og:url" content="http://blog.caoxl.com/2019/08/06/Redis-Do-Sign-Count/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
-<meta property="og:description" content="触发点 用 MySql 来实现的话虽然简单粗暴，但是也有弊端，比如我们想要做一些复杂的功能就不是太方便了，或者说不是太高性能了，比如，今天是连续签到的第几天，在一定时间内连续签到了多少天。另外一方面，如果按 100 万用户量级来计算，一个用户每年可以产生 365/366 条记录，100 万用户的所有签到记录那就有点恐怖了，查询计算速度也会越来越慢。  准备 Redis 的字符串数据都是以二进制的形">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T06:35:33.000Z">
+<meta property="og:description" content="触发点 用 MySql 来实现的话虽然简单粗暴，但是也有弊端，比如我们想要做一些复杂的功能就不是太方便了，或者说不是太高性能了，比如，今天是连续签到的第几天，在一定时间内连续签到了多少天。另外一方面，如果按 100 万用户量级来计算，一个用户每年可以产生 365&#x2F;366 条记录，100 万用户的所有签到记录那就有点恐怖了，查询计算速度也会越来越慢。  准备 Redis 的字符串数据都是以">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-06T07:43:02.000Z">
+<meta property="article:modified_time" content="2019-08-22T06:35:33.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Redis 快速实现签到统计功能">
-<meta name="twitter:description" content="触发点 用 MySql 来实现的话虽然简单粗暴，但是也有弊端，比如我们想要做一些复杂的功能就不是太方便了，或者说不是太高性能了，比如，今天是连续签到的第几天，在一定时间内连续签到了多少天。另外一方面，如果按 100 万用户量级来计算，一个用户每年可以产生 365/366 条记录，100 万用户的所有签到记录那就有点恐怖了，查询计算速度也会越来越慢。  准备 Redis 的字符串数据都是以二进制的形">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +42,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +181,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +221,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+    <a class="article-category-link" href="/categories/%E5%BF%85%E5%A4%87%E6%8A%80%E8%83%BD/">必备技能</a>
 
       
 	<a class="article-views">
@@ -197,39 +237,43 @@
         
         
           <h2 id="触发点"><a href="#触发点" class="headerlink" title="触发点"></a>触发点</h2><blockquote>
-<p>用 <code>MySql</code> 来实现的话虽然简单粗暴，但是也有弊端，比如我们想要做一些复杂的功能就不是太方便了，或者说不是太高性能了，比如，今天是连续签到的第几天，在一定时间内连续签到了多少天。另外一方面，如果按 <strong>100 万</strong>用户量级来计算，一个用户每年可以产生 <code>365</code>/<code>366</code> 条记录，<strong>100 万</strong>用户的所有签到记录那就有点恐怖了，查询计算速度也会越来越慢。</p>
+<p>用 <code>MySql</code> 来实现的话虽然简单粗暴，但是也有弊端，比如我们想要做一些复杂的功能就不是太方便了，或者说不是太高性能了，比如，今天是连续签到的第几天，在一定时间内连续签到了多少天。另外一方面，如果按 <strong>100 万</strong>用户量级来计算，一个用户每年可以产生 <code>365</code>&#x2F;<code>366</code> 条记录，<strong>100 万</strong>用户的所有签到记录那就有点恐怖了，查询计算速度也会越来越慢。</p>
 </blockquote>
 <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><blockquote>
 <p><code>Redis</code> 的字符串数据都是以二进制的形式存放的，所以说 <code>Redis</code> 的 Bit 操作非常适合处理这个场景，因为 <code>Bit</code> 的值为 <code>0</code> 或 <code>1</code>，<strong>用户是否打卡也可以用 0 或 1 来表示</strong>，我们把签到的天数对应到每个字节上，打卡了就是 <code>1</code>，没打卡就是 <code>0</code>，那么一个用户一年下来的记录就是 <code>365</code> 位的长度，<code>100</code> 万用户一年只需要耗费大约 <code>43 M</code> 左右的存储空间就可以了，而且速度贼快</p>
 </blockquote>
 <p>大伙可能会问，这个究竟是怎么计算来的，我们来看一下官方的解释：</p>
 <blockquote>
-<p>在一台 2010MacBook Pro 上，offset 为 2^32-1（分配 512MB）需要～300ms，offset 为 2^30-1 (分配 128MB) 需要～80ms，offset 为 2^28-1（分配 32 MB）需要～30ms，offset 为 2^26-1（分配 8MB）需要 8ms。<br>大概的空间占用计算公式是：(offset / 8 / 1024 / 1024) MB</p>
+<p>在一台 2010MacBook Pro 上，offset 为 2^32-1（分配 512MB）需要～300ms，offset 为 2^30-1 (分配 128MB) 需要～80ms，offset 为 2^28-1（分配 32 MB）需要～30ms，offset 为 2^26-1（分配 8MB）需要 8ms。<br>大概的空间占用计算公式是：(offset &#x2F; 8 &#x2F; 1024 &#x2F; 1024) MB</p>
 </blockquote>
 <h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><ul>
 <li>实例化一个<code>Redis</code>连接</li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Support</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Concerns</span>\<span class="title">Singleton</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">Log</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RedisTool</span> <span class="keyword">extends</span> \<span class="title">Redis</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">use</span> <span class="title">Singleton</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">parent</span>::__construct();</span><br><span class="line"></span><br><span class="line">        $host = config(<span class="string">'database.redis.default.host'</span>);</span><br><span class="line">        $port = config(<span class="string">'database.redis.default.port'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (! <span class="keyword">$this</span>-&gt;connect($host, $port)) &#123;</span><br><span class="line">            Log::error(<span class="string">"redis fail to connect to $host:$port"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$redis = RedisTool::getInstance();</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Support</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">App</span>\<span class="title">Concerns</span>\<span class="title">Singleton</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Support</span>\<span class="title">Facades</span>\<span class="title">Log</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RedisTool</span> <span class="keyword">extends</span> \<span class="title">Redis</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">use</span> <span class="title">Singleton</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in">parent</span>::<span class="title function_ invoke__">__construct</span>();</span><br><span class="line"></span><br><span class="line">        <span class="variable">$host</span> = <span class="title function_ invoke__">config</span>(<span class="string">&#x27;database.redis.default.host&#x27;</span>);</span><br><span class="line">        <span class="variable">$port</span> = <span class="title function_ invoke__">config</span>(<span class="string">&#x27;database.redis.default.port&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (! <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">connect</span>(<span class="variable">$host</span>, <span class="variable">$port</span>)) &#123;</span><br><span class="line">            <span class="title class_">Log</span>::<span class="title function_ invoke__">error</span>(<span class="string">&quot;redis fail to connect to <span class="subst">$host</span>:<span class="subst">$port</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$redis</span> = <span class="title class_">RedisTool</span>::<span class="title function_ invoke__">getInstance</span>();</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>如何设计<code>key</code>?</li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$dayKey = <span class="string">'login:'</span> . \now()-&gt;format(<span class="string">'Ymd'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 普通写法</span></span><br><span class="line">$dayKey = <span class="string">'login:'</span> . \date(<span class="string">'Ymd'</span>, \time());</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$dayKey</span> = <span class="string">&#x27;login:&#x27;</span> . \<span class="title function_ invoke__">now</span>()-&gt;<span class="title function_ invoke__">format</span>(<span class="string">&#x27;Ymd&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 普通写法</span></span><br><span class="line"><span class="variable">$dayKey</span> = <span class="string">&#x27;login:&#x27;</span> . \<span class="title function_ invoke__">date</span>(<span class="string">&#x27;Ymd&#x27;</span>, \<span class="title function_ invoke__">time</span>());</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>签到</li>
 </ul>
 <blockquote>
-<p><a href="http://redisdoc.com/bitmap/setbit.html" target="_blank" rel="noopener">http://redisdoc.com/bitmap/setbit.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://redisdoc.com/bitmap/setbit.html">http://redisdoc.com/bitmap/setbit.html</a></p>
 <ul>
 <li><code>setbit</code>: 对 key 所储存的字符串值，设置或清除指定偏移量上的位(bit)。</li>
 </ul>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$redis-&gt;setBit($dayKey, $user_id, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">setBit</span>(<span class="variable">$dayKey</span>, <span class="variable">$user_id</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>统计签到数据</li>
 </ul>
 <blockquote>
-<p><a href="http://redisdoc.com/bitmap/bitop.html" target="_blank" rel="noopener">http://redisdoc.com/bitmap/bitop.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://redisdoc.com/bitmap/bitop.html">http://redisdoc.com/bitmap/bitop.html</a></p>
 <ul>
 <li><code>setOp</code>: 对一个或多个保存二进制位的字符串 <code>key</code> 进行位元操作，并将结果保存到 <code>destkey</code> 上</li>
 <li><ul>
@@ -250,17 +294,19 @@
 </li>
 </ul>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$redis-&gt;bitOp(<span class="string">'AND'</span>, <span class="string">'threeAnd'</span>, <span class="string">'login:20190804'</span>, <span class="string">'login:20190805'</span>, <span class="string">'login:20190806'</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"连续三天都签到的用户数量: "</span> . $redis-&gt;bitCount(<span class="string">'threeAnd'</span>) . <span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"></span><br><span class="line">$redis-&gt;bitOp(<span class="string">'OR'</span>, <span class="string">'threeOr'</span>, <span class="string">'login:20190804'</span>, <span class="string">'login:20190805'</span>, <span class="string">'login:20190806'</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"连续三天中签到用户数量 (有一天也算签了) :"</span> . $redis-&gt;bitCount(<span class="string">'threeOr'</span>) . <span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这里不建议使用keys,可以使用scan替代</span></span><br><span class="line">$redis-&gt;bitOp(<span class="string">'AND'</span>, <span class="string">'monthActivities'</span>, $redis-&gt;keys(<span class="string">"login:201908*"</span>));</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"连续一个月签到用户数量 :"</span> . $redis-&gt;bitCount(<span class="string">'monthActivities'</span>) . <span class="string">"&lt;br&gt;"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"当前用户指定天数是否签到: "</span> . $redis-&gt;getBit(<span class="string">'login:20190801'</span>, <span class="number">1024</span>) . <span class="string">"&lt;br&gt;"</span>;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">bitOp</span>(<span class="string">&#x27;AND&#x27;</span>, <span class="string">&#x27;threeAnd&#x27;</span>, <span class="string">&#x27;login:20190804&#x27;</span>, <span class="string">&#x27;login:20190805&#x27;</span>, <span class="string">&#x27;login:20190806&#x27;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;连续三天都签到的用户数量: &quot;</span> . <span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">bitCount</span>(<span class="string">&#x27;threeAnd&#x27;</span>) . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">bitOp</span>(<span class="string">&#x27;OR&#x27;</span>, <span class="string">&#x27;threeOr&#x27;</span>, <span class="string">&#x27;login:20190804&#x27;</span>, <span class="string">&#x27;login:20190805&#x27;</span>, <span class="string">&#x27;login:20190806&#x27;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;连续三天中签到用户数量 (有一天也算签了) :&quot;</span> . <span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">bitCount</span>(<span class="string">&#x27;threeOr&#x27;</span>) . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这里不建议使用keys,可以使用scan替代</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">bitOp</span>(<span class="string">&#x27;AND&#x27;</span>, <span class="string">&#x27;monthActivities&#x27;</span>, <span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">keys</span>(<span class="string">&quot;login:201908*&quot;</span>));</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;连续一个月签到用户数量 :&quot;</span> . <span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">bitCount</span>(<span class="string">&#x27;monthActivities&#x27;</span>) . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;当前用户指定天数是否签到: &quot;</span> . <span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">getBit</span>(<span class="string">&#x27;login:20190801&#x27;</span>, <span class="number">1024</span>) . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>结果</li>
 </ul>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">连续三天都签到的用户数量: <span class="number">1</span></span><br><span class="line">连续三天中签到用户数量 (有一天也算签了) :<span class="number">3</span></span><br><span class="line">连续一个月签到用户数量 :<span class="number">0</span></span><br><span class="line">当前用户指定天数是否签到: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
 <li>这里只针对用户签到统计, 如需用户签到具体信息,需要使用一个签到记录表</li>
 </ul>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
-<li><a href="https://learnku.com/articles/25181" target="_blank" rel="noopener">如何利用 Redis 快速实现签到统计功能</a></li>
-<li><a href="https://learnku.com/articles/25892" target="_blank" rel="noopener">Redis 中 Keys 与 Scan 的使用</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/articles/25181">如何利用 Redis 快速实现签到统计功能</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/articles/25892">Redis 中 Keys 与 Scan 的使用</a></li>
 </ul>
 
         
@@ -293,7 +339,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/">Redis</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
 
       
 
@@ -329,7 +375,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#触发点"><span class="nav-number">1.</span> <span class="nav-text">触发点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备"><span class="nav-number">2.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例"><span class="nav-number">3.</span> <span class="nav-text">实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E7%82%B9"><span class="nav-number">1.</span> <span class="nav-text">触发点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -344,7 +390,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -424,12 +470,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -497,7 +547,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

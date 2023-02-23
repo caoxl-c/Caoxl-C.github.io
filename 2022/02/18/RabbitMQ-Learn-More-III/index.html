@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>rabbitmq 死信队列 延迟队列 惰性队列 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="RabbitMQ死信队列延迟队列惰性队列">
+  <meta name="keywords" content="RabbitMQ死信队列延迟队列惰性队列" />
   
   
   
   
   <meta name="description" content="本篇是RabbitMQ 再深入III">
-<meta name="keywords" content="RabbitMQ,死信队列,延迟队列,惰性队列">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RabbitMQ 死信队列 延迟队列 惰性队列">
 <meta property="og:url" content="http://blog.caoxl.com/2022/02/18/RabbitMQ-Learn-More-III/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="本篇是RabbitMQ 再深入III">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2022-02-18T09:41:21.899Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-18T09:08:42.000Z">
+<meta property="article:modified_time" content="2022-02-18T09:41:21.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="RabbitMQ">
+<meta property="article:tag" content="死信队列">
+<meta property="article:tag" content="延迟队列">
+<meta property="article:tag" content="惰性队列">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="RabbitMQ 死信队列 延迟队列 惰性队列">
-<meta name="twitter:description" content="本篇是RabbitMQ 再深入III">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +45,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +184,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +224,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+    <a class="article-category-link" href="/categories/%E5%BF%85%E5%A4%87%E6%8A%80%E8%83%BD/">必备技能</a>
 
       
 	<a class="article-views">
@@ -199,16 +242,18 @@
           <blockquote>
 <p>本篇是RabbitMQ 再深入III</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="死信队列"><a href="#死信队列" class="headerlink" title="死信队列"></a>死信队列</h1><blockquote>
 <p>死信队列: DLX, dead-letter-exchange</p>
 </blockquote>
 <h2 id="死信队列的产生"><a href="#死信队列的产生" class="headerlink" title="死信队列的产生"></a>死信队列的产生</h2><ol>
-<li>消息被拒绝(<code>basic.reject</code> / <code>basic.nack</code>)，并且<code>requeue = false</code></li>
+<li>消息被拒绝(<code>basic.reject</code> &#x2F; <code>basic.nack</code>)，并且<code>requeue = false</code></li>
 <li>消息TTL过期</li>
 <li>队列达到最大长度</li>
 </ol>
-<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">RabbitMQ</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">require_once</span> <span class="string">'../vendor/autoload.php'</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">Exception</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PhpAmqpLib</span>\<span class="title">Connection</span>\<span class="title">AMQPStreamConnection</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PhpAmqpLib</span>\<span class="title">Message</span>\<span class="title">AMQPMessage</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PhpAmqpLib</span>\<span class="title">Wire</span>\<span class="title">AMQPTable</span>;</span></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Class RabbitMQ</span><br><span class="line"> * @package RabbitMQ</span><br><span class="line"><span class="php"> */</span></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">RabbitMQ</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line">    /**</span><br><span class="line">     * 生产延迟消息队列</span><br><span class="line">     * @param array $message_data</span><br><span class="line">     * @param int $ttl 单位: 秒</span><br><span class="line">     * @param int $max_delay_second 单位: 秒</span><br><span class="line">     * @param bool $need_time_suffix</span><br><span class="line">     * @throws Exception</span><br><span class="line"><span class="php">     */</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">delayProduce</span><span class="params">(array $message_data, int $ttl, int $max_delay_second = <span class="number">0</span>, bool $need_time_suffix = false)</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $connection = <span class="keyword">new</span> AMQPStreamConnection(<span class="string">'rabbitmq'</span>, <span class="number">5672</span>, <span class="string">'banana'</span>, <span class="string">'123456'</span>, <span class="string">'banana'</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $channel = $connection-&gt;channel();</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $queue = <span class="string">'dead_letter_queue'</span>;</span></span><br><span class="line"><span class="php">        $exchange_name = <span class="string">'dead_letter_exchange'</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $delay_table = <span class="keyword">new</span> AMQPTable();</span></span><br><span class="line"><span class="php">        <span class="comment">// 设置死信交换机</span></span></span><br><span class="line"><span class="php">        $delay_table-&gt;set(<span class="string">'x-dead-letter-exchange'</span>, <span class="string">"delay_$exchange_name"</span>);</span></span><br><span class="line"><span class="php">        <span class="comment">// 设置死信路由键</span></span></span><br><span class="line"><span class="php">        $delay_table-&gt;set(<span class="string">'x-dead-letter-routing-key'</span>, <span class="string">"delay_$queue"</span>);</span></span><br><span class="line"><span class="php">        <span class="comment">// 死信队列消息存活时间, 单位: 毫秒</span></span></span><br><span class="line"><span class="php">        $delay_table-&gt;set(<span class="string">'x-message-ttl'</span>, $max_delay_second * <span class="number">1000</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $suffix = $need_time_suffix ? <span class="string">"_&#123;$ttl&#125;"</span> : <span class="string">''</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="comment">// 普通队列, 消息过期写入死信队列</span></span></span><br><span class="line"><span class="php">        $channel-&gt;queue_declare(<span class="string">"ttl_&#123;$queue&#125;&#123;$suffix&#125;"</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, $delay_table);</span></span><br><span class="line"><span class="php">        <span class="comment">// 这里是ttl队列, 所以交换机这里要durable是false</span></span></span><br><span class="line"><span class="php">        $channel-&gt;exchange_declare(<span class="string">"ttl_&#123;$exchange_name&#125;&#123;$suffix&#125;"</span>, <span class="string">'direct'</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span></span><br><span class="line"><span class="php">        $channel-&gt;queue_bind(<span class="string">"ttl_&#123;$queue&#125;&#123;$suffix&#125;"</span>,  <span class="string">"ttl_&#123;$exchange_name&#125;&#123;$suffix&#125;"</span>, <span class="string">"ttl_&#123;$queue&#125;&#123;$suffix&#125;"</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="comment">// 死信队列, 正常消耗</span></span></span><br><span class="line"><span class="php">        $channel-&gt;queue_declare(<span class="string">"delay_$queue"</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span></span><br><span class="line"><span class="php">        $channel-&gt;exchange_declare(<span class="string">"delay_&#123;$exchange_name&#125;"</span>, <span class="string">'direct'</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>);</span></span><br><span class="line"><span class="php">        $channel-&gt;queue_bind(<span class="string">"delay_&#123;$queue&#125;"</span>, <span class="string">"delay_&#123;$exchange_name&#125;"</span>, <span class="string">"delay_&#123;$queue&#125;"</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="comment">// 消息过期时间</span></span></span><br><span class="line"><span class="php">        <span class="comment">// 1. 若消息在队列头: 消息过期时间与队列消息过期时间取最小值</span></span></span><br><span class="line"><span class="php">        <span class="comment">// 例如: x-message-ttl=30000, expiration=5000, 则5秒过期</span></span></span><br><span class="line"><span class="php">        <span class="comment">// 2. 若消息在队列中: 先消耗之前的消息,才能消耗,即使已过期也继续等待</span></span></span><br><span class="line"><span class="php">        <span class="comment">// 例如: x-message-ttl=30000 expiration: 消息1=25000 消息2=5000, 则两个消息均25秒过期</span></span></span><br><span class="line"><span class="php">        $message = <span class="keyword">new</span> AMQPMessage(</span></span><br><span class="line"><span class="php">            serialize($message_data),</span></span><br><span class="line"><span class="php">            [</span></span><br><span class="line"><span class="php">                <span class="string">'content_type'</span> =&gt; <span class="string">'text/plain'</span>,</span></span><br><span class="line"><span class="php">                <span class="string">'expiration'</span> =&gt; $ttl * <span class="number">1000</span>, <span class="comment">// 单位: 毫秒</span></span></span><br><span class="line"><span class="php">                <span class="string">'delivery_mode'</span> =&gt; AMQPMessage::DELIVERY_MODE_PERSISTENT</span></span><br><span class="line"><span class="php">            ]</span></span><br><span class="line"><span class="php">        );</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $channel-&gt;basic_publish($message, <span class="string">"ttl_&#123;$exchange_name&#125;&#123;$suffix&#125;"</span>, <span class="string">"ttl_&#123;$queue&#125;&#123;$suffix&#125;"</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">        $channel-&gt;close();</span></span><br><span class="line"><span class="php">        $connection-&gt;close();</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$message_data = [<span class="string">'Test Dead Letter'</span>];</span></span><br><span class="line"><span class="php">$ttl = <span class="number">5</span>;</span></span><br><span class="line"><span class="php">$max_delay_second = <span class="number">30</span>;</span></span><br><span class="line"><span class="php">$need_time_suffix = <span class="keyword">false</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">try</span> &#123;</span></span><br><span class="line"><span class="php">    (<span class="keyword">new</span> RabbitMQ())-&gt;delayProduce($message_data, $ttl, $max_delay_second, $need_time_suffix);</span></span><br><span class="line"><span class="php">&#125; <span class="keyword">catch</span> (<span class="keyword">Exception</span> $e) &#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">echo</span> <span class="string">"异常消息: "</span> . $e-&gt;getMessage();</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">RabbitMQ</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">&#x27;../vendor/autoload.php&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Exception</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">PhpAmqpLib</span>\<span class="title">Connection</span>\<span class="title">AMQPStreamConnection</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">PhpAmqpLib</span>\<span class="title">Message</span>\<span class="title">AMQPMessage</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">PhpAmqpLib</span>\<span class="title">Wire</span>\<span class="title">AMQPTable</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Class RabbitMQ</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@package</span> RabbitMQ</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RabbitMQ</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 生产延迟消息队列</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> array $message_data</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $ttl 单位: 秒</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> int $max_delay_second 单位: 秒</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> bool $need_time_suffix</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">delayProduce</span>(<span class="params"><span class="keyword">array</span> <span class="variable">$message_data</span>, <span class="keyword">int</span> <span class="variable">$ttl</span>, <span class="keyword">int</span> <span class="variable">$max_delay_second</span> = <span class="number">0</span>, <span class="keyword">bool</span> <span class="variable">$need_time_suffix</span> = <span class="literal">false</span></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$connection</span> = <span class="keyword">new</span> <span class="title class_">AMQPStreamConnection</span>(<span class="string">&#x27;rabbitmq&#x27;</span>, <span class="number">5672</span>, <span class="string">&#x27;banana&#x27;</span>, <span class="string">&#x27;123456&#x27;</span>, <span class="string">&#x27;banana&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="variable">$channel</span> = <span class="variable">$connection</span>-&gt;<span class="title function_ invoke__">channel</span>();</span><br><span class="line"></span><br><span class="line">        <span class="variable">$queue</span> = <span class="string">&#x27;dead_letter_queue&#x27;</span>;</span><br><span class="line">        <span class="variable">$exchange_name</span> = <span class="string">&#x27;dead_letter_exchange&#x27;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="variable">$delay_table</span> = <span class="keyword">new</span> <span class="title class_">AMQPTable</span>();</span><br><span class="line">        <span class="comment">// 设置死信交换机</span></span><br><span class="line">        <span class="variable">$delay_table</span>-&gt;<span class="title function_ invoke__">set</span>(<span class="string">&#x27;x-dead-letter-exchange&#x27;</span>, <span class="string">&quot;delay_<span class="subst">$exchange_name</span>&quot;</span>);</span><br><span class="line">        <span class="comment">// 设置死信路由键</span></span><br><span class="line">        <span class="variable">$delay_table</span>-&gt;<span class="title function_ invoke__">set</span>(<span class="string">&#x27;x-dead-letter-routing-key&#x27;</span>, <span class="string">&quot;delay_<span class="subst">$queue</span>&quot;</span>);</span><br><span class="line">        <span class="comment">// 死信队列消息存活时间, 单位: 毫秒</span></span><br><span class="line">        <span class="variable">$delay_table</span>-&gt;<span class="title function_ invoke__">set</span>(<span class="string">&#x27;x-message-ttl&#x27;</span>, <span class="variable">$max_delay_second</span> * <span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">        <span class="variable">$suffix</span> = <span class="variable">$need_time_suffix</span> ? <span class="string">&quot;_<span class="subst">&#123;$ttl&#125;</span>&quot;</span> : <span class="string">&#x27;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 普通队列, 消息过期写入死信队列</span></span><br><span class="line">        <span class="variable">$channel</span>-&gt;<span class="title function_ invoke__">queue_declare</span>(<span class="string">&quot;ttl_<span class="subst">&#123;$queue&#125;</span><span class="subst">&#123;$suffix&#125;</span>&quot;</span>, <span class="literal">false</span>, <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">false</span>, <span class="literal">false</span>, <span class="variable">$delay_table</span>);</span><br><span class="line">        <span class="comment">// 这里是ttl队列, 所以交换机这里要durable是false</span></span><br><span class="line">        <span class="variable">$channel</span>-&gt;<span class="title function_ invoke__">exchange_declare</span>(<span class="string">&quot;ttl_<span class="subst">&#123;$exchange_name&#125;</span><span class="subst">&#123;$suffix&#125;</span>&quot;</span>, <span class="string">&#x27;direct&#x27;</span>, <span class="literal">false</span>, <span class="literal">false</span>, <span class="literal">false</span>, <span class="literal">false</span>);</span><br><span class="line">        <span class="variable">$channel</span>-&gt;<span class="title function_ invoke__">queue_bind</span>(<span class="string">&quot;ttl_<span class="subst">&#123;$queue&#125;</span><span class="subst">&#123;$suffix&#125;</span>&quot;</span>,  <span class="string">&quot;ttl_<span class="subst">&#123;$exchange_name&#125;</span><span class="subst">&#123;$suffix&#125;</span>&quot;</span>, <span class="string">&quot;ttl_<span class="subst">&#123;$queue&#125;</span><span class="subst">&#123;$suffix&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 死信队列, 正常消耗</span></span><br><span class="line">        <span class="variable">$channel</span>-&gt;<span class="title function_ invoke__">queue_declare</span>(<span class="string">&quot;delay_<span class="subst">$queue</span>&quot;</span>, <span class="literal">false</span>, <span class="literal">true</span>, <span class="literal">false</span>, <span class="literal">false</span>, <span class="literal">false</span>);</span><br><span class="line">        <span class="variable">$channel</span>-&gt;<span class="title function_ invoke__">exchange_declare</span>(<span class="string">&quot;delay_<span class="subst">&#123;$exchange_name&#125;</span>&quot;</span>, <span class="string">&#x27;direct&#x27;</span>, <span class="literal">false</span>, <span class="literal">true</span>, <span class="literal">false</span>);</span><br><span class="line">        <span class="variable">$channel</span>-&gt;<span class="title function_ invoke__">queue_bind</span>(<span class="string">&quot;delay_<span class="subst">&#123;$queue&#125;</span>&quot;</span>, <span class="string">&quot;delay_<span class="subst">&#123;$exchange_name&#125;</span>&quot;</span>, <span class="string">&quot;delay_<span class="subst">&#123;$queue&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 消息过期时间</span></span><br><span class="line">        <span class="comment">// 1. 若消息在队列头: 消息过期时间与队列消息过期时间取最小值</span></span><br><span class="line">        <span class="comment">// 例如: x-message-ttl=30000, expiration=5000, 则5秒过期</span></span><br><span class="line">        <span class="comment">// 2. 若消息在队列中: 先消耗之前的消息,才能消耗,即使已过期也继续等待</span></span><br><span class="line">        <span class="comment">// 例如: x-message-ttl=30000 expiration: 消息1=25000 消息2=5000, 则两个消息均25秒过期</span></span><br><span class="line">        <span class="variable">$message</span> = <span class="keyword">new</span> <span class="title class_">AMQPMessage</span>(</span><br><span class="line">            <span class="title function_ invoke__">serialize</span>(<span class="variable">$message_data</span>),</span><br><span class="line">            [</span><br><span class="line">                <span class="string">&#x27;content_type&#x27;</span> =&gt; <span class="string">&#x27;text/plain&#x27;</span>,</span><br><span class="line">                <span class="string">&#x27;expiration&#x27;</span> =&gt; <span class="variable">$ttl</span> * <span class="number">1000</span>, <span class="comment">// 单位: 毫秒</span></span><br><span class="line">                <span class="string">&#x27;delivery_mode&#x27;</span> =&gt; <span class="title class_">AMQPMessage</span>::<span class="variable constant_">DELIVERY_MODE_PERSISTENT</span></span><br><span class="line">            ]</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="variable">$channel</span>-&gt;<span class="title function_ invoke__">basic_publish</span>(<span class="variable">$message</span>, <span class="string">&quot;ttl_<span class="subst">&#123;$exchange_name&#125;</span><span class="subst">&#123;$suffix&#125;</span>&quot;</span>, <span class="string">&quot;ttl_<span class="subst">&#123;$queue&#125;</span><span class="subst">&#123;$suffix&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="variable">$channel</span>-&gt;<span class="title function_ invoke__">close</span>();</span><br><span class="line">        <span class="variable">$connection</span>-&gt;<span class="title function_ invoke__">close</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$message_data</span> = [<span class="string">&#x27;Test Dead Letter&#x27;</span>];</span><br><span class="line"><span class="variable">$ttl</span> = <span class="number">5</span>;</span><br><span class="line"><span class="variable">$max_delay_second</span> = <span class="number">30</span>;</span><br><span class="line"><span class="variable">$need_time_suffix</span> = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    (<span class="keyword">new</span> <span class="title function_ invoke__">RabbitMQ</span>())-&gt;<span class="title function_ invoke__">delayProduce</span>(<span class="variable">$message_data</span>, <span class="variable">$ttl</span>, <span class="variable">$max_delay_second</span>, <span class="variable">$need_time_suffix</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span> (<span class="built_in">Exception</span> <span class="variable">$e</span>) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;异常消息: &quot;</span> . <span class="variable">$e</span>-&gt;<span class="title function_ invoke__">getMessage</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="延迟队列"><a href="#延迟队列" class="headerlink" title="延迟队列"></a>延迟队列</h1><p>使用DLX（死信交换机）+TTL（消息超时时间）实现</p>
 <blockquote>
 <p>假如一条消息需要延迟 30 分钟执行，我们就设置这条消息的有效期为 30 分钟，同时为这条消息配置死信交换机和死信 routing_key，并且不为这个消息队列设置消费者，那么 30 分钟后，这条消息由于没有被消费者消费而进入死信队列，此时我们有一个消费者就在“蹲点”这个死信队列，消息一进入死信队列，就立马被消费了。</p>
@@ -216,7 +261,8 @@
 <h1 id="惰性队列"><a href="#惰性队列" class="headerlink" title="惰性队列"></a>惰性队列</h1><blockquote>
 <p>惰性队列会尽可能的将消息存入磁盘中，在消费者消费到相应的消息时才会被加载到内存中。</p>
 </blockquote>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$table = new AMQPTable();</span><br><span class="line">$table-&gt;set('x-queue-mode', "lazy");</span><br><span class="line">$channel-&gt;queue_declare($queueName, false, true, false, false, false, $table);</span><br><span class="line">$channel-&gt;queue_bind($queueName, $exchangeName, $routingKey);</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$table = new AMQPTable();</span><br><span class="line">$table-&gt;set(&#x27;x-queue-mode&#x27;, &quot;lazy&quot;);</span><br><span class="line">$channel-&gt;queue<span class="emphasis">_declare($queueName, false, true, false, false, false, $table);</span></span><br><span class="line"><span class="emphasis">$channel-&gt;queue_</span>bind($queueName, $exchangeName, $routingKey);</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><p>优点</p>
 <ul>
@@ -233,14 +279,14 @@
 <li><p>缺点</p>
 <ul>
 <li><ol>
-<li>需要i/o 增加磁盘i/o。</li>
+<li>需要i&#x2F;o 增加磁盘i&#x2F;o。</li>
 </ol>
 </li>
 </ul>
 </li>
 </ul>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://codeantenna.com/a/hleDRA33XX" target="_blank" rel="noopener">RabbitMQ 惰性队列</a></li>
+<li><a target="_blank" rel="noopener" href="https://codeantenna.com/a/hleDRA33XX">RabbitMQ 惰性队列</a></li>
 </ul>
 
         
@@ -273,7 +319,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RabbitMQ/">RabbitMQ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/延迟队列/">延迟队列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/惰性队列/">惰性队列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/死信队列/">死信队列</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BB%B6%E8%BF%9F%E9%98%9F%E5%88%97/" rel="tag">延迟队列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%83%B0%E6%80%A7%E9%98%9F%E5%88%97/" rel="tag">惰性队列</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%AD%BB%E4%BF%A1%E9%98%9F%E5%88%97/" rel="tag">死信队列</a></li></ul>
 
       
 
@@ -309,7 +355,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#死信队列"><span class="nav-number">1.</span> <span class="nav-text">死信队列</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#死信队列的产生"><span class="nav-number">1.1.</span> <span class="nav-text">死信队列的产生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">1.2.</span> <span class="nav-text">代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#延迟队列"><span class="nav-number">2.</span> <span class="nav-text">延迟队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#惰性队列"><span class="nav-number">3.</span> <span class="nav-text">惰性队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%BB%E4%BF%A1%E9%98%9F%E5%88%97"><span class="nav-number">1.</span> <span class="nav-text">死信队列</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%BB%E4%BF%A1%E9%98%9F%E5%88%97%E7%9A%84%E4%BA%A7%E7%94%9F"><span class="nav-number">1.1.</span> <span class="nav-text">死信队列的产生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">1.2.</span> <span class="nav-text">代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BB%B6%E8%BF%9F%E9%98%9F%E5%88%97"><span class="nav-number">2.</span> <span class="nav-text">延迟队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%83%B0%E6%80%A7%E9%98%9F%E5%88%97"><span class="nav-number">3.</span> <span class="nav-text">惰性队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -324,7 +370,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -404,12 +450,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -477,7 +527,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

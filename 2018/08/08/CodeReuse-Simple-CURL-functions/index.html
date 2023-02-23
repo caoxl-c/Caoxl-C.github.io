@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>「代码复用」 curl | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="代码复用CURL">
+  <meta name="keywords" content="代码复用CURL" />
   
   
   
   
   <meta name="description" content="Don’t repeat yourself">
-<meta name="keywords" content="代码复用,CURL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="「代码复用」 CURL">
 <meta property="og:url" content="http://blog.caoxl.com/2018/08/08/CodeReuse-Simple-CURL-functions/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="Don’t repeat yourself">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-08T02:22:00.000Z">
+<meta property="article:modified_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="代码复用">
+<meta property="article:tag" content="CURL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="「代码复用」 CURL">
-<meta name="twitter:description" content="Don’t repeat yourself">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +222,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/代码复用/">代码复用</a>
+    <a class="article-category-link" href="/categories/%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%94%A8/">代码复用</a>
 
       
 	<a class="article-views">
@@ -199,13 +240,15 @@
           <blockquote>
 <p>Don’t repeat yourself</p>
 </blockquote>
-<a id="more"></a>
-<h1 id="直接上源码"><a href="#直接上源码" class="headerlink" title="直接上源码"></a>直接上源码</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Simple CURL Helper funcitons</span></span><br><span class="line"><span class="comment">// @caoxl</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Traits</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">trait</span> CURL</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">requestJsonApi</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        $uri,</span></span></span><br><span class="line"><span class="function"><span class="params">        $type = <span class="string">'POST'</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">        $params = [],</span></span></span><br><span class="line"><span class="function"><span class="params">        $headers = []</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;</span><br><span class="line">        $headers = [</span><br><span class="line">            <span class="string">'Content-Type: application/json; Charset=UTF-8'</span>,</span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        $res = <span class="keyword">$this</span>-&gt;requestHTTPApi($uri, $type, $headers, $params);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (! $res[<span class="string">'err'</span>]) &#123;</span><br><span class="line">            $res[<span class="string">'res'</span>] = json_decode($res[<span class="string">'res'</span>], <span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $res;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">requestHTTPApi</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        string $uri,</span></span></span><br><span class="line"><span class="function"><span class="params">        string $type = <span class="string">'GET'</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">        array $headers = [],</span></span></span><br><span class="line"><span class="function"><span class="params">        $data</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span> </span>&#123;</span><br><span class="line">        $setOpt = [</span><br><span class="line">            CURLOPT_URL            =&gt; $uri,</span><br><span class="line">            CURLOPT_RETURNTRANSFER =&gt; <span class="keyword">true</span>,</span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ($headers) &#123;</span><br><span class="line">            $setOpt[CURLOPT_HTTPHEADER] = $headers;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="string">'POST'</span> == $type) &#123;</span><br><span class="line">            $setOpt[CURLOPT_POST]       = <span class="keyword">true</span>;</span><br><span class="line">            $setOpt[CURLOPT_POSTFIELDS] = $data;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        $ch = curl_init();</span><br><span class="line">        curl_setopt_array($ch, $setOpt);</span><br><span class="line">        $res = curl_exec($ch);</span><br><span class="line"></span><br><span class="line">        $errNo  = curl_errno($ch);</span><br><span class="line">        $errMsg = curl_error($ch);</span><br><span class="line"></span><br><span class="line">        curl_close($ch);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> [</span><br><span class="line">            <span class="string">'err'</span> =&gt; $errNo,</span><br><span class="line">            <span class="string">'msg'</span> =&gt; ($errMsg ?: <span class="string">'ok'</span>),</span><br><span class="line">            <span class="string">'res'</span> =&gt; $res,</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+
+<h1 id="直接上源码"><a href="#直接上源码" class="headerlink" title="直接上源码"></a>直接上源码</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Simple CURL Helper funcitons</span></span><br><span class="line"><span class="comment">// @caoxl</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">Traits</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">CURL</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">requestJsonApi</span>(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="variable">$uri</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="variable">$type</span> = <span class="string">&#x27;POST&#x27;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="variable">$params</span> = [],</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="variable">$headers</span> = []</span></span></span><br><span class="line"><span class="params"><span class="function">    </span>) </span>&#123;</span><br><span class="line">        <span class="variable">$headers</span> = [</span><br><span class="line">            <span class="string">&#x27;Content-Type: application/json; Charset=UTF-8&#x27;</span>,</span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        <span class="variable">$res</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">requestHTTPApi</span>(<span class="variable">$uri</span>, <span class="variable">$type</span>, <span class="variable">$headers</span>, <span class="variable">$params</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (! <span class="variable">$res</span>[<span class="string">&#x27;err&#x27;</span>]) &#123;</span><br><span class="line">            <span class="variable">$res</span>[<span class="string">&#x27;res&#x27;</span>] = <span class="title function_ invoke__">json_decode</span>(<span class="variable">$res</span>[<span class="string">&#x27;res&#x27;</span>], <span class="literal">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$res</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">requestHTTPApi</span>(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">string</span> <span class="variable">$uri</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">string</span> <span class="variable">$type</span> = <span class="string">&#x27;GET&#x27;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">array</span> <span class="variable">$headers</span> = [],</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="variable">$data</span></span></span></span><br><span class="line"><span class="params"><span class="function">    </span>) </span>&#123;</span><br><span class="line">        <span class="variable">$setOpt</span> = [</span><br><span class="line">            CURLOPT_URL            =&gt; <span class="variable">$uri</span>,</span><br><span class="line">            CURLOPT_RETURNTRANSFER =&gt; <span class="literal">true</span>,</span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$headers</span>) &#123;</span><br><span class="line">            <span class="variable">$setOpt</span>[CURLOPT_HTTPHEADER] = <span class="variable">$headers</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="string">&#x27;POST&#x27;</span> == <span class="variable">$type</span>) &#123;</span><br><span class="line">            <span class="variable">$setOpt</span>[CURLOPT_POST]       = <span class="literal">true</span>;</span><br><span class="line">            <span class="variable">$setOpt</span>[CURLOPT_POSTFIELDS] = <span class="variable">$data</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable">$ch</span> = <span class="title function_ invoke__">curl_init</span>();</span><br><span class="line">        <span class="title function_ invoke__">curl_setopt_array</span>(<span class="variable">$ch</span>, <span class="variable">$setOpt</span>);</span><br><span class="line">        <span class="variable">$res</span> = <span class="title function_ invoke__">curl_exec</span>(<span class="variable">$ch</span>);</span><br><span class="line"></span><br><span class="line">        <span class="variable">$errNo</span>  = <span class="title function_ invoke__">curl_errno</span>(<span class="variable">$ch</span>);</span><br><span class="line">        <span class="variable">$errMsg</span> = <span class="title function_ invoke__">curl_error</span>(<span class="variable">$ch</span>);</span><br><span class="line"></span><br><span class="line">        <span class="title function_ invoke__">curl_close</span>(<span class="variable">$ch</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> [</span><br><span class="line">            <span class="string">&#x27;err&#x27;</span> =&gt; <span class="variable">$errNo</span>,</span><br><span class="line">            <span class="string">&#x27;msg&#x27;</span> =&gt; (<span class="variable">$errMsg</span> ?: <span class="string">&#x27;ok&#x27;</span>),</span><br><span class="line">            <span class="string">&#x27;res&#x27;</span> =&gt; <span class="variable">$res</span>,</span><br><span class="line">        ];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h1><ul>
 <li><strong><code>Traits</code></strong></li>
 </ul>
 <blockquote>
-<p><a href="https://secure.php.net/manual/zh/language.oop5.traits.php" target="_blank" rel="noopener">https://secure.php.net/manual/zh/language.oop5.traits.php</a><br>自 PHP 5.4.0 起，PHP 实现了一种代码复用的方法，称为 trait。…</p>
+<p><a target="_blank" rel="noopener" href="https://secure.php.net/manual/zh/language.oop5.traits.php">https://secure.php.net/manual/zh/language.oop5.traits.php</a><br>自 PHP 5.4.0 起，PHP 实现了一种代码复用的方法，称为 trait。…</p>
 </blockquote>
 <ul>
 <li><p><strong><code>requestHTTPApi</code></strong></p>
@@ -213,7 +256,7 @@
 <li><code>curl_init()</code> - 初始化新的会话，返回 cURL 句柄，供<code>curl_setopt()</code>、 <code>curl_exec()</code> 和 <code>curl_close()</code> 函数使用。</li>
 <li><code>curl_setopt_array()</code> - 为 cURL 传输会话批量设置选项。这个函数对于需要设置大量的 cURL 选项是非常有用的，不需要重复地调用 <code>curl_setopt()</code>。</li>
 <li><code>curl_setopt()</code> - 设置 cURL 传输选项<blockquote>
-<p><code>curl_setopt($ch, $option, $value)</code><br>点击查看可以设置的<u><a href="https://secure.php.net/manual/zh/function.curl-setopt.php" target="_blank" rel="noopener">CURLOPT_XXX选项</a></u></p>
+<p><code>curl_setopt($ch, $option, $value)</code><br>点击查看可以设置的<u><a target="_blank" rel="noopener" href="https://secure.php.net/manual/zh/function.curl-setopt.php">CURLOPT_XXX选项</a></u></p>
 </blockquote>
 </li>
 <li><code>curl_exec()</code> - 执行给定的 cURL 会话。</li>
@@ -259,7 +302,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CURL/">CURL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/代码复用/">代码复用</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CURL/" rel="tag">CURL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%A4%8D%E7%94%A8/" rel="tag">代码复用</a></li></ul>
 
       
 
@@ -295,7 +338,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#直接上源码"><span class="nav-number">1.</span> <span class="nav-text">直接上源码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#说明"><span class="nav-number">2.</span> <span class="nav-text">说明</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E4%B8%8A%E6%BA%90%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">直接上源码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">说明</span></a></li></ol>
     
     </div>
   </aside>
@@ -310,7 +353,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -390,12 +433,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -463,7 +510,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

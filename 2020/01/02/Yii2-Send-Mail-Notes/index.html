@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>yii2 邮件发送 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="EmailYii2邮件发送">
+  <meta name="keywords" content="EmailYii2邮件发送" />
   
   
   
   
   <meta name="description" content="Yii2中官方为了解决邮件发送问题，提供了swiftMailer扩展。">
-<meta name="keywords" content="Email,Yii2,邮件发送">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Yii2 邮件发送">
 <meta property="og:url" content="http://blog.caoxl.com/2020/01/02/Yii2-Send-Mail-Notes/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="Yii2中官方为了解决邮件发送问题，提供了swiftMailer扩展。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-01-02T03:31:45.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-02T02:35:11.000Z">
+<meta property="article:modified_time" content="2020-01-02T03:31:45.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Email">
+<meta property="article:tag" content="Yii2">
+<meta property="article:tag" content="邮件发送">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Yii2 邮件发送">
-<meta name="twitter:description" content="Yii2中官方为了解决邮件发送问题，提供了swiftMailer扩展。">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +44,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +183,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +223,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/框架相关/">框架相关</a>
+    <a class="article-category-link" href="/categories/%E6%A1%86%E6%9E%B6%E7%9B%B8%E5%85%B3/">框架相关</a>
 
       
 	<a class="article-views">
@@ -199,17 +241,21 @@
           <blockquote>
 <p>Yii2中官方为了解决邮件发送问题，提供了<code>swiftMailer</code>扩展。</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><blockquote>
 <p>官方的包自带了<code>yii2-swiftmailer</code>, 如果需要自行下载可以使用下面这个</p>
 </blockquote>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer <span class="keyword">require</span> --prefer-dist yiisoft/yii2-swiftmailer</span><br></pre></td></tr></table></figure>
+
 <h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><ul>
 <li><code>config/web.php</code></li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> [ </span><br><span class="line">    <span class="comment">//.... </span></span><br><span class="line">    <span class="string">'components'</span> =&gt; [ </span><br><span class="line">        <span class="string">'mailer'</span> =&gt; [ </span><br><span class="line">            <span class="string">'class'</span> =&gt; <span class="string">'yii\swiftmailer\Mailer'</span>, </span><br><span class="line">            <span class="string">'viewPath'</span> =&gt; <span class="string">'@common/mail'</span>, </span><br><span class="line">            <span class="comment">// send all mails to a file by default. You have to set </span></span><br><span class="line">            <span class="comment">// 'useFileTransport' to false and configure a transport </span></span><br><span class="line">            <span class="comment">// for the mailer to send real emails. </span></span><br><span class="line">            <span class="string">'useFileTransport'</span> =&gt; <span class="keyword">false</span>, </span><br><span class="line">            <span class="string">'transport'</span> =&gt; [ </span><br><span class="line">              <span class="comment">//这里如果你是qq的邮箱，可以参考qq客户端设置后再进行配置 http://service.mail.qq.com/cgi-bin/help?subtype=1&amp;&amp;id=28&amp;&amp;no=1001256</span></span><br><span class="line">                <span class="string">'class'</span>      =&gt; <span class="string">'Swift_SmtpTransport'</span>,</span><br><span class="line">                <span class="string">'host'</span>       =&gt; <span class="string">'smtp.163.com'</span>,</span><br><span class="line">                <span class="string">'username'</span>   =&gt; <span class="string">'******@163.com'</span>,</span><br><span class="line">                <span class="string">'password'</span>   =&gt; <span class="string">'******'</span>,</span><br><span class="line">                <span class="string">'port'</span>       =&gt; <span class="string">'25'</span>,</span><br><span class="line">                <span class="string">'encryption'</span> =&gt; <span class="string">'tls'</span>,</span><br><span class="line">            ], </span><br><span class="line">            <span class="string">'messageConfig'</span>  =&gt; [ </span><br><span class="line">                <span class="string">'charset'</span> =&gt; <span class="string">'UTF-8'</span>, </span><br><span class="line">                <span class="string">'from'</span>    =&gt; [<span class="string">'***@163.com'</span> =&gt; <span class="string">'白狼栈'</span>] </span><br><span class="line">            ], </span><br><span class="line">        ], </span><br><span class="line">    ], </span><br><span class="line">];</span><br></pre></td></tr></table></figure>
-<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">app</span>\<span class="title">controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">yii</span>\<span class="title">web</span>\<span class="title">Controller</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EmailController</span> <span class="keyword">extends</span> <span class="title">Controller</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionEmail</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            $result = \Yii::$app-&gt;mailer-&gt;compose()</span><br><span class="line">                -&gt;setFrom(<span class="string">'******@163.com'</span>)</span><br><span class="line">                -&gt;setTo(<span class="string">'******@163.com'</span>)</span><br><span class="line">                -&gt;setSubject(<span class="string">'测试邮件'</span>)</span><br><span class="line">                -&gt;setTextBody(<span class="string">'测试邮件'</span>)</span><br><span class="line">                -&gt;setHtmlBody(<span class="string">'&lt;b&gt;测试邮件&lt;/b&gt;'</span>)</span><br><span class="line">                -&gt;send();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (\<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">            var_dump($e-&gt;getMessage());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        var_dump(<span class="number">1024</span>);<span class="keyword">die</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="批量发送"><a href="#批量发送" class="headerlink" title="批量发送"></a>批量发送</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionEmailMulti</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $users = [<span class="string">'***@qq.com'</span>, <span class="string">'******@qq.com'</span>];</span><br><span class="line"></span><br><span class="line">    $messages = [];</span><br><span class="line">    <span class="keyword">foreach</span> ($users <span class="keyword">as</span> $user) &#123;</span><br><span class="line">        $messages[] = Yii::$app-&gt;mailer-&gt;compose()</span><br><span class="line">            -&gt;setTo($user)</span><br><span class="line">            -&gt;setSubject(<span class="string">'测试主题'</span>)</span><br><span class="line">            -&gt;setHtmlBody(<span class="string">'测试内容'</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        \Yii::$app-&gt;mailer-&gt;sendMultiple($messages);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (\<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">        var_dump($e-&gt;getMessage());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    var_dump(<span class="number">1024</span>);<span class="keyword">die</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> [ </span><br><span class="line">    <span class="comment">//.... </span></span><br><span class="line">    <span class="string">&#x27;components&#x27;</span> =&gt; [ </span><br><span class="line">        <span class="string">&#x27;mailer&#x27;</span> =&gt; [ </span><br><span class="line">            <span class="string">&#x27;class&#x27;</span> =&gt; <span class="string">&#x27;yii\swiftmailer\Mailer&#x27;</span>, </span><br><span class="line">            <span class="string">&#x27;viewPath&#x27;</span> =&gt; <span class="string">&#x27;@common/mail&#x27;</span>, </span><br><span class="line">            <span class="comment">// send all mails to a file by default. You have to set </span></span><br><span class="line">            <span class="comment">// &#x27;useFileTransport&#x27; to false and configure a transport </span></span><br><span class="line">            <span class="comment">// for the mailer to send real emails. </span></span><br><span class="line">            <span class="string">&#x27;useFileTransport&#x27;</span> =&gt; <span class="literal">false</span>, </span><br><span class="line">            <span class="string">&#x27;transport&#x27;</span> =&gt; [ </span><br><span class="line">              <span class="comment">//这里如果你是qq的邮箱，可以参考qq客户端设置后再进行配置 http://service.mail.qq.com/cgi-bin/help?subtype=1&amp;&amp;id=28&amp;&amp;no=1001256</span></span><br><span class="line">                <span class="string">&#x27;class&#x27;</span>      =&gt; <span class="string">&#x27;Swift_SmtpTransport&#x27;</span>,</span><br><span class="line">                <span class="string">&#x27;host&#x27;</span>       =&gt; <span class="string">&#x27;smtp.163.com&#x27;</span>,</span><br><span class="line">                <span class="string">&#x27;username&#x27;</span>   =&gt; <span class="string">&#x27;******@163.com&#x27;</span>,</span><br><span class="line">                <span class="string">&#x27;password&#x27;</span>   =&gt; <span class="string">&#x27;******&#x27;</span>,</span><br><span class="line">                <span class="string">&#x27;port&#x27;</span>       =&gt; <span class="string">&#x27;25&#x27;</span>,</span><br><span class="line">                <span class="string">&#x27;encryption&#x27;</span> =&gt; <span class="string">&#x27;tls&#x27;</span>,</span><br><span class="line">            ], </span><br><span class="line">            <span class="string">&#x27;messageConfig&#x27;</span>  =&gt; [ </span><br><span class="line">                <span class="string">&#x27;charset&#x27;</span> =&gt; <span class="string">&#x27;UTF-8&#x27;</span>, </span><br><span class="line">                <span class="string">&#x27;from&#x27;</span>    =&gt; [<span class="string">&#x27;***@163.com&#x27;</span> =&gt; <span class="string">&#x27;白狼栈&#x27;</span>] </span><br><span class="line">            ], </span><br><span class="line">        ], </span><br><span class="line">    ], </span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+
+<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">app</span>\<span class="title class_">controllers</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">yii</span>\<span class="title">web</span>\<span class="title">Controller</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EmailController</span> <span class="keyword">extends</span> <span class="title">Controller</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionEmail</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="variable">$result</span> = <span class="title class_">\Yii</span>::<span class="variable">$app</span>-&gt;mailer-&gt;<span class="title function_ invoke__">compose</span>()</span><br><span class="line">                -&gt;<span class="title function_ invoke__">setFrom</span>(<span class="string">&#x27;******@163.com&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">setTo</span>(<span class="string">&#x27;******@163.com&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">setSubject</span>(<span class="string">&#x27;测试邮件&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">setTextBody</span>(<span class="string">&#x27;测试邮件&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">setHtmlBody</span>(<span class="string">&#x27;&lt;b&gt;测试邮件&lt;/b&gt;&#x27;</span>)</span><br><span class="line">                -&gt;<span class="title function_ invoke__">send</span>();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (\<span class="built_in">Exception</span> <span class="variable">$e</span>) &#123;</span><br><span class="line">            <span class="title function_ invoke__">var_dump</span>(<span class="variable">$e</span>-&gt;<span class="title function_ invoke__">getMessage</span>());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="title function_ invoke__">var_dump</span>(<span class="number">1024</span>);<span class="keyword">die</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="批量发送"><a href="#批量发送" class="headerlink" title="批量发送"></a>批量发送</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">actionEmailMulti</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="variable">$users</span> = [<span class="string">&#x27;***@qq.com&#x27;</span>, <span class="string">&#x27;******@qq.com&#x27;</span>];</span><br><span class="line"></span><br><span class="line">    <span class="variable">$messages</span> = [];</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$users</span> <span class="keyword">as</span> <span class="variable">$user</span>) &#123;</span><br><span class="line">        <span class="variable">$messages</span>[] = <span class="title class_">Yii</span>::<span class="variable">$app</span>-&gt;mailer-&gt;<span class="title function_ invoke__">compose</span>()</span><br><span class="line">            -&gt;<span class="title function_ invoke__">setTo</span>(<span class="variable">$user</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">setSubject</span>(<span class="string">&#x27;测试主题&#x27;</span>)</span><br><span class="line">            -&gt;<span class="title function_ invoke__">setHtmlBody</span>(<span class="string">&#x27;测试内容&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="title class_">\Yii</span>::<span class="variable">$app</span>-&gt;mailer-&gt;<span class="title function_ invoke__">sendMultiple</span>(<span class="variable">$messages</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (\<span class="built_in">Exception</span> <span class="variable">$e</span>) &#123;</span><br><span class="line">        <span class="title function_ invoke__">var_dump</span>(<span class="variable">$e</span>-&gt;<span class="title function_ invoke__">getMessage</span>());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">var_dump</span>(<span class="number">1024</span>);<span class="keyword">die</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
         
       
     </div>
@@ -240,7 +286,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Email/">Email</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Yii2/">Yii2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/邮件发送/">邮件发送</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Email/" rel="tag">Email</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Yii2/" rel="tag">Yii2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%82%AE%E4%BB%B6%E5%8F%91%E9%80%81/" rel="tag">邮件发送</a></li></ul>
 
       
 
@@ -276,7 +322,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置"><span class="nav-number">2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单使用"><span class="nav-number">3.</span> <span class="nav-text">简单使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#批量发送"><span class="nav-number">4.</span> <span class="nav-text">批量发送</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">简单使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E5%8F%91%E9%80%81"><span class="nav-number">4.</span> <span class="nav-text">批量发送</span></a></li></ol>
     
     </div>
   </aside>
@@ -291,7 +337,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -371,12 +417,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -444,7 +494,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

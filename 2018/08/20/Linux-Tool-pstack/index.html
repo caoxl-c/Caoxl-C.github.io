@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>linux pstack 跟踪进程栈 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Linuxpstack">
+  <meta name="keywords" content="Linuxpstack" />
   
   
   
   
   <meta name="description" content="此命令可显示每个进程的栈跟踪。pstack 命令必须由相应进程的属主或 root 运行。可以使用 pstack 来确定进程挂起的位置。此命令允许使用的唯一选项是要检查的进程的 PID">
-<meta name="keywords" content="Linux,pstack">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux pstack 跟踪进程栈">
 <meta property="og:url" content="http://blog.caoxl.com/2018/08/20/Linux-Tool-pstack/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="此命令可显示每个进程的栈跟踪。pstack 命令必须由相应进程的属主或 root 运行。可以使用 pstack 来确定进程挂起的位置。此命令允许使用的唯一选项是要检查的进程的 PID">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T03:50:06.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-20T02:09:34.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:50:06.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="pstack">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Linux pstack 跟踪进程栈">
-<meta name="twitter:description" content="此命令可显示每个进程的栈跟踪。pstack 命令必须由相应进程的属主或 root 运行。可以使用 pstack 来确定进程挂起的位置。此命令允许使用的唯一选项是要检查的进程的 PID">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -199,12 +240,16 @@
           <blockquote>
 <p>此命令可显示每个进程的栈跟踪。<code>pstack</code> 命令必须由相应进程的属主或 <code>root</code> 运行。可以使用 <code>pstack</code> 来确定进程挂起的位置。此命令允许使用的唯一选项是要检查的进程的 <code>PID</code></p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1><p>这个命令在排查进程问题时非常有用，比如我们发现一个服务一直处于work状态（如假死状态，好似死循环），使用这个命令就能轻松定位问题所在；可以在一段时间内，多执行几次pstack，若发现代码栈总是停在同一个位置，那个位置就需要重点关注，很可能就是出问题的地方</p>
-<h1 id="示例-查看bash程序进程栈"><a href="#示例-查看bash程序进程栈" class="headerlink" title="示例: 查看bash程序进程栈"></a>示例: 查看bash程序进程栈</h1><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# ps -ef | grep bash</span><br><span class="line">root     <span class="number">31039</span> <span class="number">31037</span>  <span class="number">0</span> <span class="number">09</span>:<span class="number">42</span> pts/<span class="number">0</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> -bash</span><br><span class="line">root     <span class="number">31229</span> <span class="number">31039</span>  <span class="number">0</span> <span class="number">10</span>:<span class="number">11</span> pts/<span class="number">0</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> grep --color=<span class="built_in">auto</span> bash</span><br><span class="line">[<span class="symbol">root@</span>caoxl ~]# pstack <span class="number">31039</span></span><br><span class="line">#<span class="number">0</span>  <span class="number">0x00007fe8aa1e817c</span> <span class="keyword">in</span> waitpid () <span class="keyword">from</span> /usr/lib64/libc.so<span class="number">.6</span></span><br><span class="line">#<span class="number">1</span>  <span class="number">0x0000000000440b24</span> <span class="keyword">in</span> waitchld.isra<span class="number">.10</span> ()</span><br><span class="line">#<span class="number">2</span>  <span class="number">0x0000000000441ddc</span> <span class="keyword">in</span> wait_for ()</span><br><span class="line">#<span class="number">3</span>  <span class="number">0x0000000000433aae</span> <span class="keyword">in</span> execute_command_internal ()</span><br><span class="line">#<span class="number">4</span>  <span class="number">0x0000000000433cce</span> <span class="keyword">in</span> execute_command ()</span><br><span class="line">#<span class="number">5</span>  <span class="number">0x000000000041e305</span> <span class="keyword">in</span> reader_loop ()</span><br><span class="line">#<span class="number">6</span>  <span class="number">0x000000000041c96e</span> <span class="keyword">in</span> main ()</span><br></pre></td></tr></table></figure>
-<h1 id="安装pstack"><a href="#安装pstack" class="headerlink" title="安装pstack"></a>安装pstack</h1><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum install gdb  <span class="regexp">//</span> 只要安装gdb,就会把pstack也一并安装成功</span><br><span class="line"></span><br><span class="line">[root@caoxl ~]<span class="comment"># which pstack</span></span><br><span class="line"><span class="regexp">/usr/</span>bin<span class="regexp">/pstack</span></span><br></pre></td></tr></table></figure>
+<h1 id="示例-查看bash程序进程栈"><a href="#示例-查看bash程序进程栈" class="headerlink" title="示例: 查看bash程序进程栈"></a>示例: 查看bash程序进程栈</h1><figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># ps -ef | grep bash</span></span><br><span class="line">root    <span class="number"> 31039 </span>31037 <span class="number"> 0 </span>09:42 pts/0    00:00:00 -bash</span><br><span class="line">root    <span class="number"> 31229 </span>31039 <span class="number"> 0 </span>10:11 pts/0    00:00:00 grep --color=auto bash</span><br><span class="line">[root@caoxl ~]<span class="comment"># pstack 31039</span></span><br><span class="line"><span class="comment">#0  0x00007fe8aa1e817c in waitpid () from /usr/lib64/libc.so.6</span></span><br><span class="line"><span class="comment">#1  0x0000000000440b24 in waitchld.isra.10 ()</span></span><br><span class="line"><span class="comment">#2  0x0000000000441ddc in wait_for ()</span></span><br><span class="line"><span class="comment">#3  0x0000000000433aae in execute_command_internal ()</span></span><br><span class="line"><span class="comment">#4  0x0000000000433cce in execute_command ()</span></span><br><span class="line"><span class="comment">#5  0x000000000041e305 in reader_loop ()</span></span><br><span class="line"><span class="comment">#6  0x000000000041c96e in main ()</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="安装pstack"><a href="#安装pstack" class="headerlink" title="安装pstack"></a>安装pstack</h1><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum install gdb  <span class="regexp">//</span> 只要安装gdb,就会把pstack也一并安装成功</span><br><span class="line"></span><br><span class="line">[root@caoxl ~]<span class="comment"># which pstack</span></span><br><span class="line"><span class="regexp">/usr/</span>bin/pstack</span><br></pre></td></tr></table></figure>
+
+
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/pstack.html" target="_blank" rel="noopener">pstack 跟踪进程栈</a></li>
+<li><a target="_blank" rel="noopener" href="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/pstack.html">pstack 跟踪进程栈</a></li>
 </ul>
 
         
@@ -237,7 +282,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pstack/">pstack</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pstack/" rel="tag">pstack</a></li></ul>
 
       
 
@@ -273,7 +318,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#应用场景"><span class="nav-number">1.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#示例-查看bash程序进程栈"><span class="nav-number">2.</span> <span class="nav-text">示例: 查看bash程序进程栈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装pstack"><span class="nav-number">3.</span> <span class="nav-text">安装pstack</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B-%E6%9F%A5%E7%9C%8Bbash%E7%A8%8B%E5%BA%8F%E8%BF%9B%E7%A8%8B%E6%A0%88"><span class="nav-number">2.</span> <span class="nav-text">示例: 查看bash程序进程栈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85pstack"><span class="nav-number">3.</span> <span class="nav-text">安装pstack</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -288,7 +333,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -368,12 +413,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -441,7 +490,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

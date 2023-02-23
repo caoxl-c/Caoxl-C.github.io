@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>做一顿饭来理解协程 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="协程SwooleCoroutine">
+  <meta name="keywords" content="Swoole协程Coroutine" />
   
   
   
   
   <meta name="description" content="协程 协程可以简单理解为线程，只不过这个线程是用户态的，不需要操作系统参与，创建销毁和切换的成本非常低，和线程不同的是协程没法利用多核 cpu 的，想利用多核 cpu 需要依赖 Swoole 的多进程模型。—— swoole 协程一章">
-<meta name="keywords" content="协程,Swoole,Coroutine">
 <meta property="og:type" content="article">
 <meta property="og:title" content="做一顿饭来理解协程">
 <meta property="og:url" content="http://blog.caoxl.com/2020/10/26/Learn-Swoole-Coroutine/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="协程 协程可以简单理解为线程，只不过这个线程是用户态的，不需要操作系统参与，创建销毁和切换的成本非常低，和线程不同的是协程没法利用多核 cpu 的，想利用多核 cpu 需要依赖 Swoole 的多进程模型。—— swoole 协程一章">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-10-26T07:15:10.915Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-26T07:06:04.000Z">
+<meta property="article:modified_time" content="2020-10-26T07:15:10.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Swoole">
+<meta property="article:tag" content="协程">
+<meta property="article:tag" content="Coroutine">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="做一顿饭来理解协程">
-<meta name="twitter:description" content="协程 协程可以简单理解为线程，只不过这个线程是用户态的，不需要操作系统参与，创建销毁和切换的成本非常低，和线程不同的是协程没法利用多核 cpu 的，想利用多核 cpu 需要依赖 Swoole 的多进程模型。—— swoole 协程一章">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +44,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +183,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -199,7 +241,8 @@
           <h1 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h1><blockquote>
 <p>协程可以简单理解为线程，只不过这个线程是用户态的，不需要操作系统参与，创建销毁和切换的成本非常低，和线程不同的是协程没法利用多核 cpu 的，想利用多核 cpu 需要依赖 <code>Swoole</code> 的多进程模型。—— swoole 协程一章</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="我的理解"><a href="#我的理解" class="headerlink" title="我的理解"></a>我的理解</h1><p>可以把协程看成一道小学数学的一道题目：“合理安排时间”，来我们先做一道题目：</p>
 <blockquote>
 <p>小明下班后回家煮饭，煲汤需要 10 分钟，煮饭需要 8 分钟， 炒菜需要 5 分钟，，请问小明最少需要多少分钟能煮好饭？</p>
@@ -207,18 +250,20 @@
 <blockquote>
 <p>下面用 <code>sleep()</code> 模拟 IO 操作</p>
 </blockquote>
-<h1 id="同步版煮饭"><a href="#同步版煮饭" class="headerlink" title="同步版煮饭"></a>同步版煮饭</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SyncCook</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">cook</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $startTime = time();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"开始煲汤..."</span> . PHP_EOL;</span><br><span class="line">        sleep(<span class="number">10</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"汤好了..."</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"开始煮饭..."</span> . PHP_EOL;</span><br><span class="line">        sleep(<span class="number">8</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"饭熟了..."</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"放油..."</span> . PHP_EOL;</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"煎鱼..."</span> . PHP_EOL;</span><br><span class="line">        sleep(<span class="number">3</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"放盐..."</span> . PHP_EOL;</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"出锅..."</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">        var_dump(<span class="string">'总耗时：'</span> . (time() - $startTime) . <span class="string">' 分钟'</span>);<span class="keyword">die</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$sync = <span class="keyword">new</span> SyncCook();</span><br><span class="line">$sync-&gt;cook();</span><br></pre></td></tr></table></figure>
+<h1 id="同步版煮饭"><a href="#同步版煮饭" class="headerlink" title="同步版煮饭"></a>同步版煮饭</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SyncCook</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">cook</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$startTime</span> = <span class="title function_ invoke__">time</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;开始煲汤...&quot;</span> . PHP_EOL;</span><br><span class="line">        <span class="title function_ invoke__">sleep</span>(<span class="number">10</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;汤好了...&quot;</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;开始煮饭...&quot;</span> . PHP_EOL;</span><br><span class="line">        <span class="title function_ invoke__">sleep</span>(<span class="number">8</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;饭熟了...&quot;</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;放油...&quot;</span> . PHP_EOL;</span><br><span class="line">        <span class="title function_ invoke__">sleep</span>(<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;煎鱼...&quot;</span> . PHP_EOL;</span><br><span class="line">        <span class="title function_ invoke__">sleep</span>(<span class="number">3</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;放盐...&quot;</span> . PHP_EOL;</span><br><span class="line">        <span class="title function_ invoke__">sleep</span>(<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;出锅...&quot;</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">        <span class="title function_ invoke__">var_dump</span>(<span class="string">&#x27;总耗时：&#x27;</span> . (<span class="title function_ invoke__">time</span>() - <span class="variable">$startTime</span>) . <span class="string">&#x27; 分钟&#x27;</span>);<span class="keyword">die</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$sync</span> = <span class="keyword">new</span> <span class="title class_">SyncCook</span>();</span><br><span class="line"><span class="variable">$sync</span>-&gt;<span class="title function_ invoke__">cook</span>();</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>总耗时：23 分钟</p>
 </blockquote>
 <p>代码很容易看懂，等待汤煮好之后再煮饭，然后再等待饭煮好再炒菜，生活中不会这样操作吧？这就要引入协程来解决这个问题了。</p>
-<h1 id="协程版煮饭"><a href="#协程版煮饭" class="headerlink" title="协程版煮饭"></a>协程版煮饭</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoole</span>\<span class="title">Coroutine</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoole</span>\<span class="title">Coroutine</span>\<span class="title">WaitGroup</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SwooleCook</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">cook</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $startTime = time();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 开启一键协程化: https://wiki.swoole.com/#/runtime?id=swoole_hook_all</span></span><br><span class="line">        Swoole\Runtime::enableCoroutine($flags = SWOOLE_HOOK_ALL);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建一个协程容器: https://wiki.swoole.com/#/coroutine/scheduler</span></span><br><span class="line">        <span class="comment">// 相当于进入厨房</span></span><br><span class="line">        Co\run(<span class="function"><span class="keyword">function</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="comment">// 等待结果: https://wiki.swoole.com/#/coroutine/wait_group?id=waitgroup</span></span><br><span class="line">            <span class="comment">// 记录哪道菜做好了，哪道菜还需要多长时间</span></span><br><span class="line">            $wg = <span class="keyword">new</span> WaitGroup();</span><br><span class="line">            <span class="comment">// 保存数据的结果</span></span><br><span class="line">            <span class="comment">// 装好的菜</span></span><br><span class="line">            $result = [];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 记录一下煲汤(记录一个任务)</span></span><br><span class="line">            $wg-&gt;add();</span><br><span class="line">            <span class="comment">// 创建一个煲汤任务(开启一个新的协程)</span></span><br><span class="line">            Coroutine::create(<span class="function"><span class="keyword">function</span> <span class="params">()</span> <span class="title">use</span> <span class="params">($wg, &amp;$result)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">"开始煲汤..."</span> . PHP_EOL;</span><br><span class="line">                <span class="comment">// 煲汤需要6分钟，所以我们也不用在这里等汤煮好，</span></span><br><span class="line">                <span class="comment">// 直接去做下一个任务：炒菜(协程切换)</span></span><br><span class="line">                sleep(<span class="number">8</span>);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">"汤好了..."</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 装盘</span></span><br><span class="line">                $result[<span class="string">'soup'</span>] = <span class="string">'一锅汤'</span>;</span><br><span class="line">                $wg-&gt;done(); <span class="comment">// 标记任务完成</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 记录一下煮饭(记录一个任务)</span></span><br><span class="line">            $wg-&gt;add();</span><br><span class="line">            <span class="comment">// 创建一个煮饭任务(开启一个新的协程)</span></span><br><span class="line">            Coroutine::create(<span class="function"><span class="keyword">function</span> <span class="params">()</span> <span class="title">use</span> <span class="params">($wg, &amp;$result)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">"开始煮饭..."</span> . PHP_EOL;</span><br><span class="line">                <span class="comment">// 煮饭需要5分钟，所以我们不用在这里等饭煮熟，放在这里一会再来看看好了没有</span></span><br><span class="line">                <span class="comment">// 我们先去煲汤(协程切换)</span></span><br><span class="line">                sleep(<span class="number">10</span>);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">"饭熟了..."</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 装盘</span></span><br><span class="line">                $result[<span class="string">'rice'</span>] = <span class="string">'一锅米饭'</span>;</span><br><span class="line">                $wg-&gt;done(); <span class="comment">// 标记任务完成</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 记录一下炒菜</span></span><br><span class="line">            $wg-&gt;add();</span><br><span class="line">            <span class="comment">// 创建一个炒菜任务(再开启一个新的协程)</span></span><br><span class="line">            Coroutine::create(<span class="function"><span class="keyword">function</span> <span class="params">()</span> <span class="title">use</span> <span class="params">($wg, &amp;$result)</span> </span>&#123;</span><br><span class="line">                <span class="comment">// 煎鱼的过程必须放在一个协程里面执行，如果不是的话可能鱼还没煎好就出锅了</span></span><br><span class="line">                <span class="comment">// 因为开启协程后，IO全是异步了，在此demo中每次遇到sleep都会挂起当前协程</span></span><br><span class="line">                <span class="comment">// 切换到下一个协程执行。</span></span><br><span class="line">                <span class="comment">// 例如把出锅这一步开启一个新协程执行，则在煎鱼的时候鱼，鱼就出锅了。</span></span><br><span class="line">                <span class="keyword">echo</span> <span class="string">"放油..."</span> . PHP_EOL;</span><br><span class="line">                sleep(<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">"煎鱼..."</span> . PHP_EOL;</span><br><span class="line">                sleep(<span class="number">3</span>);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">"放盐..."</span> . PHP_EOL;</span><br><span class="line">                sleep(<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">"出锅..."</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 装盘</span></span><br><span class="line">                $result[<span class="string">'food'</span>] = <span class="string">'鱼香肉丝'</span>;</span><br><span class="line">                $wg-&gt;done();</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 等待全部任务完成</span></span><br><span class="line">            $wg-&gt;wait();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 返回数据(上菜！)</span></span><br><span class="line">            var_dump($result);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        var_dump(<span class="string">'总耗时：'</span> . (time() - $startTime) . <span class="string">' 分钟'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$swoole = <span class="keyword">new</span> SwooleCook();</span><br><span class="line">$swoole-&gt;cook();</span><br></pre></td></tr></table></figure>
+<h1 id="协程版煮饭"><a href="#协程版煮饭" class="headerlink" title="协程版煮饭"></a>协程版煮饭</h1><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoole</span>\<span class="title">Coroutine</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Swoole</span>\<span class="title">Coroutine</span>\<span class="title">WaitGroup</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SwooleCook</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">cook</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$startTime</span> = <span class="title function_ invoke__">time</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 开启一键协程化: https://wiki.swoole.com/#/runtime?id=swoole_hook_all</span></span><br><span class="line">        <span class="title class_">Swoole\Runtime</span>::<span class="title function_ invoke__">enableCoroutine</span>(<span class="variable">$flags</span> = SWOOLE_HOOK_ALL);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建一个协程容器: https://wiki.swoole.com/#/coroutine/scheduler</span></span><br><span class="line">        <span class="comment">// 相当于进入厨房</span></span><br><span class="line">        Co\<span class="title function_ invoke__">run</span>(function () &#123;</span><br><span class="line">            <span class="comment">// 等待结果: https://wiki.swoole.com/#/coroutine/wait_group?id=waitgroup</span></span><br><span class="line">            <span class="comment">// 记录哪道菜做好了，哪道菜还需要多长时间</span></span><br><span class="line">            <span class="variable">$wg</span> = <span class="keyword">new</span> <span class="title class_">WaitGroup</span>();</span><br><span class="line">            <span class="comment">// 保存数据的结果</span></span><br><span class="line">            <span class="comment">// 装好的菜</span></span><br><span class="line">            <span class="variable">$result</span> = [];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 记录一下煲汤(记录一个任务)</span></span><br><span class="line">            <span class="variable">$wg</span>-&gt;<span class="title function_ invoke__">add</span>();</span><br><span class="line">            <span class="comment">// 创建一个煲汤任务(开启一个新的协程)</span></span><br><span class="line">            <span class="title class_">Coroutine</span>::<span class="title function_ invoke__">create</span>(function () <span class="keyword">use</span> ($<span class="title">wg</span>, &amp;$<span class="title">result</span>) &#123;</span><br><span class="line">                <span class="title">echo</span> &quot;开始煲汤...&quot; . <span class="title">PHP_EOL</span>;</span><br><span class="line">                <span class="comment">// 煲汤需要6分钟，所以我们也不用在这里等汤煮好，</span></span><br><span class="line">                <span class="comment">// 直接去做下一个任务：炒菜(协程切换)</span></span><br><span class="line">                <span class="title function_ invoke__">sleep</span>(<span class="number">8</span>);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">&quot;汤好了...&quot;</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 装盘</span></span><br><span class="line">                <span class="variable">$result</span>[<span class="string">&#x27;soup&#x27;</span>] = <span class="string">&#x27;一锅汤&#x27;</span>;</span><br><span class="line">                <span class="variable">$wg</span>-&gt;<span class="title function_ invoke__">done</span>(); <span class="comment">// 标记任务完成</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 记录一下煮饭(记录一个任务)</span></span><br><span class="line">            <span class="variable">$wg</span>-&gt;<span class="title function_ invoke__">add</span>();</span><br><span class="line">            <span class="comment">// 创建一个煮饭任务(开启一个新的协程)</span></span><br><span class="line">            <span class="title class_">Coroutine</span>::<span class="title function_ invoke__">create</span>(function () <span class="keyword">use</span> ($<span class="title">wg</span>, &amp;$<span class="title">result</span>) &#123;</span><br><span class="line">                <span class="title">echo</span> &quot;开始煮饭...&quot; . <span class="title">PHP_EOL</span>;</span><br><span class="line">                <span class="comment">// 煮饭需要5分钟，所以我们不用在这里等饭煮熟，放在这里一会再来看看好了没有</span></span><br><span class="line">                <span class="comment">// 我们先去煲汤(协程切换)</span></span><br><span class="line">                <span class="title function_ invoke__">sleep</span>(<span class="number">10</span>);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">&quot;饭熟了...&quot;</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 装盘</span></span><br><span class="line">                <span class="variable">$result</span>[<span class="string">&#x27;rice&#x27;</span>] = <span class="string">&#x27;一锅米饭&#x27;</span>;</span><br><span class="line">                <span class="variable">$wg</span>-&gt;<span class="title function_ invoke__">done</span>(); <span class="comment">// 标记任务完成</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 记录一下炒菜</span></span><br><span class="line">            <span class="variable">$wg</span>-&gt;<span class="title function_ invoke__">add</span>();</span><br><span class="line">            <span class="comment">// 创建一个炒菜任务(再开启一个新的协程)</span></span><br><span class="line">            <span class="title class_">Coroutine</span>::<span class="title function_ invoke__">create</span>(function () <span class="keyword">use</span> ($<span class="title">wg</span>, &amp;$<span class="title">result</span>) &#123;</span><br><span class="line">                // 煎鱼的过程必须放在一个协程里面执行，如果不是的话可能鱼还没煎好就出锅了</span><br><span class="line">                // 因为开启协程后，<span class="title">IO</span>全是异步了，在此<span class="title">demo</span>中每次遇到<span class="title">sleep</span>都会挂起当前协程</span><br><span class="line">                // 切换到下一个协程执行。</span><br><span class="line">                // 例如把出锅这一步开启一个新协程执行，则在煎鱼的时候鱼，鱼就出锅了。</span><br><span class="line">                <span class="title">echo</span> &quot;放油...&quot; . <span class="title">PHP_EOL</span>;</span><br><span class="line">                <span class="title function_ invoke__">sleep</span>(<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">&quot;煎鱼...&quot;</span> . PHP_EOL;</span><br><span class="line">                <span class="title function_ invoke__">sleep</span>(<span class="number">3</span>);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">&quot;放盐...&quot;</span> . PHP_EOL;</span><br><span class="line">                <span class="title function_ invoke__">sleep</span>(<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">&quot;出锅...&quot;</span> . PHP_EOL;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 装盘</span></span><br><span class="line">                <span class="variable">$result</span>[<span class="string">&#x27;food&#x27;</span>] = <span class="string">&#x27;鱼香肉丝&#x27;</span>;</span><br><span class="line">                <span class="variable">$wg</span>-&gt;<span class="title function_ invoke__">done</span>();</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 等待全部任务完成</span></span><br><span class="line">            <span class="variable">$wg</span>-&gt;<span class="title function_ invoke__">wait</span>();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 返回数据(上菜！)</span></span><br><span class="line">            <span class="title function_ invoke__">var_dump</span>(<span class="variable">$result</span>);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="title function_ invoke__">var_dump</span>(<span class="string">&#x27;总耗时：&#x27;</span> . (<span class="title function_ invoke__">time</span>() - <span class="variable">$startTime</span>) . <span class="string">&#x27; 分钟&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$swoole</span> = <span class="keyword">new</span> <span class="title class_">SwooleCook</span>();</span><br><span class="line"><span class="variable">$swoole</span>-&gt;<span class="title function_ invoke__">cook</span>();</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>总耗时：10 分钟</p>
 </blockquote>
 <p>答：小明最少需要 10 分钟能煮好饭。</p>
 <ul>
-<li><a href="https://learnku.com/articles/44836" target="_blank" rel="noopener">原文地址: https://learnku.com/articles/44836</a></li>
+<li><a target="_blank" rel="noopener" href="https://learnku.com/articles/44836">原文地址: https://learnku.com/articles/44836</a></li>
 </ul>
 
         
@@ -251,7 +296,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Coroutine/">Coroutine</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoole/">Swoole</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/协程/">协程</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Coroutine/" rel="tag">Coroutine</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoole/" rel="tag">Swoole</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%8D%8F%E7%A8%8B/" rel="tag">协程</a></li></ul>
 
       
 
@@ -287,7 +332,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#协程"><span class="nav-number">1.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#我的理解"><span class="nav-number">2.</span> <span class="nav-text">我的理解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#同步版煮饭"><span class="nav-number">3.</span> <span class="nav-text">同步版煮饭</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#协程版煮饭"><span class="nav-number">4.</span> <span class="nav-text">协程版煮饭</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E7%90%86%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">我的理解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E7%89%88%E7%85%AE%E9%A5%AD"><span class="nav-number">3.</span> <span class="nav-text">同步版煮饭</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B%E7%89%88%E7%85%AE%E9%A5%AD"><span class="nav-number">4.</span> <span class="nav-text">协程版煮饭</span></a></li></ol>
     
     </div>
   </aside>
@@ -302,7 +347,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -382,12 +427,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -455,7 +504,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

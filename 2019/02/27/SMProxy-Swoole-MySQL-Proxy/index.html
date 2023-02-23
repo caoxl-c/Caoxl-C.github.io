@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>smproxy 数据库连接池 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="MySQLSwooleSMProxy">
+  <meta name="keywords" content="MySQLSwooleSMProxy" />
   
   
   
   
   <meta name="description" content="Swoole MySQL Proxy一个基于MySQL协议,Swoole开发的MySQL数据库连接池">
-<meta name="keywords" content="MySQL,Swoole,SMProxy">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SMProxy 数据库连接池">
 <meta property="og:url" content="http://blog.caoxl.com/2019/02/27/SMProxy-Swoole-MySQL-Proxy/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="Swoole MySQL Proxy一个基于MySQL协议,Swoole开发的MySQL数据库连接池">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T06:26:59.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-02-27T02:12:28.000Z">
+<meta property="article:modified_time" content="2019-08-22T06:26:59.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="Swoole">
+<meta property="article:tag" content="SMProxy">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SMProxy 数据库连接池">
-<meta name="twitter:description" content="Swoole MySQL Proxy一个基于MySQL协议,Swoole开发的MySQL数据库连接池">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +44,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +183,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +223,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
 
       
 	<a class="article-views">
@@ -199,7 +241,8 @@
           <blockquote>
 <p>Swoole MySQL Proxy<br>一个基于MySQL协议,Swoole开发的MySQL数据库连接池</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>将数据库连接作为对象存储在内存中，当用户需要访问数据库时，首次会建立连接，后面并非建立一个新的连接，<br>而是从连接池中取出一个已建立的空闲连接对象。 使用完毕后，用户也并非将连接关闭，而是将连接放回连接池中<br>，以供下一个请求访问使用。而连接的建立、断开都由连接池自身来管理。</p>
 <p>同时，还可以通过设置连接池的参数来控制连接池中的初始连接数、连接的上下限数以及每个连接的最大使用次<br>数、最大空闲时间等等。 也可以通过其自身的管理机制来监视数据库连接的数量、使用情况等。<br>超出最大连接数会采用协程挂起，等到有连接关闭再恢复协程继续操作。</p>
 <h1 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h1><ul>
@@ -220,20 +263,23 @@
 <li><code>PHP &gt;= 7.0</code></li>
 </ul>
 <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>（推荐）直接下载最新发行版的 PHAR 文件，解压即用：</p>
-<p><u><a href="https://github.com/louislivi/SMProxy/releases/latest" target="_blank" rel="noopener">https://github.com/louislivi/SMProxy/releases/latest</a></u></p>
+<p><u><a target="_blank" rel="noopener" href="https://github.com/louislivi/SMProxy/releases/latest">https://github.com/louislivi/SMProxy/releases/latest</a></u></p>
 <p>或者使用 Git 切换任意版本：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">clone</span> https:<span class="comment">//github.com/louislivi/SMProxy.git</span></span><br><span class="line">composer install --no-dev <span class="comment"># 如果你想贡献你的代码，请不要使用 --no-dev 参数。</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p>需要给予 <code>bin/SMProxy</code> 执行权限。</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SMProxy [ start | stop | restart | status | reload ] [ -c | --config &lt;configuration_path&gt; | --console ]</span><br><span class="line">SMProxy -h | --help</span><br><span class="line">SMProxy -v | --version</span><br></pre></td></tr></table></figure>
+
 <h2 id="Options"><a href="#Options" class="headerlink" title="Options"></a><code>Options</code></h2><ul>
-<li><code>start/stop/restart/status/reload</code> - 运行/停止/重启/查询状态/平滑重启服务</li>
+<li><code>start/stop/restart/status/reload</code> - 运行&#x2F;停止&#x2F;重启&#x2F;查询状态&#x2F;平滑重启服务</li>
 <li><code>-h</code> 帮助</li>
 <li><code>-v</code> 查看当前服务版本</li>
 <li><code>-c</code> 设置好配置项目录</li>
-<li><code>--console</code> 前台运行(SMProxy&gt;=1.2.5)</li>
+<li><code>--console</code> 前台运行(SMProxy&gt;&#x3D;1.2.5)</li>
 </ul>
 <h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>配置文件位于 <code>smproxy/conf</code> 目录中，其中大写 <code>ROOT</code> 代表当前 <code>SMProxy</code> 根目录。</p>
-<h2 id="database-json"><a href="#database-json" class="headerlink" title="database.json"></a><code>database.json</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"database"</span>: &#123;</span><br><span class="line">    <span class="string">"account"</span>: &#123;</span><br><span class="line">      <span class="string">"自定义用户名"</span>: &#123;</span><br><span class="line">        <span class="string">"user"</span>: <span class="string">"必选，数据库账户"</span>,</span><br><span class="line">        <span class="string">"password"</span>: <span class="string">"必选，数据库密码"</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">"..."</span>: <span class="string">"必选1个，自定义用户名 与serverInfo中的account相对应"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"serverInfo"</span>: &#123;</span><br><span class="line">      <span class="string">"自定义数据库连接信息"</span>: &#123;</span><br><span class="line">        <span class="string">"write"</span>: &#123;</span><br><span class="line">          <span class="string">"host"</span>: <span class="string">"必选，写库地址 多个用[]表示"</span>,</span><br><span class="line">          <span class="string">"port"</span>: <span class="string">"必选，写库端口"</span>,</span><br><span class="line">          <span class="string">"timeout"</span>: <span class="string">"必选，写库连接超时时间（秒）"</span>,</span><br><span class="line">          <span class="string">"account"</span>: <span class="string">"必选，自定义用户名 与 account中的自定义用户名相对应"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">"read"</span>: &#123;</span><br><span class="line">          <span class="string">"host"</span>: <span class="string">"可选，读库地址 多个用[]表示"</span>,</span><br><span class="line">          <span class="string">"port"</span>: <span class="string">"可选，读库端口"</span>,</span><br><span class="line">          <span class="string">"timeout"</span>: <span class="string">"可选，读库连接超时时间（秒）"</span>,</span><br><span class="line">          <span class="string">"account"</span>: <span class="string">"可选，自定义用户名 与 account中的自定义用户名相对应"</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">"..."</span>: <span class="string">"必选1个，自定义数据库连接信息 与databases中的serverInfo相对应,read读库可不配置"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"databases"</span>: &#123;</span><br><span class="line">      <span class="string">"数据库名称"</span>: &#123;</span><br><span class="line">        <span class="string">"serverInfo"</span>: <span class="string">"必选，自定义数据库连接信息 与serverInfo中的自定义数据库连接信息相对应"</span>,</span><br><span class="line">        <span class="string">"maxConns"</span>: <span class="string">"必选，该库服务最大连接数，支持计算"</span>,</span><br><span class="line">        <span class="string">"maxSpareConns"</span>: <span class="string">"必选，该库服务最大空闲连接数，支持计算"</span>,</span><br><span class="line">        <span class="string">"startConns"</span>: <span class="string">"可选，该库服务默认启动连接数，支持计算"</span>,</span><br><span class="line">        <span class="string">"maxSpareExp"</span>: <span class="string">"可选，该库服务空闲连接数最大空闲时间（秒），默认为0，支持计算"</span>,</span><br><span class="line">        <span class="string">"charset"</span>: <span class="string">"可选，该库编码格式"</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">"..."</span>: <span class="string">"必选1个，数据库名称 多个数据库配置多个"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="database-json"><a href="#database-json" class="headerlink" title="database.json"></a><code>database.json</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;database&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;account&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;自定义用户名&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;user&quot;</span>: <span class="string">&quot;必选，数据库账户&quot;</span>,</span><br><span class="line">        <span class="string">&quot;password&quot;</span>: <span class="string">&quot;必选，数据库密码&quot;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">&quot;...&quot;</span>: <span class="string">&quot;必选1个，自定义用户名 与serverInfo中的account相对应&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;serverInfo&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;自定义数据库连接信息&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;write&quot;</span>: &#123;</span><br><span class="line">          <span class="string">&quot;host&quot;</span>: <span class="string">&quot;必选，写库地址 多个用[]表示&quot;</span>,</span><br><span class="line">          <span class="string">&quot;port&quot;</span>: <span class="string">&quot;必选，写库端口&quot;</span>,</span><br><span class="line">          <span class="string">&quot;timeout&quot;</span>: <span class="string">&quot;必选，写库连接超时时间（秒）&quot;</span>,</span><br><span class="line">          <span class="string">&quot;account&quot;</span>: <span class="string">&quot;必选，自定义用户名 与 account中的自定义用户名相对应&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&quot;read&quot;</span>: &#123;</span><br><span class="line">          <span class="string">&quot;host&quot;</span>: <span class="string">&quot;可选，读库地址 多个用[]表示&quot;</span>,</span><br><span class="line">          <span class="string">&quot;port&quot;</span>: <span class="string">&quot;可选，读库端口&quot;</span>,</span><br><span class="line">          <span class="string">&quot;timeout&quot;</span>: <span class="string">&quot;可选，读库连接超时时间（秒）&quot;</span>,</span><br><span class="line">          <span class="string">&quot;account&quot;</span>: <span class="string">&quot;可选，自定义用户名 与 account中的自定义用户名相对应&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">&quot;...&quot;</span>: <span class="string">&quot;必选1个，自定义数据库连接信息 与databases中的serverInfo相对应,read读库可不配置&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;databases&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;数据库名称&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;serverInfo&quot;</span>: <span class="string">&quot;必选，自定义数据库连接信息 与serverInfo中的自定义数据库连接信息相对应&quot;</span>,</span><br><span class="line">        <span class="string">&quot;maxConns&quot;</span>: <span class="string">&quot;必选，该库服务最大连接数，支持计算&quot;</span>,</span><br><span class="line">        <span class="string">&quot;maxSpareConns&quot;</span>: <span class="string">&quot;必选，该库服务最大空闲连接数，支持计算&quot;</span>,</span><br><span class="line">        <span class="string">&quot;startConns&quot;</span>: <span class="string">&quot;可选，该库服务默认启动连接数，支持计算&quot;</span>,</span><br><span class="line">        <span class="string">&quot;maxSpareExp&quot;</span>: <span class="string">&quot;可选，该库服务空闲连接数最大空闲时间（秒），默认为0，支持计算&quot;</span>,</span><br><span class="line">        <span class="string">&quot;charset&quot;</span>: <span class="string">&quot;可选，该库编码格式&quot;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">&quot;...&quot;</span>: <span class="string">&quot;必选1个，数据库名称 多个数据库配置多个&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><p><code>maxConns</code>,<code>amxSpareConns</code>,<code>startConns</code></p>
 <ul>
@@ -251,7 +297,8 @@
 </ul>
 </li>
 </ul>
-<h2 id="server-json"><a href="#server-json" class="headerlink" title="server.json"></a><code>server.json</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"server"</span>: &#123;</span><br><span class="line">    <span class="string">"user"</span>: <span class="string">"必选，SMProxy服务用户"</span>,</span><br><span class="line">    <span class="string">"password"</span>: <span class="string">"必选，SMProxy服务密码"</span>,</span><br><span class="line">    <span class="string">"charset"</span>: <span class="string">"可选，SMProxy编码，默认utf8mb4"</span>,</span><br><span class="line">    <span class="string">"host"</span>: <span class="string">"可选，SMProxy地址，默认0.0.0.0"</span>,</span><br><span class="line">    <span class="string">"port"</span>: <span class="string">"可选，SMProxy端口，默认3366 如需多个以`,`隔开"</span>,</span><br><span class="line">    <span class="string">"mode"</span>: <span class="string">"可选，SMProxy运行模式，SWOOLE_PROCESS多进程模式（默认），SWOOLE_BASE基本模式"</span>,</span><br><span class="line">    <span class="string">"sock_type"</span>: <span class="string">"可选，sock类型，SWOOLE_SOCK_TCP tcp"</span>,</span><br><span class="line">    <span class="string">"logs"</span>: &#123;</span><br><span class="line">      <span class="string">"open"</span>:<span class="string">"必选，日志开关，true 开 false 关"</span>,</span><br><span class="line">      <span class="string">"config"</span>: &#123;</span><br><span class="line">        <span class="string">"system"</span>: &#123;</span><br><span class="line">          <span class="string">"log_path"</span>: <span class="string">"必选，SMProxy系统日志目录"</span>,</span><br><span class="line">          <span class="string">"log_file"</span>: <span class="string">"必选，SMProxy系统日志文件名"</span>,</span><br><span class="line">          <span class="string">"format"</span>: <span class="string">"必选，SMProxy系统日志目录日期格式"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">"mysql"</span>: &#123;</span><br><span class="line">          <span class="string">"log_path"</span>: <span class="string">"必选，SMProxyMySQL日志目录"</span>,</span><br><span class="line">          <span class="string">"log_file"</span>: <span class="string">"必选，SMProxyMySQL日志文件名"</span>,</span><br><span class="line">          <span class="string">"format"</span>: <span class="string">"必选，SMProxyMySQL日志目录日期格式"</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"swoole"</span>: &#123;</span><br><span class="line">      <span class="string">"worker_num"</span>: <span class="string">"必选，SWOOLE worker进程数，支持计算"</span>,</span><br><span class="line">      <span class="string">"max_coro_num"</span>: <span class="string">"必选，SWOOLE 协程数，推荐不低于3000"</span>,</span><br><span class="line">      <span class="string">"pid_file"</span>: <span class="string">"必选，worker进程和manager进程pid目录"</span>,</span><br><span class="line">      <span class="string">"open_tcp_nodelay"</span>: <span class="string">"可选，关闭Nagle合并算法"</span>,</span><br><span class="line">      <span class="string">"daemonize"</span>: <span class="string">"可选，守护进程化，true 为守护进程 false 关闭守护进程"</span>,</span><br><span class="line">      <span class="string">"heartbeat_check_interval"</span>: <span class="string">"可选，心跳检测"</span>,</span><br><span class="line">      <span class="string">"heartbeat_idle_time"</span>: <span class="string">"可选，心跳检测最大空闲时间"</span>,</span><br><span class="line">      <span class="string">"reload_async"</span>: <span class="string">"可选，异步重启，true 开启异步重启 false 关闭异步重启"</span>,</span><br><span class="line">      <span class="string">"log_file"</span>: <span class="string">"可选，SWOOLE日志目录"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"swoole_client_setting"</span>: &#123;</span><br><span class="line">      <span class="string">"package_max_length"</span>: <span class="string">"可选，SWOOLE Client 最大包长，默认16777216MySQL最大支持包长"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"swoole_client_sock_setting"</span>: &#123;</span><br><span class="line">      <span class="string">"sock_type"</span>: <span class="string">"可选，SWOOLE Client sock 类型，默认tcp 仅支持tcp"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="server-json"><a href="#server-json" class="headerlink" title="server.json"></a><code>server.json</code></h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;server&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;user&quot;</span>: <span class="string">&quot;必选，SMProxy服务用户&quot;</span>,</span><br><span class="line">    <span class="string">&quot;password&quot;</span>: <span class="string">&quot;必选，SMProxy服务密码&quot;</span>,</span><br><span class="line">    <span class="string">&quot;charset&quot;</span>: <span class="string">&quot;可选，SMProxy编码，默认utf8mb4&quot;</span>,</span><br><span class="line">    <span class="string">&quot;host&quot;</span>: <span class="string">&quot;可选，SMProxy地址，默认0.0.0.0&quot;</span>,</span><br><span class="line">    <span class="string">&quot;port&quot;</span>: <span class="string">&quot;可选，SMProxy端口，默认3366 如需多个以`,`隔开&quot;</span>,</span><br><span class="line">    <span class="string">&quot;mode&quot;</span>: <span class="string">&quot;可选，SMProxy运行模式，SWOOLE_PROCESS多进程模式（默认），SWOOLE_BASE基本模式&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sock_type&quot;</span>: <span class="string">&quot;可选，sock类型，SWOOLE_SOCK_TCP tcp&quot;</span>,</span><br><span class="line">    <span class="string">&quot;logs&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;open&quot;</span>:<span class="string">&quot;必选，日志开关，true 开 false 关&quot;</span>,</span><br><span class="line">      <span class="string">&quot;config&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;system&quot;</span>: &#123;</span><br><span class="line">          <span class="string">&quot;log_path&quot;</span>: <span class="string">&quot;必选，SMProxy系统日志目录&quot;</span>,</span><br><span class="line">          <span class="string">&quot;log_file&quot;</span>: <span class="string">&quot;必选，SMProxy系统日志文件名&quot;</span>,</span><br><span class="line">          <span class="string">&quot;format&quot;</span>: <span class="string">&quot;必选，SMProxy系统日志目录日期格式&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&quot;mysql&quot;</span>: &#123;</span><br><span class="line">          <span class="string">&quot;log_path&quot;</span>: <span class="string">&quot;必选，SMProxyMySQL日志目录&quot;</span>,</span><br><span class="line">          <span class="string">&quot;log_file&quot;</span>: <span class="string">&quot;必选，SMProxyMySQL日志文件名&quot;</span>,</span><br><span class="line">          <span class="string">&quot;format&quot;</span>: <span class="string">&quot;必选，SMProxyMySQL日志目录日期格式&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;swoole&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;worker_num&quot;</span>: <span class="string">&quot;必选，SWOOLE worker进程数，支持计算&quot;</span>,</span><br><span class="line">      <span class="string">&quot;max_coro_num&quot;</span>: <span class="string">&quot;必选，SWOOLE 协程数，推荐不低于3000&quot;</span>,</span><br><span class="line">      <span class="string">&quot;pid_file&quot;</span>: <span class="string">&quot;必选，worker进程和manager进程pid目录&quot;</span>,</span><br><span class="line">      <span class="string">&quot;open_tcp_nodelay&quot;</span>: <span class="string">&quot;可选，关闭Nagle合并算法&quot;</span>,</span><br><span class="line">      <span class="string">&quot;daemonize&quot;</span>: <span class="string">&quot;可选，守护进程化，true 为守护进程 false 关闭守护进程&quot;</span>,</span><br><span class="line">      <span class="string">&quot;heartbeat_check_interval&quot;</span>: <span class="string">&quot;可选，心跳检测&quot;</span>,</span><br><span class="line">      <span class="string">&quot;heartbeat_idle_time&quot;</span>: <span class="string">&quot;可选，心跳检测最大空闲时间&quot;</span>,</span><br><span class="line">      <span class="string">&quot;reload_async&quot;</span>: <span class="string">&quot;可选，异步重启，true 开启异步重启 false 关闭异步重启&quot;</span>,</span><br><span class="line">      <span class="string">&quot;log_file&quot;</span>: <span class="string">&quot;可选，SWOOLE日志目录&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;swoole_client_setting&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;package_max_length&quot;</span>: <span class="string">&quot;可选，SWOOLE Client 最大包长，默认16777216MySQL最大支持包长&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;swoole_client_sock_setting&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;sock_type&quot;</span>: <span class="string">&quot;可选，SWOOLE Client sock 类型，默认tcp 仅支持tcp&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><p><code>user</code>, ‘password’, ‘port’, ‘host’</p>
 <ul>
@@ -274,19 +321,19 @@
 <h2 id="ThinkPHP"><a href="#ThinkPHP" class="headerlink" title="ThinkPHP"></a><code>ThinkPHP</code></h2><ul>
 <li><code>database.php</code></li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'type'</span> =&gt; <span class="string">'mysql'</span>,</span><br><span class="line"><span class="comment">// 服务器地址</span></span><br><span class="line"><span class="string">'hostname'</span> =&gt; <span class="string">'server.json中配置的host'</span>,</span><br><span class="line"><span class="comment">// 数据库名</span></span><br><span class="line"><span class="string">'database'</span> =&gt; <span class="string">'databse.json中配置的数据库名称'</span>,</span><br><span class="line"><span class="comment">// 用户名</span></span><br><span class="line"><span class="string">'username'</span> =&gt; <span class="string">'server.json中配置的user'</span>,</span><br><span class="line"><span class="comment">// 密码</span></span><br><span class="line"><span class="string">'password'</span> =&gt; <span class="string">'server.json中配置的password'</span>,</span><br><span class="line"><span class="comment">// 端口</span></span><br><span class="line"><span class="string">'hostport'</span> =&gt; <span class="string">'server.json中配置的port'</span>,</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;type&#x27;</span> =&gt; <span class="string">&#x27;mysql&#x27;</span>,</span><br><span class="line"><span class="comment">// 服务器地址</span></span><br><span class="line"><span class="string">&#x27;hostname&#x27;</span> =&gt; <span class="string">&#x27;server.json中配置的host&#x27;</span>,</span><br><span class="line"><span class="comment">// 数据库名</span></span><br><span class="line"><span class="string">&#x27;database&#x27;</span> =&gt; <span class="string">&#x27;databse.json中配置的数据库名称&#x27;</span>,</span><br><span class="line"><span class="comment">// 用户名</span></span><br><span class="line"><span class="string">&#x27;username&#x27;</span> =&gt; <span class="string">&#x27;server.json中配置的user&#x27;</span>,</span><br><span class="line"><span class="comment">// 密码</span></span><br><span class="line"><span class="string">&#x27;password&#x27;</span> =&gt; <span class="string">&#x27;server.json中配置的password&#x27;</span>,</span><br><span class="line"><span class="comment">// 端口</span></span><br><span class="line"><span class="string">&#x27;hostport&#x27;</span> =&gt; <span class="string">&#x27;server.json中配置的port&#x27;</span>,</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>其他框架以此类推，只需要配置代码中连接数据库的<code>host</code>，<code>port</code>，<code>user</code>，<code>password</code>与 <code>SMProxy</code>中<code>server.json</code>中一致即可。</li>
 </ul>
 <h1 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h1><h2 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h2><ul>
 <li><code>smproxy:db_type=[read | write]</code><ul>
-<li>强制使用读库<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** smproxy:db_type=read */</span>select * from `user` limit <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<li><p>强制使用读库</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** smproxy:db_type=read */</span>select * <span class="keyword">from</span> `user` limit <span class="number">1</span></span><br></pre></td></tr></table></figure>
 </li>
+<li><p>强制使用写库</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** smproxy:db_type=write */</span>select * <span class="keyword">from</span> `user` limit <span class="number">1</span></span><br></pre></td></tr></table></figure></li>
 </ul>
-</li>
-</ul>
-<ul>
-<li>强制使用写库<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** smproxy:db_type=write */</span>select * from `user` limit <span class="number">1</span></span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <h1 id="MySQL8-0"><a href="#MySQL8-0" class="headerlink" title="MySQL8.0"></a>MySQL8.0</h1><ul>
@@ -294,10 +341,9 @@
 </li>
 <li><p><code>SMProxy1.2.4</code>以下需要做如下兼容处理：</p>
 <ul>
-<li><code>MySQL-8.0</code>默认使用了安全性更强的<code>caching_sha2_password</code>插件，其他版本如果是从<code>5.x</code>升级上来的,<br>可以直接使用所有<code>MySQL</code>功能, 如是新建的<code>MySQL</code>, 需要进入<code>MySQL</code>命令行执行以下操作来兼容:<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ALTER USER <span class="string">'root'</span>@<span class="string">'%'</span> IDENTIFIED WITH mysql_native_password BY <span class="string">'password'</span>;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
-</li>
+<li><code>MySQL-8.0</code>默认使用了安全性更强的<code>caching_sha2_password</code>插件，其他版本如果是从<code>5.x</code>升级上来的,<br>可以直接使用所有<code>MySQL</code>功能, 如是新建的<code>MySQL</code>, 需要进入<code>MySQL</code>命令行执行以下操作来兼容:<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ALTER USER <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;%&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="string">&#x27;password&#x27;</span>;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+将语句中的 <code>&#39;root&#39;@&#39;%&#39;</code> 替换成你所使用的用户, <code>password</code> 替换成其密码.<br>如仍无法使用, 应在<code>my.cnf</code>中设置 <code>default_authentication_plugin = mysql_native_password</code></li>
 </ul>
-<p>将语句中的 <code>&#39;root&#39;@&#39;%&#39;</code> 替换成你所使用的用户, <code>password</code> 替换成其密码.<br>如仍无法使用, 应在<code>my.cnf</code>中设置 <code>default_authentication_plugin = mysql_native_password</code></p>
 </li>
 </ul>
 <h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><ul>
@@ -417,7 +463,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SMProxy/">SMProxy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoole/">Swoole</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SMProxy/" rel="tag">SMProxy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoole/" rel="tag">Swoole</a></li></ul>
 
       
 
@@ -453,7 +499,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#特性"><span class="nav-number">2.</span> <span class="nav-text">特性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#设计初衷"><span class="nav-number">3.</span> <span class="nav-text">设计初衷</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#环境要求"><span class="nav-number">4.</span> <span class="nav-text">环境要求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">5.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运行"><span class="nav-number">6.</span> <span class="nav-text">运行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Options"><span class="nav-number">6.1.</span> <span class="nav-text">Options</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置"><span class="nav-number">7.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#database-json"><span class="nav-number">7.1.</span> <span class="nav-text">database.json</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-json"><span class="nav-number">7.2.</span> <span class="nav-text">server.json</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在项目中如何进行配置"><span class="nav-number">8.</span> <span class="nav-text">在项目中如何进行配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel"><span class="nav-number">8.1.</span> <span class="nav-text">Laravel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThinkPHP"><span class="nav-number">8.2.</span> <span class="nav-text">ThinkPHP</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#路由"><span class="nav-number">9.</span> <span class="nav-text">路由</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#注解"><span class="nav-number">9.1.</span> <span class="nav-text">注解</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL8-0"><span class="nav-number">10.</span> <span class="nav-text">MySQL8.0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见问题"><span class="nav-number">11.</span> <span class="nav-text">常见问题</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%89%B9%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">特性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E5%88%9D%E8%A1%B7"><span class="nav-number">3.</span> <span class="nav-text">设计初衷</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E8%A6%81%E6%B1%82"><span class="nav-number">4.</span> <span class="nav-text">环境要求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">5.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C"><span class="nav-number">6.</span> <span class="nav-text">运行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Options"><span class="nav-number">6.1.</span> <span class="nav-text">Options</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">7.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#database-json"><span class="nav-number">7.1.</span> <span class="nav-text">database.json</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-json"><span class="nav-number">7.2.</span> <span class="nav-text">server.json</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%A8%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">8.</span> <span class="nav-text">在项目中如何进行配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Laravel"><span class="nav-number">8.1.</span> <span class="nav-text">Laravel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ThinkPHP"><span class="nav-number">8.2.</span> <span class="nav-text">ThinkPHP</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1"><span class="nav-number">9.</span> <span class="nav-text">路由</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E8%A7%A3"><span class="nav-number">9.1.</span> <span class="nav-text">注解</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL8-0"><span class="nav-number">10.</span> <span class="nav-text">MySQL8.0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">11.</span> <span class="nav-text">常见问题</span></a></li></ol>
     
     </div>
   </aside>
@@ -468,7 +514,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -548,12 +594,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -621,7 +671,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

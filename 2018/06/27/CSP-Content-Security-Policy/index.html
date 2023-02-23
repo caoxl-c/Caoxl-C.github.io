@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>csp 学习笔记 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="InternetCSP">
+  <meta name="keywords" content="InternetCSP" />
   
   
   
   
   <meta name="description" content="CSP Is Dead, Long Live CSP!On the Insecurity of Whitelists and the Future of Content Security Policy">
-<meta name="keywords" content="Internet,CSP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CSP 学习笔记">
 <meta property="og:url" content="http://blog.caoxl.com/2018/06/27/CSP-Content-Security-Policy/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="CSP Is Dead, Long Live CSP!On the Insecurity of Whitelists and the Future of Content Security Policy">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T03:44:42.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-06-27T03:01:05.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:44:42.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Internet">
+<meta property="article:tag" content="CSP">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CSP 学习笔记">
-<meta name="twitter:description" content="CSP Is Dead, Long Live CSP!On the Insecurity of Whitelists and the Future of Content Security Policy">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +222,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%BF%85%E5%A4%87/">计算机专业必备</a>
 
       
 	<a class="article-views">
@@ -199,7 +240,8 @@
           <blockquote>
 <p>CSP Is Dead, Long Live CSP!<br>On the Insecurity of Whitelists and the Future of Content Security Policy</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="CSP"><a href="#CSP" class="headerlink" title="CSP ?"></a>CSP ?</h1><blockquote>
 <p><code>Content Security Policy</code> 内容安全策略</p>
 </blockquote>
@@ -208,13 +250,15 @@
 <h1 id="CSP简介"><a href="#CSP简介" class="headerlink" title="CSP简介"></a><code>CSP</code>简介</h1><blockquote>
 <p>CSP 的实质就是白名单制度，开发者明确告诉客户端，哪些外部资源可以加载和执行，等同于提供白名单。<br>它的实现和执行全部由浏览器完成，开发者只需提供配置。</p>
 </blockquote>
-<h1 id="启用CSP"><a href="#启用CSP" class="headerlink" title="启用CSP"></a>启用<code>CSP</code></h1><h2 id="通过-HTTP-头信息的-Content-Security-Policy-的字段"><a href="#通过-HTTP-头信息的-Content-Security-Policy-的字段" class="headerlink" title="通过 HTTP 头信息的 Content-Security-Policy 的字段"></a>通过 <code>HTTP</code> 头信息的 <code>Content-Security-Policy</code> 的字段</h2><figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy</span>: <span class="keyword">script-src</span> <span class="string">'self'</span>; <span class="keyword">object-src</span> <span class="string">'none'</span>;</span><br><span class="line"><span class="keyword">style-src</span> cdn.example.org third-party.org; <span class="keyword">child-src</span> https:</span><br></pre></td></tr></table></figure>
-<h2 id="通过网页的-lt-meta-gt-标签"><a href="#通过网页的-lt-meta-gt-标签" class="headerlink" title="通过网页的&lt;meta&gt;标签"></a>通过网页的<code>&lt;meta&gt;</code>标签</h2><figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta http-equiv="Content-Security-Policy" content="<span class="keyword">script-src</span> <span class="string">'self'</span>; <span class="keyword">object-src</span> <span class="string">'none'</span>; <span class="keyword">style-src</span> cdn.example.org third-party.org; <span class="keyword">child-src</span> https:"&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="启用CSP"><a href="#启用CSP" class="headerlink" title="启用CSP"></a>启用<code>CSP</code></h1><h2 id="通过-HTTP-头信息的-Content-Security-Policy-的字段"><a href="#通过-HTTP-头信息的-Content-Security-Policy-的字段" class="headerlink" title="通过 HTTP 头信息的 Content-Security-Policy 的字段"></a>通过 <code>HTTP</code> 头信息的 <code>Content-Security-Policy</code> 的字段</h2><figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy</span>: <span class="keyword">script-src</span> <span class="string">&#x27;self&#x27;</span>; <span class="keyword">object-src</span> <span class="string">&#x27;none&#x27;</span>;</span><br><span class="line"><span class="keyword">style-src</span> cdn.example.org third-party.org; <span class="keyword">child-src</span> https:</span><br></pre></td></tr></table></figure>
+
+<h2 id="通过网页的-lt-meta-gt-标签"><a href="#通过网页的-lt-meta-gt-标签" class="headerlink" title="通过网页的&lt;meta&gt;标签"></a>通过网页的<code>&lt;meta&gt;</code>标签</h2><figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;<span class="keyword">script-src</span> <span class="string">&#x27;self&#x27;</span>; <span class="keyword">object-src</span> <span class="string">&#x27;none&#x27;</span>; <span class="keyword">style-src</span> cdn.example.org third-party.org; <span class="keyword">child-src</span> https:&quot;&gt;</span><br></pre></td></tr></table></figure>
+
 <p><strong>说明:</strong></p>
 <p>上面的代码中,<code>CSP</code>做了如下配置</p>
 <ul>
 <li>脚本:   只信任当前域名</li>
-<li><object>标签:   不信任任何URL, 即不加载任何资源</object></li>
+<li><object>标签:   不信任任何URL, 即不加载任何资源</li>
 <li>样式表:  只信任<code>cdn.example.org</code>和<code>third-party.org</code></li>
 <li>框架(frame):    必须适应<code>HTTPS</code>协议加载</li>
 <li>其他资源: 没有限制</li>
@@ -235,7 +279,8 @@
 <li><code>mainfest-src</code>:   <code>manifest</code>文件</li>
 </ul>
 <h2 id="default-src"><a href="#default-src" class="headerlink" title="default-src"></a><code>default-src</code></h2><p><code>default-src</code>用来设置上面各个选项的<strong>默认值</strong>。</p>
-<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-<span class="keyword">Security</span>-<span class="keyword">Policy</span>: <span class="keyword">default</span>-src <span class="string">'self'</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-<span class="keyword">Security</span>-<span class="keyword">Policy</span>: <span class="keyword">default</span>-src <span class="string">&#x27;self&#x27;</span></span><br></pre></td></tr></table></figure>
+
 <p>上面代码限制所有的外部资源，都只能从当前域名加载。</p>
 <blockquote>
 <p>如果同时设置某个单项限制（比如<code>font-src</code>）和<code>default-src</code>，前者会覆盖后者，<br>即字体文件会采用<code>font-src</code>的值，其他资源依然采用default-src的值。</p>
@@ -252,24 +297,28 @@
 <li><code>sandbox</code>: 浏览器行为的限制,比如不能有弹出窗口等</li>
 </ul>
 <h2 id="report-uri"><a href="#report-uri" class="headerlink" title="report-uri"></a><code>report-uri</code></h2><p>有时，我们不仅希望防止 XSS，还希望记录此类行为。<code>report-uri</code>就用来告诉浏览器，应该把注入行为报告给哪个网址。</p>
-<figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy</span>: <span class="keyword">default-src</span> <span class="string">'self'</span>; ...; <span class="keyword">report-uri</span> /my_amazing_csp_report_parser;</span><br></pre></td></tr></table></figure>
+<figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy</span>: <span class="keyword">default-src</span> <span class="string">&#x27;self&#x27;</span>; ...; <span class="keyword">report-uri</span> /my_amazing_csp_report_parser;</span><br></pre></td></tr></table></figure>
+
 <p>上面代码指定，将注入行为报告给<code>/my_amazing_csp_report_parser</code>这个 <code>URL</code>。</p>
 <h1 id="Content-Security-Policy-Report-Only"><a href="#Content-Security-Policy-Report-Only" class="headerlink" title="Content-Security-Policy-Report-Only"></a><code>Content-Security-Policy-Report-Only</code></h1><p>除了<code>Content-Security-Policy</code>，还有一个<code>Content-Security-Policy-Report-Only</code>字段，<br>表示不执行限制选项，只是记录违反限制的行为。</p>
 <p>它必须与<code>report-uri</code>选项配合使用。</p>
-<figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy-Report-Only</span>: <span class="keyword">default-src</span> <span class="string">'self'</span>; ...; <span class="keyword">report-uri</span> /my_amazing_csp_report_parser;</span><br></pre></td></tr></table></figure>
+<figure class="highlight csp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy-Report-Only</span>: <span class="keyword">default-src</span> <span class="string">&#x27;self&#x27;</span>; ...; <span class="keyword">report-uri</span> /my_amazing_csp_report_parser;</span><br></pre></td></tr></table></figure>
+
 <h1 id="选项值"><a href="#选项值" class="headerlink" title="选项值"></a>选项值</h1><p>每个限制选项可以设置以下几种值，这些值就构成了白名单。</p>
 <ul>
-<li>主机名: exaple.org, <a href="https://example.com:443" target="_blank" rel="noopener">https://example.com:443</a></li>
-<li>路径名: example.org/resources/js/</li>
-<li>通配符: <em>.example.org, </em>://<em>.example.com:</em> (表示任意协议、任意子域名、任意端口)</li>
+<li>主机名: exaple.org, <a target="_blank" rel="noopener" href="https://example.com/">https://example.com:443</a></li>
+<li>路径名: example.org&#x2F;resources&#x2F;js&#x2F;</li>
+<li>通配符: <em>.example.org, <em>:&#x2F;&#x2F;</em>.example.com:</em> (表示任意协议、任意子域名、任意端口)</li>
 <li>协议名: https、data</li>
 <li>关键字’self’: 当前域名,需要加引号</li>
 <li>关键字’none’: 禁止加载任何外部资源,需要加引号</li>
 </ul>
 <p>多个值也可以并列，用空格分隔。</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-<span class="string">Policy:</span> script-src <span class="string">'self'</span> <span class="string">https:</span><span class="comment">//apis.google.com</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Content-Security-Policy</span>: script-src <span class="string">&#x27;self&#x27;</span> <span class="attribute">https</span>:<span class="comment">//apis.google.com</span></span><br></pre></td></tr></table></figure>
+
 <p>如果同一个限制选项使用多次，只有第一次会生效。</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 错误的写法</span></span><br><span class="line">script-src https:<span class="regexp">//</span>host1.com; script-src https:<span class="regexp">//</span>host2.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 正确的写法</span></span><br><span class="line">script-src https:<span class="regexp">//</span>host1.com https:<span class="regexp">//</span>host2.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 错误的写法</span></span><br><span class="line">script-src https:<span class="regexp">//</span>host1.com; script-src https:<span class="regexp">//</span>host2.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 正确的写法</span></span><br><span class="line">script-src https:<span class="regexp">//</span>host1.com https:<span class="regexp">//</span>host2.com </span><br></pre></td></tr></table></figure>
+
 <h1 id="script-src-的特殊值"><a href="#script-src-的特殊值" class="headerlink" title="script-src 的特殊值"></a><code>script-src</code> 的特殊值</h1><p>除了常规值，<code>script-src</code> 还可以设置一些特殊值。注意，下面这些值都必须放在单引号里面。</p>
 <ul>
 <li><code>unsafa-inline</code>: 允许执行页面内嵌的<code>&amp;lt;script&gt;</code>标签和事件监听函数</li>
@@ -285,16 +334,18 @@
 <li><code>script-src</code>不能使用<code>unsafe-inline</code>关键字（除非伴随一个<code>nonce</code>值），也不能允许设置<code>data:URL</code>。</li>
 </ol>
 <p>举例:</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;img <span class="attribute">src</span>=<span class="string">"x"</span> <span class="attribute">onerror</span>=<span class="string">"evil()"</span>&gt;</span><br><span class="line">&lt;script <span class="attribute">src</span>=<span class="string">"data:text/javascript,evil()"</span>&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;img <span class="attribute">src</span>=<span class="string">&quot;x&quot;</span> <span class="attribute">onerror</span>=<span class="string">&quot;evil()&quot;</span>&gt;</span><br><span class="line">&lt;script <span class="attribute">src</span>=<span class="string">&quot;data:text/javascript,evil()&quot;</span>&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
 <ol start="3">
 <li>必须特别注意 <code>JSONP</code> 的回调函数。</li>
 </ol>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span></span></span><br><span class="line"><span class="tag">    <span class="attr">src</span>=<span class="string">"/path/jsonp?callback=alert(document.domain)//"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span></span></span><br><span class="line"><span class="tag">    <span class="attr">src</span>=<span class="string">&quot;/path/jsonp?callback=alert(document.domain)//&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
 <p>上面的代码中，虽然加载的脚本来自当前域名，但是通过改写回调函数，攻击者依然可以执行恶意代码。</p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="http://www.ruanyifeng.com/blog/2016/09/csp.html" target="_blank" rel="noopener">Content Security Policy 入门教程</a></li>
-<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP" target="_blank" rel="noopener">内容安全策略( CSP )</a></li>
-<li><a href="https://ai.google/research/pubs/pub45542" target="_blank" rel="noopener">CSP Is Dead, Long Live CSP!</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2016/09/csp.html">Content Security Policy 入门教程</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP">内容安全策略( CSP )</a></li>
+<li><a target="_blank" rel="noopener" href="https://ai.google/research/pubs/pub45542">CSP Is Dead, Long Live CSP!</a></li>
 </ul>
 
         
@@ -327,7 +378,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSP/">CSP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/">Internet</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSP/" rel="tag">CSP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/" rel="tag">Internet</a></li></ul>
 
       
 
@@ -363,7 +414,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP"><span class="nav-number">1.</span> <span class="nav-text">CSP ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#诞生场景"><span class="nav-number">2.</span> <span class="nav-text">诞生场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP简介"><span class="nav-number">3.</span> <span class="nav-text">CSP简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启用CSP"><span class="nav-number">4.</span> <span class="nav-text">启用CSP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通过-HTTP-头信息的-Content-Security-Policy-的字段"><span class="nav-number">4.1.</span> <span class="nav-text">通过 HTTP 头信息的 Content-Security-Policy 的字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过网页的-lt-meta-gt-标签"><span class="nav-number">4.2.</span> <span class="nav-text">通过网页的&lt;meta&gt;标签</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP限制选项"><span class="nav-number">5.</span> <span class="nav-text">CSP限制选项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#资源加载限制"><span class="nav-number">5.1.</span> <span class="nav-text">资源加载限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#default-src"><span class="nav-number">5.2.</span> <span class="nav-text">default-src</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URL限制"><span class="nav-number">5.3.</span> <span class="nav-text">URL限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他限制"><span class="nav-number">5.4.</span> <span class="nav-text">其他限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#report-uri"><span class="nav-number">5.5.</span> <span class="nav-text">report-uri</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Content-Security-Policy-Report-Only"><span class="nav-number">6.</span> <span class="nav-text">Content-Security-Policy-Report-Only</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选项值"><span class="nav-number">7.</span> <span class="nav-text">选项值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#script-src-的特殊值"><span class="nav-number">8.</span> <span class="nav-text">script-src 的特殊值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#注意"><span class="nav-number">9.</span> <span class="nav-text">注意</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">10.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP"><span class="nav-number">1.</span> <span class="nav-text">CSP ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%9E%E7%94%9F%E5%9C%BA%E6%99%AF"><span class="nav-number">2.</span> <span class="nav-text">诞生场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP%E7%AE%80%E4%BB%8B"><span class="nav-number">3.</span> <span class="nav-text">CSP简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E7%94%A8CSP"><span class="nav-number">4.</span> <span class="nav-text">启用CSP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87-HTTP-%E5%A4%B4%E4%BF%A1%E6%81%AF%E7%9A%84-Content-Security-Policy-%E7%9A%84%E5%AD%97%E6%AE%B5"><span class="nav-number">4.1.</span> <span class="nav-text">通过 HTTP 头信息的 Content-Security-Policy 的字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E7%BD%91%E9%A1%B5%E7%9A%84-lt-meta-gt-%E6%A0%87%E7%AD%BE"><span class="nav-number">4.2.</span> <span class="nav-text">通过网页的&lt;meta&gt;标签</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP%E9%99%90%E5%88%B6%E9%80%89%E9%A1%B9"><span class="nav-number">5.</span> <span class="nav-text">CSP限制选项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%84%E6%BA%90%E5%8A%A0%E8%BD%BD%E9%99%90%E5%88%B6"><span class="nav-number">5.1.</span> <span class="nav-text">资源加载限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#default-src"><span class="nav-number">5.2.</span> <span class="nav-text">default-src</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URL%E9%99%90%E5%88%B6"><span class="nav-number">5.3.</span> <span class="nav-text">URL限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E9%99%90%E5%88%B6"><span class="nav-number">5.4.</span> <span class="nav-text">其他限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#report-uri"><span class="nav-number">5.5.</span> <span class="nav-text">report-uri</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Content-Security-Policy-Report-Only"><span class="nav-number">6.</span> <span class="nav-text">Content-Security-Policy-Report-Only</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%89%E9%A1%B9%E5%80%BC"><span class="nav-number">7.</span> <span class="nav-text">选项值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#script-src-%E7%9A%84%E7%89%B9%E6%AE%8A%E5%80%BC"><span class="nav-number">8.</span> <span class="nav-text">script-src 的特殊值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-number">9.</span> <span class="nav-text">注意</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">10.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -378,7 +429,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -458,12 +509,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -531,7 +586,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

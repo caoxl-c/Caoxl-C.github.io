@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>让php7达到最高性能的几个tips | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="PHPPHP7">
+  <meta name="keywords" content="PHPPHP7" />
   
   
   
   
-  <meta name="description" content="原文地址: http://www.laruence.com/2015/12/04/3086.html">
-<meta name="keywords" content="PHP,PHP7">
+  <meta name="description" content="原文地址: http:&#x2F;&#x2F;www.laruence.com&#x2F;2015&#x2F;12&#x2F;04&#x2F;3086.html">
 <meta property="og:type" content="article">
 <meta property="og:title" content="让PHP7达到最高性能的几个Tips">
 <meta property="og:url" content="http://blog.caoxl.com/2018/08/01/PHP7-Max-Performance-Tips/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
-<meta property="og:description" content="原文地址: http://www.laruence.com/2015/12/04/3086.html">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T03:01:05.000Z">
+<meta property="og:description" content="原文地址: http:&#x2F;&#x2F;www.laruence.com&#x2F;2015&#x2F;12&#x2F;04&#x2F;3086.html">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-01T02:46:59.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:01:05.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="PHP7">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="让PHP7达到最高性能的几个Tips">
-<meta name="twitter:description" content="原文地址: http://www.laruence.com/2015/12/04/3086.html">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -199,20 +240,26 @@
           <blockquote>
 <p>原文地址: <code>http://www.laruence.com/2015/12/04/3086.html</code></p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <p>这里只做博客的搬运工, 方便自己查找查看.</p>
 <h1 id="1-Opcache"><a href="#1-Opcache" class="headerlink" title="1. Opcache"></a>1. <code>Opcache</code></h1><p>记得启用<code>Zend Opcache</code>, 因为<code>PHP7</code>即使不启用<code>Opcache</code>速度也比<code>PHP-5.6</code>启用了<code>Opcache</code>快, 所以之前测试时期就发生了有人一直没有启用<code>Opcache</code>的事情. 启用<code>Opcache</code>非常简单, 在<code>php.ini</code>配置文件中加入:</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">zend_extension</span>=opcache.so</span><br><span class="line">opcache.<span class="attribute">enable</span>=1</span><br><span class="line">opcache.<span class="attribute">enable_cli</span>=1"</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">zend_extension</span>=opcache.so</span><br><span class="line">opcache.<span class="attribute">enable</span>=1</span><br><span class="line">opcache.<span class="attribute">enable_cli</span>=1&quot;</span><br></pre></td></tr></table></figure>
+
 <h1 id="2-使用新的编译器"><a href="#2-使用新的编译器" class="headerlink" title="2. 使用新的编译器"></a>2. 使用新的编译器</h1><p>使用新一点的编译器, 推荐<code>GCC 4.8</code>以上, 因为只有<code>GCC 4.8</code>以上PHP才会开启<code>Global Register for opline and execute_data</code>支持, 这个会带来<code>5%</code>左右的性能提升(<code>Wordpres</code>的<code>QPS</code>角度衡量)</p>
 <p>其实<code>GCC 4.8</code>以前的版本也支持, 但是我们发现它支持的有<code>Bug</code>, 所以必须是<code>4.8</code>以上的版本才会开启这个特性.</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxianliang ~]# gcc -v</span><br><span class="line">Using built-in specs.</span><br><span class="line"><span class="attribute">COLLECT_GCC</span>=gcc</span><br><span class="line"><span class="attribute">COLLECT_LTO_WRAPPER</span>=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/lto-wrapper</span><br><span class="line">Target: x86_64-redhat-linux</span><br><span class="line">Configured with: <span class="built_in">..</span>/configure <span class="attribute">--prefix</span>=/usr <span class="attribute">--mandir</span>=/usr/share/man <span class="attribute">--infodir</span>=/usr/share/info <span class="attribute">--with-bugurl</span>=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared <span class="attribute">--enable-threads</span>=posix <span class="attribute">--enable-checking</span>=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id <span class="attribute">--with-linker-hash-style</span>=gnu <span class="attribute">--enable-languages</span>=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-plugin --enable-initfini-array --disable-libgcj <span class="attribute">--with-isl</span>=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/isl-install <span class="attribute">--with-cloog</span>=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/cloog-install --enable-gnu-indirect-function <span class="attribute">--with-tune</span>=generic <span class="attribute">--with-arch_32</span>=x86-64 <span class="attribute">--build</span>=x86_64-redhat-linux</span><br><span class="line">Thread model: posix</span><br><span class="line">gcc version 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC)</span><br></pre></td></tr></table></figure>
-<h1 id="3-HugePage"><a href="#3-HugePage" class="headerlink" title="3. HugePage"></a>3. <code>HugePage</code></h1><p>我之前的文章也介绍过: <a href="http://www.laruence.com/2015/10/02/3069.html" target="_blank" rel="noopener">让你的PHP7更快之Hugepage</a> , 首先在系统中开启<code>HugePages</code>, 然后开启<code>Opcache</code>的<code>huge_code_pages</code>.</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxianliang ~]<span class="comment"># gcc -v</span></span><br><span class="line">Using built-<span class="keyword">in</span> specs.</span><br><span class="line">COLLECT_GCC=gcc</span><br><span class="line">COLLECT_LTO_WRAPPER=<span class="regexp">/usr/</span>libexec<span class="regexp">/gcc/</span>x86_64-redhat-linux<span class="regexp">/4.8.5/</span>lto-wrapper</span><br><span class="line">Target: x86_64-redhat-linux</span><br><span class="line">Configured with: ..<span class="regexp">/configure --prefix=/u</span>sr --mandir=<span class="regexp">/usr/</span>share<span class="regexp">/man --infodir=/u</span>sr<span class="regexp">/share/i</span>nfo --with-bugurl=http:<span class="regexp">//</span>bugzilla.redhat.com<span class="regexp">/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-plugin --enable-initfini-array --disable-libgcj --with-isl=/</span>builddir<span class="regexp">/build/</span>BUILD<span class="regexp">/gcc-4.8.5-20150702/</span>obj-x86_64-redhat-linux<span class="regexp">/isl-install --with-cloog=/</span>builddir<span class="regexp">/build/</span>BUILD<span class="regexp">/gcc-4.8.5-20150702/</span>obj-x86_64-redhat-linux/cloog-install --enable-gnu-indirect-<span class="keyword">function</span> --with-tune=generic --with-arch_32=x86-<span class="number">64</span> --build=x86_64-redhat-linux</span><br><span class="line">Thread model: posix</span><br><span class="line">gcc version <span class="number">4.8</span>.<span class="number">5</span> <span class="number">20150623</span> (Red Hat <span class="number">4.8</span>.<span class="number">5</span>-<span class="number">28</span>) (GCC) </span><br></pre></td></tr></table></figure>
+
+<h1 id="3-HugePage"><a href="#3-HugePage" class="headerlink" title="3. HugePage"></a>3. <code>HugePage</code></h1><p>我之前的文章也介绍过: <a target="_blank" rel="noopener" href="http://www.laruence.com/2015/10/02/3069.html">让你的PHP7更快之Hugepage</a> , 首先在系统中开启<code>HugePages</code>, 然后开启<code>Opcache</code>的<code>huge_code_pages</code>.</p>
 <p>以我的<code>CentOS 6.5</code>为例, 通过:</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[root@caoxianliang ~]</span><span class="comment"># sudo sysctl vm.nr_hugepages=512</span></span><br><span class="line"><span class="attr">vm.nr_hugepages</span> = <span class="number">512</span></span><br></pre></td></tr></table></figure>
+
 <p>分配<code>512</code>个预留的大页内存:</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[root@caoxianliang</span> <span class="string">~]#</span> <span class="string">cat</span> <span class="string">/proc/meminfo</span> <span class="string">|</span> <span class="string">grep</span> <span class="string">Huge</span></span><br><span class="line"><span class="attr">AnonHugePages:</span>     <span class="number">59392</span> <span class="string">kB</span></span><br><span class="line"><span class="attr">HugePages_Total:</span>      <span class="number">512</span></span><br><span class="line"><span class="attr">HugePages_Free:</span>       <span class="number">37</span></span><br><span class="line"><span class="attr">HugePages_Rsvd:</span>        <span class="number">0</span></span><br><span class="line"><span class="attr">HugePages_Surp:</span>        <span class="number">0</span></span><br><span class="line"><span class="attr">Hugepagesize:</span>       <span class="number">2048</span> <span class="string">kB</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">root@caoxianliang</span> <span class="string">~</span>]<span class="comment"># cat /proc/meminfo | grep Huge</span></span><br><span class="line"><span class="attr">AnonHugePages:</span>     <span class="number">59392</span> <span class="string">kB</span></span><br><span class="line"><span class="attr">HugePages_Total:</span>      <span class="number">512</span></span><br><span class="line"><span class="attr">HugePages_Free:</span>       <span class="number">37</span></span><br><span class="line"><span class="attr">HugePages_Rsvd:</span>        <span class="number">0</span></span><br><span class="line"><span class="attr">HugePages_Surp:</span>        <span class="number">0</span></span><br><span class="line"><span class="attr">Hugepagesize:</span>       <span class="number">2048 </span><span class="string">kB</span></span><br></pre></td></tr></table></figure>
+
 <p>然后再<code>php.ini</code>中加入:</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">opcache.huge_code_pages</span>=<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>这样一来, <code>PHP</code>会把自身的<code>text</code>段, 以及内存分配中的<code>huge</code>都采用大内存页来保存, 减少<code>TLB miss</code>, 从而提高性能.</p>
 </blockquote>
@@ -221,15 +268,19 @@
 <li>在<code>php.ini</code>中加入:</li>
 </ul>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">opcache.file_cache</span>=/tmp</span><br></pre></td></tr></table></figure>
+
 <p>这样<code>PHP</code>就会在<code>/tmp</code>目录下<code>Cache</code>一些<code>Opcode</code>的二进制导出文件, 可以跨<code>PHP</code>生命周期存在.</p>
-<h1 id="PGO"><a href="#PGO" class="headerlink" title="PGO"></a><code>PGO</code></h1><p>我之前的文章: <a href="http://www.laruence.com/2015/06/19/3063.html" target="_blank" rel="noopener">让你的PHP7更快(GCC PGO)</a> 也介绍过, 如果你的<code>PHP</code>是专门为一个项目服务, 比如只是为你的<code>Wordpress</code>, 或者<code>drupal</code>, 或者其他什么, 那么你就可以尝试通过<code>PGO</code>, 来提升<code>PHP</code>, 专门为你的这个项目提高性能.</p>
+<h1 id="PGO"><a href="#PGO" class="headerlink" title="PGO"></a><code>PGO</code></h1><p>我之前的文章: <a target="_blank" rel="noopener" href="http://www.laruence.com/2015/06/19/3063.html">让你的PHP7更快(GCC PGO)</a> 也介绍过, 如果你的<code>PHP</code>是专门为一个项目服务, 比如只是为你的<code>Wordpress</code>, 或者<code>drupal</code>, 或者其他什么, 那么你就可以尝试通过<code>PGO</code>, 来提升<code>PHP</code>, 专门为你的这个项目提高性能.</p>
 <p>具体的, 以<code>wordpress 4.1</code>为优化场景.. 首先在编译<code>PHP</code>的时候首先:</p>
 <figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">make</span> <span class="keyword">prof</span>-gen</span><br></pre></td></tr></table></figure>
+
 <p>然后用你的项目训练<code>PHP</code>, 比如对于<code>Wordpress</code>:</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sapi<span class="regexp">/cgi/</span>php-cgi -T <span class="number">100</span> <span class="regexp">/home/</span>huixinchen<span class="regexp">/local/</span>www<span class="regexp">/htdocs/</span>wordpress<span class="regexp">/index.php &gt;/</span>dev/<span class="literal">null</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sapi<span class="regexp">/cgi/</span>php-cgi -T <span class="number">100</span> <span class="regexp">/home/</span>huixinchen<span class="regexp">/local/</span>www<span class="regexp">/htdocs/</span>wordpress<span class="regexp">/index.php &gt;/</span>dev/<span class="keyword">null</span></span><br></pre></td></tr></table></figure>
+
 <p>也就是让<code>php-cgi</code>跑<code>100</code>遍<code>wordpress</code>的首页, 从而生成一些在这个过程中的<code>profile</code>信息.</p>
 <p>最后:</p>
 <figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">make</span> <span class="keyword">prof</span>-clean</span><br><span class="line"><span class="keyword">make</span> <span class="keyword">prof</span>-use &amp;&amp; <span class="keyword">make</span> install</span><br></pre></td></tr></table></figure>
+
 <p>这个时候你编译得到的<code>PHP7</code>就是为你的项目量身打造的最高性能的编译版本.</p>
 
         
@@ -262,7 +313,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP7/">PHP7</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP7/" rel="tag">PHP7</a></li></ul>
 
       
 
@@ -298,7 +349,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Opcache"><span class="nav-number">1.</span> <span class="nav-text">1. Opcache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-使用新的编译器"><span class="nav-number">2.</span> <span class="nav-text">2. 使用新的编译器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-HugePage"><span class="nav-number">3.</span> <span class="nav-text">3. HugePage</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Opcache-file-cache"><span class="nav-number">4.</span> <span class="nav-text">4. Opcache file cache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PGO"><span class="nav-number">5.</span> <span class="nav-text">PGO</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Opcache"><span class="nav-number">1.</span> <span class="nav-text">1. Opcache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%BD%BF%E7%94%A8%E6%96%B0%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">2. 使用新的编译器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-HugePage"><span class="nav-number">3.</span> <span class="nav-text">3. HugePage</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Opcache-file-cache"><span class="nav-number">4.</span> <span class="nav-text">4. Opcache file cache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PGO"><span class="nav-number">5.</span> <span class="nav-text">PGO</span></a></li></ol>
     
     </div>
   </aside>
@@ -313,7 +364,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -393,12 +444,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -466,7 +521,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

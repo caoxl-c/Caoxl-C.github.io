@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>php异步的几个玩法 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="PHP异步">
+  <meta name="keywords" content="PHP异步" />
   
   
   
   
   <meta name="description" content="没有异步的PHP是世界上最好的语言, 拥有异步的PHP是宇宙上最好的语言">
-<meta name="keywords" content="PHP,异步">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP异步的几个玩法">
 <meta property="og:url" content="http://blog.caoxl.com/2018/08/17/PHP-async-notes/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="没有异步的PHP是世界上最好的语言, 拥有异步的PHP是宇宙上最好的语言">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-17T09:16:30.000Z">
+<meta property="article:modified_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="异步">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PHP异步的几个玩法">
-<meta name="twitter:description" content="没有异步的PHP是世界上最好的语言, 拥有异步的PHP是宇宙上最好的语言">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -199,7 +240,8 @@
           <blockquote>
 <p>没有异步的PHP是世界上最好的语言, 拥有异步的PHP是宇宙上最好的语言</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="一-先说说鸟哥文章中的几种玩法"><a href="#一-先说说鸟哥文章中的几种玩法" class="headerlink" title="一. 先说说鸟哥文章中的几种玩法"></a>一. 先说说鸟哥文章中的几种玩法</h1><ul>
 <li><p>一是通过渲染前端页面，<strong>使用js执行Ajax</strong>，这种方式现在还适用。只是受限于业务场景，因为只能在浏览器中调用，遇到接口请求就不行了。</p>
 </li>
@@ -211,9 +253,9 @@
 </li>
 </ul>
 <h1 id="二-PHP发展了这么多年对异步支持方面都有哪些改进？"><a href="#二-PHP发展了这么多年对异步支持方面都有哪些改进？" class="headerlink" title="二. PHP发展了这么多年对异步支持方面都有哪些改进？"></a>二. PHP发展了这么多年对异步支持方面都有哪些改进？</h1><ul>
-<li><p><code>CURL</code>扩展已支持毫秒配置，将 <code>CURLOPT_TIMEOUT</code> 改为 <code>CURLOPT_TIMEOUT_MS</code>即可生效（<code>cURL</code> 版本 &gt;= <code>libcurl</code>/<code>7.21.0</code>，老服务器要检查版本），但还是我前面说的需要服务端配合，不然接口的调用成功失败不可控。</p>
+<li><p><code>CURL</code>扩展已支持毫秒配置，将 <code>CURLOPT_TIMEOUT</code> 改为 <code>CURLOPT_TIMEOUT_MS </code>即可生效（<code>cURL</code> 版本 &gt;&#x3D; <code>libcurl</code>&#x2F;<code>7.21.0</code>，老服务器要检查版本），但还是我前面说的需要服务端配合，不然接口的调用成功失败不可控。</p>
 </li>
-<li><p><code>CURL</code>扩展已支持并发，我们能一次访问N个接口，执行时间取最长接口的时间。比如我们能一次访问 京东支付（1s），微信支付(1.2s)，支付宝(0.8s)不同服务的三个接口,总耗时才1.2s。详细用法 <a href="https://link.jianshu.com/?t=http://php.net/manual/en/function.curl-multi-init.php" target="_blank" rel="noopener">curl_multi_init</a></p>
+<li><p><code>CURL</code>扩展已支持并发，我们能一次访问N个接口，执行时间取最长接口的时间。比如我们能一次访问 京东支付（1s），微信支付(1.2s)，支付宝(0.8s)不同服务的三个接口,总耗时才1.2s。详细用法 <a target="_blank" rel="noopener" href="https://link.jianshu.com/?t=http://php.net/manual/en/function.curl-multi-init.php">curl_multi_init</a></p>
 </li>
 <li><p>类似<code>Node.js</code>的异步IO框架<code>Swoole</code>，能很好的实现异步调用；不过<code>Swoole</code>理论上不能算PHP框架，他算是PHP功能的扩展。所以除非项目都用<code>Swoole</code>写，不然也是享受不到异步IO的福利。</p>
 </li>
@@ -225,14 +267,16 @@
 </blockquote>
 <h1 id="三-最好的异步实现方法"><a href="#三-最好的异步实现方法" class="headerlink" title="三. 最好的异步实现方法"></a>三. 最好的异步实现方法</h1><p>我们都知道PHP是支持多进程编程的，那完全可以新建一个进程去实现异步的调用。比如调用<code>popen()</code>方法，但是管道的方式传参异常麻烦，不过多进程这个方法是绝对可行的。如果要实现多进程的功能，毫无疑问我们会选择PHP官方提供的 <code>pcntl</code> 扩展,PHP默认会安装 <code>pcntl</code> 扩展，</p>
 <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> @caoxl</span><br><span class="line"></span><br><span class="line">class Async</span><br><span class="line">&#123;</span><br><span class="line">    static <span class="variable">$instance</span>;</span><br><span class="line"></span><br><span class="line">    public static <span class="keyword">function</span> getInstance()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (null == Async::<span class="variable">$instance</span>)</span><br><span class="line">            Async::<span class="variable">$instance</span> = new Arrow();</span><br><span class="line">        return Async::<span class="variable">$instance</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public <span class="keyword">function</span> run(<span class="variable">$rb</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="variable">$pid</span> = pcntl_fork();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$pid</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            pcntl_wait(<span class="variable">$status</span>);</span><br><span class="line">        &#125; elseif (<span class="variable">$pid</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="variable">$cid</span> = pcntl_fork();</span><br><span class="line">            <span class="keyword">if</span> (<span class="variable">$cid</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">exit</span>();</span><br><span class="line">            &#125; elseif (<span class="variable">$cid</span> == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="variable">$rb</span>();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">exit</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">exit</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$timeout</span> = <span class="number">30</span>;</span><br><span class="line">Async::getInstance()-&gt;run(<span class="keyword">function</span> () use (<span class="variable">$timeout</span>) &#123;</span><br><span class="line">    echo <span class="number">2</span>;</span><br><span class="line">    sleep(<span class="variable">$timeout</span>);</span><br><span class="line">&#125;);</span><br><span class="line">echo <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
 <p><strong>代码说明:</strong></p>
 <p>首先<code>Async</code>类是个单例类，减少多次调用的开销。<code>run()</code>方法传递的是一个匿名函数，这样我们能非常方便的传递参数，并且保留上下文。</p>
 <p>这个类最难的地方在于多进程的处理。因为我们要尽可能快的将数据返回给用户，所以主进程越快结束越好。但是我们又需要子进程来执行我们耗时的操作，执行完退出才行。如果不等子进程执行完就将父进程退出会出现什么结果呢？结果就是子进程会常驻内存变成僵死进程。那我们有什么办法让子进程执行完之后就自动结束呢？答案是很难……那么儿子进程这么不听话，孙子进程会不会听话一点呢？？答案是孙子进程执行结束后会被系统进程回收并销毁（还是孙子听话）。所以我在代码中使用了如下方法：当前请求进程fork出子进程，子进程fork出孙子进程，主进程和子进程都先行退出，最后由孙子进程来执行耗时操作，最后完美的解决了僵死进程问题。</p>
 <p>当然这个方法的缺点就是调用的时候会多产生一个<code>php-fpm</code>的进程</p>
 <p><strong>为避免僵尸进程，当子进程结束后，手动杀死进程</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// PHP Linux Cli 模式下利用 pcntl_fork 实现多进程处理</span></span></span><br><span class="line"><span class="php"><span class="comment">// @caoxl</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// 进程数</span></span></span><br><span class="line"><span class="php">$processes = <span class="number">5</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// 所有任务就是是为了输出0到99中的所有数字</span></span></span><br><span class="line"><span class="php"><span class="comment">// 这些数字将被分成5个块，代表5个进程，</span></span></span><br><span class="line"><span class="php"><span class="comment">// 当输出的时候我们就可以看到所有进程的执行顺序</span></span></span><br><span class="line"></span><br><span class="line"><span class="php">$tasks = range(<span class="number">0</span>, <span class="number">99</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">$blocks = <span class="keyword">array</span>();</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// 将任务按进程分块</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">foreach</span> ($tasks <span class="keyword">as</span> $i) &#123;</span></span><br><span class="line"><span class="php">    $blocks[($i % $processes)][] = $i;</span></span><br><span class="line"><span class="php">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">foreach</span> ($blocks <span class="keyword">as</span> $blockNum =&gt; $block) &#123;</span></span><br><span class="line"><span class="php">    <span class="comment">// 通过pcntl得到一个子进程的PID</span></span></span><br><span class="line"><span class="php">    $pid = pcntl_fork();</span></span><br><span class="line"></span><br><span class="line"><span class="php">    <span class="keyword">if</span> ($pid == <span class="number">-1</span>) &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// 错误处理: 创建子进程失败时返回-1</span></span></span><br><span class="line"><span class="php">        <span class="keyword">die</span>(<span class="string">'cloud not fork'</span>);</span></span><br><span class="line"><span class="php">    &#125; <span class="keyword">elseif</span> ($pid) &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// 父进程逻辑</span></span></span><br><span class="line"><span class="php">        <span class="comment">// 等待子进程中断, 防止子进程成为僵尸进程</span></span></span><br><span class="line"><span class="php">        <span class="comment">// WNOHANG为非阻塞进程，具体请查阅pcntl_wait PHP官方文档</span></span></span><br><span class="line"><span class="php">        pcntl_wait($status, WNOHANG);</span></span><br><span class="line"><span class="php">    &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="php">        <span class="comment">// 子进程逻辑</span></span></span><br><span class="line"><span class="php">        <span class="keyword">foreach</span> ($block <span class="keyword">as</span> $i) &#123;</span></span><br><span class="line"><span class="php">            <span class="keyword">echo</span> <span class="string">"I'm block &#123;$blockNum&#125;, I'm printing:&#123;$i&#125;\n"</span>;</span></span><br><span class="line"><span class="php">            sleep(<span class="number">1</span>);</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="comment">// 为避免僵尸进程，当子进程结束后，手动杀死进程</span></span></span><br><span class="line"><span class="php">        <span class="keyword">if</span> (function_exists(<span class="string">'posix_kill'</span>)) &#123;</span></span><br><span class="line"><span class="php">            posix_kill(getmypid(), SIGTERM);</span></span><br><span class="line"><span class="php">        &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="php">            system(<span class="string">'kill -9'</span>.getmypid());</span></span><br><span class="line"><span class="php">        &#125;</span></span><br><span class="line"><span class="php">        <span class="keyword">exit</span>();</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> PHP Linux Cli 模式下利用 pcntl_fork 实现多进程处理</span><br><span class="line"><span class="regexp">//</span> @caoxl</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 进程数</span><br><span class="line"><span class="variable">$processes</span> = <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 所有任务就是是为了输出<span class="number">0</span>到<span class="number">99</span>中的所有数字</span><br><span class="line"><span class="regexp">//</span> 这些数字将被分成<span class="number">5</span>个块，代表<span class="number">5</span>个进程，</span><br><span class="line"><span class="regexp">//</span> 当输出的时候我们就可以看到所有进程的执行顺序</span><br><span class="line"></span><br><span class="line"><span class="variable">$tasks</span> = range(<span class="number">0</span>, <span class="number">99</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$blocks</span> = array();</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 将任务按进程分块</span><br><span class="line"></span><br><span class="line">foreach (<span class="variable">$tasks</span> as <span class="variable">$i</span>) &#123;</span><br><span class="line">    <span class="variable">$blocks</span>[(<span class="variable">$i</span> % <span class="variable">$processes</span>)][] = <span class="variable">$i</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">foreach (<span class="variable">$blocks</span> as <span class="variable">$blockNum</span> =&gt; <span class="variable">$block</span>) &#123;</span><br><span class="line">    <span class="regexp">//</span> 通过pcntl得到一个子进程的PID</span><br><span class="line">    <span class="variable">$pid</span> = pcntl_fork();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$pid</span> == -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="regexp">//</span> 错误处理: 创建子进程失败时返回-<span class="number">1</span></span><br><span class="line">        die(<span class="string">&#x27;cloud not fork&#x27;</span>);</span><br><span class="line">    &#125; elseif (<span class="variable">$pid</span>) &#123;</span><br><span class="line">        <span class="regexp">//</span> 父进程逻辑</span><br><span class="line">        <span class="regexp">//</span> 等待子进程中断, 防止子进程成为僵尸进程</span><br><span class="line">        <span class="regexp">//</span> WNOHANG为非阻塞进程，具体请查阅pcntl_wait PHP官方文档</span><br><span class="line">        pcntl_wait(<span class="variable">$status</span>, WNOHANG);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="regexp">//</span> 子进程逻辑</span><br><span class="line">        foreach (<span class="variable">$block</span> as <span class="variable">$i</span>) &#123;</span><br><span class="line">            echo <span class="string">&quot;I&#x27;m block &#123;$blockNum&#125;, I&#x27;m printing:&#123;$i&#125;\n&quot;</span>;</span><br><span class="line">            sleep(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="regexp">//</span> 为避免僵尸进程，当子进程结束后，手动杀死进程</span><br><span class="line">        <span class="keyword">if</span> (function_exists(<span class="string">&#x27;posix_kill&#x27;</span>)) &#123;</span><br><span class="line">            posix_kill(getmypid(), SIGTERM);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            system(<span class="string">&#x27;kill -9&#x27;</span>.getmypid());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">exit</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="http://www.laruence.com/2008/04/14/318.html" target="_blank" rel="noopener">PHP实现异步调用方法研究</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.laruence.com/2008/04/14/318.html">PHP实现异步调用方法研究</a></li>
 </ul>
 
         
@@ -265,7 +309,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/异步/">异步</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BC%82%E6%AD%A5/" rel="tag">异步</a></li></ul>
 
       
 
@@ -301,7 +345,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一-先说说鸟哥文章中的几种玩法"><span class="nav-number">1.</span> <span class="nav-text">一. 先说说鸟哥文章中的几种玩法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二-PHP发展了这么多年对异步支持方面都有哪些改进？"><span class="nav-number">2.</span> <span class="nav-text">二. PHP发展了这么多年对异步支持方面都有哪些改进？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三-最好的异步实现方法"><span class="nav-number">3.</span> <span class="nav-text">三. 最好的异步实现方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E5%85%88%E8%AF%B4%E8%AF%B4%E9%B8%9F%E5%93%A5%E6%96%87%E7%AB%A0%E4%B8%AD%E7%9A%84%E5%87%A0%E7%A7%8D%E7%8E%A9%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">一. 先说说鸟哥文章中的几种玩法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-PHP%E5%8F%91%E5%B1%95%E4%BA%86%E8%BF%99%E4%B9%88%E5%A4%9A%E5%B9%B4%E5%AF%B9%E5%BC%82%E6%AD%A5%E6%94%AF%E6%8C%81%E6%96%B9%E9%9D%A2%E9%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B%E6%94%B9%E8%BF%9B%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">二. PHP发展了这么多年对异步支持方面都有哪些改进？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E6%9C%80%E5%A5%BD%E7%9A%84%E5%BC%82%E6%AD%A5%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">三. 最好的异步实现方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -316,7 +360,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -396,12 +440,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -469,7 +517,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

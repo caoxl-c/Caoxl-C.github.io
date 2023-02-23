@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>mysql8 cte和窗口函数的用法 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="MySQL8CTE窗口函数">
+  <meta name="keywords" content="MySQL8CTE窗口函数" />
   
   
   
   
   <meta name="description" content="普通统计函数在每个分组内只能返回一条记录。而新增加的窗口函数和CTE函数可以一个分组返回多条函数。">
-<meta name="keywords" content="MySQL8,CTE,窗口函数">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL8 CTE和窗口函数的用法">
 <meta property="og:url" content="http://blog.caoxl.com/2022/01/06/MySQL8-CTE-WF/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="普通统计函数在每个分组内只能返回一条记录。而新增加的窗口函数和CTE函数可以一个分组返回多条函数。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2022-05-12T01:37:45.189Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-06T02:00:34.000Z">
+<meta property="article:modified_time" content="2022-05-12T01:37:45.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="MySQL8">
+<meta property="article:tag" content="CTE">
+<meta property="article:tag" content="窗口函数">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL8 CTE和窗口函数的用法">
-<meta name="twitter:description" content="普通统计函数在每个分组内只能返回一条记录。而新增加的窗口函数和CTE函数可以一个分组返回多条函数。">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +44,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +183,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -199,28 +241,36 @@
           <blockquote>
 <p>普通统计函数在每个分组内只能返回一条记录。而新增加的窗口函数和CTE函数可以一个分组返回多条函数。</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="窗口函数-amp-CTE实操"><a href="#窗口函数-amp-CTE实操" class="headerlink" title="窗口函数&amp;CTE实操"></a>窗口函数&amp;CTE实操</h1><ul>
 <li>一张表结构如下</li>
 </ul>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; desc mytest;</span><br><span class="line">+--------+------------------+------+-----+---------+----------------+</span><br><span class="line">| Field  | Type             | Null | Key | Default | Extra          |</span><br><span class="line">+--------+------------------+------+-----+---------+----------------+</span><br><span class="line">| id     | int(11) unsigned | NO   | PRI | NULL    | auto_increment |</span><br><span class="line">| name   | varchar(255)     | NO   |     | NULL    |                |</span><br><span class="line">| course | varchar(255)     | NO   |     | NULL    |                |</span><br><span class="line">| score  | decimal(10,0)    | NO   |     | NULL    |                |</span><br><span class="line">+--------+------------------+------+-----+---------+----------------+</span><br><span class="line">4 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; desc mytest;</span><br><span class="line">+--------+------------------+------+-----+---------+----------------+</span><br><span class="line">| Field  | Type             | Null | Key | Default | Extra          |</span><br><span class="line">+--------+------------------+------+-----+---------+----------------+</span><br><span class="line">| id     | int(11) unsigned | NO   | PRI | NULL    | auto<span class="emphasis">_increment |</span></span><br><span class="line"><span class="emphasis">| name   | varchar(255)     | NO   |     | NULL    |                |</span></span><br><span class="line"><span class="emphasis">| course | varchar(255)     | NO   |     | NULL    |                |</span></span><br><span class="line"><span class="emphasis">| score  | decimal(10,0)    | NO   |     | NULL    |                |</span></span><br><span class="line"><span class="emphasis">+--------+------------------+------+-----+---------+----------------+</span></span><br><span class="line"><span class="emphasis">4 rows in set (0.01 sec)</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>它有以下数据</li>
 </ul>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from mytest;</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">| id | name   | course | score |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">|  1 | 汤姆 | 数学 | 100   |</span><br><span class="line">|  2 | 汤姆 | 语文 | 90    |</span><br><span class="line">|  3 | 汤姆 | 英语 | 80    |</span><br><span class="line">|  4 | 汤姆 | 化学 | 100   |</span><br><span class="line">|  5 | 汤姆 | 物理 | 99    |</span><br><span class="line">|  6 | 杰克 | 数学 | 90    |</span><br><span class="line">|  7 | 杰克 | 语文 | 100   |</span><br><span class="line">|  8 | 杰克 | 英语 | 80    |</span><br><span class="line">|  9 | 杰克 | 化学 | 90    |</span><br><span class="line">| 10 | 杰克 | 物理 | 70    |</span><br><span class="line">| 11 | 可可 | 数学 | 90    |</span><br><span class="line">| 12 | 可可 | 语文 | 92    |</span><br><span class="line">| 13 | 可可 | 英语 | 93    |</span><br><span class="line">| 14 | 可可 | 化学 | 94    |</span><br><span class="line">| 15 | 可可 | 物理 | 75    |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">15 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+
 <p>问题: 要查询出每一科最高分学生的学号，姓名，成绩和科目。在MySQL8之前主要是通过下面的方式来实现。</p>
 <p>答案1: MySql 8之前的方法</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">   SELECT x.id,x.NAME,x.course,x.score FROM</span><br><span class="line">(</span><br><span class="line">SELECT</span><br><span class="line"><span class="code">	t.*,</span></span><br><span class="line">IF</span><br><span class="line"><span class="code">	( @_course = t.course, @rn := @rn + 1, @rn := 1 ) AS rn,</span></span><br><span class="line"><span class="code">	@_course := t.course AS _course </span></span><br><span class="line">FROM</span><br><span class="line"><span class="code">	( SELECT t.* FROM mytest t ORDER BY course, score DESC ) t,</span></span><br><span class="line"><span class="code">	( SELECT @rn := 0 rn, @_course := '' ) b </span></span><br><span class="line">) x </span><br><span class="line">   WHERE rn = 1 ORDER BY course;</span><br><span class="line">   </span><br><span class="line">   +----+--------+--------+-------+</span><br><span class="line">   | id | NAME   | course | score |</span><br><span class="line">   +----+--------+--------+-------+</span><br><span class="line">   |  4 | 汤姆   | 化学   |   100 |</span><br><span class="line">   |  1 | 汤姆   | 数学   |   100 |</span><br><span class="line">   |  5 | 汤姆   | 物理   |    99 |</span><br><span class="line">   | 13 | 可可   | 英语   |    93 |</span><br><span class="line">   |  7 | 杰克   | 语文   |   100 |</span><br><span class="line">   +----+--------+--------+-------+</span><br><span class="line">   5 rows in set, 5 warnings (0.00 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">   SELECT x.id,x.NAME,x.course,x.score FROM</span><br><span class="line">(</span><br><span class="line">SELECT</span><br><span class="line"><span class="code">	t.*,</span></span><br><span class="line"><span class="code">IF</span></span><br><span class="line"><span class="code">	( @_course = t.course, @rn := @rn + 1, @rn := 1 ) AS rn,</span></span><br><span class="line"><span class="code">	@_course := t.course AS _course </span></span><br><span class="line"><span class="code">FROM</span></span><br><span class="line"><span class="code">	( SELECT t.* FROM mytest t ORDER BY course, score DESC ) t,</span></span><br><span class="line"><span class="code">	( SELECT @rn := 0 rn, @_course := &#x27;&#x27; ) b </span></span><br><span class="line"><span class="code">) x </span></span><br><span class="line"><span class="code">   WHERE rn = 1 ORDER BY course;</span></span><br><span class="line"><span class="code">   </span></span><br><span class="line"><span class="code">   +----+--------+--------+-------+</span></span><br><span class="line"><span class="code">   | id | NAME   | course | score |</span></span><br><span class="line"><span class="code">   +----+--------+--------+-------+</span></span><br><span class="line"><span class="code">   |  4 | 汤姆   | 化学   |   100 |</span></span><br><span class="line"><span class="code">   |  1 | 汤姆   | 数学   |   100 |</span></span><br><span class="line"><span class="code">   |  5 | 汤姆   | 物理   |    99 |</span></span><br><span class="line"><span class="code">   | 13 | 可可   | 英语   |    93 |</span></span><br><span class="line"><span class="code">   |  7 | 杰克   | 语文   |   100 |</span></span><br><span class="line"><span class="code">   +----+--------+--------+-------+</span></span><br><span class="line"><span class="code">   5 rows in set, 5 warnings (0.00 sec)</span></span><br></pre></td></tr></table></figure>
+
 <p>这个sql虽然高效，但是可读性不强。接下来我们来看看窗口函数怎么实现</p>
 <p>答案2: 使用窗口函数ROW_NUMBER</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line"> id,name,course,score </span><br><span class="line">FROM</span><br><span class="line"><span class="code">    ( SELECT *,row_number() over ( PARTITION BY course ORDER BY score DESC ) AS rn FROM mytest ) t </span></span><br><span class="line">WHERE</span><br><span class="line"><span class="code">    rn = 1;</span></span><br><span class="line"><span class="code">    </span></span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">| id | name   | course | score |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">|  4 | 汤姆   | 化学   |   100 |</span><br><span class="line">|  1 | 汤姆   | 数学   |   100 |</span><br><span class="line">|  5 | 汤姆   | 物理   |    99 |</span><br><span class="line">| 13 | 可可   | 英语   |    93 |</span><br><span class="line">|  7 | 杰克   | 语文   |   100 |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">5 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line"> id,name,course,score </span><br><span class="line">FROM</span><br><span class="line"><span class="code">    ( SELECT *,row_number() over ( PARTITION BY course ORDER BY score DESC ) AS rn FROM mytest ) t </span></span><br><span class="line"><span class="code">WHERE</span></span><br><span class="line"><span class="code">    rn = 1;</span></span><br><span class="line"><span class="code">    </span></span><br><span class="line"><span class="code">+----+--------+--------+-------+</span></span><br><span class="line"><span class="code">| id | name   | course | score |</span></span><br><span class="line"><span class="code">+----+--------+--------+-------+</span></span><br><span class="line"><span class="code">|  4 | 汤姆   | 化学   |   100 |</span></span><br><span class="line"><span class="code">|  1 | 汤姆   | 数学   |   100 |</span></span><br><span class="line"><span class="code">|  5 | 汤姆   | 物理   |    99 |</span></span><br><span class="line"><span class="code">| 13 | 可可   | 英语   |    93 |</span></span><br><span class="line"><span class="code">|  7 | 杰克   | 语文   |   100 |</span></span><br><span class="line"><span class="code">+----+--------+--------+-------+</span></span><br><span class="line"><span class="code">5 rows in set (0.01 sec)</span></span><br></pre></td></tr></table></figure>
+
 <p>答案3: 使用CTE方式</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">WITH cte AS ( SELECT *,row_number() over ( PARTITION BY course ORDER BY score DESC ) AS rn FROM mytest ) </span><br><span class="line">SELECT id,name,course,score FROM cte WHERE rn = 1;</span><br><span class="line"></span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">| id | name   | course | score |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">|  4 | 汤姆   | 化学   |   100 |</span><br><span class="line">|  1 | 汤姆   | 数学   |   100 |</span><br><span class="line">|  5 | 汤姆   | 物理   |    99 |</span><br><span class="line">| 13 | 可可   | 英语   |    93 |</span><br><span class="line">|  7 | 杰克   | 语文   |   100 |</span><br><span class="line">+----+--------+--------+-------+</span><br><span class="line">5 rows in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">WITH cte AS ( SELECT <span class="emphasis">*,row_number() over ( PARTITION BY course ORDER BY score DESC ) AS rn FROM mytest ) </span></span><br><span class="line"><span class="emphasis">SELECT id,name,course,score FROM cte WHERE rn = 1;</span></span><br><span class="line"><span class="emphasis"></span></span><br><span class="line"><span class="emphasis">+----+--------+--------+-------+</span></span><br><span class="line"><span class="emphasis">| id | name   | course | score |</span></span><br><span class="line"><span class="emphasis">+----+--------+--------+-------+</span></span><br><span class="line"><span class="emphasis">|  4 | 汤姆   | 化学   |   100 |</span></span><br><span class="line"><span class="emphasis">|  1 | 汤姆   | 数学   |   100 |</span></span><br><span class="line"><span class="emphasis">|  5 | 汤姆   | 物理   |    99 |</span></span><br><span class="line"><span class="emphasis">| 13 | 可可   | 英语   |    93 |</span></span><br><span class="line"><span class="emphasis">|  7 | 杰克   | 语文   |   100 |</span></span><br><span class="line"><span class="emphasis">+----+--------+--------+-------+</span></span><br><span class="line"><span class="emphasis">5 rows in set (0.01 sec)</span></span><br></pre></td></tr></table></figure>
+
 <p>通过对比上面的三种答案，发现CTE和窗口函数极大简化了我们的sql语句。我们的sql更容易读懂。</p>
 <h1 id="通用表表达式（Common-Table-Expressions）"><a href="#通用表表达式（Common-Table-Expressions）" class="headerlink" title="通用表表达式（Common Table Expressions）"></a>通用表表达式（Common Table Expressions）</h1><p>复杂的查询会使用嵌入式表，例如：</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">   SELECT t1.<span class="emphasis">*,t2.*</span> FROM</span><br><span class="line">( SELECT col1 FROM table1 ) t1,</span><br><span class="line">( SELECT col2 FROM table2 ) t2;</span><br></pre></td></tr></table></figure>
+
 <p>而有了 CTE，我们可以这样写：</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">WITH</span><br><span class="line">t1 AS (SELECT col1 FROM table1),</span><br><span class="line">t2 AS (SELECT col2 FROM table2)</span><br><span class="line">SELECT t1.<span class="emphasis">*, t2.*</span> FROM t1, t2;</span><br></pre></td></tr></table></figure>
+
 <p>这样看上去层次和区域都更加分明，改起来也更清晰的知道要改哪一部分。</p>
 <h1 id="窗口函数"><a href="#窗口函数" class="headerlink" title="窗口函数"></a>窗口函数</h1><h2 id="什么是窗口函数"><a href="#什么是窗口函数" class="headerlink" title="什么是窗口函数"></a>什么是窗口函数</h2><p>窗口函数引入的其实不只是几个函数，而是一套完整的语法，窗口函数是此语法中的一部分。</p>
 <blockquote>
@@ -252,11 +302,13 @@
 <h3 id="窗口函数的两种写法"><a href="#窗口函数的两种写法" class="headerlink" title="窗口函数的两种写法"></a>窗口函数的两种写法</h3><ol>
 <li>over关键词后直接定义窗口</li>
 </ol>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">select</span><br><span class="line">  row<span class="emphasis">_number() over (partition by user_</span>no order by amount desc),</span><br><span class="line">  order_id</span><br><span class="line">from order_tab;</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">select</span><br><span class="line">  row<span class="emphasis">_number() over (partition by user_</span>no order by amount desc),</span><br><span class="line">  order<span class="emphasis">_id</span></span><br><span class="line"><span class="emphasis">from order_</span>tab;</span><br></pre></td></tr></table></figure>
+
 <ol start="2">
 <li>over关键字后使用窗口别名：</li>
 </ol>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">select </span><br><span class="line"><span class="code">    row_number() over w,</span></span><br><span class="line"><span class="code">    order_id</span></span><br><span class="line">from order_tab</span><br><span class="line">WINDOW w AS (partition by user_no order by amount desc);</span><br></pre></td></tr></table></figure>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">select </span><br><span class="line"><span class="code">    row_number() over w,</span></span><br><span class="line"><span class="code">    order_id</span></span><br><span class="line"><span class="code">from order_tab</span></span><br><span class="line"><span class="code">WINDOW w AS (partition by user_no order by amount desc);</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="窗口表达式语法"><a href="#窗口表达式语法" class="headerlink" title="窗口表达式语法"></a>窗口表达式语法</h2><h3 id="PARTITION-BY子句"><a href="#PARTITION-BY子句" class="headerlink" title="PARTITION BY子句"></a>PARTITION BY子句</h3><p>PARTITION BY子句是用来分组的，从字面上来看，应该叫分区。理解上可以类比group by。</p>
 <p>某行记录所在的分区就是这行对应的窗口。一个窗口可以包含多行，就像group by分的组一样。</p>
 <blockquote>
@@ -289,8 +341,8 @@
 <p>分布函数得到的是一个百分比，计算公式用到rank()函数。</p>
 </blockquote>
 <ul>
-<li><code>percent_rank()</code>: 实际计算公式：(rank()-1)/(rows-1)</li>
-<li><code>cume_dist()</code>: 实际计算公式：rank()/rows</li>
+<li><code>percent_rank()</code>: 实际计算公式：(rank()-1)&#x2F;(rows-1)</li>
+<li><code>cume_dist()</code>: 实际计算公式：rank()&#x2F;rows</li>
 </ul>
 <h3 id="前后函数-lead-lag"><a href="#前后函数-lead-lag" class="headerlink" title="前后函数: lead(), lag()"></a>前后函数: <code>lead()</code>, <code>lag()</code></h3><ul>
 <li><code>lead(expr,n)</code>: 代表当前行前面第n行记录的expr表达式（或字段值）。</li>
@@ -303,12 +355,12 @@
 </ul>
 <h3 id="其他函数-nth-value-nfile"><a href="#其他函数-nth-value-nfile" class="headerlink" title="其他函数: nth_value(), nfile()"></a>其他函数: <code>nth_value()</code>, <code>nfile()</code></h3><ul>
 <li><code>nth_value(expr,n)</code>: 代表区间第n条记录的expr表达式（或字段值）。<br>比如：nth_value(amount,2)代表区间第二行的amount字段。</li>
-<li><code>nfile(n)</code>: 代表把区间列分为n个组，返回组号。  </li>
+<li><code>nfile(n)</code>: 代表把区间列分为n个组，返回组号。</li>
 </ul>
 <h1 id="文档"><a href="#文档" class="headerlink" title="文档"></a>文档</h1><ul>
-<li><a href="https://mysql.bookhub.zone/#/README" target="_blank" rel="noopener">MySQL 8.0 中文手册</a></li>
-<li><a href="https://dev.mysql.com/doc/refman/8.0/en/with.html" target="_blank" rel="noopener">MySQL8 WITH (Common Table Expressions)</a></li>
-<li><a href="https://dev.mysql.com/doc/refman/8.0/en/window-function-descriptions.html" target="_blank" rel="noopener">MySQL8 窗口函数</a></li>
+<li><a target="_blank" rel="noopener" href="https://mysql.bookhub.zone/#/README">MySQL 8.0 中文手册</a></li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/with.html">MySQL8 WITH (Common Table Expressions)</a></li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/window-function-descriptions.html">MySQL8 窗口函数</a></li>
 </ul>
 
         
@@ -341,7 +393,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CTE/">CTE</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL8/">MySQL8</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/窗口函数/">窗口函数</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CTE/" rel="tag">CTE</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL8/" rel="tag">MySQL8</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0/" rel="tag">窗口函数</a></li></ul>
 
       
 
@@ -377,7 +429,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#窗口函数-amp-CTE实操"><span class="nav-number">1.</span> <span class="nav-text">窗口函数&amp;CTE实操</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#通用表表达式（Common-Table-Expressions）"><span class="nav-number">2.</span> <span class="nav-text">通用表表达式（Common Table Expressions）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#窗口函数"><span class="nav-number">3.</span> <span class="nav-text">窗口函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是窗口函数"><span class="nav-number">3.1.</span> <span class="nav-text">什么是窗口函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#窗口函数-1"><span class="nav-number">3.2.</span> <span class="nav-text">窗口函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#窗口函数的两种写法"><span class="nav-number">3.2.1.</span> <span class="nav-text">窗口函数的两种写法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#窗口表达式语法"><span class="nav-number">3.3.</span> <span class="nav-text">窗口表达式语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PARTITION-BY子句"><span class="nav-number">3.3.1.</span> <span class="nav-text">PARTITION BY子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ORDER-BY子句"><span class="nav-number">3.3.2.</span> <span class="nav-text">ORDER BY子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#frame子句"><span class="nav-number">3.3.3.</span> <span class="nav-text">frame子句</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#窗口函数介绍"><span class="nav-number">3.4.</span> <span class="nav-text">窗口函数介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#序号函数-row-number-rank-dense-rank"><span class="nav-number">3.4.1.</span> <span class="nav-text">序号函数: row_number(), rank(), dense_rank()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分布函数-percent-rank-cume-dist"><span class="nav-number">3.4.2.</span> <span class="nav-text">分布函数: percent_rank(), cume_dist()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前后函数-lead-lag"><span class="nav-number">3.4.3.</span> <span class="nav-text">前后函数: lead(), lag()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#头尾函数-fist-val-last-val"><span class="nav-number">3.4.4.</span> <span class="nav-text">头尾函数: fist_val(), last_val()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他函数-nth-value-nfile"><span class="nav-number">3.4.5.</span> <span class="nav-text">其他函数: nth_value(), nfile()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文档"><span class="nav-number">4.</span> <span class="nav-text">文档</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0-amp-CTE%E5%AE%9E%E6%93%8D"><span class="nav-number">1.</span> <span class="nav-text">窗口函数&amp;CTE实操</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E8%A1%A8%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%88Common-Table-Expressions%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">通用表表达式（Common Table Expressions）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">窗口函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0"><span class="nav-number">3.1.</span> <span class="nav-text">什么是窗口函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0-1"><span class="nav-number">3.2.</span> <span class="nav-text">窗口函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%86%99%E6%B3%95"><span class="nav-number">3.2.1.</span> <span class="nav-text">窗口函数的两种写法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AF%AD%E6%B3%95"><span class="nav-number">3.3.</span> <span class="nav-text">窗口表达式语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PARTITION-BY%E5%AD%90%E5%8F%A5"><span class="nav-number">3.3.1.</span> <span class="nav-text">PARTITION BY子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ORDER-BY%E5%AD%90%E5%8F%A5"><span class="nav-number">3.3.2.</span> <span class="nav-text">ORDER BY子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#frame%E5%AD%90%E5%8F%A5"><span class="nav-number">3.3.3.</span> <span class="nav-text">frame子句</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.4.</span> <span class="nav-text">窗口函数介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%8F%E5%8F%B7%E5%87%BD%E6%95%B0-row-number-rank-dense-rank"><span class="nav-number">3.4.1.</span> <span class="nav-text">序号函数: row_number(), rank(), dense_rank()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0-percent-rank-cume-dist"><span class="nav-number">3.4.2.</span> <span class="nav-text">分布函数: percent_rank(), cume_dist()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E5%90%8E%E5%87%BD%E6%95%B0-lead-lag"><span class="nav-number">3.4.3.</span> <span class="nav-text">前后函数: lead(), lag()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%B4%E5%B0%BE%E5%87%BD%E6%95%B0-fist-val-last-val"><span class="nav-number">3.4.4.</span> <span class="nav-text">头尾函数: fist_val(), last_val()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%87%BD%E6%95%B0-nth-value-nfile"><span class="nav-number">3.4.5.</span> <span class="nav-text">其他函数: nth_value(), nfile()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E6%A1%A3"><span class="nav-number">4.</span> <span class="nav-text">文档</span></a></li></ol>
     
     </div>
   </aside>
@@ -392,7 +444,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -472,12 +524,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -545,7 +601,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

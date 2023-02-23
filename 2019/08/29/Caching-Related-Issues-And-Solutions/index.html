@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>缓存 相关问题/解决方案 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="缓存雪崩缓存穿透">
+  <meta name="keywords" content="缓存雪崩缓存穿透" />
   
   
   
   
   <meta name="description" content="缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题以及解决方案">
-<meta name="keywords" content="缓存雪崩,缓存穿透">
 <meta property="og:type" content="article">
 <meta property="og:title" content="缓存 相关问题&#x2F;解决方案">
 <meta property="og:url" content="http://blog.caoxl.com/2019/08/29/Caching-Related-Issues-And-Solutions/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题以及解决方案">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-29T08:12:46.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-29T01:57:57.000Z">
+<meta property="article:modified_time" content="2019-08-29T08:12:46.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="缓存雪崩">
+<meta property="article:tag" content="缓存穿透">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="缓存 相关问题&#x2F;解决方案">
-<meta name="twitter:description" content="缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题以及解决方案">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +222,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+    <a class="article-category-link" href="/categories/%E5%BF%85%E5%A4%87%E6%8A%80%E8%83%BD/">必备技能</a>
 
       
 	<a class="article-views">
@@ -199,7 +240,8 @@
           <blockquote>
 <p>缓存雪崩、缓存穿透、缓存预热、缓存更新、缓存降级等问题以及解决方案</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h2 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h2><blockquote>
 <p><strong>缓存设置同一过期时间, 引起的DB洪峰</strong><br>缓存雪崩我们可以简单的理解为：<strong>由于 <code>原有缓存失效，新缓存未到</code> 期间</strong>(例如：我们设置缓存时采用了相同的过期时间，在同一时刻出现大面积的缓存过期)，所有原本应该访问缓存的请求都去查询数据库了，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃。</p>
 </blockquote>
@@ -220,7 +262,7 @@
 </blockquote>
 <h3 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h3><p>有很多种方法可以有效地解决缓存穿透问题.</p>
 <ul>
-<li><p>最常见的则是采用<strong><a href="http://blog.caoxl.com/2019/08/29/Redis-Bloom-Filter/">布隆过滤器</a></strong>，将所有可能存在的数据哈希到一个足够大的<code>bitmap</code>中，一个一定不存在的数据会被 这个<code>bitmap</code>拦截掉，从而避免了对底层存储系统的查询压力。</p>
+<li><p>最常见的则是采用**<a href="http://blog.caoxl.com/2019/08/29/Redis-Bloom-Filter/">布隆过滤器</a>**，将所有可能存在的数据哈希到一个足够大的<code>bitmap</code>中，一个一定不存在的数据会被 这个<code>bitmap</code>拦截掉，从而避免了对底层存储系统的查询压力。</p>
 </li>
 <li><p>另外也有一个更为简单粗暴的方法，如果一个查询返回的数据为空（不管是数据不存在，还是系统故障），我们仍然把这个空结果进行缓存，但它的过期时间会很短，最长不超过五分钟。</p>
 </li>
@@ -311,7 +353,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/缓存穿透/">缓存穿透</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/缓存雪崩/">缓存雪崩</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/" rel="tag">缓存穿透</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/" rel="tag">缓存雪崩</a></li></ul>
 
       
 
@@ -347,7 +389,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存雪崩"><span class="nav-number">1.</span> <span class="nav-text">缓存雪崩</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#触发场景"><span class="nav-number">1.1.</span> <span class="nav-text">触发场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方案"><span class="nav-number">1.2.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存穿透"><span class="nav-number">2.</span> <span class="nav-text">缓存穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方案-1"><span class="nav-number">2.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存击穿-热点Key"><span class="nav-number">3.</span> <span class="nav-text">缓存击穿(热点Key)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方案-2"><span class="nav-number">3.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存预热"><span class="nav-number">4.</span> <span class="nav-text">缓存预热</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方案-3"><span class="nav-number">4.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存更新"><span class="nav-number">5.</span> <span class="nav-text">缓存更新</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解决方案-4"><span class="nav-number">5.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存降级"><span class="nav-number">6.</span> <span class="nav-text">缓存降级</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">1.</span> <span class="nav-text">缓存雪崩</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E5%9C%BA%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">触发场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.2.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">2.</span> <span class="nav-text">缓存穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-1"><span class="nav-number">2.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF-%E7%83%AD%E7%82%B9Key"><span class="nav-number">3.</span> <span class="nav-text">缓存击穿(热点Key)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-2"><span class="nav-number">3.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%A2%84%E7%83%AD"><span class="nav-number">4.</span> <span class="nav-text">缓存预热</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-3"><span class="nav-number">4.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%9B%B4%E6%96%B0"><span class="nav-number">5.</span> <span class="nav-text">缓存更新</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-4"><span class="nav-number">5.1.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%99%8D%E7%BA%A7"><span class="nav-number">6.</span> <span class="nav-text">缓存降级</span></a></li></ol>
     
     </div>
   </aside>
@@ -362,7 +404,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -442,12 +484,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -515,7 +561,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

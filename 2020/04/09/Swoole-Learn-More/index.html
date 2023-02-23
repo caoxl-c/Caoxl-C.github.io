@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>swoole 再深入 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Swoole">
+  <meta name="keywords" content="Swoole" />
   
   
   
   
   <meta name="description" content="问即是学">
-<meta name="keywords" content="Swoole">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Swoole 再深入">
 <meta property="og:url" content="http://blog.caoxl.com/2020/04/09/Swoole-Learn-More/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="问即是学">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-10T06:41:13.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-09T03:55:42.000Z">
+<meta property="article:modified_time" content="2020-04-10T06:41:13.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Swoole">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swoole 再深入">
-<meta name="twitter:description" content="问即是学">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +42,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +181,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +221,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/加分技能/">加分技能</a>
+    <a class="article-category-link" href="/categories/%E5%8A%A0%E5%88%86%E6%8A%80%E8%83%BD/">加分技能</a>
 
       
 	<a class="article-views">
@@ -199,7 +239,8 @@
           <blockquote>
 <p>问即是学</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="基础编程知识"><a href="#基础编程知识" class="headerlink" title="基础编程知识"></a>基础编程知识</h1><h2 id="阻塞-和-非阻塞-的区别"><a href="#阻塞-和-非阻塞-的区别" class="headerlink" title="阻塞 和 非阻塞 的区别?"></a><code>阻塞</code> 和 <code>非阻塞</code> 的区别?</h2><ul>
 <li>同步(<code>Synchronous</code>)IO</li>
 </ul>
@@ -216,20 +257,20 @@
 <li>阻塞(<code>Blocking</code>)IO</li>
 </ul>
 <blockquote>
-<p>阻塞就是在程序调用之后，结果返回之前，当前的进程/线程是被挂起的</p>
+<p>阻塞就是在程序调用之后，结果返回之前，当前的进程&#x2F;线程是被挂起的</p>
 </blockquote>
 <ul>
 <li>非阻塞(<code>non-Blocking</code>)IO</li>
 </ul>
 <blockquote>
-<p>非阻塞是指程序调用之后，结果返回之前，不会挂起该进程/线程的。</p>
+<p>非阻塞是指程序调用之后，结果返回之前，不会挂起该进程&#x2F;线程的。</p>
 </blockquote>
 <h3 id="异步的优势"><a href="#异步的优势" class="headerlink" title="异步的优势 ?"></a>异步的优势 ?</h3><ul>
-<li>高并发，同步阻塞IO模型的并发能力依赖于进程/线程数量</li>
+<li>高并发，同步阻塞IO模型的并发能力依赖于进程&#x2F;线程数量</li>
 <li>无IO等待，同步模型无法解决<code>IOWait</code>很高的场景</li>
 </ul>
 <h3 id="同步的优势"><a href="#同步的优势" class="headerlink" title="同步的优势 ?"></a>同步的优势 ?</h3><ul>
-<li>编码简单，同步模式编写/调试程序更轻松</li>
+<li>编码简单，同步模式编写&#x2F;调试程序更轻松</li>
 <li>可控性好，同步模式的程序具有良好的过载保护机制</li>
 </ul>
 <h2 id="PHP的GC机制"><a href="#PHP的GC机制" class="headerlink" title="PHP的GC机制 ?"></a>PHP的GC机制 ?</h2><blockquote>
@@ -265,7 +306,7 @@
 <ul>
 <li><p><strong>PHP-FPM</strong></p>
 <ul>
-<li>Master 主进程 / Worker 多进程模式。</li>
+<li>Master 主进程 &#x2F; Worker 多进程模式。</li>
 <li>启动 Master，通过 FastCGI 协议监听来自 Nginx 传输的请求。</li>
 <li>每个 Worker 进程只对应一个连接，用于执行完整的 PHP 代码。</li>
 <li>PHP 代码执行完毕，占用的内存会全部销毁，下一次请求需要重新再进行初始化等各种繁琐的操作。</li>
@@ -274,7 +315,7 @@
 </li>
 <li><p><strong>Swoole</strong></p>
 <ul>
-<li>Master 主进程（由多个 Reactor 线程组成）/ Worker 多进程（或多线程）模式</li>
+<li>Master 主进程（由多个 Reactor 线程组成）&#x2F; Worker 多进程（或多线程）模式</li>
 <li>启动 Master，初始化 PHP 代码，由 Reactor 监听 Socket 句柄的事件变化。</li>
 <li>Reactor 主线程负责子多线程的均衡问题，Manager 进程管理 Worker 多进程，包括 TaskWorker 的进程。</li>
 <li>每个 Worker 接受来自 Reactor 的请求，只需要执行回调函数部分的 PHP 代码。</li>
@@ -307,7 +348,7 @@
 <li>如果需要在不同的Worker进程内共享数据，可以用<code>Redis</code>、<code>MySQL</code>、文件、<code>Swoole\Table</code>、<code>APCu</code>、<code>shmget</code>等工具实现</li>
 <li>不同进程的文件句柄是隔离的，所以在A进程创建的Socket连接或打开的文件，在B进程内是无效，即使是将它的fd发送到B进程也是不可用的</li>
 </ul>
-<h1 id="基础的TCP-UDP认知"><a href="#基础的TCP-UDP认知" class="headerlink" title="基础的TCP/UDP认知"></a>基础的TCP/UDP认知</h1><h2 id="TCP-和-UDP的区别"><a href="#TCP-和-UDP的区别" class="headerlink" title="TCP 和 UDP的区别 ?"></a><code>TCP</code> 和 <code>UDP</code>的区别 ?</h2><blockquote>
+<h1 id="基础的TCP-x2F-UDP认知"><a href="#基础的TCP-x2F-UDP认知" class="headerlink" title="基础的TCP&#x2F;UDP认知"></a>基础的TCP&#x2F;UDP认知</h1><h2 id="TCP-和-UDP的区别"><a href="#TCP-和-UDP的区别" class="headerlink" title="TCP 和 UDP的区别 ?"></a><code>TCP</code> 和 <code>UDP</code>的区别 ?</h2><blockquote>
 <p>TCP(Transmission Control Protocol, 传输控制协议)<br>TCP 三次握手 四次挥手</p>
 </blockquote>
 <blockquote>
@@ -378,7 +419,7 @@
 <h2 id="http请求参数获取"><a href="#http请求参数获取" class="headerlink" title="http请求参数获取 ?"></a>http请求参数获取 ?</h2><blockquote>
 <p>在同<code>swoole</code>的<code>http</code>服务的时候，很多人会发现<code>$_GET</code>、<code>$_POST</code>等常见全局变量无法使用。这是因为<code>$_GET</code>、<code>$_POST</code>等变量都是全局的，在<code>swoole</code>当中会出现问题，如果想获取请求参数，可以用<code>swoole</code>回调时提供的<code>Request</code>对象来进行获取</p>
 </blockquote>
-<h2 id="swoole不能使用die-exit"><a href="#swoole不能使用die-exit" class="headerlink" title="swoole不能使用die/exit ?"></a>swoole不能使用die/exit ?</h2><blockquote>
+<h2 id="swoole不能使用die-x2F-exit"><a href="#swoole不能使用die-x2F-exit" class="headerlink" title="swoole不能使用die&#x2F;exit ?"></a>swoole不能使用die&#x2F;exit ?</h2><blockquote>
 <p><code>phper</code>都习惯用<code>die/exit</code>来调试代码，这是因为这个命令会直接退出当前进程，对于fpm来讲，每个请求都对应一个独立进程，退出了问题不大，但是在<code>swoole</code>当中，可能一个进程中会有多个请求同时在处理，如果你<code>exit</code>或者<code>die</code>来退出当前进程，会导致数据丢失。</p>
 </blockquote>
 <h2 id="swoole下为何需要断线重连"><a href="#swoole下为何需要断线重连" class="headerlink" title="swoole下为何需要断线重连 ?"></a>swoole下为何需要断线重连 ?</h2><blockquote>
@@ -415,7 +456,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoole/">Swoole</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swoole/" rel="tag">Swoole</a></li></ul>
 
       
 
@@ -451,7 +492,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基础编程知识"><span class="nav-number">1.</span> <span class="nav-text">基础编程知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#阻塞-和-非阻塞-的区别"><span class="nav-number">1.1.</span> <span class="nav-text">阻塞 和 非阻塞 的区别?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#异步的优势"><span class="nav-number">1.1.1.</span> <span class="nav-text">异步的优势 ?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步的优势"><span class="nav-number">1.1.2.</span> <span class="nav-text">同步的优势 ?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP的GC机制"><span class="nav-number">1.2.</span> <span class="nav-text">PHP的GC机制 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP面向对象编程-对象引用机制和对象与内存之间的关系"><span class="nav-number">1.3.</span> <span class="nav-text">PHP面向对象编程: 对象引用机制和对象与内存之间的关系 ?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多进程编程"><span class="nav-number">2.</span> <span class="nav-text">多进程编程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#fpm-和-swoole-的多进程模型及其区别"><span class="nav-number">2.1.</span> <span class="nav-text">fpm 和 swoole 的多进程模型及其区别 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程间通信-进程隔离-进程信号量"><span class="nav-number">2.2.</span> <span class="nav-text">进程间通信? 进程隔离? 进程信号量?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#进程间通信"><span class="nav-number">2.2.1.</span> <span class="nav-text">进程间通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程隔离"><span class="nav-number">2.2.2.</span> <span class="nav-text">进程隔离</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基础的TCP-UDP认知"><span class="nav-number">3.</span> <span class="nav-text">基础的TCP/UDP认知</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-和-UDP的区别"><span class="nav-number">3.1.</span> <span class="nav-text">TCP 和 UDP的区别 ?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#区别"><span class="nav-number">3.1.1.</span> <span class="nav-text">区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OSI七层模型中的上四层"><span class="nav-number">3.2.</span> <span class="nav-text">OSI七层模型中的上四层 ?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#协程"><span class="nav-number">4.</span> <span class="nav-text">协程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Swoole的协程工作模式"><span class="nav-number">4.1.</span> <span class="nav-text">Swoole的协程工作模式 ?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Swoole常见的”坑”"><span class="nav-number">5.</span> <span class="nav-text">Swoole常见的”坑”</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为何全局变量无法共享呢"><span class="nav-number">5.1.</span> <span class="nav-text">为何全局变量无法共享呢 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#echo-var-dump-无法输出到浏览器-http响应"><span class="nav-number">5.2.</span> <span class="nav-text">echo var_dump 无法输出到浏览器(http响应) ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http请求参数获取"><span class="nav-number">5.3.</span> <span class="nav-text">http请求参数获取 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#swoole不能使用die-exit"><span class="nav-number">5.4.</span> <span class="nav-text">swoole不能使用die/exit ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#swoole下为何需要断线重连"><span class="nav-number">5.5.</span> <span class="nav-text">swoole下为何需要断线重连 ?</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%BC%96%E7%A8%8B%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">基础编程知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%BB%E5%A1%9E-%E5%92%8C-%E9%9D%9E%E9%98%BB%E5%A1%9E-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.1.</span> <span class="nav-text">阻塞 和 非阻塞 的区别?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">1.1.1.</span> <span class="nav-text">异步的优势 ?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="nav-number">1.1.2.</span> <span class="nav-text">同步的优势 ?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP%E7%9A%84GC%E6%9C%BA%E5%88%B6"><span class="nav-number">1.2.</span> <span class="nav-text">PHP的GC机制 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B-%E5%AF%B9%E8%B1%A1%E5%BC%95%E7%94%A8%E6%9C%BA%E5%88%B6%E5%92%8C%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%86%85%E5%AD%98%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.3.</span> <span class="nav-text">PHP面向对象编程: 对象引用机制和对象与内存之间的关系 ?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%9A%E8%BF%9B%E7%A8%8B%E7%BC%96%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">多进程编程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#fpm-%E5%92%8C-swoole-%E7%9A%84%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%8F%8A%E5%85%B6%E5%8C%BA%E5%88%AB"><span class="nav-number">2.1.</span> <span class="nav-text">fpm 和 swoole 的多进程模型及其区别 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1-%E8%BF%9B%E7%A8%8B%E9%9A%94%E7%A6%BB-%E8%BF%9B%E7%A8%8B%E4%BF%A1%E5%8F%B7%E9%87%8F"><span class="nav-number">2.2.</span> <span class="nav-text">进程间通信? 进程隔离? 进程信号量?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1"><span class="nav-number">2.2.1.</span> <span class="nav-text">进程间通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E9%9A%94%E7%A6%BB"><span class="nav-number">2.2.2.</span> <span class="nav-text">进程隔离</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9A%84TCP-x2F-UDP%E8%AE%A4%E7%9F%A5"><span class="nav-number">3.</span> <span class="nav-text">基础的TCP&#x2F;UDP认知</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E5%92%8C-UDP%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.1.</span> <span class="nav-text">TCP 和 UDP的区别 ?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB"><span class="nav-number">3.1.1.</span> <span class="nav-text">区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%AD%E7%9A%84%E4%B8%8A%E5%9B%9B%E5%B1%82"><span class="nav-number">3.2.</span> <span class="nav-text">OSI七层模型中的上四层 ?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">协程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Swoole%E7%9A%84%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text">Swoole的协程工作模式 ?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Swoole%E5%B8%B8%E8%A7%81%E7%9A%84%E2%80%9D%E5%9D%91%E2%80%9D"><span class="nav-number">5.</span> <span class="nav-text">Swoole常见的”坑”</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BD%95%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F%E6%97%A0%E6%B3%95%E5%85%B1%E4%BA%AB%E5%91%A2"><span class="nav-number">5.1.</span> <span class="nav-text">为何全局变量无法共享呢 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#echo-var-dump-%E6%97%A0%E6%B3%95%E8%BE%93%E5%87%BA%E5%88%B0%E6%B5%8F%E8%A7%88%E5%99%A8-http%E5%93%8D%E5%BA%94"><span class="nav-number">5.2.</span> <span class="nav-text">echo var_dump 无法输出到浏览器(http响应) ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E8%8E%B7%E5%8F%96"><span class="nav-number">5.3.</span> <span class="nav-text">http请求参数获取 ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#swoole%E4%B8%8D%E8%83%BD%E4%BD%BF%E7%94%A8die-x2F-exit"><span class="nav-number">5.4.</span> <span class="nav-text">swoole不能使用die&#x2F;exit ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#swoole%E4%B8%8B%E4%B8%BA%E4%BD%95%E9%9C%80%E8%A6%81%E6%96%AD%E7%BA%BF%E9%87%8D%E8%BF%9E"><span class="nav-number">5.5.</span> <span class="nav-text">swoole下为何需要断线重连 ?</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -466,7 +507,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -546,12 +587,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -619,7 +664,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

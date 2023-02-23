@@ -1,32 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>php 生命周期 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="PHP生命周期">
+  <meta name="keywords" content="PHP生命周期" />
   
   
   
   
   <meta name="description" content="想做一些关于框架的生命周期的探讨, 又一想, 在那之前很有必要做一下PHP生命周期的功课">
-<meta name="keywords" content="PHP,生命周期">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP 生命周期">
 <meta property="og:url" content="http://blog.caoxl.com/2018/07/06/PHP-life/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="想做一些关于框架的生命周期的探讨, 又一想, 在那之前很有必要做一下PHP生命周期的功课">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://caoxl.com/images/sapi.jpg">
 <meta property="og:image" content="https://caoxl.com/images/sapi-cli-cgi.jpg">
 <meta property="og:image" content="https://caoxl.com/images/sapi-apache2.jpg">
 <meta property="og:image" content="https://caoxl.com/images/sapi-mult.jpg">
-<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:published_time" content="2018-07-06T03:36:00.000Z">
+<meta property="article:modified_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="生命周期">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PHP 生命周期">
-<meta name="twitter:description" content="想做一些关于框架的生命周期的探讨, 又一想, 在那之前很有必要做一下PHP生命周期的功课">
 <meta name="twitter:image" content="https://caoxl.com/images/sapi.jpg">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
@@ -47,30 +48,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -148,7 +187,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -204,7 +245,8 @@
           <blockquote>
 <p>想做一些关于框架的生命周期的探讨, 又一想, 在那之前很有必要做一下<code>PHP</code>生命周期的功课</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="SAPI-一切的开始"><a href="#SAPI-一切的开始" class="headerlink" title="SAPI: 一切的开始"></a><code>SAPI</code>: 一切的开始</h1><p>什么是<code>SAPI</code> ? 为什么先讲这个 ? 看下图!</p>
 <p><img src="https://caoxl.com/images/sapi.jpg" alt="SAPI"></p>
 <blockquote>
@@ -215,41 +257,45 @@
 <p><code>PHP</code>中常用的<code>SAPI</code>有<code>cli</code>(命令行模式，单进程)、<code>php-fpm</code>、<code>CGI</code>、<code>Apache</code>…</p>
 <p>有点像策略模式,使用相同的接口，但是实现会略有不同。</p>
 <blockquote>
-<p><a href="http://www.laruence.com/2008/08/12/180.html" target="_blank" rel="noopener">深入理解Zend SAPIs(Zend SAPI Internals) </a></p>
+<p><a target="_blank" rel="noopener" href="http://www.laruence.com/2008/08/12/180.html">深入理解Zend SAPIs(Zend SAPI Internals) </a></p>
 </blockquote>
 <h1 id="PHP的启动和终止"><a href="#PHP的启动和终止" class="headerlink" title="PHP的启动和终止"></a><code>PHP</code>的启动和终止</h1><h2 id="请求之前的开始阶段"><a href="#请求之前的开始阶段" class="headerlink" title="请求之前的开始阶段"></a>请求之前的开始阶段</h2><ul>
 <li><code>MINIT</code>:  模块初始化阶段, 初始化一些扩展、常量、类、资源、等所有被<code>php</code>脚本用到的东西. (常驻内存, 可以被所有请求使用)</li>
 </ul>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PHP_MINIT_FUNCTION(myphp_extentsion)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 注册常量或者类等初始化操作</span></span><br><span class="line">    <span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight wren"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">PHP_MINIT_FUNCTION</span>(<span class="params">myphp_extentsion</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 注册常量或者类等初始化操作</span></span><br><span class="line">    <span class="keyword">return</span> <span class="variable">SUCCESS</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>PRINT</code>:  模块激活阶段, <code>PHP</code>惠调用所有模块的<code>RINIT</code>函数, 在这个阶段各个模块也可以执行一些相关的操作, 比如初始化<code>本次请求</code>使用到的变量</li>
 </ul>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PHP_RINIT_FUNCTION(myphp_extension)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 例如记录请求开始时间</span></span><br><span class="line">    <span class="comment">// 随后在请求结束的时候记录结束时间, 这样我们就能够记录下处理请求所花费的时间了</span></span><br><span class="line">    <span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight wren"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">PHP_RINIT_FUNCTION</span>(<span class="params">myphp_extension</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 例如记录请求开始时间</span></span><br><span class="line">    <span class="comment">// 随后在请求结束的时候记录结束时间, 这样我们就能够记录下处理请求所花费的时间了</span></span><br><span class="line">    <span class="keyword">return</span> <span class="variable">SUCCESS</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="请求之后的结束阶段"><a href="#请求之后的结束阶段" class="headerlink" title="请求之后的结束阶段"></a>请求之后的结束阶段</h2><ul>
 <li><code>RSHUTDOWN</code>:  这个页面请求执行完毕，或者被用户给die（exit）了， 这时PHP会启动回收程序，回收本次请求使用的资源。<br>这次会执行所有已加载扩展的<code>RSHUTDOWN</code>（俗称<code>Request Shutdown</code>）方法， 这时候扩展可以利用内核中的变量表等做的一些事情<br>。因为<code>PHP</code>一旦把所有扩展的<code>RSHUTDOWN</code>方法执行完，便会释放掉这次请求使用过的所有资源，比如变量表的所有变量、所有在这次请求中申请的内存等</li>
 </ul>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PHP_RSHUTDOWN_FUNCTION(myphp_extension)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 例如记录请求结束时间, 并把相应的信息写入到日志文件中</span></span><br><span class="line">    <span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight wren"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">PHP_RSHUTDOWN_FUNCTION</span>(<span class="params">myphp_extension</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 例如记录请求结束时间, 并把相应的信息写入到日志文件中</span></span><br><span class="line">    <span class="keyword">return</span> <span class="variable">SUCCESS</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>MSHUTDOWN</code>:  <code>PHP</code>执行所有扩展的<code>MSHUDOWN</code>, 释放资源.</li>
 </ul>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">PHP_MSHUTDOWN_FUNCTION(extension_name)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 自由处理程序和持久内存等</span></span><br><span class="line">    <span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight wren"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">PHP_MSHUTDOWN_FUNCTION</span>(<span class="params">extension_name</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 自由处理程序和持久内存等</span></span><br><span class="line">    <span class="keyword">return</span> <span class="variable">SUCCESS</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="PHP的生命周期"><a href="#PHP的生命周期" class="headerlink" title="PHP的生命周期"></a><code>PHP</code>的生命周期</h1><h2 id="单进程SAPI生命周期-CLI-CGI"><a href="#单进程SAPI生命周期-CLI-CGI" class="headerlink" title="单进程SAPI生命周期(CLI/CGI)"></a>单进程<code>SAPI</code>生命周期(<code>CLI/CGI</code>)</h2><p><img src="https://caoxl.com/images/sapi-cli-cgi.jpg" alt="单进程SAPI"></p>
 <h2 id="多进程SAPI生命周期-Apache2"><a href="#多进程SAPI生命周期-Apache2" class="headerlink" title="多进程SAPI生命周期(Apache2)"></a>多进程<code>SAPI</code>生命周期(<code>Apache2</code>)</h2><p><img src="https://caoxl.com/images/sapi-apache2.jpg" alt="多进程SAPI"></p>
 <h2 id="多线程SAPI生命周期"><a href="#多线程SAPI生命周期" class="headerlink" title="多线程SAPI生命周期"></a>多线程<code>SAPI</code>生命周期</h2><p><img src="https://caoxl.com/images/sapi-mult.jpg" alt="多线程SAPI"></p>
 <h2 id="Embed"><a href="#Embed" class="headerlink" title="Embed"></a><code>Embed</code></h2><p><code>Embed SAPI</code>是一种比较特殊的<code>sapi</code>, 容许你在<code>C/C++</code>语言中调用<code>PHP/ZE</code>提供的函数。</p>
 <blockquote>
-<p><u><a href="http://www.laruence.com/2008/09/23/539.html" target="_blank" rel="noopener">使用PHP Embed SAPI实现Opcodes查看器 </a></u></p>
+<p><u><a target="_blank" rel="noopener" href="http://www.laruence.com/2008/09/23/539.html">使用PHP Embed SAPI实现Opcodes查看器 </a></u></p>
 </blockquote>
 <blockquote>
 <p>图片基本是从参考链接那边拿过来, 站在前人的肩膀上</p>
 </blockquote>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="http://www.laruence.com/2008/08/12/180.html" target="_blank" rel="noopener">深入理解Zend SAPIs(Zend SAPI Internals) </a></li>
-<li><a href="http://www.laruence.com/2008/09/23/539.html" target="_blank" rel="noopener">使用PHP Embed SAPI实现Opcodes查看器 </a></li>
-<li><a href="https://en.wikipedia.org/wiki/Server_Application_Programming_Interface" target="_blank" rel="noopener">服务器应用编程接口</a></li>
-<li><a href="https://foio.github.io/php-sapi/" target="_blank" rel="noopener">理解php内核中SAPI的作用</a></li>
-<li><a href="http://www.php-internals.com/book/?p=chapt02/02-01-php-life-cycle-and-zend-engine" target="_blank" rel="noopener">生命周期和Zend引擎</a></li>
-<li><a href="https://blog.csdn.net/hguisu/article/details/7377520" target="_blank" rel="noopener">深入理解php底层：php生命周期</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.laruence.com/2008/08/12/180.html">深入理解Zend SAPIs(Zend SAPI Internals) </a></li>
+<li><a target="_blank" rel="noopener" href="http://www.laruence.com/2008/09/23/539.html">使用PHP Embed SAPI实现Opcodes查看器 </a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Server_Application_Programming_Interface">服务器应用编程接口</a></li>
+<li><a target="_blank" rel="noopener" href="https://foio.github.io/php-sapi/">理解php内核中SAPI的作用</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.php-internals.com/book/?p=chapt02/02-01-php-life-cycle-and-zend-engine">生命周期和Zend引擎</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/hguisu/article/details/7377520">深入理解php底层：php生命周期</a></li>
 </ul>
 
         
@@ -282,7 +328,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/生命周期/">生命周期</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" rel="tag">生命周期</a></li></ul>
 
       
 
@@ -318,7 +364,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SAPI-一切的开始"><span class="nav-number">1.</span> <span class="nav-text">SAPI: 一切的开始</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP的启动和终止"><span class="nav-number">2.</span> <span class="nav-text">PHP的启动和终止</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#请求之前的开始阶段"><span class="nav-number">2.1.</span> <span class="nav-text">请求之前的开始阶段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求之后的结束阶段"><span class="nav-number">2.2.</span> <span class="nav-text">请求之后的结束阶段</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP的生命周期"><span class="nav-number">3.</span> <span class="nav-text">PHP的生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单进程SAPI生命周期-CLI-CGI"><span class="nav-number">3.1.</span> <span class="nav-text">单进程SAPI生命周期(CLI/CGI)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多进程SAPI生命周期-Apache2"><span class="nav-number">3.2.</span> <span class="nav-text">多进程SAPI生命周期(Apache2)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程SAPI生命周期"><span class="nav-number">3.3.</span> <span class="nav-text">多线程SAPI生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Embed"><span class="nav-number">3.4.</span> <span class="nav-text">Embed</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SAPI-%E4%B8%80%E5%88%87%E7%9A%84%E5%BC%80%E5%A7%8B"><span class="nav-number">1.</span> <span class="nav-text">SAPI: 一切的开始</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP%E7%9A%84%E5%90%AF%E5%8A%A8%E5%92%8C%E7%BB%88%E6%AD%A2"><span class="nav-number">2.</span> <span class="nav-text">PHP的启动和终止</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E4%B9%8B%E5%89%8D%E7%9A%84%E5%BC%80%E5%A7%8B%E9%98%B6%E6%AE%B5"><span class="nav-number">2.1.</span> <span class="nav-text">请求之前的开始阶段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E4%B9%8B%E5%90%8E%E7%9A%84%E7%BB%93%E6%9D%9F%E9%98%B6%E6%AE%B5"><span class="nav-number">2.2.</span> <span class="nav-text">请求之后的结束阶段</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHP%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">3.</span> <span class="nav-text">PHP的生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E8%BF%9B%E7%A8%8BSAPI%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F-CLI-CGI"><span class="nav-number">3.1.</span> <span class="nav-text">单进程SAPI生命周期(CLI&#x2F;CGI)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%BF%9B%E7%A8%8BSAPI%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F-Apache2"><span class="nav-number">3.2.</span> <span class="nav-text">多进程SAPI生命周期(Apache2)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8BSAPI%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">3.3.</span> <span class="nav-text">多线程SAPI生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Embed"><span class="nav-number">3.4.</span> <span class="nav-text">Embed</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -333,7 +379,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -413,12 +459,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -486,7 +536,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

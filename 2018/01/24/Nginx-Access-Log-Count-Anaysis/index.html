@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>nginx access log日志统计分析常用命令 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Nginx">
+  <meta name="keywords" content="Nginx" />
   
   
   
   
-  <meta name="description" content="IP相关统计统计IP访问量1awk &apos;&amp;#123;print $1&amp;#125;&apos; access.log | sort -n | uniq | wc -l">
-<meta name="keywords" content="Nginx">
+  <meta name="description" content="IP相关统计统计IP访问量1awk &amp;#x27;&amp;#123;print $1&amp;#125;&amp;#x27; access.log | sort -n | uniq | wc -l">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Nginx Access Log日志统计分析常用命令">
 <meta property="og:url" content="http://blog.caoxl.com/2018/01/24/Nginx-Access-Log-Count-Anaysis/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
-<meta property="og:description" content="IP相关统计统计IP访问量1awk &apos;&amp;#123;print $1&amp;#125;&apos; access.log | sort -n | uniq | wc -l">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta property="og:description" content="IP相关统计统计IP访问量1awk &amp;#x27;&amp;#123;print $1&amp;#125;&amp;#x27; access.log | sort -n | uniq | wc -l">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-24T08:57:43.000Z">
+<meta property="article:modified_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Nginx">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Nginx Access Log日志统计分析常用命令">
-<meta name="twitter:description" content="IP相关统计统计IP访问量1awk &apos;&amp;#123;print $1&amp;#125;&apos; access.log | sort -n | uniq | wc -l">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +42,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +181,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -196,29 +236,50 @@
       
         
         
-          <h1 id="IP相关统计"><a href="#IP相关统计" class="headerlink" title="IP相关统计"></a>IP相关统计</h1><h2 id="统计IP访问量"><a href="#统计IP访问量" class="headerlink" title="统计IP访问量"></a>统计IP访问量</h2><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk '&#123;<span class="keyword">print</span> <span class="variable">$1&#125;</span>' access.<span class="keyword">log</span> | <span class="keyword">sort</span> -<span class="keyword">n</span> | uniq | wc -<span class="keyword">l</span></span><br></pre></td></tr></table></figure>
-<a id="more"></a>
-<h2 id="查看某一时间段的IP访问量-4-5点"><a href="#查看某一时间段的IP访问量-4-5点" class="headerlink" title="查看某一时间段的IP访问量(4-5点)"></a>查看某一时间段的IP访问量(4-5点)</h2><figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">"07/Apr/2018:0[4-5]"</span> access.log | <span class="type">awk</span> '&#123;print $<span class="number">1</span>&#125;' | <span class="type">sort</span> | <span class="type">uniq</span> -c| <span class="type">sort</span> -nr | <span class="type">wc</span> -l</span><br></pre></td></tr></table></figure>
-<h2 id="查看访问最频繁的前100个IP"><a href="#查看访问最频繁的前100个IP" class="headerlink" title="查看访问最频繁的前100个IP"></a>查看访问最频繁的前100个IP</h2><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk '&#123;<span class="keyword">print</span> <span class="variable">$1&#125;</span>' access.<span class="keyword">log</span> | <span class="keyword">sort</span> -<span class="keyword">n</span> |uniq -c | <span class="keyword">sort</span> -rn | head -<span class="keyword">n</span> 100</span><br></pre></td></tr></table></figure>
-<h2 id="查看访问100次以上的IP"><a href="#查看访问100次以上的IP" class="headerlink" title="查看访问100次以上的IP"></a>查看访问100次以上的IP</h2><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk '&#123;<span class="keyword">print</span> <span class="variable">$1&#125;</span>' access.<span class="keyword">log</span> | <span class="keyword">sort</span> -<span class="keyword">n</span> |uniq -c |awk '&#123;<span class="keyword">if</span>(<span class="variable">$1</span> &gt;100) <span class="keyword">print</span> <span class="variable">$0&#125;</span>'|<span class="keyword">sort</span> -rn</span><br></pre></td></tr></table></figure>
-<h2 id="查询某个IP的详细访问情况-按访问频率排序"><a href="#查询某个IP的详细访问情况-按访问频率排序" class="headerlink" title="查询某个IP的详细访问情况,按访问频率排序"></a>查询某个IP的详细访问情况,按访问频率排序</h2><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">grep</span> <span class="string">'104.217.108.66'</span> access.<span class="built_in">log</span> |awk <span class="string">'&#123;print $7&#125;'</span>|<span class="keyword">sort</span> |uniq -<span class="keyword">c</span> |<span class="keyword">sort</span> -rn |head -n <span class="number">100</span></span><br></pre></td></tr></table></figure>
-<h1 id="页面访问统计"><a href="#页面访问统计" class="headerlink" title="页面访问统计"></a>页面访问统计</h1><h2 id="查看访问最频的页面-TOP100"><a href="#查看访问最频的页面-TOP100" class="headerlink" title="查看访问最频的页面(TOP100)"></a>查看访问最频的页面(TOP100)</h2><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk '&#123;<span class="keyword">print</span> <span class="variable">$7&#125;</span>' access.<span class="keyword">log</span> | <span class="keyword">sort</span> |uniq -c | <span class="keyword">sort</span> -rn | head -<span class="keyword">n</span> 10</span><br></pre></td></tr></table></figure>
-<h2 id="查看访问最频的页面-排除php页面-TOP100"><a href="#查看访问最频的页面-排除php页面-TOP100" class="headerlink" title="查看访问最频的页面([排除php页面] (TOP100))"></a>查看访问最频的页面([排除php页面] (TOP100))</h2><figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -v <span class="string">".php"</span>  access.log | <span class="type">awk</span> '&#123;print $<span class="number">7</span>&#125;' | <span class="type">sort</span> |<span class="type">uniq</span> -c | <span class="type">sort</span> -rn | <span class="type">head</span> -n <span class="number">100</span></span><br></pre></td></tr></table></figure>
-<h2 id="查看页面访问次数超过100次的页面"><a href="#查看页面访问次数超过100次的页面" class="headerlink" title="查看页面访问次数超过100次的页面"></a>查看页面访问次数超过100次的页面</h2><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cat</span> access.<span class="keyword">log</span> | cut -<span class="keyword">d</span> ' ' -f 7 | <span class="keyword">sort</span> |uniq -c | awk '&#123;<span class="keyword">if</span> (<span class="variable">$1</span> &gt; 100) <span class="keyword">print</span> <span class="variable">$0&#125;</span>' | less</span><br></pre></td></tr></table></figure>
-<h2 id="查看最近1000条记录，访问量最高的页面"><a href="#查看最近1000条记录，访问量最高的页面" class="headerlink" title="查看最近1000条记录，访问量最高的页面"></a>查看最近1000条记录，访问量最高的页面</h2><figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail <span class="number">-1000</span> access.log |<span class="type">awk</span> '&#123;print $<span class="number">7</span>&#125;'|<span class="type">sort</span>|<span class="type">uniq</span> -c|<span class="type">sort</span> -nr|<span class="type">less</span></span><br></pre></td></tr></table></figure>
+          <h1 id="IP相关统计"><a href="#IP相关统计" class="headerlink" title="IP相关统计"></a>IP相关统计</h1><h2 id="统计IP访问量"><a href="#统计IP访问量" class="headerlink" title="统计IP访问量"></a>统计IP访问量</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span> access.log | <span class="built_in">sort</span> -n | <span class="built_in">uniq</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h2 id="查看某一时间段的IP访问量-4-5点"><a href="#查看某一时间段的IP访问量-4-5点" class="headerlink" title="查看某一时间段的IP访问量(4-5点)"></a>查看某一时间段的IP访问量(4-5点)</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&quot;07/Apr/2018:0[4-5]&quot;</span> access.log | awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span> | <span class="built_in">sort</span> | <span class="built_in">uniq</span> -c| <span class="built_in">sort</span> -nr | <span class="built_in">wc</span> -l   </span><br></pre></td></tr></table></figure>
+
+<h2 id="查看访问最频繁的前100个IP"><a href="#查看访问最频繁的前100个IP" class="headerlink" title="查看访问最频繁的前100个IP"></a>查看访问最频繁的前100个IP</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print $1&#125;&#x27;</span> access.log | <span class="built_in">sort</span> -n |<span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -rn | <span class="built_in">head</span> -n 100</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看访问100次以上的IP"><a href="#查看访问100次以上的IP" class="headerlink" title="查看访问100次以上的IP"></a>查看访问100次以上的IP</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">awk</span> <span class="string">&#x27;&#123;print <span class="variable">$1</span>&#125;&#x27;</span> access.log | sort -n |uniq -c |awk <span class="string">&#x27;&#123;if(<span class="variable">$1</span> &gt;100) print <span class="variable">$0</span>&#125;&#x27;</span>|sort -rn</span><br></pre></td></tr></table></figure>
+
+<h2 id="查询某个IP的详细访问情况-按访问频率排序"><a href="#查询某个IP的详细访问情况-按访问频率排序" class="headerlink" title="查询某个IP的详细访问情况,按访问频率排序"></a>查询某个IP的详细访问情况,按访问频率排序</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep <span class="string">&#x27;104.217.108.66&#x27;</span> access.log |awk <span class="string">&#x27;&#123;print $7&#125;&#x27;</span>|<span class="built_in">sort</span> |<span class="built_in">uniq</span> -c |<span class="built_in">sort</span> -rn |<span class="built_in">head</span> -n 100  </span><br></pre></td></tr></table></figure>
+
+
+<h1 id="页面访问统计"><a href="#页面访问统计" class="headerlink" title="页面访问统计"></a>页面访问统计</h1><h2 id="查看访问最频的页面-TOP100"><a href="#查看访问最频的页面-TOP100" class="headerlink" title="查看访问最频的页面(TOP100)"></a>查看访问最频的页面(TOP100)</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print $7&#125;&#x27;</span> access.log | <span class="built_in">sort</span> |<span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -rn | <span class="built_in">head</span> -n 10</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看访问最频的页面-排除php页面-TOP100"><a href="#查看访问最频的页面-排除php页面-TOP100" class="headerlink" title="查看访问最频的页面([排除php页面] (TOP100))"></a>查看访问最频的页面([排除php页面] (TOP100))</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -v <span class="string">&quot;.php&quot;</span>  access.log | awk <span class="string">&#x27;&#123;print $7&#125;&#x27;</span> | <span class="built_in">sort</span> |<span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -rn | <span class="built_in">head</span> -n 100  </span><br></pre></td></tr></table></figure>
+
+<h2 id="查看页面访问次数超过100次的页面"><a href="#查看页面访问次数超过100次的页面" class="headerlink" title="查看页面访问次数超过100次的页面"></a>查看页面访问次数超过100次的页面</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> access.log | <span class="built_in">cut</span> -d <span class="string">&#x27; &#x27;</span> -f 7 | <span class="built_in">sort</span> |<span class="built_in">uniq</span> -c | awk <span class="string">&#x27;&#123;if ($1 &gt; 100) print $0&#125;&#x27;</span> | less</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看最近1000条记录，访问量最高的页面"><a href="#查看最近1000条记录，访问量最高的页面" class="headerlink" title="查看最近1000条记录，访问量最高的页面"></a>查看最近1000条记录，访问量最高的页面</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">tail</span> -1000 access.log |awk <span class="string">&#x27;&#123;print $7&#125;&#x27;</span>|<span class="built_in">sort</span>|<span class="built_in">uniq</span> -c|<span class="built_in">sort</span> -nr|less</span><br></pre></td></tr></table></figure>
+
 <h1 id="请求量统计"><a href="#请求量统计" class="headerlink" title="请求量统计"></a>请求量统计</h1><h2 id="每秒请求量统计"><a href="#每秒请求量统计" class="headerlink" title="每秒请求量统计"></a>每秒请求量统计</h2><p>统计每秒的请求数,top100的时间点(精确到秒)</p>
-<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk '&#123;print $<span class="number">4</span>&#125;' access.log |<span class="type">cut</span> -c <span class="number">14</span><span class="number">-21</span>|<span class="type">sort</span>|<span class="type">uniq</span> -c|<span class="type">sort</span> -nr|<span class="type">head</span> -n <span class="number">100</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print $4&#125;&#x27;</span> access.log |<span class="built_in">cut</span> -c 14-21|<span class="built_in">sort</span>|<span class="built_in">uniq</span> -c|<span class="built_in">sort</span> -nr|<span class="built_in">head</span> -n 100</span><br></pre></td></tr></table></figure>
+
 <h2 id="每分钟请求量统计"><a href="#每分钟请求量统计" class="headerlink" title="每分钟请求量统计"></a>每分钟请求量统计</h2><p>统计每分钟的请求数,top100的时间点(精确到分钟)</p>
-<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk '&#123;print $<span class="number">4</span>&#125;' access.log |<span class="type">cut</span> -c <span class="number">14</span><span class="number">-18</span>|<span class="type">sort</span>|<span class="type">uniq</span> -c|<span class="type">sort</span> -nr|<span class="type">head</span> -n <span class="number">100</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print $4&#125;&#x27;</span> access.log |<span class="built_in">cut</span> -c 14-18|<span class="built_in">sort</span>|<span class="built_in">uniq</span> -c|<span class="built_in">sort</span> -nr|<span class="built_in">head</span> -n 100</span><br></pre></td></tr></table></figure>
+
 <h2 id="每小时请求量统计"><a href="#每小时请求量统计" class="headerlink" title="每小时请求量统计"></a>每小时请求量统计</h2><p>统计每小时的请求数,top100的时间点(精确到小时)</p>
-<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk '&#123;print $<span class="number">4</span>&#125;' access.log |<span class="type">cut</span> -c <span class="number">14</span><span class="number">-15</span>|<span class="type">sort</span>|<span class="type">uniq</span> -c|<span class="type">sort</span> -nr|<span class="type">head</span> -n <span class="number">100</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print $4&#125;&#x27;</span> access.log |<span class="built_in">cut</span> -c 14-15|<span class="built_in">sort</span>|<span class="built_in">uniq</span> -c|<span class="built_in">sort</span> -nr|<span class="built_in">head</span> -n 100</span><br></pre></td></tr></table></figure>
+
+
 <h1 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h1><p>在nginx log中最后一个字段加入$request_time</p>
-<h2 id="列出传输时间超过-3-秒的页面，显示前20条"><a href="#列出传输时间超过-3-秒的页面，显示前20条" class="headerlink" title="列出传输时间超过 3 秒的页面，显示前20条"></a>列出传输时间超过 3 秒的页面，显示前20条</h2><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cat</span> access.<span class="keyword">log</span>|awk '(<span class="variable">$NF</span> &gt; 3)&#123;<span class="keyword">print</span> <span class="variable">$7&#125;</span>'|<span class="keyword">sort</span> -<span class="keyword">n</span>|uniq -c|<span class="keyword">sort</span> -nr|head -20</span><br></pre></td></tr></table></figure>
-<h2 id="列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条"><a href="#列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条" class="headerlink" title="列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条"></a>列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条</h2><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cat</span> access.<span class="keyword">log</span>|awk '(<span class="variable">$NF</span> &gt; 1 &amp;&amp;  <span class="variable">$7</span>~/\.php/)&#123;<span class="keyword">print</span> <span class="variable">$7&#125;</span>'|<span class="keyword">sort</span> -<span class="keyword">n</span>|uniq -c|<span class="keyword">sort</span> -nr|head -100</span><br></pre></td></tr></table></figure>
-<h1 id="蜘蛛抓取统计"><a href="#蜘蛛抓取统计" class="headerlink" title="蜘蛛抓取统计"></a>蜘蛛抓取统计</h1><h2 id="统计蜘蛛抓取次数"><a href="#统计蜘蛛抓取次数" class="headerlink" title="统计蜘蛛抓取次数"></a>统计蜘蛛抓取次数</h2><figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep 'Baiduspider' access.<span class="built_in">log</span> <span class="string">|wc -l</span></span><br></pre></td></tr></table></figure>
-<h2 id="统计蜘蛛抓取404的次数"><a href="#统计蜘蛛抓取404的次数" class="headerlink" title="统计蜘蛛抓取404的次数"></a>统计蜘蛛抓取404的次数</h2><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">grep</span> <span class="string">'Baiduspider'</span> access.<span class="built_in">log</span> |<span class="keyword">grep</span> <span class="string">'404'</span> | wc -<span class="keyword">l</span></span><br></pre></td></tr></table></figure>
-<h1 id="TCP连接统计"><a href="#TCP连接统计" class="headerlink" title="TCP连接统计"></a>TCP连接统计</h1><h2 id="查看当前TCP连接数"><a href="#查看当前TCP连接数" class="headerlink" title="查看当前TCP连接数"></a>查看当前TCP连接数</h2><figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -tan | <span class="type">grep</span> <span class="string">"ESTABLISHED"</span> | <span class="type">grep</span> <span class="string">":80"</span> | <span class="type">wc</span> -l</span><br></pre></td></tr></table></figure>
-<h2 id="用tcpdump嗅探80端口的访问看看谁最高"><a href="#用tcpdump嗅探80端口的访问看看谁最高" class="headerlink" title="用tcpdump嗅探80端口的访问看看谁最高"></a>用tcpdump嗅探80端口的访问看看谁最高</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcpdump -i eth0 -tnn dst<span class="built_in"> port </span>80 -c 1000 | awk -F<span class="string">"."</span> <span class="string">'&#123;print $1"."$2"."$3"."$4&#125;'</span> | sort | uniq -c | sort -nr</span><br></pre></td></tr></table></figure>
+<h2 id="列出传输时间超过-3-秒的页面，显示前20条"><a href="#列出传输时间超过-3-秒的页面，显示前20条" class="headerlink" title="列出传输时间超过 3 秒的页面，显示前20条"></a>列出传输时间超过 3 秒的页面，显示前20条</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> access.log|awk <span class="string">&#x27;($NF &gt; 3)&#123;print $7&#125;&#x27;</span>|<span class="built_in">sort</span> -n|<span class="built_in">uniq</span> -c|<span class="built_in">sort</span> -nr|<span class="built_in">head</span> -20</span><br></pre></td></tr></table></figure>
+
+<h2 id="列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条"><a href="#列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条" class="headerlink" title="列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条"></a>列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> access.log|awk <span class="string">&#x27;($NF &gt; 1 &amp;&amp;  $7~/\.php/)&#123;print $7&#125;&#x27;</span>|<span class="built_in">sort</span> -n|<span class="built_in">uniq</span> -c|<span class="built_in">sort</span> -nr|<span class="built_in">head</span> -100</span><br></pre></td></tr></table></figure>
+
+<h1 id="蜘蛛抓取统计"><a href="#蜘蛛抓取统计" class="headerlink" title="蜘蛛抓取统计"></a>蜘蛛抓取统计</h1><h2 id="统计蜘蛛抓取次数"><a href="#统计蜘蛛抓取次数" class="headerlink" title="统计蜘蛛抓取次数"></a>统计蜘蛛抓取次数</h2><figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep &#x27;Baiduspider&#x27; access.<span class="built_in">log</span> <span class="string">|wc -l</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="统计蜘蛛抓取404的次数"><a href="#统计蜘蛛抓取404的次数" class="headerlink" title="统计蜘蛛抓取404的次数"></a>统计蜘蛛抓取404的次数</h2><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">grep</span> <span class="string">&#x27;Baiduspider&#x27;</span> access.<span class="built_in">log</span> |<span class="keyword">grep</span> <span class="string">&#x27;404&#x27;</span> | wc -<span class="keyword">l</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="TCP连接统计"><a href="#TCP连接统计" class="headerlink" title="TCP连接统计"></a>TCP连接统计</h1><h2 id="查看当前TCP连接数"><a href="#查看当前TCP连接数" class="headerlink" title="查看当前TCP连接数"></a>查看当前TCP连接数</h2><figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -tan | <span class="type">grep</span> <span class="string">&quot;ESTABLISHED&quot;</span> | <span class="type">grep</span> <span class="string">&quot;:80&quot;</span> | <span class="type">wc</span> -l</span><br></pre></td></tr></table></figure>
+
+<h2 id="用tcpdump嗅探80端口的访问看看谁最高"><a href="#用tcpdump嗅探80端口的访问看看谁最高" class="headerlink" title="用tcpdump嗅探80端口的访问看看谁最高"></a>用tcpdump嗅探80端口的访问看看谁最高</h2><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">tcpdump</span> -i eth0 -tnn dst port <span class="number">80</span> -c <span class="number">1000</span> | awk -F<span class="string">&quot;.&quot;</span> &#x27;&#123;print $<span class="number">1</span><span class="string">&quot;.&quot;</span>$<span class="number">2</span><span class="string">&quot;.&quot;</span>$<span class="number">3</span><span class="string">&quot;.&quot;</span>$<span class="number">4</span>&#125;&#x27; | sort | uniq -c | sort -nr</span><br></pre></td></tr></table></figure>
+
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1>
         
       
@@ -250,7 +311,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/">Nginx</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li></ul>
 
       
 
@@ -286,7 +347,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#IP相关统计"><span class="nav-number">1.</span> <span class="nav-text">IP相关统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#统计IP访问量"><span class="nav-number">1.1.</span> <span class="nav-text">统计IP访问量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看某一时间段的IP访问量-4-5点"><span class="nav-number">1.2.</span> <span class="nav-text">查看某一时间段的IP访问量(4-5点)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看访问最频繁的前100个IP"><span class="nav-number">1.3.</span> <span class="nav-text">查看访问最频繁的前100个IP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看访问100次以上的IP"><span class="nav-number">1.4.</span> <span class="nav-text">查看访问100次以上的IP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查询某个IP的详细访问情况-按访问频率排序"><span class="nav-number">1.5.</span> <span class="nav-text">查询某个IP的详细访问情况,按访问频率排序</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#页面访问统计"><span class="nav-number">2.</span> <span class="nav-text">页面访问统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看访问最频的页面-TOP100"><span class="nav-number">2.1.</span> <span class="nav-text">查看访问最频的页面(TOP100)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看访问最频的页面-排除php页面-TOP100"><span class="nav-number">2.2.</span> <span class="nav-text">查看访问最频的页面([排除php页面] (TOP100))</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看页面访问次数超过100次的页面"><span class="nav-number">2.3.</span> <span class="nav-text">查看页面访问次数超过100次的页面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看最近1000条记录，访问量最高的页面"><span class="nav-number">2.4.</span> <span class="nav-text">查看最近1000条记录，访问量最高的页面</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#请求量统计"><span class="nav-number">3.</span> <span class="nav-text">请求量统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#每秒请求量统计"><span class="nav-number">3.1.</span> <span class="nav-text">每秒请求量统计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#每分钟请求量统计"><span class="nav-number">3.2.</span> <span class="nav-text">每分钟请求量统计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#每小时请求量统计"><span class="nav-number">3.3.</span> <span class="nav-text">每小时请求量统计</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#性能分析"><span class="nav-number">4.</span> <span class="nav-text">性能分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#列出传输时间超过-3-秒的页面，显示前20条"><span class="nav-number">4.1.</span> <span class="nav-text">列出传输时间超过 3 秒的页面，显示前20条</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条"><span class="nav-number">4.2.</span> <span class="nav-text">列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#蜘蛛抓取统计"><span class="nav-number">5.</span> <span class="nav-text">蜘蛛抓取统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#统计蜘蛛抓取次数"><span class="nav-number">5.1.</span> <span class="nav-text">统计蜘蛛抓取次数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#统计蜘蛛抓取404的次数"><span class="nav-number">5.2.</span> <span class="nav-text">统计蜘蛛抓取404的次数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP连接统计"><span class="nav-number">6.</span> <span class="nav-text">TCP连接统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查看当前TCP连接数"><span class="nav-number">6.1.</span> <span class="nav-text">查看当前TCP连接数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用tcpdump嗅探80端口的访问看看谁最高"><span class="nav-number">6.2.</span> <span class="nav-text">用tcpdump嗅探80端口的访问看看谁最高</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#IP%E7%9B%B8%E5%85%B3%E7%BB%9F%E8%AE%A1"><span class="nav-number">1.</span> <span class="nav-text">IP相关统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1IP%E8%AE%BF%E9%97%AE%E9%87%8F"><span class="nav-number">1.1.</span> <span class="nav-text">统计IP访问量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%9F%90%E4%B8%80%E6%97%B6%E9%97%B4%E6%AE%B5%E7%9A%84IP%E8%AE%BF%E9%97%AE%E9%87%8F-4-5%E7%82%B9"><span class="nav-number">1.2.</span> <span class="nav-text">查看某一时间段的IP访问量(4-5点)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E8%AE%BF%E9%97%AE%E6%9C%80%E9%A2%91%E7%B9%81%E7%9A%84%E5%89%8D100%E4%B8%AAIP"><span class="nav-number">1.3.</span> <span class="nav-text">查看访问最频繁的前100个IP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E8%AE%BF%E9%97%AE100%E6%AC%A1%E4%BB%A5%E4%B8%8A%E7%9A%84IP"><span class="nav-number">1.4.</span> <span class="nav-text">查看访问100次以上的IP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%9F%90%E4%B8%AAIP%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AE%BF%E9%97%AE%E6%83%85%E5%86%B5-%E6%8C%89%E8%AE%BF%E9%97%AE%E9%A2%91%E7%8E%87%E6%8E%92%E5%BA%8F"><span class="nav-number">1.5.</span> <span class="nav-text">查询某个IP的详细访问情况,按访问频率排序</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A1%B5%E9%9D%A2%E8%AE%BF%E9%97%AE%E7%BB%9F%E8%AE%A1"><span class="nav-number">2.</span> <span class="nav-text">页面访问统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E8%AE%BF%E9%97%AE%E6%9C%80%E9%A2%91%E7%9A%84%E9%A1%B5%E9%9D%A2-TOP100"><span class="nav-number">2.1.</span> <span class="nav-text">查看访问最频的页面(TOP100)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E8%AE%BF%E9%97%AE%E6%9C%80%E9%A2%91%E7%9A%84%E9%A1%B5%E9%9D%A2-%E6%8E%92%E9%99%A4php%E9%A1%B5%E9%9D%A2-TOP100"><span class="nav-number">2.2.</span> <span class="nav-text">查看访问最频的页面([排除php页面] (TOP100))</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E9%A1%B5%E9%9D%A2%E8%AE%BF%E9%97%AE%E6%AC%A1%E6%95%B0%E8%B6%85%E8%BF%87100%E6%AC%A1%E7%9A%84%E9%A1%B5%E9%9D%A2"><span class="nav-number">2.3.</span> <span class="nav-text">查看页面访问次数超过100次的页面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%9C%80%E8%BF%911000%E6%9D%A1%E8%AE%B0%E5%BD%95%EF%BC%8C%E8%AE%BF%E9%97%AE%E9%87%8F%E6%9C%80%E9%AB%98%E7%9A%84%E9%A1%B5%E9%9D%A2"><span class="nav-number">2.4.</span> <span class="nav-text">查看最近1000条记录，访问量最高的页面</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E9%87%8F%E7%BB%9F%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">请求量统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AF%8F%E7%A7%92%E8%AF%B7%E6%B1%82%E9%87%8F%E7%BB%9F%E8%AE%A1"><span class="nav-number">3.1.</span> <span class="nav-text">每秒请求量统计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AF%8F%E5%88%86%E9%92%9F%E8%AF%B7%E6%B1%82%E9%87%8F%E7%BB%9F%E8%AE%A1"><span class="nav-number">3.2.</span> <span class="nav-text">每分钟请求量统计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AF%8F%E5%B0%8F%E6%97%B6%E8%AF%B7%E6%B1%82%E9%87%8F%E7%BB%9F%E8%AE%A1"><span class="nav-number">3.3.</span> <span class="nav-text">每小时请求量统计</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">性能分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E5%87%BA%E4%BC%A0%E8%BE%93%E6%97%B6%E9%97%B4%E8%B6%85%E8%BF%87-3-%E7%A7%92%E7%9A%84%E9%A1%B5%E9%9D%A2%EF%BC%8C%E6%98%BE%E7%A4%BA%E5%89%8D20%E6%9D%A1"><span class="nav-number">4.1.</span> <span class="nav-text">列出传输时间超过 3 秒的页面，显示前20条</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E5%87%BAphp%E9%A1%B5%E9%9D%A2%E8%AF%B7%E6%B1%82%E6%97%B6%E9%97%B4%E8%B6%85%E8%BF%873%E7%A7%92%E7%9A%84%E9%A1%B5%E9%9D%A2%EF%BC%8C%E5%B9%B6%E7%BB%9F%E8%AE%A1%E5%85%B6%E5%87%BA%E7%8E%B0%E7%9A%84%E6%AC%A1%E6%95%B0%EF%BC%8C%E6%98%BE%E7%A4%BA%E5%89%8D100%E6%9D%A1"><span class="nav-number">4.2.</span> <span class="nav-text">列出php页面请求时间超过3秒的页面，并统计其出现的次数，显示前100条</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%9C%98%E8%9B%9B%E6%8A%93%E5%8F%96%E7%BB%9F%E8%AE%A1"><span class="nav-number">5.</span> <span class="nav-text">蜘蛛抓取统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E8%9C%98%E8%9B%9B%E6%8A%93%E5%8F%96%E6%AC%A1%E6%95%B0"><span class="nav-number">5.1.</span> <span class="nav-text">统计蜘蛛抓取次数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E8%9C%98%E8%9B%9B%E6%8A%93%E5%8F%96404%E7%9A%84%E6%AC%A1%E6%95%B0"><span class="nav-number">5.2.</span> <span class="nav-text">统计蜘蛛抓取404的次数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP%E8%BF%9E%E6%8E%A5%E7%BB%9F%E8%AE%A1"><span class="nav-number">6.</span> <span class="nav-text">TCP连接统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8DTCP%E8%BF%9E%E6%8E%A5%E6%95%B0"><span class="nav-number">6.1.</span> <span class="nav-text">查看当前TCP连接数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8tcpdump%E5%97%85%E6%8E%A280%E7%AB%AF%E5%8F%A3%E7%9A%84%E8%AE%BF%E9%97%AE%E7%9C%8B%E7%9C%8B%E8%B0%81%E6%9C%80%E9%AB%98"><span class="nav-number">6.2.</span> <span class="nav-text">用tcpdump嗅探80端口的访问看看谁最高</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -301,7 +362,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -381,12 +442,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -454,7 +519,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

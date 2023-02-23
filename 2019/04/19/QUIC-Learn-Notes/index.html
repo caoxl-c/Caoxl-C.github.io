@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>quic 初步认识 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="QUICHTTP/3">
+  <meta name="keywords" content="QUICHTTP/3" />
   
   
   
   
   <meta name="description" content="QUIC (Quick UDP Internet Connections 快速UDP网络连接) (发音：quick) 由google开发的新一代网络传输协议。QUIC设计的初衷就是利用工程师几十年的经验来改进网络传输延迟。">
-<meta name="keywords" content="QUIC,HTTP&#x2F;3">
 <meta property="og:type" content="article">
 <meta property="og:title" content="QUIC 初步认识">
 <meta property="og:url" content="http://blog.caoxl.com/2019/04/19/QUIC-Learn-Notes/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="QUIC (Quick UDP Internet Connections 快速UDP网络连接) (发音：quick) 由google开发的新一代网络传输协议。QUIC设计的初衷就是利用工程师几十年的经验来改进网络传输延迟。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://genuifx.github.io/images/quic/quic-fit.png">
 <meta property="og:image" content="https://genuifx.github.io/images/quic/tcp-tls.png">
 <meta property="og:image" content="https://res.cloudinary.com/practicaldev/image/fetch/s--0hlAeTAi--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://cdn-images-1.medium.com/max/800/1%2Ar6NNOhOGncUfvHXKHUM39w.gif">
@@ -26,10 +25,12 @@
 <meta property="og:image" content="https://genuifx.github.io/images/quic/http2-multiplex-head-line-block.png">
 <meta property="og:image" content="https://genuifx.github.io/images/quic/quic-multiplex.png">
 <meta property="og:image" content="https://genuifx.github.io/images/quic/quic-header.png">
-<meta property="og:updated_time" content="2019-08-22T03:44:18.000Z">
+<meta property="article:published_time" content="2019-04-19T07:15:01.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:44:18.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="QUIC">
+<meta property="article:tag" content="HTTP&#x2F;3">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="QUIC 初步认识">
-<meta name="twitter:description" content="QUIC (Quick UDP Internet Connections 快速UDP网络连接) (发音：quick) 由google开发的新一代网络传输协议。QUIC设计的初衷就是利用工程师几十年的经验来改进网络传输延迟。">
 <meta name="twitter:image" content="https://genuifx.github.io/images/quic/quic-fit.png">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
@@ -50,30 +51,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -151,7 +190,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -189,7 +230,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/计算机专业必备/">计算机专业必备</a>
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%BF%85%E5%A4%87/">计算机专业必备</a>
 
       
 	<a class="article-views">
@@ -207,7 +248,8 @@
           <blockquote>
 <p><strong>QUIC</strong> (<code>Quick UDP Internet Connections</code> 快速UDP网络连接) (发音：<code>quick</code>) 由google开发的新一代网络传输协议。<br><code>QUIC</code>设计的初衷就是利用工程师几十年的经验来改进网络传输延迟。</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="QUIC简介"><a href="#QUIC简介" class="headerlink" title="QUIC简介"></a>QUIC简介</h1><blockquote>
 <p>据 <code>IETF</code> (Internet Engineering Task Force 意思是<strong>互联网工程任务小组</strong>) 透露，<code>HTTP-over-QUIC</code> 实验协议将被重命名为 <code>HTTP/3</code>，并成为 <code>HTTP</code> 协议的第三个正式版本。</p>
 </blockquote>
@@ -216,13 +258,13 @@
 </blockquote>
 <p><code>QUIC</code>基于<code>UDP</code>协议实现了类似<code>TCP</code>+<code>TLS</code>+<code>HTTP2</code>的功能组合。所以可以把<code>QUIC</code>和现有的协议理解成以下结构：</p>
 <p><img src="https://genuifx.github.io/images/quic/quic-fit.png" alt="QUIC"></p>
-<h1 id="为什么需要QUIC"><a href="#为什么需要QUIC" class="headerlink" title="为什么需要QUIC?"></a>为什么需要QUIC?</h1><p>这个问题也可以理解为，HTTP/2 现在有什么硬伤是不能解决的吗？其实HTTP/2的硬伤就是TCP。</p>
+<h1 id="为什么需要QUIC"><a href="#为什么需要QUIC" class="headerlink" title="为什么需要QUIC?"></a>为什么需要QUIC?</h1><p>这个问题也可以理解为，HTTP&#x2F;2 现在有什么硬伤是不能解决的吗？其实HTTP&#x2F;2的硬伤就是TCP。</p>
 <p>TCP 协议在70年代设计敲定，当时的网络丢包率高，网速差，链接的稳定和可靠对当时来说是最需要解决的事情。对比今天的网络现状，毫无疑问在网络的可靠性和速度上我们都得到了巨大的进步。</p>
 <p>经过几十年的经验累积，网络工程师对怎么优化网络访问，降低延迟也有了新的认知，于是就想着更新 TCP 协议，但是 TCP 的更新非常困难，因为网络协议栈的实现本来就依赖系统内核更新，而不管是终端设备，中间设备的系统更新都极其缓慢，一个更新迭代可能需要5-15年的时间去普及，对于现在的互联网发展来说太慢了。</p>
 <p>所以 TCP 的硬伤总结一下就是：<strong>TCP的更新优化需要依赖系统内核更新。</strong></p>
 <p>这是一个日益高速高速发展的应用层和缓慢进化的网络传输层的矛盾，于是 <strong>JIM（QUIC协议设计师）</strong> 决定<strong>在传输层抛弃TCP，拥抱UDP协议</strong>。UDP相对TCP协议来说，是一个不稳定的乐观协议，他不需要握手建立连接，至于什么防止IP攻击，怎么保证数据一致性，这些都是UDP之上的工作，这一点刚好契合我们的需求，把很多工作从传输层移动到了应用层（4层网络模型而言~），如此一来，以后QUIC协议的升级完全不依赖于底层操作系统，只需终端和服务器升级到指定版本即可。</p>
 <p>这就是<strong>QUIC 的意义</strong>。</p>
-<h2 id="对比HTTP-2的优势所在"><a href="#对比HTTP-2的优势所在" class="headerlink" title="对比HTTP/2的优势所在"></a>对比HTTP/2的优势所在</h2><p><code>HTTP/2</code> 是个优秀的协议，其最大的特色就是多路复用，那么 <code>QUIC</code> 带了什么新的东西，对比 HTTP/2 有什么优势呢。</p>
+<h2 id="对比HTTP-x2F-2的优势所在"><a href="#对比HTTP-x2F-2的优势所在" class="headerlink" title="对比HTTP&#x2F;2的优势所在"></a>对比HTTP&#x2F;2的优势所在</h2><p><code>HTTP/2</code> 是个优秀的协议，其最大的特色就是多路复用，那么 <code>QUIC</code> 带了什么新的东西，对比 HTTP&#x2F;2 有什么优势呢。</p>
 <p>主要在以下几点有着巨大的优势：</p>
 <ul>
 <li>建立连接的延迟</li>
@@ -240,7 +282,7 @@
 <p><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--0hlAeTAi--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://cdn-images-1.medium.com/max/800/1%2Ar6NNOhOGncUfvHXKHUM39w.gif" alt="QUIC"></p>
 <p><strong>0 RTT</strong> 的效果是因为<code>QUIC</code>的客户端会缓存服务器端发的令牌和证书，当有数据需要再次发送的时候，客户端可以直接使用旧的令牌和证书，这样子就实现了 <strong>0 RTT</strong> 了。对于没有缓存的情况，服务器端会直接拒绝请求，并且返回新生产的令牌和证书。 所以当令牌失效或者没有缓存的情况下，<code>QUIC</code>还是需要一次握手才能开始传输数据</p>
 <p>当然这么玩还是有代价的，对于<strong>重放攻击（replay attack）</strong> 的防范就需要从应用层解决了。</p>
-<p>需要注意的是：被<strong>接纳为HTTP/3之后，QUIC未来还是会采用 TLS 1.3，放弃现有加密算法~</strong></p>
+<p>需要注意的是：被<strong>接纳为HTTP&#x2F;3之后，QUIC未来还是会采用 TLS 1.3，放弃现有加密算法~</strong></p>
 <p><code>TLS 1.3</code> 是对于<code>1.2</code>、<code>1.1</code>版本的大跃迁，目前还没有正式版。<code>TLS 1.3</code> 只需要 <strong>2 RTT</strong> 就完成一次连接建立了。</p>
 <h2 id="改进的拥塞控制"><a href="#改进的拥塞控制" class="headerlink" title="改进的拥塞控制"></a>改进的拥塞控制</h2><p>目前的 <code>QUIC</code> 的<strong>拥塞控制</strong>主要实现了 <code>TCP</code> 的<strong>慢启动，拥塞避免，快重传，快恢复</strong>。在这些拥塞控制算法的基础上，再进行改进。</p>
 <blockquote>
@@ -249,7 +291,7 @@
 <p><code>QUIC</code> 拥塞控制算法主要重新实现了一遍 <code>TCP</code> 的算法，毕竟 <code>TCP</code> 的算法是经过几十年的生产验证的。</p>
 <h2 id="多路复用——无队头阻塞版"><a href="#多路复用——无队头阻塞版" class="headerlink" title="多路复用——无队头阻塞版"></a>多路复用——无队头阻塞版</h2><p><code>SPDY</code> 和 <code>HTTP/2</code> 已经实现了<strong>多路复用</strong>。多路复用的指的是<strong>我们不需要在为每个资源重新建立一次 TCP 连接，多个资源的传输可以共用一个连接</strong>。</p>
 <p><img src="https://genuifx.github.io/images/quic/http2-multiplex.png" alt="SPDY HTTP/2"></p>
-<p>如此一来，在启用了 HTTP/2 的网站，我们再也不需要对资源进行合并了（：）压缩还是可以做一下的），毕竟一次性发出去多个资源和建立多个连接一个一个下载资源相比还是会快一下的。</p>
+<p>如此一来，在启用了 HTTP&#x2F;2 的网站，我们再也不需要对资源进行合并了（：）压缩还是可以做一下的），毕竟一次性发出去多个资源和建立多个连接一个一个下载资源相比还是会快一下的。</p>
 <p>然后 <code>HTTP/2</code> 的多路复用会有个很大的问题，那就是<strong>队头阻塞</strong>。原因还是因为 <code>TCP</code> 的 <code>Sequence Number</code> 机制，为了保证资源的有序到达，如果传输队列的队头某个资源丢失了，TCP 必须等到这个资源重传成功之后才会通知应用层处理后续资源。</p>
 <p><img src="https://genuifx.github.io/images/quic/http2-multiplex-head-line-block.png" alt="队头阻塞"></p>
 <p>由于 <code>QUIC</code> 避开了 <code>TCP</code>， 他设计 <code>connection</code> 和 <code>stream</code> 的概念，一个 <code>connection</code> 可以复用传输多个 <code>stream</code>，每个 <code>stream</code> 之间都是独立的，单一一个 <code>stream</code> 丢包并不会影响到其他资源处理。</p>
@@ -259,16 +301,16 @@
 </blockquote>
 <p>这意味着，实际上每个 <code>packet</code> 都携带着多余的信息，通过这些信息，<code>QUIC</code> 能够重组对应资源，而无需进行重传。</p>
 <p>目前大概<strong>每 10 个包能修复一个 packet</strong>。</p>
-<h2 id="连接迁移"><a href="#连接迁移" class="headerlink" title="连接迁移"></a>连接迁移</h2><p>TCP 是按照 <strong>4-要素(客户端IP、端口, 服务器IP、端口)</strong> 要确定一个连接的，当这4个要素其中一个发生变化的时候，连接就需要重新建立。而在移动端，我们经常会切换 4G/wifi 使用，每一次切换，我们只能重新建立连接。</p>
+<h2 id="连接迁移"><a href="#连接迁移" class="headerlink" title="连接迁移"></a>连接迁移</h2><p>TCP 是按照 <strong>4-要素(客户端IP、端口, 服务器IP、端口)</strong> 要确定一个连接的，当这4个要素其中一个发生变化的时候，连接就需要重新建立。而在移动端，我们经常会切换 4G&#x2F;wifi 使用，每一次切换，我们只能重新建立连接。</p>
 <p>在 <code>QUIC</code> 中，连接是由其维护的。 于是 <code>QUIC</code> 通过生成客户端生成一个 <code>Connection ID</code> （64位）的东西来区别不同连接，只要生成的 <code>UUID</code> 不变， 连接就不需要重新建立，即便是客户端的网络发生变化。</p>
 <p><img src="https://genuifx.github.io/images/quic/quic-header.png" alt="QUIC header"></p>
-<h1 id="QUIC-现状"><a href="#QUIC-现状" class="headerlink" title="QUIC 现状"></a>QUIC 现状</h1><p><strong>HTTP-over-QUIC 将被吸收改名为 HTTP/3。</strong></p>
+<h1 id="QUIC-现状"><a href="#QUIC-现状" class="headerlink" title="QUIC 现状"></a>QUIC 现状</h1><p><strong>HTTP-over-QUIC 将被吸收改名为 HTTP&#x2F;3。</strong></p>
 <p>未来的 <code>web</code> 传输不再依赖 <code>TCP</code> 协议，升级更新也不再需要依赖系统内核升级了，未来的 <code>HTTP</code> 可以跟其他产品一样月更、甚至周更。</p>
-<p>目前，如果想体验 <code>QUIC</code> 可以使用 <u><a href="https://github.com/mholt/caddy/wiki/QUIC" target="_blank" rel="noopener">candy</a></u> 服务器。candy 在 0.9 版本之后就支持 <code>QUIC</code> 了。</p>
+<p>目前，如果想体验 <code>QUIC</code> 可以使用 <u><a target="_blank" rel="noopener" href="https://github.com/mholt/caddy/wiki/QUIC">candy</a></u> 服务器。candy 在 0.9 版本之后就支持 <code>QUIC</code> 了。</p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://zh.wikipedia.org/wiki/%E5%BF%AB%E9%80%9FUDP%E7%BD%91%E7%BB%9C%E8%BF%9E%E6%8E%A5" target="_blank" rel="noopener">快速UDP网络连接</a></li>
-<li><a href="https://genuifx.github.io/2018/11/27/keynote-for-http3-quic/" target="_blank" rel="noopener">QUIC 简明教程</a></li>
-<li><a href="https://www.nanog.org/sites/default/files//meetings/NANOG64/1051/20150603_Rogan_Quic_Next_Generation_v1.pdf" target="_blank" rel="noopener">QUIC</a></li>
+<li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%BF%AB%E9%80%9FUDP%E7%BD%91%E7%BB%9C%E8%BF%9E%E6%8E%A5">快速UDP网络连接</a></li>
+<li><a target="_blank" rel="noopener" href="https://genuifx.github.io/2018/11/27/keynote-for-http3-quic/">QUIC 简明教程</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.nanog.org/sites/default/files//meetings/NANOG64/1051/20150603_Rogan_Quic_Next_Generation_v1.pdf">QUIC</a></li>
 </ul>
 
         
@@ -301,7 +343,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP-3/">HTTP/3</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/QUIC/">QUIC</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTTP-3/" rel="tag">HTTP&#x2F;3</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/QUIC/" rel="tag">QUIC</a></li></ul>
 
       
 
@@ -337,7 +379,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#QUIC简介"><span class="nav-number">1.</span> <span class="nav-text">QUIC简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么需要QUIC"><span class="nav-number">2.</span> <span class="nav-text">为什么需要QUIC?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#对比HTTP-2的优势所在"><span class="nav-number">2.1.</span> <span class="nav-text">对比HTTP/2的优势所在</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建立连接的延迟"><span class="nav-number">2.2.</span> <span class="nav-text">建立连接的延迟</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进的拥塞控制"><span class="nav-number">2.3.</span> <span class="nav-text">改进的拥塞控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多路复用——无队头阻塞版"><span class="nav-number">2.4.</span> <span class="nav-text">多路复用——无队头阻塞版</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#错误自动纠正"><span class="nav-number">2.5.</span> <span class="nav-text">错误自动纠正</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#连接迁移"><span class="nav-number">2.6.</span> <span class="nav-text">连接迁移</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#QUIC-现状"><span class="nav-number">3.</span> <span class="nav-text">QUIC 现状</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#QUIC%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">QUIC简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81QUIC"><span class="nav-number">2.</span> <span class="nav-text">为什么需要QUIC?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%AF%94HTTP-x2F-2%E7%9A%84%E4%BC%98%E5%8A%BF%E6%89%80%E5%9C%A8"><span class="nav-number">2.1.</span> <span class="nav-text">对比HTTP&#x2F;2的优势所在</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5%E7%9A%84%E5%BB%B6%E8%BF%9F"><span class="nav-number">2.2.</span> <span class="nav-text">建立连接的延迟</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B%E7%9A%84%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="nav-number">2.3.</span> <span class="nav-text">改进的拥塞控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E2%80%94%E2%80%94%E6%97%A0%E9%98%9F%E5%A4%B4%E9%98%BB%E5%A1%9E%E7%89%88"><span class="nav-number">2.4.</span> <span class="nav-text">多路复用——无队头阻塞版</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E8%87%AA%E5%8A%A8%E7%BA%A0%E6%AD%A3"><span class="nav-number">2.5.</span> <span class="nav-text">错误自动纠正</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E8%BF%81%E7%A7%BB"><span class="nav-number">2.6.</span> <span class="nav-text">连接迁移</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#QUIC-%E7%8E%B0%E7%8A%B6"><span class="nav-number">3.</span> <span class="nav-text">QUIC 现状</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -352,7 +394,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -432,12 +474,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -505,7 +551,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

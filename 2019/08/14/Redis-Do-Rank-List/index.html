@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>redis 实现排行榜功能 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="RedisRank">
+  <meta name="keywords" content="RedisRank" />
   
   
   
   
   <meta name="description" content="这里以游戏中的排行榜举例: 游戏中存在各种各样的排行榜，比如玩家的等级排名、分数排名等">
-<meta name="keywords" content="Redis,Rank">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis 实现排行榜功能">
 <meta property="og:url" content="http://blog.caoxl.com/2019/08/14/Redis-Do-Rank-List/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="这里以游戏中的排行榜举例: 游戏中存在各种各样的排行榜，比如玩家的等级排名、分数排名等">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T06:35:21.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-14T08:19:51.000Z">
+<meta property="article:modified_time" content="2019-08-22T06:35:21.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="Rank">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Redis 实现排行榜功能">
-<meta name="twitter:description" content="这里以游戏中的排行榜举例: 游戏中存在各种各样的排行榜，比如玩家的等级排名、分数排名等">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +222,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+    <a class="article-category-link" href="/categories/%E5%BF%85%E5%A4%87%E6%8A%80%E8%83%BD/">必备技能</a>
 
       
 	<a class="article-views">
@@ -199,7 +240,8 @@
           <blockquote>
 <p>这里以游戏中的排行榜举例: 游戏中存在各种各样的排行榜，比如玩家的等级排名、分数排名等</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><ul>
 <li>一个典型的游戏排行榜包括以下常见功能:<ul>
 <li><ol>
@@ -227,7 +269,7 @@
 </ul>
 <p>由于一个玩家名次上升<code>x</code>位将会引起<code>x+1</code>位玩家的名次发生变化（包括该玩家），如果采用传统数据库（比如MySQL）来实现排行榜，当玩家人数较多时，将会导致对数据库的频繁修改，性能得不到满足，所以我们只能另想它法。</p>
 <h2 id="Redis-Zset"><a href="#Redis-Zset" class="headerlink" title="Redis Zset"></a>Redis Zset</h2><blockquote>
-<p><a href="http://redisdoc.com/sorted_set/index.html" target="_blank" rel="noopener">Redis 有序集合</a></p>
+<p><a target="_blank" rel="noopener" href="http://redisdoc.com/sorted_set/index.html">Redis 有序集合</a></p>
 </blockquote>
 <p>下面介绍几个能用于排行榜的命令:</p>
 <ul>
@@ -236,49 +278,55 @@
 <blockquote>
 <p>将一个或多个 member 元素及其 score 值加入到有序集 key 当中。</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zAdd</span><span class="params">( $key, $score1, $value1, $score2 = null, $value2 = null, $scoreN = null, $valueN = null )</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zAdd</span>(<span class="params"> <span class="variable">$key</span>, <span class="variable">$score1</span>, <span class="variable">$value1</span>, <span class="variable">$score2</span> = <span class="literal">null</span>, <span class="variable">$value2</span> = <span class="literal">null</span>, <span class="variable">$scoreN</span> = <span class="literal">null</span>, <span class="variable">$valueN</span> = <span class="literal">null</span> </span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>zscore</code> - 查看玩家分数</li>
 </ul>
 <blockquote>
 <p>返回有序集 key 中，成员 member 的 score 值。</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zScore</span><span class="params">( $key, $member )</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zScore</span>(<span class="params"> <span class="variable">$key</span>, <span class="variable">$member</span> </span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>zrevrange</code> - 按名次查看排行榜</li>
 </ul>
 <blockquote>
 <p>返回有序集 key 中，指定区间内的成员。其中成员的位置按 score 值递减(从大到小)来排列。<br>起始位置和结束位置都是以0开始的索引，且都包含在内。如果结束位置为-1则查看范围为整个排行榜。<br>带上withscores则会返回玩家分数。</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zRevRange</span><span class="params">( $key, $start, $end, $withscore = null )</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zRevRange</span>(<span class="params"> <span class="variable">$key</span>, <span class="variable">$start</span>, <span class="variable">$end</span>, <span class="variable">$withscore</span> = <span class="literal">null</span> </span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>zrank/zrevrank</code> - 查看玩家的排名</li>
 </ul>
 <blockquote>
 <p>zrank: 返回有序集 key 中成员 member 的排名。其中有序集成员按 score 值递增(从小到大)顺序排列。<br>zrevrank: 返回有序集 key 中成员 member 的排名。其中有序集成员按 score 值递减(从大到小)排序。</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zRank</span><span class="params">( $key, $member )</span> </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zRevRank</span><span class="params">( $key, $member )</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zRank</span>(<span class="params"> <span class="variable">$key</span>, <span class="variable">$member</span> </span>) </span>&#123;&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zRevRank</span>(<span class="params"> <span class="variable">$key</span>, <span class="variable">$member</span> </span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>zincrby</code> - 增减玩家分数</li>
 </ul>
 <blockquote>
 <p>为有序集 key 的成员 member 的 score 值加上增量 increment 。<br>可以通过传递一个负数值 increment ，让 score 减去相应的值，比如 ZINCRBY key -5 member ，就是让 member 的 score 值减去 5 。</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zIncrBy</span><span class="params">( $key, $value, $member )</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zIncrBy</span>(<span class="params"> <span class="variable">$key</span>, <span class="variable">$value</span>, <span class="variable">$member</span> </span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li><code>zrem</code> - 移除某个/多个玩家</li>
+<li><code>zrem</code> - 移除某个&#x2F;多个玩家</li>
 </ul>
 <blockquote>
 <p>移除有序集 key 中的一个或多个成员，不存在的成员将被忽略。</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zRem</span><span class="params">( $key, $member1, $member2 = null, $memberN = null )</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">zRem</span>(<span class="params"> <span class="variable">$key</span>, <span class="variable">$member1</span>, <span class="variable">$member2</span> = <span class="literal">null</span>, <span class="variable">$memberN</span> = <span class="literal">null</span> </span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>del</code> - 删除排行榜</li>
 </ul>
 <blockquote>
 <p>删除给定的一个或多个 key 。</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">del</span><span class="params">( $key1, $key2 = null, $key3 = null )</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">del</span>(<span class="params"> <span class="variable">$key1</span>, <span class="variable">$key2</span> = <span class="literal">null</span>, <span class="variable">$key3</span> = <span class="literal">null</span> </span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
         
       
     </div>
@@ -309,7 +357,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rank/">Rank</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/">Redis</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rank/" rel="tag">Rank</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
 
       
 
@@ -345,7 +393,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备"><span class="nav-number">1.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-Zset"><span class="nav-number">2.</span> <span class="nav-text">Redis Zset</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87"><span class="nav-number">1.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-Zset"><span class="nav-number">2.</span> <span class="nav-text">Redis Zset</span></a></li></ol>
     
     </div>
   </aside>
@@ -360,7 +408,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -440,12 +488,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -513,7 +565,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

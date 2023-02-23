@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>mysql 索引优化 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="MySQL优化索引">
+  <meta name="keywords" content="MySQL优化索引" />
   
   
   
   
   <meta name="description" content="想要做MySQL索引优化首先得了解MySQL索引!">
-<meta name="keywords" content="MySQL,优化,索引">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL 索引优化">
 <meta property="og:url" content="http://blog.caoxl.com/2018/10/20/MySQL-Index-OPT/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="想要做MySQL索引优化首先得了解MySQL索引!">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T06:27:26.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-10-20T08:51:58.000Z">
+<meta property="article:modified_time" content="2019-08-22T06:27:26.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="优化">
+<meta property="article:tag" content="索引">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL 索引优化">
-<meta name="twitter:description" content="想要做MySQL索引优化首先得了解MySQL索引!">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +44,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +183,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +223,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
 
       
 	<a class="article-views">
@@ -199,10 +241,11 @@
           <blockquote>
 <p>想要做MySQL索引优化首先得了解MySQL索引!</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="索引的作用"><a href="#索引的作用" class="headerlink" title="索引的作用"></a>索引的作用</h1><p>当一个数据表只有很少量的数据时,索引体现不了他的价值。但若是一个表有10w多的数据时,查找数据就要全表查找,<br>最差要查找10w个数据,太慢了,若是用索引的话,就会大大减少时间,<br>例如对 score字段做一个索引,<strong>索引会生成一个文件,查找数据就到索引文件中查找</strong>,又因为索引出来的数据是已经排好序的,<br>所以查找时,数据库会用类似二分法的查找,这样会比不用索引快很多倍。</p>
 <h1 id="MySQL索引种类"><a href="#MySQL索引种类" class="headerlink" title="MySQL索引种类"></a>MySQL索引种类</h1><p>索引是帮助mysql获取数据的数据结构。最常见的索引是<code>Btree</code>索引和<code>Hash</code>索引。</p>
-<p>不同的引擎对于索引有不同的支持：<strong><code>Innodb</code>和<code>MyISAM</code>默认的索引是Btree索引;而<code>Mermory</code>默认的索引是Hash索引</strong>。</p>
+<p>不同的引擎对于索引有不同的支持：**<code>Innodb</code>和<code>MyISAM</code>默认的索引是Btree索引;而<code>Mermory</code>默认的索引是Hash索引**。</p>
 <h2 id="FULLTEXT"><a href="#FULLTEXT" class="headerlink" title="FULLTEXT"></a>FULLTEXT</h2><blockquote>
 <p>即为全文索引,目前只有<code>MyISAM</code>引擎支持。<br>不过目前只有 CHAR、VARCHAR ,TEXT 列上可以创建全文索引。<br>全文索引并不是和MyISAM一起诞生的,它的出现是为了解决<code>WHERE name LIKE “%word%”</code>这类针对文本的模糊查询效率较低的问题。</p>
 </blockquote>
@@ -210,7 +253,7 @@
 <p>由于<strong>hash索引可以一次定位,不需要像树形索引那样逐层查找</strong>,因此具有极高的效率。但是 Hash 索引本身由于其特殊性也带来了很多限制和弊端,<br>主要有以下这些:</p>
 </blockquote>
 <ol>
-<li>Hash 索引仅仅能满足”=”,”IN”和”&lt;=&gt;”查询,不能使用范围查询。</li>
+<li>Hash 索引仅仅能满足”&#x3D;”,”IN”和”&lt;&#x3D;&gt;”查询,不能使用范围查询。</li>
 <li>Hash 索引无法被用来避免数据的排序操作。</li>
 <li>Hash 索引不能利用部分索引键查询。</li>
 <li>Hash 索引在任何时候都不能避免表扫描。</li>
@@ -226,7 +269,8 @@
 <h3 id="单列索引"><a href="#单列索引" class="headerlink" title="单列索引"></a>单列索引</h3><blockquote>
 <p>单列索引是给单个字段做索引,如给math字段。</p>
 </blockquote>
-<h4 id="建立索引"><a href="#建立索引" class="headerlink" title="建立索引"></a>建立索引</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//给 test表 中的math字段加一个索引,索引名叫 math_index</span></span><br><span class="line">alter table test add index math_index(math);</span><br></pre></td></tr></table></figure>
+<h4 id="建立索引"><a href="#建立索引" class="headerlink" title="建立索引"></a>建立索引</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//给 test表 中的math字段加一个索引,索引名叫 math_index</span></span><br><span class="line">alter table test add index <span class="title function_ invoke__">math_index</span>(math);</span><br></pre></td></tr></table></figure>
+
 <p>用命令 <code>show index from test;</code>可以查看是否建立了索引：</p>
 <p>建立索引后,我们就要使用索引,索引一般是用于查找信息（用select语句）</p>
 <blockquote>
@@ -234,14 +278,18 @@
 </blockquote>
 <p>使用 <code>select math from test;</code> 得出的结果：可以看出,数据是应该排好序的,因为只要是用到索引,被查找后的字段都会被排好序的。</p>
 <h4 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//删除test表中的名为 `math_index` 的索引</span></span><br><span class="line">alter table test drop index math_index;</span><br></pre></td></tr></table></figure>
+
 <h3 id="多列索引"><a href="#多列索引" class="headerlink" title="多列索引"></a>多列索引</h3><blockquote>
 <p>多列索引是一个索引对应多个字段的数据。<br>  例如我们想查找 数学成绩&gt;60 且 英语成绩 &gt;60 的学生。可以用多列索引,当然你说用2个单列索引,分别是数学 和 英语的索引行不行？<br>  其实也是可以的,但也有区别,下面会讲解：</p>
 </blockquote>
-<h4 id="创建一个多列索引"><a href="#创建一个多列索引" class="headerlink" title="创建一个多列索引"></a>创建一个多列索引</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在test表中创建一个 为名 indexes 的多列索引,包含 math,english字段</span></span><br><span class="line">alter table test add indexs(math, english);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用 show index from test; 查看是否有创建。</span></span><br></pre></td></tr></table></figure>
-<p>然后对test表：<br>//在test表中找出数学和英语成绩都高于60的数据<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select  math, english  from test where math&gt;<span class="number">60</span> <span class="keyword">and</span> english&gt;<span class="number">60</span>;</span><br></pre></td></tr></table></figure></p>
+<h4 id="创建一个多列索引"><a href="#创建一个多列索引" class="headerlink" title="创建一个多列索引"></a>创建一个多列索引</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在test表中创建一个 为名 indexes 的多列索引,包含 math,english字段</span></span><br><span class="line">alter table test add <span class="title function_ invoke__">indexs</span>(math, english);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用 show index from test; 查看是否有创建。</span></span><br></pre></td></tr></table></figure>
+
+<p>然后对test表：<br>&#x2F;&#x2F;在test表中找出数学和英语成绩都高于60的数据</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select  math, english  <span class="keyword">from</span> test where math&gt;<span class="number">60</span> <span class="keyword">and</span> english&gt;<span class="number">60</span>;</span><br></pre></td></tr></table></figure>
 <p>可以看出，数据也是排好序的。</p>
 <h4 id="删除多列索引跟删除单列索引一样。"><a href="#删除多列索引跟删除单列索引一样。" class="headerlink" title="删除多列索引跟删除单列索引一样。"></a>删除多列索引跟删除单列索引一样。</h4><h4 id="最左前缀："><a href="#最左前缀：" class="headerlink" title="最左前缀："></a>最左前缀：</h4><p>最左前缀的意思是，例如我创建的多列索引是 （math，english）这样表示的，则：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">select  math  from test;</span><br><span class="line">select  math, english  from test;</span><br><span class="line"><span class="comment">//上面的写法都可以使用多列索引，第一行的写法相当于math的单列索引</span></span><br><span class="line"><span class="comment">// 而</span></span><br><span class="line">selec english from test;</span><br><span class="line"><span class="comment">// 则会使索引失效, 因为他不是math开头</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">select  math  <span class="keyword">from</span> test;</span><br><span class="line">select  math, english  <span class="keyword">from</span> test;</span><br><span class="line"><span class="comment">//上面的写法都可以使用多列索引，第一行的写法相当于math的单列索引</span></span><br><span class="line"><span class="comment">// 而</span></span><br><span class="line">selec english <span class="keyword">from</span> test;</span><br><span class="line"><span class="comment">// 则会使索引失效, 因为他不是math开头</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="RTREE"><a href="#RTREE" class="headerlink" title="RTREE"></a>RTREE</h2><blockquote>
 <p>RTREE在mysql很少使用,<strong>仅支持geometry数据类型</strong>,相对于BTREE,RTREE的优势在于范围查找。</p>
 </blockquote>
@@ -255,7 +303,7 @@
 <p>所以当传进来的是后两个字段的数据（age,sex）,因为建立搜索树的时候是按照第一个字段建立的,所以必须根据name字段才能知道下一个字段去哪里查询。</p>
 <p>所以传进来的是（name,sex）时,首先会根据name指定搜索方向,但是第二个字段缺失,所以将name字段正确的都找到后,然后才会去匹配sex的数据。</p>
 <h1 id="建立索引的规则："><a href="#建立索引的规则：" class="headerlink" title="建立索引的规则："></a>建立索引的规则：</h1><ol>
-<li><p>利用最左前缀：Mysql会一直向右查找直到遇到范围操作（&gt;,&lt;,like、between）就停止匹配。比如a=1 and b=2 and c&gt;3 and d=6;<br>此时如果建立了（a,b,c,d）索引,那么后面的d索引是完全没有用到,当换成了（a,b,d,c）就可以用到。</p>
+<li><p>利用最左前缀：Mysql会一直向右查找直到遇到范围操作（&gt;,&lt;,like、between）就停止匹配。比如a&#x3D;1 and b&#x3D;2 and c&gt;3 and d&#x3D;6;<br>此时如果建立了（a,b,c,d）索引,那么后面的d索引是完全没有用到,当换成了（a,b,d,c）就可以用到。</p>
 </li>
 <li><p>不能过度索引：在修改表内容的时候,索引必须更新或者重构,所以索引过多时,会消耗更多的时间。</p>
 </li>
@@ -297,7 +345,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/索引/">索引</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BC%98%E5%8C%96/" rel="tag">优化</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag">索引</a></li></ul>
 
       
 
@@ -333,7 +381,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#索引的作用"><span class="nav-number">1.</span> <span class="nav-text">索引的作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL索引种类"><span class="nav-number">2.</span> <span class="nav-text">MySQL索引种类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#FULLTEXT"><span class="nav-number">2.1.</span> <span class="nav-text">FULLTEXT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HASH"><span class="nav-number">2.2.</span> <span class="nav-text">HASH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BTREE"><span class="nav-number">2.3.</span> <span class="nav-text">BTREE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单列索引"><span class="nav-number">2.3.1.</span> <span class="nav-text">单列索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#建立索引"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">建立索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除索引"><span class="nav-number">2.3.1.2.</span> <span class="nav-text">删除索引</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多列索引"><span class="nav-number">2.3.2.</span> <span class="nav-text">多列索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建一个多列索引"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">创建一个多列索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除多列索引跟删除单列索引一样。"><span class="nav-number">2.3.2.2.</span> <span class="nav-text">删除多列索引跟删除单列索引一样。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最左前缀："><span class="nav-number">2.3.2.3.</span> <span class="nav-text">最左前缀：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RTREE"><span class="nav-number">2.4.</span> <span class="nav-text">RTREE</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BTREE和HASH的区别"><span class="nav-number">3.</span> <span class="nav-text">BTREE和HASH的区别?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#B-Tree"><span class="nav-number">3.1.</span> <span class="nav-text">B-Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HASH-1"><span class="nav-number">3.2.</span> <span class="nav-text">HASH</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#B-Tree索引中的最左匹配原则"><span class="nav-number">4.</span> <span class="nav-text">B-Tree索引中的最左匹配原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#建立索引的规则："><span class="nav-number">5.</span> <span class="nav-text">建立索引的规则：</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">索引的作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL%E7%B4%A2%E5%BC%95%E7%A7%8D%E7%B1%BB"><span class="nav-number">2.</span> <span class="nav-text">MySQL索引种类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#FULLTEXT"><span class="nav-number">2.1.</span> <span class="nav-text">FULLTEXT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HASH"><span class="nav-number">2.2.</span> <span class="nav-text">HASH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BTREE"><span class="nav-number">2.3.</span> <span class="nav-text">BTREE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E5%88%97%E7%B4%A2%E5%BC%95"><span class="nav-number">2.3.1.</span> <span class="nav-text">单列索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E7%B4%A2%E5%BC%95"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">建立索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E7%B4%A2%E5%BC%95"><span class="nav-number">2.3.1.2.</span> <span class="nav-text">删除索引</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E5%88%97%E7%B4%A2%E5%BC%95"><span class="nav-number">2.3.2.</span> <span class="nav-text">多列索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%A4%9A%E5%88%97%E7%B4%A2%E5%BC%95"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">创建一个多列索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%A4%9A%E5%88%97%E7%B4%A2%E5%BC%95%E8%B7%9F%E5%88%A0%E9%99%A4%E5%8D%95%E5%88%97%E7%B4%A2%E5%BC%95%E4%B8%80%E6%A0%B7%E3%80%82"><span class="nav-number">2.3.2.2.</span> <span class="nav-text">删除多列索引跟删除单列索引一样。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80%EF%BC%9A"><span class="nav-number">2.3.2.3.</span> <span class="nav-text">最左前缀：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RTREE"><span class="nav-number">2.4.</span> <span class="nav-text">RTREE</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BTREE%E5%92%8CHASH%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">BTREE和HASH的区别?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#B-Tree"><span class="nav-number">3.1.</span> <span class="nav-text">B-Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HASH-1"><span class="nav-number">3.2.</span> <span class="nav-text">HASH</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#B-Tree%E7%B4%A2%E5%BC%95%E4%B8%AD%E7%9A%84%E6%9C%80%E5%B7%A6%E5%8C%B9%E9%85%8D%E5%8E%9F%E5%88%99"><span class="nav-number">4.</span> <span class="nav-text">B-Tree索引中的最左匹配原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E7%B4%A2%E5%BC%95%E7%9A%84%E8%A7%84%E5%88%99%EF%BC%9A"><span class="nav-number">5.</span> <span class="nav-text">建立索引的规则：</span></a></li></ol>
     
     </div>
   </aside>
@@ -348,7 +396,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -428,12 +476,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -501,7 +553,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

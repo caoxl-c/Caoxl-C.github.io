@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>mysql「性能优化」 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="MySQL优化">
+  <meta name="keywords" content="MySQL优化" />
   
   
   
   
   <meta name="description" content="数据库优化与检查是一项比较艰难的任务，必须借助于一些工具，而且往往问题比较隐蔽，多是在部署在生产环境一段时间之后，因为数据库的性能瓶颈，导致一系列问题的产生。">
-<meta name="keywords" content="MySQL,优化">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL「性能优化」">
 <meta property="og:url" content="http://blog.caoxl.com/2018/02/01/MySQL-Performance-Optimization/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="数据库优化与检查是一项比较艰难的任务，必须借助于一些工具，而且往往问题比较隐蔽，多是在部署在生产环境一段时间之后，因为数据库的性能瓶颈，导致一系列问题的产生。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T06:29:05.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-02-01T07:17:44.000Z">
+<meta property="article:modified_time" content="2019-08-22T06:29:05.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="优化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL「性能优化」">
-<meta name="twitter:description" content="数据库优化与检查是一项比较艰难的任务，必须借助于一些工具，而且往往问题比较隐蔽，多是在部署在生产环境一段时间之后，因为数据库的性能瓶颈，导致一系列问题的产生。">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +222,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/数据库/">数据库</a>
+    <a class="article-category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
 
       
 	<a class="article-views">
@@ -197,26 +238,33 @@
         
         
           <p>数据库优化与检查是一项比较艰难的任务，必须借助于一些工具，而且往往问题比较隐蔽，多是在部署在生产环境一段时间之后，因为数据库的性能瓶颈，导致一系列问题的产生。</p>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h1><ul>
 <li>查看mysql是否开启慢查询日志</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'slow_query_log'</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> slow_query_log=<span class="keyword">on</span>; //开启慢查日志</span><br></pre></td></tr></table></figure>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show <span class="keyword">variables</span> like <span class="comment">&#x27;slow_query_log&#x27;</span>;</span><br><span class="line"><span class="keyword">set</span> global <span class="comment">slow_query_log=on</span>; <span class="comment">//开启慢查日志</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>设置没有索引的记录到慢查询日志</li>
 </ul>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> log_queries_not_using_indexes=<span class="keyword">on</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> global <span class="attribute">log_queries_not_using_indexes</span>=on;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>查看超过多长时间的sql进行记录到慢查询日志</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'long_query_time'</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> long_query_time=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">show <span class="keyword">variables</span> like <span class="comment">&#x27;long_query_time&#x27;</span>;</span><br><span class="line"><span class="keyword">set</span> global <span class="comment">long_query_time=1</span>;</span><br></pre></td></tr></table></figure>
+
+
 <h1 id="慢查日志分析工具"><a href="#慢查日志分析工具" class="headerlink" title="慢查日志分析工具"></a>慢查日志分析工具</h1><h2 id="mysqldumpslow"><a href="#mysqldumpslow" class="headerlink" title="mysqldumpslow"></a>mysqldumpslow</h2><p>使用<code>mysqldumpslow -h</code>来查看帮助信息<br>使用<code>mysqldumpslow -t 3 /home/mysql/data/mysql-slow.log | more</code>来对日志进行分析。</p>
 <h2 id="pt-query-digest"><a href="#pt-query-digest" class="headerlink" title="pt-query-digest"></a>pt-query-digest</h2><p>输出到文件：</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">pt-query-digest</span> <span class="selector-tag">show</span><span class="selector-class">.log</span> &gt; <span class="selector-tag">slow_log</span><span class="selector-class">.repor</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest <span class="built_in">show</span>.<span class="built_in">log</span> &gt; slow_log.repor</span><br></pre></td></tr></table></figure>
+
 <h1 id="如何通过慢查日志发现有问题的SQL？"><a href="#如何通过慢查日志发现有问题的SQL？" class="headerlink" title="如何通过慢查日志发现有问题的SQL？"></a>如何通过慢查日志发现有问题的SQL？</h1><h2 id="查询次数多且每次查询占用时间长的SQL"><a href="#查询次数多且每次查询占用时间长的SQL" class="headerlink" title="查询次数多且每次查询占用时间长的SQL"></a>查询次数多且每次查询占用时间长的SQL</h2><p>通常为<code>pt-query-digest</code>分析的前几个查询</p>
 <h2 id="IO大的SQL，数据库的主要瓶颈就在于IO"><a href="#IO大的SQL，数据库的主要瓶颈就在于IO" class="headerlink" title="IO大的SQL，数据库的主要瓶颈就在于IO"></a>IO大的SQL，数据库的主要瓶颈就在于IO</h2><p>注意pt-query-digest分析中的 <code>Rows examine</code> 项。<strong>扫描行数多，占用io大</strong></p>
 <h2 id="未命中索引的sql"><a href="#未命中索引的sql" class="headerlink" title="未命中索引的sql"></a>未命中索引的sql</h2><p>注意<code>pt-query-digest</code>分析中<strong>Rows examine（扫描行数）</strong>和<strong>Rows send（发送行数）</strong>的对比<br><strong>如果这个比值比较大，说明索引命中率不高</strong></p>
 <h1 id="怎么优化有问题的sql"><a href="#怎么优化有问题的sql" class="headerlink" title="怎么优化有问题的sql"></a>怎么优化有问题的sql</h1><h2 id="使用explain查询SQL的执行计划"><a href="#使用explain查询SQL的执行计划" class="headerlink" title="使用explain查询SQL的执行计划"></a>使用explain查询SQL的执行计划</h2><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><code>table</code>：表名；</li>
 <li><code>type</code>：连接的类型，<code>const</code>、<code>eq_reg</code>、<code>ref</code>、<code>range</code>、<code>index</code>和<code>ALL</code>；<ul>
@@ -245,15 +293,18 @@
 </ul>
 <p>计算离散度:</p>
 <figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(<span class="keyword">distinct</span> customer_id), <span class="built_in">count</span>(<span class="keyword">distinct</span> staff_id) <span class="keyword">from</span> payment;</span><br></pre></td></tr></table></figure>
+
 <p>查找字段的唯一值（不同数的个数）来确定count（distinct customer_id）离散度的大小来确定索引建立在哪一个列上.</p>
 <p>离散度，我的理解就是唯一性了，比如主键，绝对是离散度最大的，而一些用来标识状态标识的列，基本只有几个可选项，离散度就很小</p>
 <p><strong>index(col1,col2)</strong> 在建立联合索引时，离散度高的列放到前面</p>
 <h2 id="冗余索引检查"><a href="#冗余索引检查" class="headerlink" title="冗余索引检查"></a>冗余索引检查</h2><p>索引存在的目的是为了加快查询的效率，不过不是索引越多越好，建立索引要适当才好。</p>
 <p>过多的索引会增加数据库判断使用什么索引来查询的开销，所以，有时候也会出现以去掉重复或者无效的索引为优化手段的优化方式。</p>
 <p>冗余索引是指多个索引的前缀列相同，或是在联合索引中包含了主键的索引，下面这个例子中key(name, id)就是一个冗余索引</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">test</span>(<span class="keyword">id</span> <span class="built_in">int</span> <span class="keyword">not</span> <span class="literal">null</span> primay <span class="keyword">key</span>,<span class="keyword">name</span> <span class="built_in">varchar</span>(<span class="number">10</span>) <span class="keyword">not</span> <span class="literal">null</span>,title <span class="built_in">varchar</span>(<span class="number">50</span>) <span class="keyword">not</span> <span class="literal">null</span>, <span class="keyword">key</span>(<span class="keyword">name</span>,<span class="keyword">id</span>))<span class="keyword">engine</span>=<span class="keyword">innodb</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test(id <span class="type">int</span> <span class="keyword">not</span> <span class="keyword">null</span> primay key,<span class="type">name</span> <span class="type">varchar</span>(<span class="number">10</span>) <span class="keyword">not</span> <span class="keyword">null</span>,title <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">not</span> <span class="keyword">null</span>, key(<span class="type">name</span>,id))engine=innodb;</span><br></pre></td></tr></table></figure>
+
 <p>主键索引本来就是唯一索引</p>
-<h3 id="索引检查语句"><a href="#索引检查语句" class="headerlink" title="索引检查语句"></a>索引检查语句</h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">use information_schema;</span><br><span class="line"><span class="keyword">SELECT</span> a.TABLE_SCHEMA <span class="keyword">AS</span> <span class="string">'db'</span></span><br><span class="line">    ,a.<span class="built_in">TABLE_NAME</span> <span class="keyword">AS</span> <span class="string">'table'</span></span><br><span class="line">    ,a.INDEX_NAME <span class="keyword">AS</span> <span class="string">'index1'</span></span><br><span class="line">    ,b.INDEX_NAME <span class="keyword">AS</span> <span class="string">'index2'</span></span><br><span class="line">    ,a.<span class="built_in">COLUMN_NAME</span> <span class="keyword">AS</span> <span class="string">'re_col'</span></span><br><span class="line"><span class="keyword">FROM</span> <span class="keyword">STATISTICS</span> a</span><br><span class="line">    <span class="keyword">JOIN</span> <span class="keyword">STATISTICS</span> b <span class="keyword">ON</span> a.TABLE_SCHEMA = b.TABLE_SCHEMA</span><br><span class="line"><span class="keyword">AND</span> a.<span class="built_in">TABLE_NAME</span> = b.<span class="built_in">TABLE_NAME</span></span><br><span class="line">    <span class="keyword">AND</span> a.SEQ_IN_INDEX = b.SEQ_IN_INDEX</span><br><span class="line">    <span class="keyword">AND</span> a.<span class="built_in">COLUMN_NAME</span> = b.<span class="built_in">COLUMN_NAME</span></span><br><span class="line"><span class="keyword">WHERE</span> a.SEQ_IN_INDEX = <span class="number">1</span> <span class="keyword">AND</span> a.INDEX_NAME &lt;&gt; b.INDEX_NAME</span><br></pre></td></tr></table></figure>
+<h3 id="索引检查语句"><a href="#索引检查语句" class="headerlink" title="索引检查语句"></a>索引检查语句</h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">use information_schema;</span><br><span class="line"><span class="keyword">SELECT</span> a.TABLE_SCHEMA <span class="keyword">AS</span> <span class="string">&#x27;db&#x27;</span></span><br><span class="line">    ,a.<span class="built_in">TABLE_NAME</span> <span class="keyword">AS</span> <span class="string">&#x27;table&#x27;</span></span><br><span class="line">    ,a.INDEX_NAME <span class="keyword">AS</span> <span class="string">&#x27;index1&#x27;</span></span><br><span class="line">    ,b.INDEX_NAME <span class="keyword">AS</span> <span class="string">&#x27;index2&#x27;</span></span><br><span class="line">    ,a.<span class="built_in">COLUMN_NAME</span> <span class="keyword">AS</span> <span class="string">&#x27;re_col&#x27;</span></span><br><span class="line"><span class="keyword">FROM</span> <span class="keyword">STATISTICS</span> a</span><br><span class="line">    <span class="keyword">JOIN</span> <span class="keyword">STATISTICS</span> b <span class="keyword">ON</span> a.TABLE_SCHEMA = b.TABLE_SCHEMA</span><br><span class="line"><span class="keyword">AND</span> a.<span class="built_in">TABLE_NAME</span> = b.<span class="built_in">TABLE_NAME</span></span><br><span class="line">    <span class="keyword">AND</span> a.SEQ_IN_INDEX = b.SEQ_IN_INDEX</span><br><span class="line">    <span class="keyword">AND</span> a.<span class="built_in">COLUMN_NAME</span> = b.<span class="built_in">COLUMN_NAME</span></span><br><span class="line"><span class="keyword">WHERE</span> a.SEQ_IN_INDEX = <span class="number">1</span> <span class="keyword">AND</span> a.INDEX_NAME &lt;&gt; b.INDEX_NAME</span><br></pre></td></tr></table></figure>
+
 <h3 id="索引检查工具-pt-duplicate-key-checker"><a href="#索引检查工具-pt-duplicate-key-checker" class="headerlink" title="索引检查工具 pt-duplicate-key-checker"></a>索引检查工具 <code>pt-duplicate-key-checker</code></h3><p>查询冗余索引工具 <code>pt-duplicate-key-checker -uroot -p &#39;123456&#39; -h 127.0.0.1</code></p>
 <h2 id="字段类型优化"><a href="#字段类型优化" class="headerlink" title="字段类型优化"></a>字段类型优化</h2><ul>
 <li><p>可以使用int类型存储时间类型：</p>
@@ -270,7 +321,7 @@
 </li>
 </ul>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="http://jinfang.life/posts/a8073527/" target="_blank" rel="noopener">Mysql性能优化笔记</a></li>
+<li><a target="_blank" rel="noopener" href="http://jinfang.life/posts/a8073527/">Mysql性能优化笔记</a></li>
 </ul>
 
         
@@ -303,7 +354,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BC%98%E5%8C%96/" rel="tag">优化</a></li></ul>
 
       
 
@@ -339,7 +390,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#常用参数"><span class="nav-number">1.</span> <span class="nav-text">常用参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#慢查日志分析工具"><span class="nav-number">2.</span> <span class="nav-text">慢查日志分析工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mysqldumpslow"><span class="nav-number">2.1.</span> <span class="nav-text">mysqldumpslow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-query-digest"><span class="nav-number">2.2.</span> <span class="nav-text">pt-query-digest</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何通过慢查日志发现有问题的SQL？"><span class="nav-number">3.</span> <span class="nav-text">如何通过慢查日志发现有问题的SQL？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查询次数多且每次查询占用时间长的SQL"><span class="nav-number">3.1.</span> <span class="nav-text">查询次数多且每次查询占用时间长的SQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO大的SQL，数据库的主要瓶颈就在于IO"><span class="nav-number">3.2.</span> <span class="nav-text">IO大的SQL，数据库的主要瓶颈就在于IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#未命中索引的sql"><span class="nav-number">3.3.</span> <span class="nav-text">未命中索引的sql</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#怎么优化有问题的sql"><span class="nav-number">4.</span> <span class="nav-text">怎么优化有问题的sql</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用explain查询SQL的执行计划"><span class="nav-number">4.1.</span> <span class="nav-text">使用explain查询SQL的执行计划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选择合适的索引列"><span class="nav-number">4.2.</span> <span class="nav-text">选择合适的索引列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#冗余索引检查"><span class="nav-number">4.3.</span> <span class="nav-text">冗余索引检查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#索引检查语句"><span class="nav-number">4.3.1.</span> <span class="nav-text">索引检查语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引检查工具-pt-duplicate-key-checker"><span class="nav-number">4.3.2.</span> <span class="nav-text">索引检查工具 pt-duplicate-key-checker</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字段类型优化"><span class="nav-number">4.4.</span> <span class="nav-text">字段类型优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">常用参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%85%A2%E6%9F%A5%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7"><span class="nav-number">2.</span> <span class="nav-text">慢查日志分析工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mysqldumpslow"><span class="nav-number">2.1.</span> <span class="nav-text">mysqldumpslow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pt-query-digest"><span class="nav-number">2.2.</span> <span class="nav-text">pt-query-digest</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E6%85%A2%E6%9F%A5%E6%97%A5%E5%BF%97%E5%8F%91%E7%8E%B0%E6%9C%89%E9%97%AE%E9%A2%98%E7%9A%84SQL%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">如何通过慢查日志发现有问题的SQL？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%AC%A1%E6%95%B0%E5%A4%9A%E4%B8%94%E6%AF%8F%E6%AC%A1%E6%9F%A5%E8%AF%A2%E5%8D%A0%E7%94%A8%E6%97%B6%E9%97%B4%E9%95%BF%E7%9A%84SQL"><span class="nav-number">3.1.</span> <span class="nav-text">查询次数多且每次查询占用时间长的SQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO%E5%A4%A7%E7%9A%84SQL%EF%BC%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%B8%BB%E8%A6%81%E7%93%B6%E9%A2%88%E5%B0%B1%E5%9C%A8%E4%BA%8EIO"><span class="nav-number">3.2.</span> <span class="nav-text">IO大的SQL，数据库的主要瓶颈就在于IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AA%E5%91%BD%E4%B8%AD%E7%B4%A2%E5%BC%95%E7%9A%84sql"><span class="nav-number">3.3.</span> <span class="nav-text">未命中索引的sql</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96%E6%9C%89%E9%97%AE%E9%A2%98%E7%9A%84sql"><span class="nav-number">4.</span> <span class="nav-text">怎么优化有问题的sql</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8explain%E6%9F%A5%E8%AF%A2SQL%E7%9A%84%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92"><span class="nav-number">4.1.</span> <span class="nav-text">使用explain查询SQL的执行计划</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E5%90%88%E9%80%82%E7%9A%84%E7%B4%A2%E5%BC%95%E5%88%97"><span class="nav-number">4.2.</span> <span class="nav-text">选择合适的索引列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%97%E4%BD%99%E7%B4%A2%E5%BC%95%E6%A3%80%E6%9F%A5"><span class="nav-number">4.3.</span> <span class="nav-text">冗余索引检查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E6%A3%80%E6%9F%A5%E8%AF%AD%E5%8F%A5"><span class="nav-number">4.3.1.</span> <span class="nav-text">索引检查语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E6%A3%80%E6%9F%A5%E5%B7%A5%E5%85%B7-pt-duplicate-key-checker"><span class="nav-number">4.3.2.</span> <span class="nav-text">索引检查工具 pt-duplicate-key-checker</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96"><span class="nav-number">4.4.</span> <span class="nav-text">字段类型优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -354,7 +405,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -434,12 +485,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -507,7 +562,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

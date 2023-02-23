@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>单元测试「phpunit」的使用 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="PHPPHPUnit">
+  <meta name="keywords" content="PHPPHPUnit" />
   
   
   
   
   <meta name="description" content="本文是在Laravel框架下使用PHPUnit进行单元测试">
-<meta name="keywords" content="PHP,PHPUnit">
 <meta property="og:type" content="article">
 <meta property="og:title" content="单元测试「PHPUnit」的使用">
 <meta property="og:url" content="http://blog.caoxl.com/2018/07/11/PHP-PHPUnit/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="本文是在Laravel框架下使用PHPUnit进行单元测试">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-11-22T09:36:47.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-07-11T08:17:45.000Z">
+<meta property="article:modified_time" content="2018-11-22T09:36:47.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="PHPUnit">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="单元测试「PHPUnit」的使用">
-<meta name="twitter:description" content="本文是在Laravel框架下使用PHPUnit进行单元测试">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -199,7 +240,8 @@
           <blockquote>
 <p>本文是在<code>Laravel</code>框架下使用<code>PHPUnit</code>进行单元测试</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="为什么要单元测试-？"><a href="#为什么要单元测试-？" class="headerlink" title="为什么要单元测试 ？"></a>为什么要单元测试 ？</h1><blockquote>
 <p>只要你想到输入一些东西到<code>print</code>语句或调试表达式中，就用测试代替它。</p>
 </blockquote>
@@ -207,15 +249,18 @@
 <li>使用 <code>composer</code> 方式安装 <code>PHPUnit</code></li>
 </ul>
 <figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer <span class="built_in">require</span> <span class="comment">--dev phpunit/phpunit</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>安装 <code>Monolog</code>日志包, 做<code>phpunit</code>测试记录日志使用</li>
 </ul>
 <figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">composer</span> <span class="meta">require</span> monolog/monolog</span><br></pre></td></tr></table></figure>
+
 <h1 id="PHPUnit简单用法"><a href="#PHPUnit简单用法" class="headerlink" title="PHPUnit简单用法"></a><code>PHPUnit</code>简单用法</h1><h2 id="单个文件测试"><a href="#单个文件测试" class="headerlink" title="单个文件测试"></a>单个文件测试</h2><p>创建目录 <code>tests</code>, 新建文件 <code>StackTest.php</code>, 编辑如下:</p>
 <blockquote>
 <p>一般初始化<code>Laravel</code>框架就带有<code>tests</code>文件夹, 用于存放测试代码</p>
 </blockquote>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">tests</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/../vendor/autoload.php'</span>;</span><br><span class="line"></span><br><span class="line">define(<span class="string">"ROOT_PATH"</span>, dirname(<span class="keyword">__DIR__</span>) . <span class="string">"StackTest.php/"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Monolog</span>\<span class="title">Logger</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Monolog</span>\<span class="title">Handler</span>\<span class="title">StreamHandler</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">PHPUnit</span>\<span class="title">Framework</span>\<span class="title">TestCase</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StackTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testPushAndPop</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $stack = [];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">0</span>, count($stack));</span><br><span class="line"></span><br><span class="line">        array_push($stack, <span class="string">'foo'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加日志文件, 如果没有安装monolog，则有关monolog的代码都可以注释掉</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;Log()-&gt;error(<span class="string">'hello'</span>, $stack);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="string">'foo'</span>, $stack[count($stack) - <span class="number">1</span>]);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">1</span>, count($stack));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="string">'foo'</span>, array_pop($stack));</span><br><span class="line">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">0</span>, count($stack));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">Log</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// create a log channel</span></span><br><span class="line">        $log = <span class="keyword">new</span> Logger(<span class="string">'Tester'</span>);</span><br><span class="line">        $log-&gt;pushHandler(<span class="keyword">new</span> StreamHandler(ROOT_PATH . <span class="string">'storage/logs/app.log'</span>, Logger::WARNING));</span><br><span class="line">        $log-&gt;error(<span class="string">'Error'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $log;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">tests</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">&#x27;/../vendor/autoload.php&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">define</span>(<span class="string">&quot;ROOT_PATH&quot;</span>, <span class="title function_ invoke__">dirname</span>(<span class="keyword">__DIR__</span>) . <span class="string">&quot;StackTest.php/&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Monolog</span>\<span class="title">Logger</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Monolog</span>\<span class="title">Handler</span>\<span class="title">StreamHandler</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">PHPUnit</span>\<span class="title">Framework</span>\<span class="title">TestCase</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StackTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testPushAndPop</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$stack</span> = [];</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertEquals</span>(<span class="number">0</span>, <span class="title function_ invoke__">count</span>(<span class="variable">$stack</span>));</span><br><span class="line"></span><br><span class="line">        <span class="title function_ invoke__">array_push</span>(<span class="variable">$stack</span>, <span class="string">&#x27;foo&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加日志文件, 如果没有安装monolog，则有关monolog的代码都可以注释掉</span></span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">Log</span>()-&gt;<span class="title function_ invoke__">error</span>(<span class="string">&#x27;hello&#x27;</span>, <span class="variable">$stack</span>);</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertEquals</span>(<span class="string">&#x27;foo&#x27;</span>, <span class="variable">$stack</span>[<span class="title function_ invoke__">count</span>(<span class="variable">$stack</span>) - <span class="number">1</span>]);</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertEquals</span>(<span class="number">1</span>, <span class="title function_ invoke__">count</span>(<span class="variable">$stack</span>));</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertEquals</span>(<span class="string">&#x27;foo&#x27;</span>, <span class="title function_ invoke__">array_pop</span>(<span class="variable">$stack</span>));</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertEquals</span>(<span class="number">0</span>, <span class="title function_ invoke__">count</span>(<span class="variable">$stack</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">Log</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// create a log channel</span></span><br><span class="line">        <span class="variable">$log</span> = <span class="keyword">new</span> <span class="title class_">Logger</span>(<span class="string">&#x27;Tester&#x27;</span>);</span><br><span class="line">        <span class="variable">$log</span>-&gt;<span class="title function_ invoke__">pushHandler</span>(<span class="keyword">new</span> <span class="title class_">StreamHandler</span>(ROOT_PATH . <span class="string">&#x27;storage/logs/app.log&#x27;</span>, <span class="title class_">Logger</span>::<span class="variable constant_">WARNING</span>));</span><br><span class="line">        <span class="variable">$log</span>-&gt;<span class="title function_ invoke__">error</span>(<span class="string">&#x27;Error&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$log</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><strong>代码解释:</strong></p>
 <ul>
 <li><ol>
@@ -235,52 +280,67 @@
 </ol>
 </li>
 </ul>
-<h3 id="命令行执行"><a href="#命令行执行" class="headerlink" title="命令行执行"></a>命令行执行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phpunit命令 测试文件命名</span><br></pre></td></tr></table></figure>
-<p>例如:<br><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/vendor/</span>bin<span class="regexp">/phpunit tests/</span>StackTest.php</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 或者可以省略文件后缀名</span><br><span class="line">.<span class="regexp">/vendor/</span>bin<span class="regexp">/phpunit tests/</span>StackTest</span><br></pre></td></tr></table></figure></p>
+<h3 id="命令行执行"><a href="#命令行执行" class="headerlink" title="命令行执行"></a>命令行执行</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phpunit命令 测试文件命名</span><br></pre></td></tr></table></figure>
+
+<p>例如:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/vendor/</span>bin<span class="regexp">/phpunit tests/</span>StackTest.php</span><br><span class="line"></span><br><span class="line"><span class="regexp">//</span> 或者可以省略文件后缀名</span><br><span class="line">.<span class="regexp">/vendor/</span>bin<span class="regexp">/phpunit tests/</span>StackTest</span><br></pre></td></tr></table></figure>
+
 <p>执行结果:</p>
 <figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ./vendor/bin/phpunit tests/StackTest.php</span><br><span class="line">PHPUnit 7.2.6 by Sebastian Bergmann and contributors.</span><br><span class="line"></span><br><span class="line">.                                                                   1 / 1 (100%)</span><br><span class="line"></span><br><span class="line"><span class="keyword">Time:</span> 203 ms, Memory: 4.00MB</span><br><span class="line"></span><br><span class="line">OK (1 test, 5 assertions)</span><br></pre></td></tr></table></figure>
+
 <p>我们可以在<code>app.log</code>文件中查看我们打印的日志信息。</p>
 <ul>
 <li><code>storage/logs/app.log</code></li>
 </ul>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">2018</span><span class="number">-07</span><span class="number">-11</span> <span class="number">08</span>:<span class="number">45</span>:<span class="number">24</span>] Tester.ERROR: Error [] []</span><br><span class="line">[<span class="number">2018</span><span class="number">-07</span><span class="number">-11</span> <span class="number">08</span>:<span class="number">45</span>:<span class="number">24</span>] Tester.ERROR: hello [<span class="string">"foo"</span>] []</span><br></pre></td></tr></table></figure>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-attr">[2018-07-11 08:45:24]</span> Tester<span class="selector-class">.ERROR</span>: Error <span class="selector-attr">[]</span> <span class="selector-attr">[]</span></span><br><span class="line"><span class="selector-attr">[2018-07-11 08:45:24]</span> Tester<span class="selector-class">.ERROR</span>: hello <span class="selector-attr">[<span class="string">&quot;foo&quot;</span>]</span> <span class="selector-attr">[]</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="类文件引入"><a href="#类文件引入" class="headerlink" title="类文件引入"></a>类文件引入</h2><ul>
 <li><code>Calculator.php</code></li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sum</span><span class="params">($a, $b)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> $a + $b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sum</span>(<span class="params"><span class="variable">$a</span>, <span class="variable">$b</span></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$a</span> + <span class="variable">$b</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>单元测试类: <code>CalculatorTest.php</code></li>
 </ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">tests</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">'/../vendor/autoload.php'</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">require</span> <span class="string">"Calculator.php"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">use</span> <span class="title">PHPUnit</span>\<span class="title">Framework</span>\<span class="title">TestCase</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="class"><span class="keyword">class</span> <span class="title">CalculatorTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span></span><br><span class="line"><span class="php">&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testSum</span><span class="params">()</span></span></span></span><br><span class="line"><span class="php">    &#123;</span></span><br><span class="line"><span class="php">        $obj = <span class="keyword">new</span> \Calculator;</span></span><br><span class="line"></span><br><span class="line"><span class="php">        <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">2</span>, $obj-&gt;sum(<span class="number">1</span>, <span class="number">1</span>));</span></span><br><span class="line"><span class="php">    &#125;</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">App</span>\<span class="title class_">tests</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="keyword">__DIR__</span> . <span class="string">&#x27;/../vendor/autoload.php&#x27;</span>;</span><br><span class="line"><span class="keyword">require</span> <span class="string">&quot;Calculator.php&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">PHPUnit</span>\<span class="title">Framework</span>\<span class="title">TestCase</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CalculatorTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testSum</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$obj</span> = <span class="keyword">new</span> <span class="title class_">\Calculator</span>;</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertEquals</span>(<span class="number">2</span>, <span class="variable">$obj</span>-&gt;<span class="title function_ invoke__">sum</span>(<span class="number">1</span>, <span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>命令执行:</p>
 <figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ./vendor/bin/phpunit tests/CalculatorTest</span><br><span class="line">PHPUnit 7.2.6 by Sebastian Bergmann and contributors.</span><br><span class="line"></span><br><span class="line">.                                                                   1 / 1 (100%)</span><br><span class="line"></span><br><span class="line"><span class="keyword">Time:</span> 185 ms, Memory: 4.00MB</span><br><span class="line"></span><br><span class="line">OK (1 test, 1 assertion)</span><br></pre></td></tr></table></figure>
+
 <p>如果我们把这里的断言故意写错，<code>$this-&gt;assertEquals(1, $obj-&gt;sum(0, 0));</code></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">./vendor/bin/phpunit</span> <span class="string">tests/CalculatorTest</span></span><br><span class="line"><span class="string">PHPUnit</span> <span class="number">7.2</span><span class="number">.6</span> <span class="string">by</span> <span class="string">Sebastian</span> <span class="string">Bergmann</span> <span class="string">and</span> <span class="string">contributors.</span></span><br><span class="line"></span><br><span class="line"><span class="string">F</span>                                                                   <span class="number">1</span> <span class="string">/</span> <span class="number">1</span> <span class="string">(100%)</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Time:</span> <span class="number">194</span> <span class="string">ms,</span> <span class="attr">Memory:</span> <span class="number">4.</span><span class="string">00MB</span></span><br><span class="line"></span><br><span class="line"><span class="attr">There was 1 failure:</span></span><br><span class="line"></span><br><span class="line"><span class="number">1</span><span class="string">)</span> <span class="string">App\tests\CalculatorTest::testSum</span></span><br><span class="line"><span class="string">Failed</span> <span class="string">asserting</span> <span class="string">that</span> <span class="number">2</span> <span class="string">matches</span> <span class="string">expected</span> <span class="number">1</span><span class="string">.</span></span><br><span class="line"></span><br><span class="line"><span class="string">C:\WWW\Laravel\tests\CalculatorTest.php:16</span></span><br><span class="line"></span><br><span class="line"><span class="string">FAILURES!</span></span><br><span class="line"><span class="attr">Tests:</span> <span class="number">1</span><span class="string">,</span> <span class="attr">Assertions:</span> <span class="number">1</span><span class="string">,</span> <span class="attr">Failures:</span> <span class="number">1</span><span class="string">.</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ ./vendor/bin/phpunit tests/CalculatorTest</span><br><span class="line">PHPUnit 7.2.6 by Sebastian Bergmann and contributors.</span><br><span class="line"></span><br><span class="line">F                                                                   1 / 1 (100%)</span><br><span class="line"></span><br><span class="line"><span class="keyword">Time:</span> 194 ms, Memory: 4.00MB</span><br><span class="line"></span><br><span class="line">There was 1 failure:</span><br><span class="line"></span><br><span class="line">1) App\tests\CalculatorTest::testSum</span><br><span class="line">Failed asserting that 2 matches expected 1.</span><br><span class="line"></span><br><span class="line">C:\WWW\Laravel\tests\CalculatorTest.php:16</span><br><span class="line"></span><br><span class="line">FAILURES!</span><br><span class="line">Tests: 1, Assertions: 1, Failures: 1.</span><br></pre></td></tr></table></figure>
+
 <p><strong>会直接报出方法错误信息及行号，有助于我们快速找出<code>bug</code></strong></p>
 <h2 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h2><p>你是否已经厌烦了在每一个测试方法命名前面加一个test，是否因为只是调用的参数不同，却要写多个测试用例而纠结？<br>我最喜欢的高级功能，现在隆重推荐给你，叫做<strong>框架生成器</strong>。</p>
 <ul>
 <li><code>Calculator.php</code></li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span>  </span></span><br><span class="line"><span class="class"></span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sum</span><span class="params">($a, $b)</span>  </span></span><br><span class="line"><span class="function">    </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> $a + $b;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span>  </span></span><br><span class="line"><span class="class"></span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sum</span>(<span class="params"><span class="variable">$a</span>, <span class="variable">$b</span></span>)  </span></span><br><span class="line"><span class="function">    </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$a</span> + <span class="variable">$b</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>命令行启动测试用例，使用关键字 <code>--skeleton</code></li>
 </ul>
-<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./vendor/bin/phpunit</span> <span class="params">--skeleton</span> Calculator.php</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.<span class="regexp">/vendor/</span>bin/phpunit --skeleton Calculator.php</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>执行结果:</li>
 </ul>
-<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PHPUnit <span class="number">7</span>.<span class="number">2</span>.<span class="number">6</span> <span class="keyword">by </span><span class="keyword">Sebastian </span><span class="keyword">Bergmann </span><span class="keyword">and </span>contributors.</span><br><span class="line"></span><br><span class="line">Wrote test class skeleton for Calculator to CalculatorTest.php.</span><br></pre></td></tr></table></figure>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PHPUnit <span class="number">7.2</span>.<span class="number">6</span> <span class="keyword">by</span> Sebastian Bergmann <span class="keyword">and</span> contributors.</span><br><span class="line"></span><br><span class="line">Wrote test <span class="keyword">class</span> <span class="title class_">skeleton</span> <span class="keyword">for</span> Calculator <span class="keyword">to</span> CalculatorTest.php.  </span><br></pre></td></tr></table></figure>
+
 <p>是不是很简单，因为没有测试数据，所以这里加测试数据，然后重新执行上边的命令</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span>  </span></span><br><span class="line"><span class="class"></span>&#123;  </span><br><span class="line">    <span class="comment">/** </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (0, 0) == 0 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (0, 1) == 1 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (1, 0) == 1 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (1, 1) == 2 </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sum</span><span class="params">($a, $b)</span>  </span></span><br><span class="line"><span class="function">    </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> $a + $b;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span>  </span></span><br><span class="line"><span class="class"></span>&#123;  </span><br><span class="line">    <span class="comment">/** </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (0, 0) == 0 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (0, 1) == 1 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (1, 0) == 1 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@assert</span> (1, 1) == 2 </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sum</span>(<span class="params"><span class="variable">$a</span>, <span class="variable">$b</span></span>)  </span></span><br><span class="line"><span class="function">    </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$a</span> + <span class="variable">$b</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span>  </span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>原始类中的每个方法都进行<code>@assert</code>注解的检测。这些被转变为测试代码，像这样:</li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Generated from <span class="doctag">@assert</span> (0, 0) == 0.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testSum</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    $obj = <span class="keyword">new</span> Calculator;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;assertEquals(<span class="number">0</span>, $obj-&gt;sum(<span class="number">0</span>, <span class="number">0</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="出现错误-unrecognized-option-skeleton"><a href="#出现错误-unrecognized-option-skeleton" class="headerlink" title="出现错误: unrecognized option --skeleton"></a>出现错误: <code>unrecognized option --skeleton</code></h3><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget <span class="string">https:</span><span class="comment">//phar.phpunit.de/phpunit-skelgen.phar</span></span><br><span class="line">php phpunit-skelgen.phar</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Generated from <span class="doctag">@assert</span> (0, 0) == 0.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testSum</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="variable">$obj</span> = <span class="keyword">new</span> <span class="title class_">Calculator</span>;</span><br><span class="line">    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">assertEquals</span>(<span class="number">0</span>, <span class="variable">$obj</span>-&gt;<span class="title function_ invoke__">sum</span>(<span class="number">0</span>, <span class="number">0</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="出现错误-unrecognized-option-skeleton"><a href="#出现错误-unrecognized-option-skeleton" class="headerlink" title="出现错误: unrecognized option --skeleton"></a>出现错误: <code>unrecognized option --skeleton</code></h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https:<span class="regexp">//</span>phar.phpunit.de/phpunit-skelgen.phar</span><br><span class="line">php phpunit-skelgen.phar</span><br></pre></td></tr></table></figure>
+
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="http://www.phpunit.cn/" target="_blank" rel="noopener">PHPUnit中文网</a></li>
-<li><a href="http://www.phpunit.cn/manual/current/zh_cn/installation.html" target="_blank" rel="noopener">PHPUnit中文文档</a></li>
-<li><a href="https://segmentfault.com/a/1190000011499301" target="_blank" rel="noopener">PHP单元测试框架PHPUnit的使用</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.phpunit.cn/">PHPUnit中文网</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.phpunit.cn/manual/current/zh_cn/installation.html">PHPUnit中文文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000011499301">PHP单元测试框架PHPUnit的使用</a></li>
 </ul>
 
         
@@ -313,7 +373,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHPUnit/">PHPUnit</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHPUnit/" rel="tag">PHPUnit</a></li></ul>
 
       
 
@@ -349,7 +409,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要单元测试-？"><span class="nav-number">1.</span> <span class="nav-text">为什么要单元测试 ？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装PHPUnit"><span class="nav-number">2.</span> <span class="nav-text">安装PHPUnit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHPUnit简单用法"><span class="nav-number">3.</span> <span class="nav-text">PHPUnit简单用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单个文件测试"><span class="nav-number">3.1.</span> <span class="nav-text">单个文件测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命令行执行"><span class="nav-number">3.1.1.</span> <span class="nav-text">命令行执行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类文件引入"><span class="nav-number">3.2.</span> <span class="nav-text">类文件引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级用法"><span class="nav-number">3.3.</span> <span class="nav-text">高级用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#出现错误-unrecognized-option-skeleton"><span class="nav-number">3.3.1.</span> <span class="nav-text">出现错误: unrecognized option --skeleton</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95-%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">为什么要单元测试 ？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85PHPUnit"><span class="nav-number">2.</span> <span class="nav-text">安装PHPUnit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PHPUnit%E7%AE%80%E5%8D%95%E7%94%A8%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">PHPUnit简单用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%B8%AA%E6%96%87%E4%BB%B6%E6%B5%8B%E8%AF%95"><span class="nav-number">3.1.</span> <span class="nav-text">单个文件测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%89%A7%E8%A1%8C"><span class="nav-number">3.1.1.</span> <span class="nav-text">命令行执行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E6%96%87%E4%BB%B6%E5%BC%95%E5%85%A5"><span class="nav-number">3.2.</span> <span class="nav-text">类文件引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E7%94%A8%E6%B3%95"><span class="nav-number">3.3.</span> <span class="nav-text">高级用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BA%E7%8E%B0%E9%94%99%E8%AF%AF-unrecognized-option-skeleton"><span class="nav-number">3.3.1.</span> <span class="nav-text">出现错误: unrecognized option --skeleton</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -364,7 +424,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -444,12 +504,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -517,7 +581,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>nginx 反向代理/负载均衡 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Nginx">
+  <meta name="keywords" content="Nginx" />
   
   
   
   
   <meta name="description" content="反向代理（Reverse Proxy）方式是指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时站在服务器角度来看，代理服务器对外就表现为一个反向代理服务器。">
-<meta name="keywords" content="Nginx">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Nginx 反向代理&#x2F;负载均衡">
 <meta property="og:url" content="http://blog.caoxl.com/2018/06/08/Nginx-reverse-proxy/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="反向代理（Reverse Proxy）方式是指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时站在服务器角度来看，代理服务器对外就表现为一个反向代理服务器。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-06-08T07:38:49.000Z">
+<meta property="article:modified_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Nginx">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Nginx 反向代理&#x2F;负载均衡">
-<meta name="twitter:description" content="反向代理（Reverse Proxy）方式是指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时站在服务器角度来看，代理服务器对外就表现为一个反向代理服务器。">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +42,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +181,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -199,38 +239,47 @@
           <blockquote>
 <p>反向代理（Reverse Proxy）方式是指以代理服务器来接受internet上的连接请求，<br>然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，<br>此时站在服务器角度来看，代理服务器对外就表现为一个反向代理服务器。</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="Nginx负载均衡集群配置"><a href="#Nginx负载均衡集群配置" class="headerlink" title="Nginx负载均衡集群配置"></a><code>Nginx</code>负载均衡集群配置</h1><ul>
 <li>修改<code>nginx.conf</code>配置文件</li>
-<li>配置服务器组,在<code>http{}</code>节点之间添加<code>upstream</code>配置(注意不要写<code>localhost</code>，不然访问速度会很慢)</li>
+<li>配置服务器组,在<code>http&#123;&#125;</code>节点之间添加<code>upstream</code>配置(注意不要写<code>localhost</code>，不然访问速度会很慢)</li>
 </ul>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">upstream nginx &#123;</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8081;</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8082;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">upstream</span> nginx &#123;</span><br><span class="line">    <span class="attribute">server</span> <span class="number">127.0.0.1:8081</span>;</span><br><span class="line">    <span class="attribute">server</span> <span class="number">127.0.0.1:8082</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>修改<code>nginx</code>监听的端口号<code>80</code>, 改为<code>8080</code></li>
 </ul>
-<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">listen</span> <span class="number">8080</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">listen</span> <span class="number">8080</span>;</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>在<code>location / {}</code>中,利用<code>proxy_pass</code>配置反向代理地址;此处<code>&quot;http://&quot;</code>不能少,<br>后面的地址要和第一步<code>upstream</code>的名称保持一致.</li>
+<li>在<code>location / &#123;&#125;</code>中,利用<code>proxy_pass</code>配置反向代理地址;此处<code>&quot;http://&quot;</code>不能少,<br>后面的地址要和第一步<code>upstream</code>的名称保持一致.</li>
 </ul>
 <figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">location</span> <span class="title">/ &#123;</span></span><br><span class="line"><span class="title">    proxy_pass</span> http://nginx; <span class="comment">#配置反向代理地址</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>访问:url:<a href="http://127.0.0.1:8080/nginx" target="_blank" rel="noopener">http://127.0.0.1:8080/nginx</a></p>
+
+<p>访问:url:<a target="_blank" rel="noopener" href="http://127.0.0.1:8080/nginx">http://127.0.0.1:8080/nginx</a></p>
 <h1 id="Nginx负载均衡策略"><a href="#Nginx负载均衡策略" class="headerlink" title="Nginx负载均衡策略"></a><code>Nginx</code>负载均衡策略</h1><h2 id="一、轮询（默认）"><a href="#一、轮询（默认）" class="headerlink" title="一、轮询（默认）"></a>一、轮询（默认）</h2><p>每个web请求按时间顺序逐一分配到不同的后端服务器，如果后端服务器down掉，能自动剔除。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">upstream nginxDemo &#123;</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8081;</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8082;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">upstream</span> nginxDemo &#123;</span><br><span class="line">    <span class="attribute">server</span> <span class="number">127.0.0.1:8081</span>;</span><br><span class="line">    <span class="attribute">server</span> <span class="number">127.0.0.1:8082</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="二、最少链接"><a href="#二、最少链接" class="headerlink" title="二、最少链接"></a>二、最少链接</h2><p>web请求会被转发到连接数最少的服务器上。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream nginxDemo &#123;</span><br><span class="line">    least_conn;</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8081;</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8082;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight roboconf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream nginxDemo &#123;</span><br><span class="line">    <span class="attribute">least_conn;</span></span><br><span class="line"><span class="attribute">    server 127.0.0.1</span>:8081;</span><br><span class="line">    <span class="attribute">server 127.0.0.1</span>:8082;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="三、weight权重"><a href="#三、weight权重" class="headerlink" title="三、weight权重"></a>三、<code>weight</code>权重</h2><p>指定轮询几率，weight和访问比率成正比，用于后端服务器性能不均的情况，weight默认是1。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#服务器A和服务器B的访问比例为：2-1;比如有3个请求，前两个会访问A，三个访问B，其它规则和轮询一样。</span></span><br><span class="line">upstream nginxDemo &#123;</span><br><span class="line">    <span class="built_in"> server </span>127.0.0.1:8081 <span class="attribute">weight</span>=2; #服务器A</span><br><span class="line">    <span class="built_in"> server </span>127.0.0.1:8082; #服务器B</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#服务器<span class="selector-tag">A</span>和服务器<span class="selector-tag">B</span>的访问比例为：<span class="number">2</span>-<span class="number">1</span>;比如有<span class="number">3</span>个请求，前两个会访问<span class="selector-tag">A</span>，三个访问<span class="selector-tag">B</span>，其它规则和轮询一样。</span><br><span class="line">upstream nginxDemo &#123;</span><br><span class="line">     server <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">8081</span> weight=<span class="number">2</span>; #服务器<span class="selector-tag">A</span></span><br><span class="line">     server <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">8082</span>; #服务器<span class="selector-tag">B</span></span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
 <h2 id="四、ip-hash"><a href="#四、ip-hash" class="headerlink" title="四、ip_hash"></a>四、<code>ip_hash</code></h2><p>每个请求按访问<code>ip</code>的<code>hash</code>值分配，这样同一客户端连续的Web请求都会被分发到同一服务器进行处理，<br>可以解决<code>session</code>的问题。当后台服务器宕机时，会自动跳转到其它服务器。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstrea nginxDemo &#123;</span><br><span class="line">    ip_hash;</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8081 <span class="attribute">weight</span>=2; #服务器A</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8082; #服务器B</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight roboconf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstrea nginxDemo &#123;</span><br><span class="line">    <span class="attribute">ip_hash;</span></span><br><span class="line"><span class="attribute">    server 127.0.0.1</span>:8081 weight=2; <span class="comment">#服务器A</span></span><br><span class="line">    <span class="attribute">server 127.0.0.1</span>:8082; <span class="comment">#服务器B</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>基于<code>weight</code>的负载均衡和基于<code>ip_hash</code>的负载均衡可以组合在一起使用。</p>
 </blockquote>
 <h2 id="五、url-hash-第三方"><a href="#五、url-hash-第三方" class="headerlink" title="五、url_hash (第三方)"></a>五、<code>url_hash (第三方)</code></h2><p><code>url_hash</code>是nginx的第三方模块，nginx本身不支持，需要打补丁。</p>
 <p><code>nginx</code>按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，后端服务器为缓存服务器、文件服务器、静态服务器时比较有效。</p>
 <p>缺点是当后端服务器宕机的时候，url_hash不会自动跳转的其他缓存服务器，而是返回给用户一个503错误。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream nginxDemo &#123;</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8081; #服务器A</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8082; #服务器B</span><br><span class="line">    hash <span class="variable">$requert_url</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">upstream</span> nginxDemo &#123;</span><br><span class="line">    <span class="attribute">server</span> <span class="number">127.0.0.1:8081</span>; <span class="comment">#服务器A</span></span><br><span class="line">    <span class="attribute">server</span> <span class="number">127.0.0.1:8082</span>; <span class="comment">#服务器B</span></span><br><span class="line">    <span class="attribute">hash</span> <span class="variable">$requert_url</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="六、fair-第三方"><a href="#六、fair-第三方" class="headerlink" title="六、fair (第三方)"></a>六、<code>fair (第三方)</code></h2><p>按后端服务器的响应时间来分配请求，响应时间短的优先分配。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream nginxDemo &#123;</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8081; #服务器A</span><br><span class="line">   <span class="built_in"> server </span>127.0.0.1:8082; #服务器B</span><br><span class="line">    fair;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream nginxDemo &#123;</span><br><span class="line">    <span class="keyword">server</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8081</span>; <span class="meta">#服务器A</span></span><br><span class="line">    <span class="keyword">server</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8082</span>; <span class="meta">#服务器B</span></span><br><span class="line">    fair;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
         
       
     </div>
@@ -261,7 +310,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/">Nginx</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li></ul>
 
       
 
@@ -297,7 +346,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx负载均衡集群配置"><span class="nav-number">1.</span> <span class="nav-text">Nginx负载均衡集群配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx负载均衡策略"><span class="nav-number">2.</span> <span class="nav-text">Nginx负载均衡策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、轮询（默认）"><span class="nav-number">2.1.</span> <span class="nav-text">一、轮询（默认）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、最少链接"><span class="nav-number">2.2.</span> <span class="nav-text">二、最少链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、weight权重"><span class="nav-number">2.3.</span> <span class="nav-text">三、weight权重</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、ip-hash"><span class="nav-number">2.4.</span> <span class="nav-text">四、ip_hash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、url-hash-第三方"><span class="nav-number">2.5.</span> <span class="nav-text">五、url_hash (第三方)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、fair-第三方"><span class="nav-number">2.6.</span> <span class="nav-text">六、fair (第三方)</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">Nginx负载均衡集群配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AD%96%E7%95%A5"><span class="nav-number">2.</span> <span class="nav-text">Nginx负载均衡策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%BD%AE%E8%AF%A2%EF%BC%88%E9%BB%98%E8%AE%A4%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">一、轮询（默认）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%9C%80%E5%B0%91%E9%93%BE%E6%8E%A5"><span class="nav-number">2.2.</span> <span class="nav-text">二、最少链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81weight%E6%9D%83%E9%87%8D"><span class="nav-number">2.3.</span> <span class="nav-text">三、weight权重</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81ip-hash"><span class="nav-number">2.4.</span> <span class="nav-text">四、ip_hash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81url-hash-%E7%AC%AC%E4%B8%89%E6%96%B9"><span class="nav-number">2.5.</span> <span class="nav-text">五、url_hash (第三方)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81fair-%E7%AC%AC%E4%B8%89%E6%96%B9"><span class="nav-number">2.6.</span> <span class="nav-text">六、fair (第三方)</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -312,7 +361,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -392,12 +441,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -465,7 +518,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>linux 程序优化 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Linux优化">
+  <meta name="keywords" content="优化Linux" />
   
   
   
   
   <meta name="description" content="性能优化的核心是找出系统的瓶颈点，问题找到了，优化的工作也就完成了大半； 这里介绍的性能优化主要从两个层面来介绍：系统层面和程序层面；">
-<meta name="keywords" content="Linux,优化">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux 程序优化">
 <meta property="og:url" content="http://blog.caoxl.com/2018/08/24/Linux-Program-Optimization/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="性能优化的核心是找出系统的瓶颈点，问题找到了，优化的工作也就完成了大半； 这里介绍的性能优化主要从两个层面来介绍：系统层面和程序层面；">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-24T03:04:53.000Z">
+<meta property="article:modified_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="优化">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Linux 程序优化">
-<meta name="twitter:description" content="性能优化的核心是找出系统的瓶颈点，问题找到了，优化的工作也就完成了大半； 这里介绍的性能优化主要从两个层面来介绍：系统层面和程序层面；">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -199,10 +240,12 @@
           <blockquote>
 <p>性能优化的核心是<strong>找出系统的瓶颈点</strong>，问题找到了，优化的工作也就完成了大半； 这里介绍的性能优化主要从两个层面来介绍：系统层面和程序层面；</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="分析系统瓶颈"><a href="#分析系统瓶颈" class="headerlink" title="分析系统瓶颈"></a>分析系统瓶颈</h1><p>系统响应变慢，首先得定位大致的问题出在哪里，是IO瓶颈、CPU瓶颈、内存瓶颈还是程序导致的系统问题；</p>
 <p>使用top工具能够比较全面的查看我们关注的点:</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# top</span><br><span class="line">top - <span class="number">11</span>:<span class="number">59</span>:<span class="number">14</span> up <span class="number">21</span> days,  <span class="number">2</span>:<span class="number">19</span>,  <span class="number">1</span> user,  load average: <span class="number">0.00</span>, <span class="number">0.01</span>, <span class="number">0.05</span></span><br><span class="line">Tasks:  <span class="number">91</span> total,   <span class="number">1</span> running,  <span class="number">90</span> sleeping,   <span class="number">0</span> stopped,   <span class="number">0</span> zombie</span><br><span class="line">%Cpu(s):  <span class="number">6.2</span> us,  <span class="number">0.0</span> sy,  <span class="number">0.0</span> ni, <span class="number">93.8</span> id,  <span class="number">0.0</span> wa,  <span class="number">0.0</span> hi,  <span class="number">0.0</span> si,  <span class="number">0.0</span> st</span><br><span class="line">KiB Mem :  <span class="number">1015436</span> total,   <span class="number">130888</span> free,   <span class="number">309720</span> used,   <span class="number">574828</span> buff/cache</span><br><span class="line">KiB Swap:        <span class="number">0</span> total,        <span class="number">0</span> free,        <span class="number">0</span> used.   <span class="number">523220</span> avail Mem </span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND                   </span><br><span class="line">    <span class="number">1</span> root      <span class="number">20</span>   <span class="number">0</span>   <span class="number">43392</span>   <span class="number">3080</span>   <span class="number">1888</span> S  <span class="number">0.0</span>  <span class="number">0.3</span>   <span class="number">0</span>:<span class="number">14.98</span> systemd                   </span><br><span class="line">    <span class="number">2</span> root      <span class="number">20</span>   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">00.18</span> kthreadd                  </span><br><span class="line">    <span class="number">3</span> root      <span class="number">20</span>   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">06.86</span> ksoftirqd/<span class="number">0</span>               </span><br><span class="line">    <span class="number">5</span> root       <span class="number">0</span> <span class="number">-20</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">00.00</span> kworker/<span class="number">0</span>:<span class="number">0</span>H              </span><br><span class="line">    <span class="number">6</span> root      <span class="number">20</span>   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">02.57</span> kworker/u2:<span class="number">0</span>              </span><br><span class="line">    <span class="number">7</span> root      rt   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">00.00</span> migration/<span class="number">0</span>               </span><br><span class="line">    <span class="number">8</span> root      <span class="number">20</span>   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">00.00</span> rcu_bh                    </span><br><span class="line">    <span class="number">9</span> root      <span class="number">20</span>   <span class="number">0</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">1</span>:<span class="number">07.10</span> rcu_sched                 </span><br><span class="line">   <span class="number">10</span> root       <span class="number">0</span> <span class="number">-20</span>       <span class="number">0</span>      <span class="number">0</span>      <span class="number">0</span> S  <span class="number">0.0</span>  <span class="number">0.0</span>   <span class="number">0</span>:<span class="number">00.00</span> lru-add-drain</span><br></pre></td></tr></table></figure>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># top</span></span><br><span class="line">top - 11:59:14 up<span class="number"> 21 </span>days,  2:19, <span class="number"> 1 </span>user,  load average: 0.00, 0.01, 0.05</span><br><span class="line">Tasks: <span class="number"> 91 </span>total,  <span class="number"> 1 </span>running, <span class="number"> 90 </span>sleeping,  <span class="number"> 0 </span>stopped,  <span class="number"> 0 </span>zombie</span><br><span class="line">%Cpu(s):  6.2 us,  0.0 sy,  0.0 ni, 93.8 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st</span><br><span class="line">KiB Mem : <span class="number"> 1015436 </span>total,  <span class="number"> 130888 </span>free,  <span class="number"> 309720 </span>used,  <span class="number"> 574828 </span>buff/cache</span><br><span class="line">KiB Swap:       <span class="number"> 0 </span>total,       <span class="number"> 0 </span>free,       <span class="number"> 0 </span>used.  <span class="number"> 523220 </span>avail Mem </span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND                   </span><br><span class="line">   <span class="number"> 1 </span>root     <span class="number"> 20 </span> <span class="number"> 0 </span> <span class="number"> 43392 </span> <span class="number"> 3080 </span> <span class="number"> 1888 </span>S  0.0  0.3   0:14.98 systemd                   </span><br><span class="line">   <span class="number"> 2 </span>root     <span class="number"> 20 </span> <span class="number"> 0 </span>     <span class="number"> 0 </span>    <span class="number"> 0 </span>    <span class="number"> 0 </span>S  0.0  0.0   0:00.18 kthreadd                  </span><br><span class="line">   <span class="number"> 3 </span>root     <span class="number"> 20 </span> <span class="number"> 0 </span>     <span class="number"> 0 </span>    <span class="number"> 0 </span>    <span class="number"> 0 </span>S  0.0  0.0   0:06.86 ksoftirqd/0               </span><br><span class="line">   <span class="number"> 5 </span>root      <span class="number"> 0 </span>-20      <span class="number"> 0 </span>    <span class="number"> 0 </span>    <span class="number"> 0 </span>S  0.0  0.0   0:00.00 kworker/0:0H              </span><br><span class="line">   <span class="number"> 6 </span>root     <span class="number"> 20 </span> <span class="number"> 0 </span>     <span class="number"> 0 </span>    <span class="number"> 0 </span>    <span class="number"> 0 </span>S  0.0  0.0   0:02.57 kworker/u2:0              </span><br><span class="line">   <span class="number"> 7 </span>root      rt  <span class="number"> 0 </span>     <span class="number"> 0 </span>    <span class="number"> 0 </span>    <span class="number"> 0 </span>S  0.0  0.0   0:00.00 migration/0               </span><br><span class="line">   <span class="number"> 8 </span>root     <span class="number"> 20 </span> <span class="number"> 0 </span>     <span class="number"> 0 </span>    <span class="number"> 0 </span>    <span class="number"> 0 </span>S  0.0  0.0   0:00.00 rcu_bh                    </span><br><span class="line">   <span class="number"> 9 </span>root     <span class="number"> 20 </span> <span class="number"> 0 </span>     <span class="number"> 0 </span>    <span class="number"> 0 </span>    <span class="number"> 0 </span>S  0.0  0.0   1:07.10 rcu_sched                 </span><br><span class="line">  <span class="number"> 10 </span>root      <span class="number"> 0 </span>-20      <span class="number"> 0 </span>    <span class="number"> 0 </span>    <span class="number"> 0 </span>S  0.0  0.0   0:00.00 lru-add-drain     </span><br></pre></td></tr></table></figure>
+
 <p><strong>进入交互模式后:</strong></p>
 <ul>
 <li>输入<strong>M</strong>，进程列表<code>按内存使用大小降序排序</code>，便于我们观察最大内存使用者使用有问题（检测内存泄漏问题）;</li>
@@ -211,21 +254,23 @@
 <p><strong>top第三行显示当前系统的，其中有两个值很关键:</strong></p>
 <ul>
 <li><code>%id</code>：空闲CPU时间百分比，如果这个值过低，表明系统CPU存在瓶颈；</li>
-<li><code>%wa</code>：等待I/O的CPU时间百分比，如果这个值过高，表明IO存在瓶颈；</li>
+<li><code>%wa</code>：等待I&#x2F;O的CPU时间百分比，如果这个值过高，表明IO存在瓶颈；</li>
 </ul>
 <h1 id="分析内存瓶颈"><a href="#分析内存瓶颈" class="headerlink" title="分析内存瓶颈"></a>分析内存瓶颈</h1><p>查看内存是否存在瓶颈，使用top指令看比较麻烦，而free命令更为直观:</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# free</span><br><span class="line">              total        used        free      <span class="keyword">shared</span>  buff/cache   available</span><br><span class="line">Mem:        <span class="number">1015436</span>      <span class="number">309332</span>      <span class="number">127740</span>        <span class="number">2664</span>      <span class="number">578364</span>      <span class="number">523596</span></span><br><span class="line">Swap:             <span class="number">0</span>           <span class="number">0</span>           <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># free</span></span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:       <span class="number"> 1015436 </span>    <span class="number"> 309332 </span>    <span class="number"> 127740 </span>      <span class="number"> 2664 </span>    <span class="number"> 578364 </span>     523596</span><br><span class="line">Swap:            <span class="number"> 0 </span>         <span class="number"> 0 </span>          0</span><br></pre></td></tr></table></figure>
+
 <p>top工具显示了free工具的第一行所有信息，但真实可用的内存，还需要自己计算才知道; 系统实际可用的内存为free工具输出第二行的<code>free</code>+<code>buffer</code>+<code>cached</code>；也就是第三行的free值127740；</p>
 <p>如果是因为缺少内存，系统响应变慢很明显，因为这使得系统不停的做换入换出的工作;</p>
 <p>进一步的监视内存使用情况，可使用vmstat工具，实时动态监视操作系统的内存和虚拟内存的动态变化。</p>
 <h1 id="分析IO瓶颈"><a href="#分析IO瓶颈" class="headerlink" title="分析IO瓶颈"></a>分析IO瓶颈</h1><p>如果IO存在性能瓶颈，top工具中的<code>%wa</code>会偏高；</p>
 <p>进一步分析使用<code>iostat</code>工具:</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# iostat -d -x -k <span class="number">1</span> <span class="number">1</span></span><br><span class="line">Linux <span class="number">3.10</span><span class="number">.0</span><span class="number">-862.9</span><span class="number">.1</span>.el7.x86_64 (caoxl) 	<span class="number">08</span>/<span class="number">24</span>/<span class="number">2018</span> 	_x86_64_	(<span class="number">1</span> CPU)</span><br><span class="line"></span><br><span class="line">Device:         rrqm/s   wrqm/s     r/s     w/s    rkB/s    wkB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util</span><br><span class="line">vda               <span class="number">0.00</span>     <span class="number">0.17</span>    <span class="number">0.06</span>    <span class="number">0.31</span>     <span class="number">1.26</span>     <span class="number">2.84</span>    <span class="number">22.37</span>     <span class="number">0.00</span>    <span class="number">5.88</span>    <span class="number">6.97</span>    <span class="number">5.65</span>   <span class="number">0.64</span>   <span class="number">0.02</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># iostat -d -x -k 1 1</span></span><br><span class="line">Linux <span class="number">3.10</span>.<span class="number">0</span>-<span class="number">862.9</span>.<span class="number">1</span>.el7.x86_64 (caoxl) 	<span class="number">08</span><span class="regexp">/24/</span><span class="number">2018</span> 	_x86_64_	(<span class="number">1</span> CPU)</span><br><span class="line"></span><br><span class="line">Device:         rrqm<span class="regexp">/s   wrqm/</span>s     r<span class="regexp">/s     w/</span>s    rkB<span class="regexp">/s    wkB/</span>s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util</span><br><span class="line">vda               <span class="number">0.00</span>     <span class="number">0.17</span>    <span class="number">0.06</span>    <span class="number">0.31</span>     <span class="number">1.26</span>     <span class="number">2.84</span>    <span class="number">22.37</span>     <span class="number">0.00</span>    <span class="number">5.88</span>    <span class="number">6.97</span>    <span class="number">5.65</span>   <span class="number">0.64</span>   <span class="number">0.02</span></span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>如果 <code>%iowait</code> 的值过高，表示硬盘存在I/O瓶颈。</li>
-<li>如果 <code>%util</code> 接近 100%，说明产生的I/O请求太多，I/O系统已经满负荷，该磁盘可能存在瓶颈。</li>
-<li>如果 <code>svctm</code> 比较接近 await，说明 I/O 几乎没有等待时间；</li>
-<li>如果 <code>await</code> 远大于 <code>svctm</code>，说明I/O 队列太长，io响应太慢，则需要进行必要优化。</li>
+<li>如果 <code>%iowait</code> 的值过高，表示硬盘存在I&#x2F;O瓶颈。</li>
+<li>如果 <code>%util</code> 接近 100%，说明产生的I&#x2F;O请求太多，I&#x2F;O系统已经满负荷，该磁盘可能存在瓶颈。</li>
+<li>如果 <code>svctm</code> 比较接近 await，说明 I&#x2F;O 几乎没有等待时间；</li>
+<li>如果 <code>await</code> 远大于 <code>svctm</code>，说明I&#x2F;O 队列太长，io响应太慢，则需要进行必要优化。</li>
 <li>如果 <code>avgqu-sz</code> 比较大，也表示有大量io在等待。</li>
 </ul>
 <h1 id="分析进程调用"><a href="#分析进程调用" class="headerlink" title="分析进程调用"></a>分析进程调用</h1><p>过top等工具发现系统性能问题是由某个进程导致的之后，接下来我们就需要分析这个进程；继续 查询问题在哪；</p>
@@ -234,7 +279,8 @@
 <ul>
 <li>示例：查看bash程序进程栈:</li>
 </ul>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[<span class="symbol">root@</span>caoxl ~]# ps -ef | grep bash</span><br><span class="line">root      <span class="number">5459</span>  <span class="number">5457</span>  <span class="number">0</span> <span class="number">10</span>:<span class="number">23</span> pts/<span class="number">0</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> -bash</span><br><span class="line">root      <span class="number">5902</span>  <span class="number">5459</span>  <span class="number">0</span> <span class="number">15</span>:<span class="number">32</span> pts/<span class="number">0</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> grep --color=<span class="built_in">auto</span> bash</span><br><span class="line">[<span class="symbol">root@</span>caoxl ~]# pstack <span class="number">5459</span></span><br><span class="line">#<span class="number">0</span>  <span class="number">0x00007f513172f17c</span> <span class="keyword">in</span> waitpid () <span class="keyword">from</span> /usr/lib64/libc.so<span class="number">.6</span></span><br><span class="line">#<span class="number">1</span>  <span class="number">0x0000000000440b24</span> <span class="keyword">in</span> waitchld.isra<span class="number">.10</span> ()</span><br><span class="line">#<span class="number">2</span>  <span class="number">0x0000000000441ddc</span> <span class="keyword">in</span> wait_for ()</span><br><span class="line">#<span class="number">3</span>  <span class="number">0x0000000000433aae</span> <span class="keyword">in</span> execute_command_internal ()</span><br><span class="line">#<span class="number">4</span>  <span class="number">0x0000000000433cce</span> <span class="keyword">in</span> execute_command ()</span><br><span class="line">#<span class="number">5</span>  <span class="number">0x000000000041e305</span> <span class="keyword">in</span> reader_loop ()</span><br><span class="line">#<span class="number">6</span>  <span class="number">0x000000000041c96e</span> <span class="keyword">in</span> main ()</span><br></pre></td></tr></table></figure>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@caoxl ~]<span class="comment"># ps -ef | grep bash</span></span><br><span class="line">root     <span class="number"> 5459 </span><span class="number"> 5457 </span><span class="number"> 0 </span>10:23 pts/0    00:00:00 -bash</span><br><span class="line">root     <span class="number"> 5902 </span><span class="number"> 5459 </span><span class="number"> 0 </span>15:32 pts/0    00:00:00 grep --color=auto bash</span><br><span class="line">[root@caoxl ~]<span class="comment"># pstack 5459</span></span><br><span class="line"><span class="comment">#0  0x00007f513172f17c in waitpid () from /usr/lib64/libc.so.6</span></span><br><span class="line"><span class="comment">#1  0x0000000000440b24 in waitchld.isra.10 ()</span></span><br><span class="line"><span class="comment">#2  0x0000000000441ddc in wait_for ()</span></span><br><span class="line"><span class="comment">#3  0x0000000000433aae in execute_command_internal ()</span></span><br><span class="line"><span class="comment">#4  0x0000000000433cce in execute_command ()</span></span><br><span class="line"><span class="comment">#5  0x000000000041e305 in reader_loop ()</span></span><br><span class="line"><span class="comment">#6  0x000000000041c96e in main ()</span></span><br></pre></td></tr></table></figure>
+
 <p>而<code>strace</code>用来跟踪进程中的系统调用；这个工具能够动态的跟踪进程执行时的系统调用和所接收的信号。是一个非常有效的检测、指导和调试工具。系统管理员可以通过该命令容易地解决程序问题。</p>
 <h1 id="优化程序代码"><a href="#优化程序代码" class="headerlink" title="优化程序代码"></a>优化程序代码</h1><p>优化自己开发的程序，建议采用以下准则:</p>
 <ol>
@@ -285,7 +331,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BC%98%E5%8C%96/" rel="tag">优化</a></li></ul>
 
       
 
@@ -321,7 +367,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#分析系统瓶颈"><span class="nav-number">1.</span> <span class="nav-text">分析系统瓶颈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分析内存瓶颈"><span class="nav-number">2.</span> <span class="nav-text">分析内存瓶颈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分析IO瓶颈"><span class="nav-number">3.</span> <span class="nav-text">分析IO瓶颈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分析进程调用"><span class="nav-number">4.</span> <span class="nav-text">分析进程调用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#优化程序代码"><span class="nav-number">5.</span> <span class="nav-text">优化程序代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#gprof使用步骤"><span class="nav-number">5.1.</span> <span class="nav-text">gprof使用步骤</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其它工具"><span class="nav-number">6.</span> <span class="nav-text">其它工具</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F%E7%93%B6%E9%A2%88"><span class="nav-number">1.</span> <span class="nav-text">分析系统瓶颈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%86%85%E5%AD%98%E7%93%B6%E9%A2%88"><span class="nav-number">2.</span> <span class="nav-text">分析内存瓶颈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%9E%90IO%E7%93%B6%E9%A2%88"><span class="nav-number">3.</span> <span class="nav-text">分析IO瓶颈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E8%BF%9B%E7%A8%8B%E8%B0%83%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">分析进程调用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E7%A8%8B%E5%BA%8F%E4%BB%A3%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">优化程序代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#gprof%E4%BD%BF%E7%94%A8%E6%AD%A5%E9%AA%A4"><span class="nav-number">5.1.</span> <span class="nav-text">gprof使用步骤</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E5%B7%A5%E5%85%B7"><span class="nav-number">6.</span> <span class="nav-text">其它工具</span></a></li></ol>
     
     </div>
   </aside>
@@ -336,7 +382,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -416,12 +462,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -489,7 +539,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>nginx 优化 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="NginxLinux服务器优化">
+  <meta name="keywords" content="服务器优化NginxLinux" />
   
   
   
   
   <meta name="description" content="关于 Nginx 优化实际实践记录在这里。 下列配置可以放在 nginx.conf 的 http 块中，也可以放到虚拟主机的 server 块中。根据情况配置。">
-<meta name="keywords" content="Nginx,Linux,服务器,优化">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Nginx 优化">
 <meta property="og:url" content="http://blog.caoxl.com/2018/01/22/Nginx-Optimization/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="关于 Nginx 优化实际实践记录在这里。 下列配置可以放在 nginx.conf 的 http 块中，也可以放到虚拟主机的 server 块中。根据情况配置。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-22T07:00:33.000Z">
+<meta property="article:modified_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="服务器">
+<meta property="article:tag" content="优化">
+<meta property="article:tag" content="Nginx">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Nginx 优化">
-<meta name="twitter:description" content="关于 Nginx 优化实际实践记录在这里。 下列配置可以放在 nginx.conf 的 http 块中，也可以放到虚拟主机的 server 块中。根据情况配置。">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +45,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +184,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -198,8 +241,11 @@
         
           <p>关于 Nginx 优化实际实践记录在这里。</p>
 <p>下列配置可以放在 <code>nginx.conf</code> 的 <code>http</code> 块中，也可以放到虚拟主机的 <code>server</code> 块中。根据情况配置。</p>
-<a id="more"></a>
-<h1 id="启用压缩"><a href="#启用压缩" class="headerlink" title="启用压缩"></a>启用压缩</h1><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启gzip</span></span><br><span class="line">gzip <span class="keyword">on</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启用gzip压缩的最小文件，小于设置值的文件将不会压缩</span></span><br><span class="line">gzip_min_length <span class="number">1</span>k;</span><br><span class="line"></span><br><span class="line"><span class="comment"># gzip 压缩级别，1-10，数字越大压缩的越好，也越占用CPU时间，后面会有详细说明</span></span><br><span class="line">gzip_comp_level <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 进行压缩的文件类型 (javascript有多种形式 其中的值可以在 mime.types 文件中找到)</span></span><br><span class="line">gzip_types <span class="built_in">text</span>/plain <span class="built_in">application</span>/javascript <span class="built_in">application</span>/x-javascript <span class="built_in">text</span>/css <span class="built_in">application</span>/xml <span class="built_in">text</span>/javascript <span class="built_in">application</span>/x-httpd-php image/jpeg image/gif image/png font/ttf font/otf image/svg+xml;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 是否在 http header 中添加 Vary: Accept-Encoding，建议开启</span></span><br><span class="line">gzip_vary <span class="keyword">on</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 禁用IE 6 gzip</span></span><br><span class="line">gzip_disable <span class="string">"MSIE [1-6]\."</span>;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+
+<h1 id="启用压缩"><a href="#启用压缩" class="headerlink" title="启用压缩"></a>启用压缩</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启gzip</span></span><br><span class="line">gzip on;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启用gzip压缩的最小文件，小于设置值的文件将不会压缩</span></span><br><span class="line">gzip_min_length 1k;</span><br><span class="line"></span><br><span class="line"><span class="comment"># gzip 压缩级别，1-10，数字越大压缩的越好，也越占用CPU时间，后面会有详细说明</span></span><br><span class="line">gzip_comp_level 2;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 进行压缩的文件类型 (javascript有多种形式 其中的值可以在 mime.types 文件中找到)</span></span><br><span class="line">gzip_types text/plain application/javascript application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png font/ttf font/otf image/svg+xml;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 是否在 http header 中添加 Vary: Accept-Encoding，建议开启</span></span><br><span class="line">gzip_vary on;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 禁用IE 6 gzip</span></span><br><span class="line">gzip_disable <span class="string">&quot;MSIE [1-6]\.&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+
 <h1 id="响应与超时"><a href="#响应与超时" class="headerlink" title="响应与超时"></a>响应与超时</h1><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">sendfile</span>        <span class="literal">on</span>;</span><br><span class="line"></span><br><span class="line"><span class="attribute">tcp_nopush</span>     <span class="literal">on</span>;</span><br><span class="line"></span><br><span class="line"><span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line"></span><br><span class="line"><span class="attribute">client_max_body_size</span> <span class="number">50m</span>; <span class="comment"># 缓冲区代理缓冲用户端请求的最大字节数,可以理解为保存到&gt;本地再传给用户</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">client_body_buffer_size</span> <span class="number">256k</span>;</span><br><span class="line"></span><br><span class="line"><span class="attribute">client_header_timeout</span> <span class="number">3m</span>;</span><br><span class="line"></span><br><span class="line"><span class="attribute">client_body_timeout</span> <span class="number">3m</span>;</span><br><span class="line"></span><br><span class="line"><span class="attribute">send_timeout</span> <span class="number">3m</span>;</span><br><span class="line"></span><br><span class="line"><span class="attribute">proxy_connect_timeout</span> <span class="number">300s</span>; <span class="comment"># nginx跟后端服务器连接超时时间(代理连接超时)</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">proxy_read_timeout</span> <span class="number">300s</span>; <span class="comment"># 连接成功后，后端服务器响应时间(代理接收超时)</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">proxy_send_timeout</span> <span class="number">300s</span>;</span><br><span class="line"></span><br><span class="line"><span class="attribute">proxy_buffer_size</span> <span class="number">64k</span>; <span class="comment"># 设置代理服务器（nginx）保存用户头信息的缓冲区大小</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">proxy_buffers</span> <span class="number">4</span> <span class="number">32k</span>; <span class="comment"># proxy_buffers缓冲区，网页平均在32k以下的话，这样设置</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">proxy_busy_buffers_size</span> <span class="number">64k</span>; <span class="comment"># 高负荷下缓冲大小（proxy_buffers*2）</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">proxy_temp_file_write_size</span> <span class="number">64k</span>; <span class="comment"># 设定缓存文件夹大小，大于这个值，将从upstream服务器传递请求，而不缓冲到磁盘</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">proxy_ignore_client_abort</span> <span class="literal">on</span>; <span class="comment"># 不允许代理端主动关闭连接</span></span><br></pre></td></tr></table></figure>
         
       
@@ -231,7 +277,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/优化/">优化</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/服务器/">服务器</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BC%98%E5%8C%96/" rel="tag">优化</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">服务器</a></li></ul>
 
       
 
@@ -267,7 +313,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#启用压缩"><span class="nav-number">1.</span> <span class="nav-text">启用压缩</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#响应与超时"><span class="nav-number">2.</span> <span class="nav-text">响应与超时</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E7%94%A8%E5%8E%8B%E7%BC%A9"><span class="nav-number">1.</span> <span class="nav-text">启用压缩</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E4%B8%8E%E8%B6%85%E6%97%B6"><span class="nav-number">2.</span> <span class="nav-text">响应与超时</span></a></li></ol>
     
     </div>
   </aside>
@@ -282,7 +328,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -362,12 +408,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -435,7 +485,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

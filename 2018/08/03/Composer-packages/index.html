@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>composer 开发自己的组件 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="ComposerPackagist">
+  <meta name="keywords" content="ComposerPackagist" />
   
   
   
   
   <meta name="description" content="知识没有你的我的, 只有学习顺序的先后, 你从别人那学,我从你这学, 别人又从我这里学,多好~~。  写个 Composer 组件玩玩，顺便总结下 Composer 的使用。">
-<meta name="keywords" content="Composer,Packagist">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Composer 开发自己的组件">
 <meta property="og:url" content="http://blog.caoxl.com/2018/08/03/Composer-packages/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="知识没有你的我的, 只有学习顺序的先后, 你从别人那学,我从你这学, 别人又从我这里学,多好~~。  写个 Composer 组件玩玩，顺便总结下 Composer 的使用。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://caoxl.com/images/packagist-submit.png">
 <meta property="og:image" content="https://caoxl.com/images/github-packagist.png">
-<meta property="og:updated_time" content="2019-08-22T03:25:18.000Z">
+<meta property="article:published_time" content="2018-08-03T06:09:35.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:25:18.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Composer">
+<meta property="article:tag" content="Packagist">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Composer 开发自己的组件">
-<meta name="twitter:description" content="知识没有你的我的, 只有学习顺序的先后, 你从别人那学,我从你这学, 别人又从我这里学,多好~~。  写个 Composer 组件玩玩，顺便总结下 Composer 的使用。">
 <meta name="twitter:image" content="https://caoxl.com/images/packagist-submit.png">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
@@ -45,30 +46,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -146,7 +185,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -184,7 +225,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/开发工具/">开发工具</a>
+    <a class="article-category-link" href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/">开发工具</a>
 
       
 	<a class="article-views">
@@ -205,7 +246,8 @@
 <p>写个 <code>Composer</code> 组件玩玩，顺便总结下 <code>Composer</code> 的使用。</p>
 </blockquote>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><h2 id="组件化"><a href="#组件化" class="headerlink" title="组件化"></a>组件化</h2><p>现代 Web 开发已经不再流行开发一个巨型框架了，反过来，我们更关心的是通过甄选一个个由专业人士编写的、可以<strong>具有互操作特性的组件</strong>，来组装解决方案。</p>
 <blockquote>
 <p>互操作性：组件之间可以很方便的互相利用。</p>
@@ -218,50 +260,58 @@
 </blockquote>
 </blockquote>
 <h2 id="autoloader"><a href="#autoloader" class="headerlink" title="autoloader"></a><code>autoloader</code></h2><p>当通过 <code>composer</code> 下载 <code>PHP</code> 组件的同时，<code>composer</code> 将会扫描每个组件的 <code>composer.json</code> 文件，并为我们的整个项目生成好了一份兼容 <code>PSR</code> 规范的 <code>autoloader</code>，位于 <code>vendor/autoload.php</code>，项目通过该引入自动加载器，便能够在项目范围内使用各个组件提供的功能。</p>
-<h2 id="composer-json-部分字段解释"><a href="#composer-json-部分字段解释" class="headerlink" title="composer.json 部分字段解释"></a><code>composer.json</code> 部分字段解释</h2><h3 id="require"><a href="#require" class="headerlink" title="require"></a><code>require</code></h3><p>列出了该 PHP 项目/组件的所有依赖，包括 PHP 版本以及其他库。该字段中的依赖包将会在开发环境和生产环境中被安装</p>
-<h3 id="require-dev"><a href="#require-dev" class="headerlink" title="require-dev"></a><code>require-dev</code></h3><p>和 <code>required</code> 作用大体一致，不过只是列举出开发当前项目/组件期间需要用的依赖，比如单元测试框架 <code>phpunit</code> 等。</p>
+<h2 id="composer-json-部分字段解释"><a href="#composer-json-部分字段解释" class="headerlink" title="composer.json 部分字段解释"></a><code>composer.json</code> 部分字段解释</h2><h3 id="require"><a href="#require" class="headerlink" title="require"></a><code>require</code></h3><p>列出了该 PHP 项目&#x2F;组件的所有依赖，包括 PHP 版本以及其他库。该字段中的依赖包将会在开发环境和生产环境中被安装</p>
+<h3 id="require-dev"><a href="#require-dev" class="headerlink" title="require-dev"></a><code>require-dev</code></h3><p>和 <code>required</code> 作用大体一致，不过只是列举出开发当前项目&#x2F;组件期间需要用的依赖，比如单元测试框架 <code>phpunit</code> 等。</p>
 <blockquote>
 <p>生产环境中，该列表中的依赖不应该被安装。</p>
 </blockquote>
-<h3 id="suggest"><a href="#suggest" class="headerlink" title="suggest"></a><code>suggest</code></h3><p><code>composer</code> 不会安装这里指出的组件，<strong>仅仅起到提示作用</strong>：提示这些组件可能会对当前项目/组件有用。</p>
+<h3 id="suggest"><a href="#suggest" class="headerlink" title="suggest"></a><code>suggest</code></h3><p><code>composer</code> 不会安装这里指出的组件，<strong>仅仅起到提示作用</strong>：提示这些组件可能会对当前项目&#x2F;组件有用。</p>
 <h3 id="autoload"><a href="#autoload" class="headerlink" title="autoload"></a><code>autoload</code></h3><p>该字段用于指示 <code>composer autoloader</code> 如何进行自动加载。</p>
 <p>一般来说，目前我们应该遵守并使用 <code>psr-4</code> 规范。举例说明：</p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"autoload"</span>: &#123;</span><br><span class="line">    <span class="string">"psr-4"</span>: &#123;</span><br><span class="line">        <span class="string">"A\\B\\C"</span>: <span class="string">"src/"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&quot;autoload&quot;: &#123;</span><br><span class="line">    &quot;psr-<span class="number">4</span>&quot;: &#123;</span><br><span class="line">        &quot;<span class="selector-tag">A</span>\\<span class="selector-tag">B</span>\\C&quot;: <span class="string">&quot;src/&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>该例子的意思是，当需要找到命名空间为 <code>A\B\C</code> 的类文件时，到当前 <code>composer.json</code> 所在的路径(也是项目的根路径)下面的 <code>src/</code> 目录下以此为跟路径开始找。</p>
 <p><strong>其中，两个反斜线 <code>\\</code> 不能写漏。</strong></p>
-<h3 id="举例-composer-json"><a href="#举例-composer-json" class="headerlink" title="举例: composer.json"></a>举例: <code>composer.json</code></h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"laravel/lumen"</span>,</span><br><span class="line">    <span class="attr">"description"</span>: <span class="string">"The Laravel Lumen Framework."</span>,</span><br><span class="line">    <span class="attr">"keywords"</span>: [<span class="string">"framework"</span>, <span class="string">"laravel"</span>, <span class="string">"lumen"</span>],</span><br><span class="line">    <span class="attr">"license"</span>: <span class="string">"MIT"</span>,</span><br><span class="line">    <span class="attr">"type"</span>: <span class="string">"project"</span>,</span><br><span class="line">    <span class="attr">"require"</span>: &#123;</span><br><span class="line">        <span class="attr">"php"</span>: <span class="string">"^7.0"</span>,</span><br><span class="line">        <span class="attr">"laravel/lumen-framework"</span>: <span class="string">"5.4.*"</span>,</span><br><span class="line">        <span class="attr">"vlucas/phpdotenv"</span>: <span class="string">"~2.2"</span>,</span><br><span class="line">        <span class="attr">"firebase/php-jwt"</span>: <span class="string">"^5.0"</span>,</span><br><span class="line">        <span class="attr">"symfony/var-dumper"</span>: <span class="string">"^3.3"</span>,</span><br><span class="line">        <span class="attr">"predis/predis"</span>: <span class="string">"^1.1"</span>,</span><br><span class="line">        <span class="attr">"illuminate/redis"</span>: <span class="string">"^5.4"</span>,</span><br><span class="line">        <span class="attr">"qiniu/php-sdk"</span>: <span class="string">"^7.1"</span>,</span><br><span class="line">        <span class="attr">"maatwebsite/excel"</span>: <span class="string">"~2.1.0"</span>,</span><br><span class="line">        <span class="attr">"jpush/jpush"</span>: <span class="string">"^3.5"</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"require-dev"</span>: &#123;</span><br><span class="line">        <span class="attr">"fzaninotto/faker"</span>: <span class="string">"~1.4"</span>,</span><br><span class="line">        <span class="attr">"phpunit/phpunit"</span>: <span class="string">"~5.0"</span>,</span><br><span class="line">        <span class="attr">"mockery/mockery"</span>: <span class="string">"~0.9"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"autoload"</span>: &#123;</span><br><span class="line">        <span class="attr">"psr-4"</span>: &#123;</span><br><span class="line">            <span class="attr">"App\\"</span>: <span class="string">"app/"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"files"</span>: [</span><br><span class="line">            <span class="string">"app/functions.php"</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"autoload-dev"</span>: &#123;</span><br><span class="line">        <span class="attr">"classmap"</span>: [</span><br><span class="line">            <span class="string">"tests/"</span>,</span><br><span class="line">            <span class="string">"database/"</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"scripts"</span>: &#123;</span><br><span class="line">        <span class="attr">"post-root-package-install"</span>: [</span><br><span class="line">            <span class="string">"php -r \"copy('.env.example', '.env');\""</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"minimum-stability"</span>: <span class="string">"dev"</span>,</span><br><span class="line">    <span class="attr">"prefer-stable"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"repositories"</span>: &#123;</span><br><span class="line">        <span class="attr">"packagist"</span>: &#123;</span><br><span class="line">            <span class="attr">"type"</span>: <span class="string">"composer"</span>,</span><br><span class="line">            <span class="attr">"url"</span>: <span class="string">"https://packagist.phpcomposer.com"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="举例-composer-json"><a href="#举例-composer-json" class="headerlink" title="举例: composer.json"></a>举例: <code>composer.json</code></h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;name&quot;: &quot;laravel/lumen&quot;,</span><br><span class="line">    &quot;description&quot;: &quot;The Laravel Lumen Framework.&quot;,</span><br><span class="line">    &quot;keywords&quot;: [&quot;framework&quot;, &quot;laravel&quot;, &quot;lumen&quot;],</span><br><span class="line">    &quot;license&quot;: &quot;MIT&quot;,</span><br><span class="line">    &quot;type&quot;: &quot;project&quot;,</span><br><span class="line">    &quot;require&quot;: &#123;</span><br><span class="line">        &quot;php&quot;: &quot;^7.0&quot;,</span><br><span class="line">        &quot;laravel/lumen-framework&quot;: &quot;5.4.*&quot;,</span><br><span class="line">        &quot;vlucas/phpdotenv&quot;: &quot;~2.2&quot;,</span><br><span class="line">        &quot;firebase/php-jwt&quot;: &quot;^5.0&quot;,</span><br><span class="line">        &quot;symfony/var-dumper&quot;: &quot;^3.3&quot;,</span><br><span class="line">        &quot;predis/predis&quot;: &quot;^1.1&quot;,</span><br><span class="line">        &quot;illuminate/redis&quot;: &quot;^5.4&quot;,</span><br><span class="line">        &quot;qiniu/php-sdk&quot;: &quot;^7.1&quot;,</span><br><span class="line">        &quot;maatwebsite/excel&quot;: &quot;~2.1.0&quot;,</span><br><span class="line">        &quot;jpush/jpush&quot;: &quot;^3.5&quot;,</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;require-dev&quot;: &#123;</span><br><span class="line">        &quot;fzaninotto/faker&quot;: &quot;~1.4&quot;,</span><br><span class="line">        &quot;phpunit/phpunit&quot;: &quot;~5.0&quot;,</span><br><span class="line">        &quot;mockery/mockery&quot;: &quot;~0.9&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;autoload&quot;: &#123;</span><br><span class="line">        &quot;psr-4&quot;: &#123;</span><br><span class="line">            &quot;App\\&quot;: &quot;app/&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;files&quot;: [</span><br><span class="line">            &quot;app/functions.php&quot;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;autoload-dev&quot;: &#123;</span><br><span class="line">        &quot;classmap&quot;: [</span><br><span class="line">            &quot;tests/&quot;,</span><br><span class="line">            &quot;database/&quot;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;scripts&quot;: &#123;</span><br><span class="line">        &quot;post-root-package-install&quot;: [</span><br><span class="line">            &quot;php -r \&quot;<span class="keyword">copy</span>(<span class="string">&#x27;.env.example&#x27;</span>, <span class="string">&#x27;.env&#x27;</span>);\&quot;&quot;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;minimum-stability&quot;: &quot;dev&quot;,</span><br><span class="line">    &quot;prefer-stable&quot;: <span class="keyword">true</span>,</span><br><span class="line">    &quot;repositories&quot;: &#123;</span><br><span class="line">        &quot;packagist&quot;: &#123;</span><br><span class="line">            &quot;type&quot;: &quot;composer&quot;,</span><br><span class="line">            &quot;url&quot;: &quot;https://packagist.phpcomposer.com&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="搭建私有-composer-仓库"><a href="#搭建私有-composer-仓库" class="headerlink" title="搭建私有 composer 仓库"></a>搭建私有 <code>composer</code> 仓库</h1><blockquote>
-<p><a href="https://getcomposer.org/doc/articles/handling-private-packages-with-satis.md#setup" target="_blank" rel="noopener">Handling private packages</a></p>
+<p><a target="_blank" rel="noopener" href="https://getcomposer.org/doc/articles/handling-private-packages-with-satis.md#setup">Handling private packages</a></p>
 </blockquote>
-<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Via composer/source</span></span><br><span class="line"><span class="string">composer </span><span class="built_in">create-project</span> <span class="string">composer/</span><span class="string">statis </span><span class="built_in">--stability=dev</span> <span class="built_in">--keep=vcs</span></span><br><span class="line"><span class="built_in">php</span> <span class="string">bin/</span><span class="string">satic </span><span class="string">build </span><span class="string">satic.</span><span class="string">json </span>/<span class="string">path/</span><span class="string">to/</span><span class="string">output-web-</span><span class="string">dir/</span> -<span class="string">vvv</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Via composer/source</span></span><br><span class="line"><span class="string">composer</span> <span class="built_in">create-project</span> <span class="string">composer</span>/<span class="string">statis</span> <span class="built_in">--stability=dev</span> <span class="built_in">--keep=vcs</span></span><br><span class="line"><span class="string">php</span> <span class="string">bin</span>/<span class="string">satic</span> <span class="string">build</span> <span class="string">satic</span>.<span class="string">json</span> /<span class="string">path</span>/<span class="string">to</span>/<span class="string">output-web-dir</span>/ -<span class="string">vvv</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>说明:</strong> <code>/path/to/output-web-dir/</code>  此处为自定义目录</p>
 <h1 id="Composer组件开发流程"><a href="#Composer组件开发流程" class="headerlink" title="Composer组件开发流程"></a><code>Composer</code>组件开发流程</h1><h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p><code>composer</code> 项目是由一定规范限制的，可以通过如下命令初始化一个 <code>composer</code> 组件。</p>
-<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mkdir</span> <span class="keyword">test</span> &amp;&amp; <span class="keyword">cd</span> tests</span><br><span class="line">composer init</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> <span class="built_in">test</span> &amp;&amp; <span class="built_in">cd</span> tests</span><br><span class="line">composer init</span><br></pre></td></tr></table></figure>
+
 <p>出现以下内容:</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ composer init</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  Welcome <span class="keyword">to</span> the Composer<span class="built_in"> config </span>generator</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">This command will guide you through creating your composer.json config.</span><br><span class="line"></span><br><span class="line">Package name (&lt;vendor&gt;/&lt;name&gt;) [97321/test]: caoxl/caoxl</span><br><span class="line">Description []: caoxl_package</span><br><span class="line">Author [SoulMate94. &lt;code0809@163.com&gt;, n <span class="keyword">to</span> skip]:</span><br><span class="line">Minimum Stability []: dev</span><br><span class="line">Package<span class="built_in"> Type </span>(e.g. library, project, metapackage, composer-plugin) []:</span><br><span class="line">License []: MIT</span><br><span class="line"></span><br><span class="line">Define your dependencies.</span><br><span class="line"></span><br><span class="line">Would you like <span class="keyword">to</span> define your dependencies (require) interactively [<span class="literal">yes</span>]?</span><br><span class="line">Search <span class="keyword">for</span> a package:</span><br><span class="line">Would you like <span class="keyword">to</span> define your dev dependencies (require-dev) interactively [<span class="literal">yes</span>]?</span><br></pre></td></tr></table></figure>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ composer init</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  Welcome to the Composer config generator</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">This</span> command will guide you through creating your composer.json config.</span><br><span class="line"></span><br><span class="line"><span class="keyword">Package</span> name (&lt;vendor&gt;<span class="regexp">/&lt;name&gt;) [97321/test]: caoxl/</span>caoxl</span><br><span class="line"><span class="keyword">Description</span> []: caoxl_package</span><br><span class="line">Author [SoulMate94. &lt;code0809@<span class="number">163</span>.com&gt;, n to skip]:</span><br><span class="line">Minimum Stability []: dev</span><br><span class="line"><span class="keyword">Package</span> Type (e.g. library, <span class="keyword">project</span>, metapackage, composer-plugin) []:</span><br><span class="line">License []: MIT</span><br><span class="line"></span><br><span class="line">Define your <span class="keyword">dependencies</span>.</span><br><span class="line"></span><br><span class="line">Would you like to define your <span class="keyword">dependencies</span> (require) interactively [yes]?</span><br><span class="line">Search <span class="keyword">for</span> a <span class="keyword">package</span>:</span><br><span class="line">Would you like to define your dev <span class="keyword">dependencies</span> (require-dev) interactively [yes]?</span><br></pre></td></tr></table></figure>
+
 <p>结束时会生成一份 <code>composer.json</code> 文件。当然也可以直接创建 <code>composer.json</code> 然后定义同样的属性。</p>
 <ul>
 <li>就像下面这样:</li>
 </ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"vendor_name/component_name"</span>,</span><br><span class="line">    <span class="attr">"description"</span>: <span class="string">"desc"</span>,</span><br><span class="line">    <span class="attr">"type"</span>: <span class="string">"library"</span>,</span><br><span class="line">    <span class="attr">"license"</span>: <span class="string">"MIT"</span>,</span><br><span class="line">    <span class="attr">"authors"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"name"</span>: <span class="string">"your_name"</span>,</span><br><span class="line">            <span class="attr">"email"</span>: <span class="string">"your@email.com"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"minimum-stability"</span>: <span class="string">"dev"</span>,</span><br><span class="line">    <span class="attr">"require"</span>: &#123;</span><br><span class="line">        <span class="attr">"php"</span>: <span class="string">"&gt;=5.4.0"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"autoload"</span>: &#123;</span><br><span class="line">        <span class="attr">"psr-4"</span>: &#123;</span><br><span class="line">            <span class="attr">"&lt;NAMESPACE&gt;\\"</span>: <span class="string">"src/"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;name&quot;</span>: <span class="string">&quot;vendor_name/component_name&quot;</span>,</span><br><span class="line">    <span class="string">&quot;description&quot;</span>: <span class="string">&quot;desc&quot;</span>,</span><br><span class="line">    <span class="string">&quot;type&quot;</span>: <span class="string">&quot;library&quot;</span>,</span><br><span class="line">    <span class="string">&quot;license&quot;</span>: <span class="string">&quot;MIT&quot;</span>,</span><br><span class="line">    <span class="string">&quot;authors&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;name&quot;</span>: <span class="string">&quot;your_name&quot;</span>,</span><br><span class="line">            <span class="string">&quot;email&quot;</span>: <span class="string">&quot;your@email.com&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;minimum-stability&quot;</span>: <span class="string">&quot;dev&quot;</span>,</span><br><span class="line">    <span class="string">&quot;require&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;php&quot;</span>: <span class="string">&quot;&gt;=5.4.0&quot;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;autoload&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;psr-4&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;&lt;NAMESPACE&gt;\\&quot;</span>: <span class="string">&quot;src/&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="开发"><a href="#开发" class="headerlink" title="开发"></a>开发</h2><p>接下来就是敲代码了。</p>
 <p>注意，为了规范和统一，一般在 <code>src</code> 目录中放主要的源码，然后 <code>composer.json</code> 使用的命名空间和这个 <code>src</code> 关联。</p>
 <ul>
 <li>示例: 新建<code>/src/test.php</code></li>
 </ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">// 获取扩展名</span></span></span><br><span class="line"><span class="php"><span class="function"><span class="keyword">function</span> <span class="title">get_file_ext</span><span class="params">($file)</span></span>&#123;</span></span><br><span class="line"><span class="php">    <span class="keyword">return</span> strtolower(pathinfo($file,PATHINFO_EXTENSION));</span></span><br><span class="line"><span class="php">&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取扩展名</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_file_ext</span>(<span class="params"><span class="variable">$file</span></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_ invoke__">strtolower</span>(<span class="title function_ invoke__">pathinfo</span>(<span class="variable">$file</span>,PATHINFO_EXTENSION));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="提交到-GitHhub"><a href="#提交到-GitHhub" class="headerlink" title="提交到 GitHhub"></a>提交到 <code>GitHhub</code></h2><p>代码写完了, 提交到<code>Github</code>托管</p>
 <ul>
 <li>在<code>Github</code>上新建一个项目:</li>
 </ul>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo <span class="string">"# composer_vendor"</span> &gt;&gt; README.md</span><br><span class="line">git init</span><br><span class="line">git <span class="keyword">add</span><span class="bash"> README.md</span></span><br><span class="line">git commit -m <span class="string">"first commit"</span></span><br><span class="line">git remote <span class="keyword">add</span><span class="bash"> origin git@github.com:SoulMate94/composer_vendor.git</span></span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo <span class="string">&quot;# composer_vendor&quot;</span> &gt;&gt; README.md</span><br><span class="line">git init</span><br><span class="line">git <span class="built_in">add</span> README.md</span><br><span class="line">git commit -m <span class="string">&quot;first commit&quot;</span></span><br><span class="line">git remote <span class="built_in">add</span> origin git@github.com:SoulMate94/composer_vendor.git</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+
 <blockquote>
-<p>至此代码已经提交到<code>github</code>托管; <a href="https://github.com/SoulMate94/composer_vendor" target="_blank" rel="noopener">SoulMate94/composer_vendor</a></p>
+<p>至此代码已经提交到<code>github</code>托管; <a target="_blank" rel="noopener" href="https://github.com/SoulMate94/composer_vendor">SoulMate94&#x2F;composer_vendor</a></p>
 </blockquote>
 <h2 id="提交到-Packagist"><a href="#提交到-Packagist" class="headerlink" title="提交到 Packagist"></a>提交到 <code>Packagist</code></h2><p>注册 <code>packgist</code> 账号后，点击 <code>Submit</code>，输入 仓库地址，点击 <code>Check</code>，检查无误确认提交。</p>
 <p><img src="https://caoxl.com/images/packagist-submit.png" alt="Packagist-Submit"></p>
 <blockquote>
-<p>成功后可以看到 <u><a href="https://packagist.org/packages/caoxl/caoxl" target="_blank" rel="noopener">Packagist-caoxl/caoxl</a></u></p>
+<p>成功后可以看到 <u><a target="_blank" rel="noopener" href="https://packagist.org/packages/caoxl/caoxl">Packagist-caoxl&#x2F;caoxl</a></u></p>
 </blockquote>
 <h2 id="设置自动更新"><a href="#设置自动更新" class="headerlink" title="设置自动更新"></a>设置自动更新</h2><p>在 <code>GitHub</code> 仓库<code>Settings</code>中找到 <code>Services</code>，搜索 <code>Packagist</code>，然后填好：</p>
 <ul>
@@ -272,26 +322,29 @@
 <p><img src="https://caoxl.com/images/github-packagist.png" alt="Github-packagist"></p>
 <h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>如果上面测试无误则可以在任何地方使用 <code>composer require &lt;Vendor&gt;/&lt;Package&gt;</code> 来下载并使用你开放的 <code>composer</code> 组件了。</p>
 <figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">composer</span> <span class="meta">require</span> caoxl/caoxl</span><br></pre></td></tr></table></figure>
+
 <h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><h2 id="composer-lock-是否应该纳入版本控制？"><a href="#composer-lock-是否应该纳入版本控制？" class="headerlink" title="composer.lock 是否应该纳入版本控制？"></a><code>composer.lock</code> 是否应该纳入版本控制？</h2><blockquote>
 <p><strong>是, 这是<code>lock</code>存在的意义</strong></p>
 </blockquote>
 <p>版本库中的 <code>composer.lock</code> 确保了协作开发和在任何环境安装组件的时候都是同一个版本号</p>
-<p>此外，<strong>尽量不要在正式环境执行 <code>composer update</code></strong>。当某个开发者要更新某个组件的时候，应该现在他的环境更新该组件，测试后在提交 <code>composer.lock</code> 到版本库，其他开发者在不需要更新任何组件的情况下只需要执行 <code>composer install</code> 即可。</p>
+<p>此外，**尽量不要在正式环境执行 <code>composer update</code>**。当某个开发者要更新某个组件的时候，应该现在他的环境更新该组件，测试后在提交 <code>composer.lock</code> 到版本库，其他开发者在不需要更新任何组件的情况下只需要执行 <code>composer install</code> 即可。</p>
 <p><strong>生产环境只允许执行 <code>composer install</code>。</strong></p>
-<h2 id="对文件名／目录名大小写敏感导致-“Class-Not-found”？"><a href="#对文件名／目录名大小写敏感导致-“Class-Not-found”？" class="headerlink" title="对文件名／目录名大小写敏感导致 “Class Not found”？"></a>对文件名／目录名大小写敏感导致 “Class Not found”？</h2><figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"autoload"</span>: &#123;</span><br><span class="line">    <span class="string">"classmap"</span>: [<span class="string">"folder1/"</span>, <span class="string">"folder2/"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="对文件名／目录名大小写敏感导致-“Class-Not-found”？"><a href="#对文件名／目录名大小写敏感导致-“Class-Not-found”？" class="headerlink" title="对文件名／目录名大小写敏感导致 “Class Not found”？"></a>对文件名／目录名大小写敏感导致 “Class Not found”？</h2><figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;autoload&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;classmap&quot;</span>: [<span class="string">&quot;folder1/&quot;</span>, <span class="string">&quot;folder2/&quot;</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <blockquote>
-<p><a href="https://stackoverflow.com/questions/20235922/how-to-add-case-insensitive-autoloading-using-composer-generated-classmap" target="_blank" rel="noopener">How to add case insensitive autoloading using composer generated classmap?</a></p>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/20235922/how-to-add-case-insensitive-autoloading-using-composer-generated-classmap">How to add case insensitive autoloading using composer generated classmap?</a></p>
 </blockquote>
 <h2 id="缓存导致找不到PHP类"><a href="#缓存导致找不到PHP类" class="headerlink" title="缓存导致找不到PHP类 ?"></a>缓存导致找不到<code>PHP</code>类 ?</h2><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer dump-<span class="built_in">auto</span>load</span><br></pre></td></tr></table></figure>
+
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://packagist.org/" target="_blank" rel="noopener">Packagist - The PHP Package Repository</a> &amp;&amp; <a href="https://pkg.phpcomposer.com/" target="_blank" rel="noopener">Packagist/Composer中国全量镜像</a></li>
-<li><a href="https://getcomposer.org/doc/" target="_blank" rel="noopener">composer-doc</a></li>
-<li><a href="https://blog.jgrossi.com/2013/creating-your-first-composer-packagist-package/" target="_blank" rel="noopener">Creating your first Composer/Packagist package</a></li>
-<li><a href="https://github.com/composer/satis" target="_blank" rel="noopener">composer/satis</a></li>
-<li><a href="http://www.ps-aux.com/%E4%BD%BF%E7%94%A8%20satis%20%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89%E7%9A%84%20Composer%20%E5%8C%85%E4%BB%93%E5%BA%93.html" target="_blank" rel="noopener">使用 satis 搭建私有的 Composer 包仓库</a></li>
-<li><a href="https://www.engineyard.com/blog/composer-its-all-about-the-lock-file" target="_blank" rel="noopener">Composer: It’s All About the Lock File</a></li>
-<li><a href="https://stackoverflow.com/questions/12896780/should-composer-lock-be-committed-to-version-control" target="_blank" rel="noopener">Should composer.lock be committed to version control?</a></li>
-<li><a href="http://blog.cjli.info/2017/07/22/Composer-Notes/" target="_blank" rel="noopener">Composer 使用日志</a></li>
+<li><a target="_blank" rel="noopener" href="https://packagist.org/">Packagist - The PHP Package Repository</a> &amp;&amp; <a target="_blank" rel="noopener" href="https://pkg.phpcomposer.com/">Packagist&#x2F;Composer中国全量镜像</a></li>
+<li><a target="_blank" rel="noopener" href="https://getcomposer.org/doc/">composer-doc</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.jgrossi.com/2013/creating-your-first-composer-packagist-package/">Creating your first Composer&#x2F;Packagist package</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/composer/satis">composer&#x2F;satis</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ps-aux.com/%E4%BD%BF%E7%94%A8%20satis%20%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89%E7%9A%84%20Composer%20%E5%8C%85%E4%BB%93%E5%BA%93.html">使用 satis 搭建私有的 Composer 包仓库</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.engineyard.com/blog/composer-its-all-about-the-lock-file">Composer: It’s All About the Lock File</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/12896780/should-composer-lock-be-committed-to-version-control">Should composer.lock be committed to version control?</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.cjli.info/2017/07/22/Composer-Notes/">Composer 使用日志</a></li>
 </ul>
 
         
@@ -324,7 +377,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Composer/">Composer</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Packagist/">Packagist</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Composer/" rel="tag">Composer</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Packagist/" rel="tag">Packagist</a></li></ul>
 
       
 
@@ -360,7 +413,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基础知识"><span class="nav-number">1.</span> <span class="nav-text">基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#组件化"><span class="nav-number">1.1.</span> <span class="nav-text">组件化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#autoloader"><span class="nav-number">1.2.</span> <span class="nav-text">autoloader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#composer-json-部分字段解释"><span class="nav-number">1.3.</span> <span class="nav-text">composer.json 部分字段解释</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#require"><span class="nav-number">1.3.1.</span> <span class="nav-text">require</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#require-dev"><span class="nav-number">1.3.2.</span> <span class="nav-text">require-dev</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#suggest"><span class="nav-number">1.3.3.</span> <span class="nav-text">suggest</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#autoload"><span class="nav-number">1.3.4.</span> <span class="nav-text">autoload</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#举例-composer-json"><span class="nav-number">1.3.5.</span> <span class="nav-text">举例: composer.json</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#搭建私有-composer-仓库"><span class="nav-number">2.</span> <span class="nav-text">搭建私有 composer 仓库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Composer组件开发流程"><span class="nav-number">3.</span> <span class="nav-text">Composer组件开发流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">3.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发"><span class="nav-number">3.2.</span> <span class="nav-text">开发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提交到-GitHhub"><span class="nav-number">3.3.</span> <span class="nav-text">提交到 GitHhub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提交到-Packagist"><span class="nav-number">3.4.</span> <span class="nav-text">提交到 Packagist</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置自动更新"><span class="nav-number">3.5.</span> <span class="nav-text">设置自动更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">3.6.</span> <span class="nav-text">测试</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">4.</span> <span class="nav-text">FAQ</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#composer-lock-是否应该纳入版本控制？"><span class="nav-number">4.1.</span> <span class="nav-text">composer.lock 是否应该纳入版本控制？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对文件名／目录名大小写敏感导致-“Class-Not-found”？"><span class="nav-number">4.2.</span> <span class="nav-text">对文件名／目录名大小写敏感导致 “Class Not found”？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存导致找不到PHP类"><span class="nav-number">4.3.</span> <span class="nav-text">缓存导致找不到PHP类 ?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">组件化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#autoloader"><span class="nav-number">1.2.</span> <span class="nav-text">autoloader</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#composer-json-%E9%83%A8%E5%88%86%E5%AD%97%E6%AE%B5%E8%A7%A3%E9%87%8A"><span class="nav-number">1.3.</span> <span class="nav-text">composer.json 部分字段解释</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#require"><span class="nav-number">1.3.1.</span> <span class="nav-text">require</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#require-dev"><span class="nav-number">1.3.2.</span> <span class="nav-text">require-dev</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#suggest"><span class="nav-number">1.3.3.</span> <span class="nav-text">suggest</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#autoload"><span class="nav-number">1.3.4.</span> <span class="nav-text">autoload</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BE%E4%BE%8B-composer-json"><span class="nav-number">1.3.5.</span> <span class="nav-text">举例: composer.json</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89-composer-%E4%BB%93%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">搭建私有 composer 仓库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Composer%E7%BB%84%E4%BB%B6%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">Composer组件开发流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">3.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%8F%91"><span class="nav-number">3.2.</span> <span class="nav-text">开发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E4%BA%A4%E5%88%B0-GitHhub"><span class="nav-number">3.3.</span> <span class="nav-text">提交到 GitHhub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E4%BA%A4%E5%88%B0-Packagist"><span class="nav-number">3.4.</span> <span class="nav-text">提交到 Packagist</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%96%B0"><span class="nav-number">3.5.</span> <span class="nav-text">设置自动更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-number">3.6.</span> <span class="nav-text">测试</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">4.</span> <span class="nav-text">FAQ</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#composer-lock-%E6%98%AF%E5%90%A6%E5%BA%94%E8%AF%A5%E7%BA%B3%E5%85%A5%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%EF%BC%9F"><span class="nav-number">4.1.</span> <span class="nav-text">composer.lock 是否应该纳入版本控制？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%96%87%E4%BB%B6%E5%90%8D%EF%BC%8F%E7%9B%AE%E5%BD%95%E5%90%8D%E5%A4%A7%E5%B0%8F%E5%86%99%E6%95%8F%E6%84%9F%E5%AF%BC%E8%87%B4-%E2%80%9CClass-Not-found%E2%80%9D%EF%BC%9F"><span class="nav-number">4.2.</span> <span class="nav-text">对文件名／目录名大小写敏感导致 “Class Not found”？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%AF%BC%E8%87%B4%E6%89%BE%E4%B8%8D%E5%88%B0PHP%E7%B1%BB"><span class="nav-number">4.3.</span> <span class="nav-text">缓存导致找不到PHP类 ?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -375,7 +428,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -455,12 +508,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -528,7 +585,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

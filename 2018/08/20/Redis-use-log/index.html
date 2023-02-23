@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>redis 使用日志 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="RedisCacheRTFM">
+  <meta name="keywords" content="RedisCacheRTFM" />
   
   
   
   
   <meta name="description" content="Redis 在开发、测试、正式环境使用日志，不定时更新。">
-<meta name="keywords" content="Redis,Cache,RTFM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis 使用日志">
 <meta property="og:url" content="http://blog.caoxl.com/2018/08/20/Redis-use-log/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="Redis 在开发、测试、正式环境使用日志，不定时更新。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-22T03:37:12.000Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-20T07:06:31.000Z">
+<meta property="article:modified_time" content="2019-08-22T03:37:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="Cache">
+<meta property="article:tag" content="RTFM">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Redis 使用日志">
-<meta name="twitter:description" content="Redis 在开发、测试、正式环境使用日志，不定时更新。">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +44,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +183,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -181,7 +223,7 @@
 	</a>
 
       
-    <a class="article-category-link" href="/categories/必备技能/">必备技能</a>
+    <a class="article-category-link" href="/categories/%E5%BF%85%E5%A4%87%E6%8A%80%E8%83%BD/">必备技能</a>
 
       
 	<a class="article-views">
@@ -199,8 +241,9 @@
           <blockquote>
 <p><code>Redis</code> 在开发、测试、正式环境使用日志，不定时更新。</p>
 </blockquote>
-<a id="more"></a>
-<p>说明：本文旨在梳理 Redis 这门技术的学习思路，实际使用必须 <u><a href="https://zh.wikipedia.org/wiki/RTFM" target="_blank" rel="noopener">RTFM</a></u>: <a href="Redis 命令参考">Redis 命令参考</a> / <a href="https://redis.io/commands/" target="_blank" rel="noopener">英文版</a></p>
+<span id="more"></span>
+
+<p>说明：本文旨在梳理 Redis 这门技术的学习思路，实际使用必须 <u><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/RTFM">RTFM</a></u>: [Redis 命令参考](Redis 命令参考) &#x2F; <a target="_blank" rel="noopener" href="https://redis.io/commands/">英文版</a></p>
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p><code>Redis</code>（<code>REmote Dictionary Server</code>，远程字典服务器） 是一个开源、高性能、基于键值对的缓存与存储系统，允许其他应用以字典（KV）形式通过 TCP 读写字典中的内容。</p>
 <h2 id="Redis-的优点"><a href="#Redis-的优点" class="headerlink" title="Redis 的优点"></a>Redis 的优点</h2><ul>
 <li>更符合程序员思维</li>
@@ -218,7 +261,7 @@
 <blockquote>
 <p>RDB 将数据库的快照（snapshot）以二进制的方式保存到磁盘中。<br>AOF 则以协议文本的方式，将所有对数据库进行过写入的命令（及其参数）记录到 AOF 文件，以此达到记录数据库状态的目的</p>
 <blockquote>
-<p><a href="https://redisbook.readthedocs.io/en/latest/internal/aof.html" target="_blank" rel="noopener">https://redisbook.readthedocs.io/en/latest/internal/aof.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://redisbook.readthedocs.io/en/latest/internal/aof.html">https://redisbook.readthedocs.io/en/latest/internal/aof.html</a></p>
 </blockquote>
 </blockquote>
 <ul>
@@ -267,7 +310,7 @@
 <li>队列</li>
 </ul>
 <h2 id="如何掌握-Redis-最小必须知识？"><a href="#如何掌握-Redis-最小必须知识？" class="headerlink" title="如何掌握 Redis 最小必须知识？"></a>如何掌握 Redis 最小必须知识？</h2><ul>
-<li><strong>WHY/WHAT：明白 Redis 的优缺点，以及适用场景。</strong></li>
+<li><strong>WHY&#x2F;WHAT：明白 Redis 的优缺点，以及适用场景。</strong></li>
 <li><strong>HOW：理解 Redis 五种基本数据结构的工作原理及其正确使用，使用正确的数据结构处理特定的问题。</strong></li>
 <li>使用编程语言驱动并使用 Redis。</li>
 <li>掌握 Redis 主要的管理调试技巧</li>
@@ -281,11 +324,8 @@
 <li>选择数据库：<code>select n</code>，其中 <code>n</code> 是数据库编号<br>对 Redis 来说，一个数据库就是一个字典（根据 Redis 定义），对外都是从 0 开始的递增数字命名，默认 Redis 支持 16 个数据库，可以配置 <code>databases</code> 来修改。</li>
 <li>获取当前数据库中符合指定规则的键名：<code>KEYS *</code></li>
 <li>判断一个键是否存在：<code>exists key</code></li>
-<li><p>删除指定 KEY：<code>del key1 key2 key3 ...</code>，返回删除的键的个数。<br>del 指令不支持通配符，但是可以这样曲线救国：</p>
-<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">redis-<span class="keyword">cli</span> KEYS <span class="string">"user:*"</span> | xargs redis-<span class="keyword">cli</span> DEL</span><br><span class="line">redis-<span class="keyword">cli</span> DEL `redis-<span class="keyword">cli</span> KEYS <span class="string">"user:*"</span>`</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>获得键值的数据类型：<code>TYPE key</code></p>
-</li>
+<li>删除指定 KEY：<code>del key1 key2 key3 ...</code>，返回删除的键的个数。<br>del 指令不支持通配符，但是可以这样曲线救国：<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">redis-<span class="keyword">cli</span> KEYS <span class="string">&quot;user:*&quot;</span> | xargs redis-<span class="keyword">cli</span> DEL</span><br><span class="line">redis-<span class="keyword">cli</span> DEL `redis-<span class="keyword">cli</span> KEYS <span class="string">&quot;user:*&quot;</span>`</span><br></pre></td></tr></table></figure></li>
+<li>获得键值的数据类型：<code>TYPE key</code></li>
 <li>清空所有 KEY：<code>flushall</code></li>
 <li>清除所有值：<code>flushdb</code></li>
 </ul>
@@ -295,49 +335,60 @@
 <li>一个命令，尤其是字符串相关的，只有在给定了明确的数据类型后，才会有实际意义。</li>
 <li>使用各种数据结构时需要考虑是：如何利用散列数据结构去组织数据，是查询变得更高效。</li>
 </ul>
-<h2 id="字符串-string"><a href="#字符串-string" class="headerlink" title="字符串/string"></a>字符串/string</h2><p>字符串的值是标量。字符串适合存储对象和计数，也适合缓存数据。</p>
-<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> user<span class="variable">s:caoxl</span> <span class="string">"&#123;name: caoxl, gender: sir&#125;"</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">strlen</span> user<span class="variable">s:caoxl</span></span><br><span class="line"></span><br><span class="line">getrange user<span class="variable">s:caoxl</span> <span class="number">1</span> <span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">append</span> user<span class="variable">s:caoxl</span> <span class="string">"balabala"</span></span><br></pre></td></tr></table></figure>
+<h2 id="字符串-x2F-string"><a href="#字符串-x2F-string" class="headerlink" title="字符串&#x2F;string"></a>字符串&#x2F;string</h2><p>字符串的值是标量。字符串适合存储对象和计数，也适合缓存数据。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> user<span class="variable">s:caoxl</span> <span class="string">&quot;&#123;name: caoxl, gender: sir&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">strlen</span> user<span class="variable">s:caoxl</span></span><br><span class="line"></span><br><span class="line">getrange user<span class="variable">s:caoxl</span> <span class="number">1</span> <span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">append</span> user<span class="variable">s:caoxl</span> <span class="string">&quot;balabala&quot;</span></span><br></pre></td></tr></table></figure>
+
 <p>一些字符串命令是专门为一些类型或值的结构而设计的，比如整型数值。如下：</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">incr</span> <span class="selector-tag">stats</span><span class="selector-pseudo">:page</span><span class="selector-pseudo">:about</span></span><br><span class="line"><span class="selector-tag">incrby</span> <span class="selector-tag">ratings</span><span class="selector-pseudo">:video</span><span class="selector-pseudo">:12333</span> 5</span><br></pre></td></tr></table></figure>
-<h2 id="散列表-hash"><a href="#散列表-hash" class="headerlink" title="散列表/hash"></a>散列表/hash</h2><p>散列数据结构很像字符串，区别在于：hash 提供了一个额外的间接层：域（Field）。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">hset</span> <span class="selector-tag">users</span><span class="selector-pseudo">:caoxl</span> <span class="selector-tag">age</span> 18</span><br><span class="line"><span class="selector-tag">hget</span> <span class="selector-tag">users</span><span class="selector-pseudo">:caoxl</span> <span class="selector-tag">age</span></span><br><span class="line"><span class="selector-tag">hmset</span> <span class="selector-tag">users</span><span class="selector-pseudo">:caoxl</span> <span class="selector-tag">age</span> <span class="selector-tag">attr1</span> <span class="selector-tag">attr2</span> 1024</span><br><span class="line"><span class="selector-tag">hmget</span> <span class="selector-tag">users</span><span class="selector-pseudo">:caoxl</span> <span class="selector-tag">age</span> <span class="selector-tag">gender</span></span><br><span class="line"><span class="selector-tag">hgetall</span> <span class="selector-tag">users</span><span class="selector-pseudo">:caoxl</span></span><br><span class="line"><span class="selector-tag">hkeys</span> <span class="selector-tag">users</span><span class="selector-pseudo">:caoxl</span></span><br><span class="line"><span class="selector-tag">hdel</span> <span class="selector-tag">users</span><span class="selector-pseudo">:caoxl</span> <span class="selector-tag">age</span></span><br></pre></td></tr></table></figure>
-<h2 id="列表-list"><a href="#列表-list" class="headerlink" title="列表/list"></a>列表/list</h2><p>简而言之，列表就是数组。对于一个给定的关键字，列表让你可以存储和处理一组值，并对列表中的值进行 CRUD 和其他操作。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">incr</span> stats:page:about</span><br><span class="line"><span class="attribute">incrby</span> ratings:video:<span class="number">12333</span> <span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="散列表-x2F-hash"><a href="#散列表-x2F-hash" class="headerlink" title="散列表&#x2F;hash"></a>散列表&#x2F;hash</h2><p>散列数据结构很像字符串，区别在于：hash 提供了一个额外的间接层：域（Field）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hset <span class="built_in">users</span>:caoxl age 18</span><br><span class="line">hget <span class="built_in">users</span>:caoxl age</span><br><span class="line">hmset <span class="built_in">users</span>:caoxl age attr1 attr2 1024</span><br><span class="line">hmget <span class="built_in">users</span>:caoxl age gender</span><br><span class="line">hgetall <span class="built_in">users</span>:caoxl</span><br><span class="line">hkeys <span class="built_in">users</span>:caoxl</span><br><span class="line">hdel <span class="built_in">users</span>:caoxl age</span><br></pre></td></tr></table></figure>
+
+<h2 id="列表-x2F-list"><a href="#列表-x2F-list" class="headerlink" title="列表&#x2F;list"></a>列表&#x2F;list</h2><p>简而言之，列表就是数组。对于一个给定的关键字，列表让你可以存储和处理一组值，并对列表中的值进行 CRUD 和其他操作。</p>
 <p>列表维护了值的顺序，提供了基于索引的高效操作。理论上列表可以存放任意个值。</p>
 <figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lpush newusers caoxl</span><br><span class="line">ltrim newusers <span class="number">0</span> <span class="number">50</span></span><br><span class="line"><span class="keyword">lrange</span> newusers <span class="number">0</span> <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
 <p><code>LTRIM Key start stop</code>，删除指定范围外的值，时间复杂度 O(N)，N 是被删除的值的数量</p>
 <p>这个例子中，由于先插入一个元素到列表开始（入栈）再进行列表调整，间接使得 <code>ltrim</code> 具有了常数性能，因为这种情况下 N 始终为 1。</p>
-<h2 id="集合-set"><a href="#集合-set" class="headerlink" title="集合/set"></a>集合/set</h2><p>集合常被用来存储只能唯一存在的值，并提供了许多的基于集合的操作，例如交集、并集。集合没有对值进行操作，但是提供了高效的基于值的操作。</p>
+<h2 id="集合-x2F-set"><a href="#集合-x2F-set" class="headerlink" title="集合&#x2F;set"></a>集合&#x2F;set</h2><p>集合常被用来存储只能唯一存在的值，并提供了许多的基于集合的操作，例如交集、并集。集合没有对值进行操作，但是提供了高效的基于值的操作。</p>
 <p>举例，使用集合实现朋友白名单：</p>
-<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 声明朋友集合</span><br><span class="line">sadd friend<span class="variable">s:cao</span> cao_1 cao_2 cao_3 caoxl</span><br><span class="line">sadd friend<span class="variable">s:xl</span>  xl_1  xl_2  xl_3  caoxl</span><br><span class="line"></span><br><span class="line"># 检查 <span class="keyword">X</span> 是不是 Y 的朋友</span><br><span class="line">sismember friend<span class="variable">s:cao</span> xl_1     # (integer) <span class="number">0</span></span><br><span class="line">sismember friend<span class="variable">s:xl</span>  cao_2    # (integer) <span class="number">1</span> </span><br><span class="line"></span><br><span class="line"># 检查 <span class="keyword">N</span> 个人是不是有共同的朋友</span><br><span class="line">sinter friend<span class="variable">s:cao</span> friend<span class="variable">s:cj</span> # <span class="number">1</span>) <span class="string">"caoxl"</span></span><br><span class="line"></span><br><span class="line"># 检查 <span class="keyword">N</span> 个人是不是有共同的朋友 并把结果存在 friend<span class="variable">s:caoxl</span> 集合中</span><br><span class="line">sinterstore friend<span class="variable">s:caoxl</span> friend<span class="variable">s:cao</span> friend<span class="variable">s:xl</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 声明朋友集合</span><br><span class="line">sadd friend<span class="variable">s:cao</span> cao_1 cao_2 cao_3 caoxl</span><br><span class="line">sadd friend<span class="variable">s:xl</span>  xl_1  xl_2  xl_3  caoxl</span><br><span class="line"></span><br><span class="line"># 检查 <span class="keyword">X</span> 是不是 Y 的朋友</span><br><span class="line">sismember friend<span class="variable">s:cao</span> xl_1     # (integer) <span class="number">0</span></span><br><span class="line">sismember friend<span class="variable">s:xl</span>  cao_2    # (integer) <span class="number">1</span> </span><br><span class="line"></span><br><span class="line"># 检查 <span class="keyword">N</span> 个人是不是有共同的朋友</span><br><span class="line">sinter friend<span class="variable">s:cao</span> friend<span class="variable">s:cj</span> # <span class="number">1</span>) <span class="string">&quot;caoxl&quot;</span></span><br><span class="line"></span><br><span class="line"># 检查 <span class="keyword">N</span> 个人是不是有共同的朋友 并把结果存在 friend<span class="variable">s:caoxl</span> 集合中</span><br><span class="line">sinterstore friend<span class="variable">s:caoxl</span> friend<span class="variable">s:cao</span> friend<span class="variable">s:xl</span></span><br></pre></td></tr></table></figure>
+
 <p>有时候需要对值的属性进行标记和跟踪处理，但不能通过简单的复制操作完成，集合数据结构是解决此类问题的最好方法之一。</p>
-<h2 id="有序集合（Sorted-Set）-zset"><a href="#有序集合（Sorted-Set）-zset" class="headerlink" title="有序集合（Sorted Set）/zset"></a>有序集合（Sorted Set）/zset</h2><p>序集合类似集合，主要区分是标记（<code>score</code>）。标记提供了排序（<code>sorting</code>）和秩划分（<code>ranking</code>）</p>
+<h2 id="有序集合（Sorted-Set）-x2F-zset"><a href="#有序集合（Sorted-Set）-x2F-zset" class="headerlink" title="有序集合（Sorted Set）&#x2F;zset"></a>有序集合（Sorted Set）&#x2F;zset</h2><p>序集合类似集合，主要区分是标记（<code>score</code>）。标记提供了排序（<code>sorting</code>）和秩划分（<code>ranking</code>）</p>
 <p>有序集合默认是根据 Score 对各个元素进行升序的排列。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">zadd</span> <span class="string">friends:caoxl</span> <span class="number">60</span> <span class="string">caoxl_1</span> <span class="number">80</span> <span class="string">caoxl_2</span> <span class="number">100</span> <span class="string">caoxl_3</span></span><br><span class="line"><span class="string">zcount</span> <span class="string">friends:caoxl</span> <span class="number">80</span> <span class="number">100</span>    <span class="comment"># (integer) 2</span></span><br><span class="line"><span class="string">zrank</span> <span class="string">friends:caoxl</span> <span class="string">caoxl_2</span>    <span class="comment"># 从低到高 获取 caoxl_2 在 friends_caoxl 中的 rank（秩）</span></span><br><span class="line"><span class="string">zrevrank</span> <span class="string">friends:caoxl</span> <span class="string">caoxl_2</span> <span class="comment"># 从高到低 获取 caoxl_2 在 friends_caoxl 中的 rank（秩）</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zadd friends:caoxl<span class="number"> 60 </span>caoxl_1<span class="number"> 80 </span>caoxl_2<span class="number"> 100 </span>caoxl_3</span><br><span class="line">zcount friends:caoxl<span class="number"> 80 </span>100    <span class="comment"># (integer) 2</span></span><br><span class="line">zrank friends:caoxl caoxl_2    <span class="comment"># 从低到高 获取 caoxl_2 在 friends_caoxl 中的 rank（秩）</span></span><br><span class="line">zrevrank friends:caoxl caoxl_2 <span class="comment"># 从高到低 获取 caoxl_2 在 friends_caoxl 中的 rank（秩）</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="管理Redis"><a href="#管理Redis" class="headerlink" title="管理Redis"></a>管理Redis</h1><h2 id="客户端验证"><a href="#客户端验证" class="headerlink" title="客户端验证"></a>客户端验证</h2><p>通过设置 <code>requirepass</code>，可以让 Redis 需要一个密码验证。验证也很简单，客户端只需要执行 <code>auth password</code> 就可以了。</p>
 <p><code>requirepass</code> 可以通过 <code>config set</code> 和修改 <code>redis.conf</code> 文件配置。</p>
 <p>通过验证的客户端可以对 Redis 所有数据库执行任何命令，为了安全性，你可以设置关键字别名，比如把 config 命令设置为一个随机字符串：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rename-command<span class="built_in"> CONFIG </span>9336ebf25087d91c818ee6e9ec29f8c1 </span><br><span class="line">rename-command FLUSHALL 9dd4e461268c8034f5c8564e155c67a6</span><br><span class="line">rename-command FLUSHDB 415290769594460e2e485922904f345d</span><br></pre></td></tr></table></figure>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">rename</span>-<span class="keyword">command</span> <span class="title">CONFIG</span> <span class="title">9336ebf25087d91c818ee6e9ec29f8c1</span> </span><br><span class="line"><span class="built_in">rename</span>-<span class="keyword">command</span> <span class="title">FLUSHALL</span> <span class="title">9dd4e461268c8034f5c8564e155c67a6</span></span><br><span class="line"><span class="built_in">rename</span>-<span class="keyword">command</span> <span class="title">FLUSHDB</span> <span class="title">415290769594460e2e485922904f345d</span></span><br></pre></td></tr></table></figure>
+
 <p>甚至，你可以将新名字设置为一个空字符串，从而禁掉某个命令。</p>
 <h2 id="数据库之间访问问题"><a href="#数据库之间访问问题" class="headerlink" title="数据库之间访问问题"></a>数据库之间访问问题</h2><p>Redis 不支持为每个数据库设置不同的访问密码，所以一个客户端要么可以访问全部数据要么全部都无权访问。</p>
 <p>此外，多个数据库之间并非完全隔离的。比如 <code>FLUSHALL</code> 命令会清空该 Redis 实例中的所有数据。</p>
 <p>因此，同一个 Redis 实例中不适合存储不同应用的数据，最好同一应用的不同环境也隔离开（保护生产数据），所有，<strong>应该一个应用使用一个 Redis 实例</strong>。</p>
-<h2 id="复制集-读写分离"><a href="#复制集-读写分离" class="headerlink" title="复制集/读写分离"></a>复制集/读写分离</h2><p>所谓的复制集，指的是当我们向某个 Redis 实例（<code>master</code>）进行写入时，可以通过 <code>slaveof</code> 配置其他 Redis 实例（<code>slaves</code>）能够通过 master 保持更新。</p>
+<h2 id="复制集-x2F-读写分离"><a href="#复制集-x2F-读写分离" class="headerlink" title="复制集&#x2F;读写分离"></a>复制集&#x2F;读写分离</h2><p>所谓的复制集，指的是当我们向某个 Redis 实例（<code>master</code>）进行写入时，可以通过 <code>slaveof</code> 配置其他 Redis 实例（<code>slaves</code>）能够通过 master 保持更新。</p>
 <p>为了数据安全性，也为了性能，应该将 Redis 复制到不同的服务器，实现异地冗余的同时，也提供了读写分离，因为读请求会被发送到 <code>slave</code> 实例。虽然数据可能出现滞后，但是大多数情况下都选择这种折中措施。</p>
 <h2 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h2><p>备份 Redis 只需要把 Redis 的快照拷贝到任何地方即可。默认情况，Redis 的快照文件名是 <code>dump.rdb</code>。</p>
 <p>为了减少 Master 实例的负载，在备份策略上通常把备份操作放到 slave，master 会停用快照功能以及单一附加文件（AOF）。</p>
-<h2 id="伸缩-集群"><a href="#伸缩-集群" class="headerlink" title="伸缩/集群"></a>伸缩/集群</h2><p>Redis 也能实现高可用和伸缩，以及集群间负载均衡，将命令负载转移或分散到多个 Slave 实例就可以了。不过，具体的效果需要根据实际情况针对性实现。</p>
+<h2 id="伸缩-x2F-集群"><a href="#伸缩-x2F-集群" class="headerlink" title="伸缩&#x2F;集群"></a>伸缩&#x2F;集群</h2><p>Redis 也能实现高可用和伸缩，以及集群间负载均衡，将命令负载转移或分散到多个 Slave 实例就可以了。不过，具体的效果需要根据实际情况针对性实现。</p>
 <h1 id="其他功能"><a href="#其他功能" class="headerlink" title="其他功能"></a>其他功能</h1><h2 id="字段超时"><a href="#字段超时" class="headerlink" title="字段超时"></a>字段超时</h2><p>Redis 允许我们标记一个关键字的使用期限，从而实现缓存的作用。存活时间单位为秒或者时间戳。</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">expire pages:<span class="keyword">about</span> <span class="number">30</span></span><br><span class="line">expireat pages:<span class="keyword">about</span> <span class="number">1504988562</span></span><br><span class="line"></span><br><span class="line">ttl pages:<span class="keyword">about</span> <span class="comment"># 查看某个字段还有多久过期</span></span><br><span class="line">setex pages:<span class="keyword">about</span> '&lt;h1&gt;<span class="keyword">about</span> us&lt;h1&gt; ...' <span class="comment"># 设置字符串的同时设置过期时间 </span></span><br><span class="line">persist pages:<span class="keyword">about</span> <span class="comment"># 取消某个字段的超时设置</span></span><br></pre></td></tr></table></figure>
-<h2 id="发布-订阅机制"><a href="#发布-订阅机制" class="headerlink" title="发布/订阅机制"></a>发布/订阅机制</h2><p>Redis 提供的发布订阅机制可以在多个客户端之间实现通讯。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">expire pages:<span class="keyword">about</span> <span class="number">30</span></span><br><span class="line">expireat pages:<span class="keyword">about</span> <span class="number">1504988562</span></span><br><span class="line"></span><br><span class="line">ttl pages:<span class="keyword">about</span> <span class="comment"># 查看某个字段还有多久过期</span></span><br><span class="line">setex pages:<span class="keyword">about</span> &#x27;&lt;h1&gt;<span class="keyword">about</span> us&lt;h1&gt; ...&#x27; <span class="comment"># 设置字符串的同时设置过期时间 </span></span><br><span class="line">persist pages:<span class="keyword">about</span> <span class="comment"># 取消某个字段的超时设置</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="发布-x2F-订阅机制"><a href="#发布-x2F-订阅机制" class="headerlink" title="发布&#x2F;订阅机制"></a>发布&#x2F;订阅机制</h2><p>Redis 提供的发布订阅机制可以在多个客户端之间实现通讯。</p>
 <ul>
 <li>消费者订阅某个 channel</li>
 </ul>
-<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">subscribe </span>music programming</span><br></pre></td></tr></table></figure>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">subscribe music programming</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>生产者发布内容到某个 channel</li>
 </ul>
-<figure class="highlight sml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">publish music <span class="symbol">'jjlin</span> new album'</span><br><span class="line">publish programming <span class="symbol">'learn</span> redis now'</span><br></pre></td></tr></table></figure>
-<h2 id="慢日志"><a href="#慢日志" class="headerlink" title="慢日志"></a>慢日志</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">config <span class="builtin-name">set</span> slowlog-log-slower-than 0    # 记录所有命令</span><br><span class="line">slowlog get</span><br><span class="line">slowlog <span class="builtin-name">get</span> 10</span><br></pre></td></tr></table></figure>
+<figure class="highlight sml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">publish music <span class="symbol">&#x27;jjlin</span> new album&#x27;</span><br><span class="line">publish programming <span class="symbol">&#x27;learn</span> redis now&#x27;</span><br></pre></td></tr></table></figure>
+
+<h2 id="慢日志"><a href="#慢日志" class="headerlink" title="慢日志"></a>慢日志</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">config <span class="built_in">set</span> slowlog-log-slower-than 0    # 记录所有命令</span><br><span class="line">slowlog <span class="built_in">get</span></span><br><span class="line">slowlog <span class="built_in">get</span> 10</span><br></pre></td></tr></table></figure>
+
 <h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><h2 id="什么是键值对？有什么含义？"><a href="#什么是键值对？有什么含义？" class="headerlink" title="什么是键值对？有什么含义？"></a>什么是键值对？有什么含义？</h2><p>键值对中键就是一切，所有的操作命令都是针对键的，不能根据值来操作。</p>
 <p>值是关联到键的实际值，可以是任何东西。在大多数情况下，Redis 会把值看作一个字节序列，而不会关注他们实际上是什么。</p>
 <h2 id="Redis-由哪些部分组成？"><a href="#Redis-由哪些部分组成？" class="headerlink" title="Redis 由哪些部分组成？"></a>Redis 由哪些部分组成？</h2><p>命令、关键字、值、数据结构以及与其一一绑定的操作方法。</p>
@@ -355,9 +406,11 @@
 <li>事务中的命令将会如单个原子操作般执行，没有其他客户端命令会在中途被执行。</li>
 <li>事务中的命令要么全部执行，要么全不执行。</li>
 </ul>
-<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">multi    <span class="meta"># 开始事务</span></span><br><span class="line">hincrby groups:<span class="number">1</span>percent <span class="built_in">balance</span> - <span class="number">90000000</span></span><br><span class="line">hincrby groups:<span class="number">99</span>percent <span class="built_in">balance</span> <span class="number">90000000</span></span><br><span class="line"><span class="built_in">exec</span>    <span class="meta"># 提交事务</span></span><br><span class="line"><span class="meta"># discard    # 放弃执行</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">multi    <span class="comment"># 开始事务</span></span><br><span class="line">hincrby <span class="built_in">groups</span>:1percent balance - 90000000</span><br><span class="line">hincrby <span class="built_in">groups</span>:99percent balance 90000000</span><br><span class="line"><span class="built_in">exec</span>    <span class="comment"># 提交事务</span></span><br><span class="line"><span class="comment"># discard    # 放弃执行</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="原子性的-Redis-还会遇到并发问题吗？"><a href="#原子性的-Redis-还会遇到并发问题吗？" class="headerlink" title="原子性的 Redis 还会遇到并发问题吗？"></a>原子性的 Redis 还会遇到并发问题吗？</h2><p>会，因为客户端是可以同时运行很多个的，当多个客户端操作同一个值的时候，就会出现并发问题。举例说明：</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">def <span class="builtin-name">add</span>():</span><br><span class="line">    redis.multi()</span><br><span class="line">    current = redis.<span class="builtin-name">get</span>(<span class="string">'sth'</span>)</span><br><span class="line">    redis.<span class="builtin-name">set</span>(<span class="string">'sth'</span>, sth + 1)</span><br><span class="line">    redis.exec()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 不安全的操作</span></span><br><span class="line"><span class="builtin-name">add</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安全的操作（增加 watch）</span></span><br><span class="line">redis.watch(<span class="string">'sth'</span>)</span><br><span class="line"><span class="builtin-name">add</span>()</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">def <span class="built_in">add</span>():</span><br><span class="line">    redis.multi()</span><br><span class="line">    current = redis.<span class="built_in">get</span>(<span class="string">&#x27;sth&#x27;</span>)</span><br><span class="line">    redis.<span class="built_in">set</span>(<span class="string">&#x27;sth&#x27;</span>, sth + 1)</span><br><span class="line">    redis.exec()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 不安全的操作</span></span><br><span class="line"><span class="built_in">add</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安全的操作（增加 watch）</span></span><br><span class="line">redis.watch(<span class="string">&#x27;sth&#x27;</span>)</span><br><span class="line"><span class="built_in">add</span>()</span><br></pre></td></tr></table></figure>
+
 <p>调用 <code>watch</code> 监控关键字之后，如果另一个客户端改变了 <code>sth</code> 的值，那么事务就会失败，我们可以在一个循环内运行这些代码，直到其能正常工作。</p>
 <h2 id="客户端与-Redis-实例之间的往返次数是不是越少越好？"><a href="#客户端与-Redis-实例之间的往返次数是不是越少越好？" class="headerlink" title="客户端与 Redis 实例之间的往返次数是不是越少越好？"></a>客户端与 Redis 实例之间的往返次数是不是越少越好？</h2><p>不是，往往相反。SQL 的程序员通常会致力于让数据库的数据往返次数减至最小，这对于任何的数据库而言都是个好建议，但是考虑到我们是在处理比较简单的数据类型，有时候我们会频繁与 Redis 服务器交互，以实现我们的目的，通常情况下，在 Redis 高性能的前提下，这点性能损失可以忽略不计。</p>
 <h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><ul>
@@ -368,13 +421,14 @@
 <li><code>Docker redis container</code> 作为命令行客户端?</li>
 </ul>
 <figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">run</span> -<span class="keyword">it</span> <span class="comment">--link &#123;REDIS_CONTAINER_NAME&#125;:redis --rm redis redis-cli -h redis -p 6379</span></span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <p>说明：生产环境尽量不要使用 monitor 命令，因为这是调试和开发工具。</p>
 </blockquote>
 <ul>
 <li>laravel 中使用 Redis 集群作为队列数据库？</li>
 </ul>
-<p>hash tags, RTFM:<u><a href="https://redis.io/topics/cluster-spec#keys-hash-tags" target="_blank" rel="noopener">https://redis.io/topics/cluster-spec#keys-hash-tags.</a></u></p>
+<p>hash tags, RTFM:<u><a target="_blank" rel="noopener" href="https://redis.io/topics/cluster-spec#keys-hash-tags">https://redis.io/topics/cluster-spec#keys-hash-tags.</a></u></p>
 <ul>
 <li>Redis 和 Memcached 的区别？</li>
 </ul>
@@ -384,10 +438,10 @@
 <p><strong>集群</strong>：Redis 原生支持集群，Memcached 需要借助第三方集群工具来实现。</p>
 <p><strong>分布式</strong>：两者都支持，Memcached 只能由客户端实现，Redis 更偏向在服务器构建。</p>
 <p><strong>队列</strong>：Redis 的类型键可用来实现队列，并且支持阻塞式读取，可以很容易地实现一个高性能的优先级队列。</p>
-<p><strong>消息通讯</strong>：Redis 支持发布/订阅模式，Memcached 无此机制。</p>
+<p><strong>消息通讯</strong>：Redis 支持发布&#x2F;订阅模式，Memcached 无此机制。</p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://hub.docker.com/_/redis/" target="_blank" rel="noopener">library/redis - Docker Hub</a></li>
-<li><a href="https://m.aliyun.com/yunqi/articles/531067" target="_blank" rel="noopener">阿里云Redis开发规范</a></li>
+<li><a target="_blank" rel="noopener" href="https://hub.docker.com/_/redis/">library&#x2F;redis - Docker Hub</a></li>
+<li><a target="_blank" rel="noopener" href="https://m.aliyun.com/yunqi/articles/531067">阿里云Redis开发规范</a></li>
 </ul>
 
         
@@ -420,7 +474,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cache/">Cache</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RTFM/">RTFM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/">Redis</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cache/" rel="tag">Cache</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RTFM/" rel="tag">RTFM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li></ul>
 
       
 
@@ -456,7 +510,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-的优点"><span class="nav-number">1.2.</span> <span class="nav-text">Redis 的优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-的缺点"><span class="nav-number">1.3.</span> <span class="nav-text">Redis 的缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-适用场景"><span class="nav-number">1.4.</span> <span class="nav-text">Redis 适用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何掌握-Redis-最小必须知识？"><span class="nav-number">1.5.</span> <span class="nav-text">如何掌握 Redis 最小必须知识？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#redis-cli-通用命令"><span class="nav-number">2.</span> <span class="nav-text">redis-cli 通用命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-五大数据结构"><span class="nav-number">3.</span> <span class="nav-text">Redis 五大数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串-string"><span class="nav-number">3.1.</span> <span class="nav-text">字符串/string</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#散列表-hash"><span class="nav-number">3.2.</span> <span class="nav-text">散列表/hash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列表-list"><span class="nav-number">3.3.</span> <span class="nav-text">列表/list</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集合-set"><span class="nav-number">3.4.</span> <span class="nav-text">集合/set</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#有序集合（Sorted-Set）-zset"><span class="nav-number">3.5.</span> <span class="nav-text">有序集合（Sorted Set）/zset</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#管理Redis"><span class="nav-number">4.</span> <span class="nav-text">管理Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端验证"><span class="nav-number">4.1.</span> <span class="nav-text">客户端验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库之间访问问题"><span class="nav-number">4.2.</span> <span class="nav-text">数据库之间访问问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制集-读写分离"><span class="nav-number">4.3.</span> <span class="nav-text">复制集/读写分离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#备份"><span class="nav-number">4.4.</span> <span class="nav-text">备份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#伸缩-集群"><span class="nav-number">4.5.</span> <span class="nav-text">伸缩/集群</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他功能"><span class="nav-number">5.</span> <span class="nav-text">其他功能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字段超时"><span class="nav-number">5.1.</span> <span class="nav-text">字段超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发布-订阅机制"><span class="nav-number">5.2.</span> <span class="nav-text">发布/订阅机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#慢日志"><span class="nav-number">5.3.</span> <span class="nav-text">慢日志</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理"><span class="nav-number">6.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是键值对？有什么含义？"><span class="nav-number">6.1.</span> <span class="nav-text">什么是键值对？有什么含义？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-由哪些部分组成？"><span class="nav-number">6.2.</span> <span class="nav-text">Redis 由哪些部分组成？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-持久化原理？"><span class="nav-number">6.3.</span> <span class="nav-text">Redis 持久化原理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么-Redis-具有原子性？Redis-事务如何使用？"><span class="nav-number">6.4.</span> <span class="nav-text">为什么 Redis 具有原子性？Redis 事务如何使用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原子性的-Redis-还会遇到并发问题吗？"><span class="nav-number">6.5.</span> <span class="nav-text">原子性的 Redis 还会遇到并发问题吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端与-Redis-实例之间的往返次数是不是越少越好？"><span class="nav-number">6.6.</span> <span class="nav-text">客户端与 Redis 实例之间的往返次数是不是越少越好？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">7.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E7%9A%84%E4%BC%98%E7%82%B9"><span class="nav-number">1.2.</span> <span class="nav-text">Redis 的优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">1.3.</span> <span class="nav-text">Redis 的缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.4.</span> <span class="nav-text">Redis 适用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%8E%8C%E6%8F%A1-Redis-%E6%9C%80%E5%B0%8F%E5%BF%85%E9%A1%BB%E7%9F%A5%E8%AF%86%EF%BC%9F"><span class="nav-number">1.5.</span> <span class="nav-text">如何掌握 Redis 最小必须知识？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#redis-cli-%E9%80%9A%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">redis-cli 通用命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-%E4%BA%94%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">3.</span> <span class="nav-text">Redis 五大数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2-x2F-string"><span class="nav-number">3.1.</span> <span class="nav-text">字符串&#x2F;string</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%A3%E5%88%97%E8%A1%A8-x2F-hash"><span class="nav-number">3.2.</span> <span class="nav-text">散列表&#x2F;hash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8-x2F-list"><span class="nav-number">3.3.</span> <span class="nav-text">列表&#x2F;list</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E5%90%88-x2F-set"><span class="nav-number">3.4.</span> <span class="nav-text">集合&#x2F;set</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88%EF%BC%88Sorted-Set%EF%BC%89-x2F-zset"><span class="nav-number">3.5.</span> <span class="nav-text">有序集合（Sorted Set）&#x2F;zset</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%A1%E7%90%86Redis"><span class="nav-number">4.</span> <span class="nav-text">管理Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%AA%8C%E8%AF%81"><span class="nav-number">4.1.</span> <span class="nav-text">客户端验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B9%8B%E9%97%B4%E8%AE%BF%E9%97%AE%E9%97%AE%E9%A2%98"><span class="nav-number">4.2.</span> <span class="nav-text">数据库之间访问问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E9%9B%86-x2F-%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="nav-number">4.3.</span> <span class="nav-text">复制集&#x2F;读写分离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%87%E4%BB%BD"><span class="nav-number">4.4.</span> <span class="nav-text">备份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%B8%E7%BC%A9-x2F-%E9%9B%86%E7%BE%A4"><span class="nav-number">4.5.</span> <span class="nav-text">伸缩&#x2F;集群</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%8A%9F%E8%83%BD"><span class="nav-number">5.</span> <span class="nav-text">其他功能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E6%AE%B5%E8%B6%85%E6%97%B6"><span class="nav-number">5.1.</span> <span class="nav-text">字段超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E5%B8%83-x2F-%E8%AE%A2%E9%98%85%E6%9C%BA%E5%88%B6"><span class="nav-number">5.2.</span> <span class="nav-text">发布&#x2F;订阅机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%85%A2%E6%97%A5%E5%BF%97"><span class="nav-number">5.3.</span> <span class="nav-text">慢日志</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%94%AE%E5%80%BC%E5%AF%B9%EF%BC%9F%E6%9C%89%E4%BB%80%E4%B9%88%E5%90%AB%E4%B9%89%EF%BC%9F"><span class="nav-number">6.1.</span> <span class="nav-text">什么是键值对？有什么含义？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E7%94%B1%E5%93%AA%E4%BA%9B%E9%83%A8%E5%88%86%E7%BB%84%E6%88%90%EF%BC%9F"><span class="nav-number">6.2.</span> <span class="nav-text">Redis 由哪些部分组成？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E6%8C%81%E4%B9%85%E5%8C%96%E5%8E%9F%E7%90%86%EF%BC%9F"><span class="nav-number">6.3.</span> <span class="nav-text">Redis 持久化原理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-Redis-%E5%85%B7%E6%9C%89%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%9FRedis-%E4%BA%8B%E5%8A%A1%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%EF%BC%9F"><span class="nav-number">6.4.</span> <span class="nav-text">为什么 Redis 具有原子性？Redis 事务如何使用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%AD%90%E6%80%A7%E7%9A%84-Redis-%E8%BF%98%E4%BC%9A%E9%81%87%E5%88%B0%E5%B9%B6%E5%8F%91%E9%97%AE%E9%A2%98%E5%90%97%EF%BC%9F"><span class="nav-number">6.5.</span> <span class="nav-text">原子性的 Redis 还会遇到并发问题吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8E-Redis-%E5%AE%9E%E4%BE%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%BE%80%E8%BF%94%E6%AC%A1%E6%95%B0%E6%98%AF%E4%B8%8D%E6%98%AF%E8%B6%8A%E5%B0%91%E8%B6%8A%E5%A5%BD%EF%BC%9F"><span class="nav-number">6.6.</span> <span class="nav-text">客户端与 Redis 实例之间的往返次数是不是越少越好？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">7.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -471,7 +525,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -551,12 +605,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -624,7 +682,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

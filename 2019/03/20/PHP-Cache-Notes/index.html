@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>php 缓存技术 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="PHP缓存">
+  <meta name="keywords" content="PHP缓存" />
   
   
   
   
   <meta name="description" content="本文在掘金第一次看到,不过也是转载文原文链接：mp.weixin.qq.com">
-<meta name="keywords" content="PHP,缓存">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP 缓存技术">
 <meta property="og:url" content="http://blog.caoxl.com/2019/03/20/PHP-Cache-Notes/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
 <meta property="og:description" content="本文在掘金第一次看到,不过也是转载文原文链接：mp.weixin.qq.com">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/3/12/1696f969cd05f803?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/3/12/1696f969ccfb9804?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
-<meta property="og:updated_time" content="2019-03-20T04:01:23.000Z">
+<meta property="article:published_time" content="2019-03-20T02:23:37.000Z">
+<meta property="article:modified_time" content="2019-03-20T04:01:23.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="缓存">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PHP 缓存技术">
-<meta name="twitter:description" content="本文在掘金第一次看到,不过也是转载文原文链接：mp.weixin.qq.com">
 <meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2019/3/12/1696f969cd05f803?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
@@ -45,30 +46,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -146,7 +185,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -202,9 +243,10 @@
           <blockquote>
 <p>本文在掘金第一次看到,不过也是转载文<br>原文链接：mp.weixin.qq.com</p>
 </blockquote>
-<a id="more"></a>
+<span id="more"></span>
+
 <p><img src="https://user-gold-cdn.xitu.io/2019/3/12/1696f969cd05f803?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="PHP缓存"></p>
-<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>缓存已经成了项目中是必不可少的一部分，它是提高性能最好的方式，例如减少网络I/O、减少磁盘I/O 等，使项目加载速度变的更快。</p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>缓存已经成了项目中是必不可少的一部分，它是提高性能最好的方式，例如减少网络I&#x2F;O、减少磁盘I&#x2F;O 等，使项目加载速度变的更快。</p>
 <p>缓存可以是<code>CPU缓存</code>、<code>内存缓存</code>、<code>硬盘缓存</code>，不同的缓存查询速度也不一样（<strong>CPU缓存 优于 内存缓存 优于 硬盘缓存</strong>）。</p>
 <p>接下来，给大家逐一进行介绍。</p>
 <h1 id="浏览器缓存"><a href="#浏览器缓存" class="headerlink" title="浏览器缓存"></a>浏览器缓存</h1><blockquote>
@@ -213,64 +255,58 @@
 <h2 id="强缓存"><a href="#强缓存" class="headerlink" title="强缓存"></a>强缓存</h2><p>用户发送的请求，直接从客户端缓存中获取，不请求服务器。</p>
 <p>根据 <code>Expires</code> 和 <code>Cache-Control</code> 判断是否命中强缓存。</p>
 <p>代码如下:</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">header(<span class="string">'Expires: '</span>. gmdate(<span class="string">'D, d M Y H:i:s'</span>, time() + <span class="number">3600</span>). <span class="string">' GMT'</span>);</span><br><span class="line"></span><br><span class="line">header(<span class="string">"Cache-Control: max-age=3600"</span>); <span class="comment">//有效期3600秒</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&#x27;Expires: &#x27;</span>. <span class="title function_ invoke__">gmdate</span>(<span class="string">&#x27;D, d M Y H:i:s&#x27;</span>, <span class="title function_ invoke__">time</span>() + <span class="number">3600</span>). <span class="string">&#x27; GMT&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&quot;Cache-Control: max-age=3600&quot;</span>); <span class="comment">//有效期3600秒</span></span><br></pre></td></tr></table></figure>
+
 <p><code>Cache-Control</code> 还可以设置以下参数：</p>
 <ul>
-<li><code>public</code>: 可以被所有的用户缓存（终端用户的浏览器/CDN服务器）</li>
+<li><code>public</code>: 可以被所有的用户缓存（终端用户的浏览器&#x2F;CDN服务器）</li>
 <li><code>private</code>: 只能被终端用户的浏览器缓存</li>
 <li><code>no-cache</code>: 不使用本地缓存</li>
 <li><code>no-store</code>: 禁止缓存数据</li>
 </ul>
 <h2 id="协商缓存"><a href="#协商缓存" class="headerlink" title="协商缓存"></a>协商缓存</h2><p>用户发送的请求，发送给服务器，由服务器判定是否使用客户端缓存。</p>
 <p>代码如下：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$last_modify = strtotime($_SERVER[<span class="string">'HTTP_IF_MODIFIED_SINCE'</span>]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (time() - $last_modify &lt; <span class="number">3600</span>) &#123;</span><br><span class="line"></span><br><span class="line">    header(<span class="string">'Last-Modified: '</span>. gmdate(<span class="string">'D, d M Y H:i:s'</span>, $last_modify).<span class="string">' GMT'</span>);</span><br><span class="line"></span><br><span class="line">    header(<span class="string">'HTTP/1.1 304'</span>); <span class="comment">//Not Modified</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">exit</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">header(<span class="string">'Last-Modified: '</span>. gmdate(<span class="string">'D, d M Y H:i:s'</span>).<span class="string">' GMT'</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$last_modify</span> = <span class="title function_ invoke__">strtotime</span>(<span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_IF_MODIFIED_SINCE&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="title function_ invoke__">time</span>() - <span class="variable">$last_modify</span> &lt; <span class="number">3600</span>) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">header</span>(<span class="string">&#x27;Last-Modified: &#x27;</span>. <span class="title function_ invoke__">gmdate</span>(<span class="string">&#x27;D, d M Y H:i:s&#x27;</span>, <span class="variable">$last_modify</span>).<span class="string">&#x27; GMT&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="title function_ invoke__">header</span>(<span class="string">&#x27;HTTP/1.1 304&#x27;</span>); <span class="comment">//Not Modified</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">exit</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">&#x27;Last-Modified: &#x27;</span>. <span class="title function_ invoke__">gmdate</span>(<span class="string">&#x27;D, d M Y H:i:s&#x27;</span>).<span class="string">&#x27; GMT&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
 <h3 id="用户操作行为对缓存的影响"><a href="#用户操作行为对缓存的影响" class="headerlink" title="用户操作行为对缓存的影响"></a>用户操作行为对缓存的影响</h3><table>
 <thead>
 <tr>
-<th style="text-align:left">操作行为</th>
-<th style="text-align:left">Expires</th>
-<th style="text-align:left">Last-Modified</th>
+<th align="left">操作行为</th>
+<th align="left">Expires</th>
+<th align="left">Last-Modified</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:left">地址栏回车</td>
-<td style="text-align:left">有效</td>
-<td style="text-align:left">有效</td>
-<td></td>
+<tbody><tr>
+<td align="left">地址栏回车</td>
+<td align="left">有效</td>
+<td align="left">有效</td>
 </tr>
 <tr>
-<td style="text-align:left">页面跳转</td>
-<td style="text-align:left">有效</td>
-<td style="text-align:left">有效</td>
-<td></td>
+<td align="left">页面跳转</td>
+<td align="left">有效</td>
+<td align="left">有效</td>
 </tr>
 <tr>
-<td style="text-align:left">新开窗口</td>
-<td style="text-align:left">有效</td>
-<td style="text-align:left">有效</td>
-<td></td>
+<td align="left">新开窗口</td>
+<td align="left">有效</td>
+<td align="left">有效</td>
 </tr>
 <tr>
-<td style="text-align:left">前进/后退</td>
-<td style="text-align:left">有效</td>
-<td style="text-align:left">有效</td>
-<td></td>
+<td align="left">前进&#x2F;后退</td>
+<td align="left">有效</td>
+<td align="left">有效</td>
 </tr>
 <tr>
-<td style="text-align:left">F5刷新</td>
-<td style="text-align:left">无效</td>
-<td style="text-align:left">有效</td>
-<td></td>
+<td align="left">F5刷新</td>
+<td align="left">无效</td>
+<td align="left">有效</td>
 </tr>
 <tr>
-<td style="text-align:left">Ctrl+F5</td>
-<td style="text-align:left">无效</td>
-<td style="text-align:left">无效</td>
-<td></td>
+<td align="left">Ctrl+F5</td>
+<td align="left">无效</td>
+<td align="left">无效</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h1 id="文件缓存"><a href="#文件缓存" class="headerlink" title="文件缓存"></a>文件缓存</h1><h2 id="数据文件缓存"><a href="#数据文件缓存" class="headerlink" title="数据文件缓存"></a>数据文件缓存</h2><p>将更新频率低，读取频率高的数据，缓存成文件。</p>
 <p>比如，项目中多个地方用到城市数据做三级联动，我们就可以将城市数据缓存成一个文件（<code>city_data.json</code>），JS 可以直接读取这个文件，无需请求后端服务器。</p>
 <h2 id="全站静态化"><a href="#全站静态化" class="headerlink" title="全站静态化"></a>全站静态化</h2><p><code>CMS</code>（内容管理系统），也许大家都比较熟悉，比如早期的 <code>DEDE</code>、<code>PHPCMS</code>，后台都可以设置静态化HTML，用户在访问网站的时候读取的都是静态HTML，不用请求后端的数据库，也不用Ajax请求数据接口，加快了网站的加载速度。</p>
@@ -290,60 +326,58 @@
 </blockquote>
 <p>一般的使用目的是，通过缓存数据库查询结果，减少数据库访问次数，以提高动态Web应用的速度、提高可扩展性。</p>
 <p>它也能够用来存储各种格式的数据，包括图像、视频、文件等。</p>
-<p><code>Memcached</code> 仅支持K/V类型的数据，不支持持久化存储。</p>
+<p><code>Memcached</code> 仅支持K&#x2F;V类型的数据，不支持持久化存储。</p>
 <h3 id="Memcache-与-Memcached-的区别"><a href="#Memcache-与-Memcached-的区别" class="headerlink" title="Memcache 与 Memcached 的区别"></a><code>Memcache</code> 与 <code>Memcached</code> 的区别</h3><table>
 <thead>
 <tr>
-<th style="text-align:left">区别</th>
-<th style="text-align:left"><code>Memcached</code></th>
-<th style="text-align:left"><code>Memcache</code></th>
+<th align="left">区别</th>
+<th align="left"><code>Memcached</code></th>
+<th align="left"><code>Memcache</code></th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:left">PHP版本</td>
-<td style="text-align:left"><code>&gt;=5.2.0</code></td>
-<td style="text-align:left"><code>&gt;=4.3</code></td>
-<td></td>
+<tbody><tr>
+<td align="left">PHP版本</td>
+<td align="left"><code>&gt;=5.2.0</code></td>
+<td align="left"><code>&gt;=4.3</code></td>
 </tr>
 <tr>
-<td style="text-align:left">发布时间</td>
-<td style="text-align:left"><code>2018-12-24</code></td>
-<td style="text-align:left"><code>2013-04-07</code></td>
-<td></td>
+<td align="left">发布时间</td>
+<td align="left"><code>2018-12-24</code></td>
+<td align="left"><code>2013-04-07</code></td>
 </tr>
 <tr>
-<td style="text-align:left">基于</td>
-<td style="text-align:left"><code>libmemcached</code></td>
-<td style="text-align:left"><code>PECL</code></td>
-<td></td>
+<td align="left">基于</td>
+<td align="left"><code>libmemcached</code></td>
+<td align="left"><code>PECL</code></td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>可以将 <code>Memcached</code> 看作是 <code>Memcache</code> 的升级版。</p>
-<p><strong><u><a href="http://www.php.net/manual/zh/book.memcached.php" target="_blank" rel="noopener">PHP Memcached 使用手册</a></u></strong></p>
+<p><strong><u><a target="_blank" rel="noopener" href="http://www.php.net/manual/zh/book.memcached.php">PHP Memcached 使用手册</a></u></strong></p>
 <p><code>Memcached</code> 经常拿来与 <code>Redis</code> 做对比，接下来介绍下 <code>Redis</code> 缓存。</p>
 <h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><blockquote>
-<p><code>Redis</code> 是一个高性能的 K/V 数据库。</p>
+<p><code>Redis</code> 是一个高性能的 K&#x2F;V 数据库。</p>
 </blockquote>
-<p><code>Redis</code> 很大程度补偿了 <code>Memcached</code> K/V存储的不足，比如 <code>List</code>（链表）、<code>Set</code>（集合）、<code>Zset</code>（有序集合）、Hash（散列），既可以将数据存储在内存中，也可以将数据持久化到磁盘上，支持主从同步。</p>
+<p><code>Redis</code> 很大程度补偿了 <code>Memcached</code> K&#x2F;V存储的不足，比如 <code>List</code>（链表）、<code>Set</code>（集合）、<code>Zset</code>（有序集合）、Hash（散列），既可以将数据存储在内存中，也可以将数据持久化到磁盘上，支持主从同步。</p>
 <p>总的来说，可以将 <code>Redis</code> 看作是 <code>Memcached</code> 的扩展版，更加重量级，功能更强大。</p>
 <p>Redis 在日常工作中使用的居多。</p>
-<p><strong><u><a href="http://www.redis.cn/" target="_blank" rel="noopener">Redis 学习网址</a></u></strong> &amp;&amp; <strong><u><a href="http://redisdoc.com/" target="_blank" rel="noopener">Redis 命令参考</a></u></strong></p>
+<p><strong><u><a target="_blank" rel="noopener" href="http://www.redis.cn/">Redis 学习网址</a></u></strong> &amp;&amp; <strong><u><a target="_blank" rel="noopener" href="http://redisdoc.com/">Redis 命令参考</a></u></strong></p>
 <h2 id="MongoDB"><a href="#MongoDB" class="headerlink" title="MongoDB"></a>MongoDB</h2><blockquote>
 <p><code>MongoDB</code> 是一个基于分布式文件存储的数据库。由 C++ 语言编写。</p>
 </blockquote>
 <p>旨在为 WEB 应用提供可扩展的高性能数据存储解决方案。</p>
 <p><code>MongoDB</code> 是一个介于关系数据库和非关系数据库之间的产品，是非关系数据库当中功能最丰富，最像关系数据库的。</p>
-<p>**<u><a href="http://www.mongodb.org.cn" target="_blank" rel="noopener">MongoDB 学习网址</a></u></p>
+<p>**<u><a target="_blank" rel="noopener" href="http://www.mongodb.org.cn/">MongoDB 学习网址</a></u></p>
 <h1 id="WEB服务器缓存"><a href="#WEB服务器缓存" class="headerlink" title="WEB服务器缓存"></a>WEB服务器缓存</h1><h2 id="Apache缓存"><a href="#Apache缓存" class="headerlink" title="Apache缓存"></a>Apache缓存</h2><p>利用 <code>mod_expires</code> ，指定缓存的过期时间，可以缓存HTML、图片、JS、CSS 等。</p>
 <p>打开 <code>http.conf</code>，开启模块：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LoadModule expires_module modules / mod_expires.so</span><br></pre></td></tr></table></figure>
+
 <p>指定缓存的过期时间：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;IfModule expires_module&gt;</span><br><span class="line">     <span class="comment">#打开缓存</span></span><br><span class="line">     ExpiresActive on </span><br><span class="line"></span><br><span class="line">     <span class="comment">#css缓存(8640000秒=10天)</span></span><br><span class="line">     ExpiresByType text/css A8640000</span><br><span class="line"></span><br><span class="line">     <span class="comment">#js缓存</span></span><br><span class="line">     ExpiresByType application/x-javascript A8640000</span><br><span class="line">     ExpiresByType application/javascript A8640000</span><br><span class="line"></span><br><span class="line">     <span class="comment">#html缓存</span></span><br><span class="line">     ExpiresByType text/html A8640000</span><br><span class="line"></span><br><span class="line">     <span class="comment">#图片缓存</span></span><br><span class="line">     ExpiresByType image/jpeg A8640000</span><br><span class="line">     ExpiresByType image/gif A8640000</span><br><span class="line">     ExpiresByType image/png A8640000</span><br><span class="line">     ExpiresByType image/x-icon A8640000</span><br><span class="line"> &lt;/IfModule&gt;</span><br></pre></td></tr></table></figure>
+
 <h2 id="Nginx缓存"><a href="#Nginx缓存" class="headerlink" title="Nginx缓存"></a>Nginx缓存</h2><p>利用 <code>expire</code> 参数，指定缓存的过期时间，可以缓存HTML、图片、JS、CSS 等。</p>
 <p>打开 <code>nginx.conf</code> ：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//以图片为例：</span></span><br><span class="line">location ~\.(gif|jpg|jepg|png|bmp|ico)$ &#123; <span class="comment">#加入新的location</span></span><br><span class="line">    root html;</span><br><span class="line">    expires <span class="number">1</span>d; <span class="comment">#指定缓存时间</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>大家也可以了解下：<code>proxycachepath</code> 和 <code>proxy_cache</code>，进行缓存的设置。</p>
 <h1 id="Opcode缓存"><a href="#Opcode缓存" class="headerlink" title="Opcode缓存"></a>Opcode缓存</h1><blockquote>
 <p><code>Opcode</code>（Operate Code）操作码。</p>
@@ -357,15 +391,15 @@
 <p>APC 的目标是提供一个自由、 开放，和健全的框架，用于缓存、优化 PHP 中间代码。</p>
 <p>APC 可以去掉 php 动态解析以及编译的时间，使php脚本可以执行的更快。</p>
 <p>APC 扩展最后的发布时间为 2012-09-03。</p>
-<p>感兴趣可以了解下，官方介绍：<u><a href="http://php.net/manual/zh/book.apc.php" target="_blank" rel="noopener">http://php.net/manual/zh/book.apc.php</a></u></p>
+<p>感兴趣可以了解下，官方介绍：<u><a target="_blank" rel="noopener" href="http://php.net/manual/zh/book.apc.php">http://php.net/manual/zh/book.apc.php</a></u></p>
 <h2 id="eAccelerator"><a href="#eAccelerator" class="headerlink" title="eAccelerator"></a>eAccelerator</h2><blockquote>
 <p><code>eAccelerator</code>：A PHP opcode cache。</p>
 </blockquote>
-<p>感兴趣可以了解下，官方介绍：<u><a href="http://eaccelerator.net/" target="_blank" rel="noopener">http://eaccelerator.net/</a></u></p>
+<p>感兴趣可以了解下，官方介绍：<u><a target="_blank" rel="noopener" href="http://eaccelerator.net/">http://eaccelerator.net/</a></u></p>
 <h2 id="XCache"><a href="#XCache" class="headerlink" title="XCache"></a>XCache</h2><blockquote>
 <p><code>XCache</code> 是一个又快又稳定的 PHP opcode 缓存器。</p>
 </blockquote>
-<p>感兴趣可以了解下，官方介绍：<u><a href="http://xcache.lighttpd.net/" target="_blank" rel="noopener">http://xcache.lighttpd.net/</a></u></p>
+<p>感兴趣可以了解下，官方介绍：<u><a target="_blank" rel="noopener" href="http://xcache.lighttpd.net/">http://xcache.lighttpd.net/</a></u></p>
 <h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>文章主要简单的介绍了 浏览器缓存、文件缓存、NoSQL缓存、WEB服务器缓存、Opcode缓存。</p>
 <p>每一种缓存都可以深入研究，从介绍 -&gt; 安装 -&gt; 使用 -&gt; 总结应用场景。</p>
 <p>大家可以思考下，通过上面的介绍，工作中我们使用了哪些缓存？</p>
@@ -377,7 +411,8 @@
 <li>比如实现一个简单的日志收集功能或发送大量短信、邮件的功能，实现方式是先将数据收集到队列中，然后有一个定时任务去消耗队列，处理该做的事情。</li>
 </ol>
 <p>直接使用 <code>Redis</code> 的 <code>lpush</code>，<code>rpop</code> 或 <code>rpush</code>，<code>lpop</code>。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//进队列</span></span><br><span class="line">$redis-&gt;lpush(key, value);</span><br><span class="line"></span><br><span class="line"><span class="comment">//出队列</span></span><br><span class="line">$redis-&gt;rpop(key);</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//进队列</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">lpush</span>(key, value);</span><br><span class="line"></span><br><span class="line"><span class="comment">//出队列</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">rpop</span>(key);</span><br></pre></td></tr></table></figure>
+
 <p><code>Memcached</code> 没有这种数据结构。</p>
 <ol start="2">
 <li>比如我们要存储用户信息，ID、姓名、电话、年龄、身高 ，怎么存储？</li>
@@ -385,14 +420,17 @@
 <ul>
 <li>方案一：<code>key =&gt; value</code></li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">key   = userdata(用户ID)</span><br><span class="line">   </span><br><span class="line">value = json_encode(用户数据)</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">key   = <span class="title function_ invoke__">userdata</span>(用户ID)</span><br><span class="line">   </span><br><span class="line">value = <span class="title function_ invoke__">json_encode</span>(用户数据)</span><br></pre></td></tr></table></figure>
+
 <p>查询时，先取出<code>key</code>，然后进行<code>json_decode</code>解析。</p>
 <ul>
 <li>方案二：<code>hash</code></li>
 </ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">key = userdata(用户ID)</span><br><span class="line"></span><br><span class="line">hashKey = 姓名，value = xx</span><br><span class="line"></span><br><span class="line">hashKey = 电话，value = xx</span><br><span class="line"></span><br><span class="line">hashKey = 年龄，value = xx</span><br><span class="line"></span><br><span class="line">hashKey = 身高，value = xx</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">key = <span class="title function_ invoke__">userdata</span>(用户ID)</span><br><span class="line"></span><br><span class="line">hashKey = 姓名，value = xx</span><br><span class="line"></span><br><span class="line">hashKey = 电话，value = xx</span><br><span class="line"></span><br><span class="line">hashKey = 年龄，value = xx</span><br><span class="line"></span><br><span class="line">hashKey = 身高，value = xx</span><br></pre></td></tr></table></figure>
+
 <p>查询时，取出key即可。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//新增</span></span><br><span class="line">$redis-&gt;hSet(key, hashKey, value);</span><br><span class="line">$redis-&gt;hSet(key, hashKey, value);</span><br><span class="line">$redis-&gt;hSet(key, hashKey, value);</span><br><span class="line"></span><br><span class="line"><span class="comment">//编辑</span></span><br><span class="line">$redis-&gt;hSet(key, hashKey, value);</span><br><span class="line"></span><br><span class="line"><span class="comment">//查询</span></span><br><span class="line">$redis-&gt;hGetAll(key); <span class="comment">//查询所有属性</span></span><br><span class="line">$redis-&gt;hGet(key, hashKey); <span class="comment">//查询某个属性</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//新增</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">hSet</span>(key, hashKey, value);</span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">hSet</span>(key, hashKey, value);</span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">hSet</span>(key, hashKey, value);</span><br><span class="line"></span><br><span class="line"><span class="comment">//编辑</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">hSet</span>(key, hashKey, value);</span><br><span class="line"></span><br><span class="line"><span class="comment">//查询</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">hGetAll</span>(key); <span class="comment">//查询所有属性</span></span><br><span class="line"><span class="variable">$redis</span>-&gt;<span class="title function_ invoke__">hGet</span>(key, hashKey); <span class="comment">//查询某个属性</span></span><br></pre></td></tr></table></figure>
+
 <p>方案二 优于 方案一。</p>
 <ol start="3">
 <li>比如社交项目类似于新浪微博，个人中心的关注列表和粉丝列表，双向关注列表，还有热门微博，还有消息订阅 等等。</li>
@@ -415,7 +453,7 @@
 </blockquote>
 <ul>
 <li>设置有规则的Key值，先验证Key是否符合规范。</li>
-<li>接口限流、降级、熔断，请研究 <code>istio</code>：<u><a href="https://istio.io/" target="_blank" rel="noopener">https://istio.io/</a></u></li>
+<li>接口限流、降级、熔断，请研究 <code>istio</code>：<u><a target="_blank" rel="noopener" href="https://istio.io/">https://istio.io/</a></u></li>
 <li>布隆过滤器。(没有打错字就是这个<strong>布隆过滤器</strong>)</li>
 <li>为不存在的key值，设置空缓存和过期时间，如果存储层创建了数据，及时更新缓存。</li>
 </ul>
@@ -457,7 +495,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/缓存/">缓存</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%93%E5%AD%98/" rel="tag">缓存</a></li></ul>
 
       
 
@@ -493,7 +531,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#浏览器缓存"><span class="nav-number">2.</span> <span class="nav-text">浏览器缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#强缓存"><span class="nav-number">2.1.</span> <span class="nav-text">强缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协商缓存"><span class="nav-number">2.2.</span> <span class="nav-text">协商缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#用户操作行为对缓存的影响"><span class="nav-number">2.2.1.</span> <span class="nav-text">用户操作行为对缓存的影响</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件缓存"><span class="nav-number">3.</span> <span class="nav-text">文件缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据文件缓存"><span class="nav-number">3.1.</span> <span class="nav-text">数据文件缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#全站静态化"><span class="nav-number">3.2.</span> <span class="nav-text">全站静态化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CDN"><span class="nav-number">3.3.</span> <span class="nav-text">CDN</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NoSQL缓存"><span class="nav-number">4.</span> <span class="nav-text">NoSQL缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Memcached"><span class="nav-number">4.1.</span> <span class="nav-text">Memcached</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Memcache-与-Memcached-的区别"><span class="nav-number">4.1.1.</span> <span class="nav-text">Memcache 与 Memcached 的区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis"><span class="nav-number">4.2.</span> <span class="nav-text">Redis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MongoDB"><span class="nav-number">4.3.</span> <span class="nav-text">MongoDB</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WEB服务器缓存"><span class="nav-number">5.</span> <span class="nav-text">WEB服务器缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache缓存"><span class="nav-number">5.1.</span> <span class="nav-text">Apache缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx缓存"><span class="nav-number">5.2.</span> <span class="nav-text">Nginx缓存</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Opcode缓存"><span class="nav-number">6.</span> <span class="nav-text">Opcode缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#APC"><span class="nav-number">6.1.</span> <span class="nav-text">APC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eAccelerator"><span class="nav-number">6.2.</span> <span class="nav-text">eAccelerator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XCache"><span class="nav-number">6.3.</span> <span class="nav-text">XCache</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">7.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关于缓存的常见问题"><span class="nav-number">8.</span> <span class="nav-text">关于缓存的常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#当项目中使用到缓存，我们是选择-Redis-还是-Memcached-，为什么？"><span class="nav-number">8.1.</span> <span class="nav-text">当项目中使用到缓存，我们是选择 Redis 还是 Memcached ，为什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证，缓存与数据库的数据一致性？"><span class="nav-number">8.2.</span> <span class="nav-text">如何保证，缓存与数据库的数据一致性？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存穿透怎么办？"><span class="nav-number">8.3.</span> <span class="nav-text">缓存穿透怎么办？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#雪崩怎么办"><span class="nav-number">8.4.</span> <span class="nav-text">雪崩怎么办?</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98"><span class="nav-number">2.</span> <span class="nav-text">浏览器缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%BA%E7%BC%93%E5%AD%98"><span class="nav-number">2.1.</span> <span class="nav-text">强缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E5%95%86%E7%BC%93%E5%AD%98"><span class="nav-number">2.2.</span> <span class="nav-text">协商缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E6%93%8D%E4%BD%9C%E8%A1%8C%E4%B8%BA%E5%AF%B9%E7%BC%93%E5%AD%98%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">2.2.1.</span> <span class="nav-text">用户操作行为对缓存的影响</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%BC%93%E5%AD%98"><span class="nav-number">3.</span> <span class="nav-text">文件缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6%E7%BC%93%E5%AD%98"><span class="nav-number">3.1.</span> <span class="nav-text">数据文件缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E7%AB%99%E9%9D%99%E6%80%81%E5%8C%96"><span class="nav-number">3.2.</span> <span class="nav-text">全站静态化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CDN"><span class="nav-number">3.3.</span> <span class="nav-text">CDN</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NoSQL%E7%BC%93%E5%AD%98"><span class="nav-number">4.</span> <span class="nav-text">NoSQL缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Memcached"><span class="nav-number">4.1.</span> <span class="nav-text">Memcached</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Memcache-%E4%B8%8E-Memcached-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">4.1.1.</span> <span class="nav-text">Memcache 与 Memcached 的区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis"><span class="nav-number">4.2.</span> <span class="nav-text">Redis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MongoDB"><span class="nav-number">4.3.</span> <span class="nav-text">MongoDB</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WEB%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BC%93%E5%AD%98"><span class="nav-number">5.</span> <span class="nav-text">WEB服务器缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache%E7%BC%93%E5%AD%98"><span class="nav-number">5.1.</span> <span class="nav-text">Apache缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx%E7%BC%93%E5%AD%98"><span class="nav-number">5.2.</span> <span class="nav-text">Nginx缓存</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Opcode%E7%BC%93%E5%AD%98"><span class="nav-number">6.</span> <span class="nav-text">Opcode缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#APC"><span class="nav-number">6.1.</span> <span class="nav-text">APC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eAccelerator"><span class="nav-number">6.2.</span> <span class="nav-text">eAccelerator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XCache"><span class="nav-number">6.3.</span> <span class="nav-text">XCache</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E7%BC%93%E5%AD%98%E7%9A%84%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">8.</span> <span class="nav-text">关于缓存的常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93%E9%A1%B9%E7%9B%AE%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%88%B0%E7%BC%93%E5%AD%98%EF%BC%8C%E6%88%91%E4%BB%AC%E6%98%AF%E9%80%89%E6%8B%A9-Redis-%E8%BF%98%E6%98%AF-Memcached-%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">8.1.</span> <span class="nav-text">当项目中使用到缓存，我们是选择 Redis 还是 Memcached ，为什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%EF%BC%8C%E7%BC%93%E5%AD%98%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%EF%BC%9F"><span class="nav-number">8.2.</span> <span class="nav-text">如何保证，缓存与数据库的数据一致性？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="nav-number">8.3.</span> <span class="nav-text">缓存穿透怎么办？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%AA%E5%B4%A9%E6%80%8E%E4%B9%88%E5%8A%9E"><span class="nav-number">8.4.</span> <span class="nav-text">雪崩怎么办?</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -508,7 +546,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -588,12 +626,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -661,7 +703,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>

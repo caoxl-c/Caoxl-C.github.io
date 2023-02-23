@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
   <title>nginx 「通用日志」 | Keep It Simple And Stupid</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="Nginx配置">
+  <meta name="keywords" content="Nginx配置" />
   
   
   
   
-  <meta name="description" content="Nginx 能做的事实在太多，先遇到什么记录下什么吧。 和本博客其他很多汇总性日志一样，本文内容也会不定期更新。  http://nginx.org/en/docs/">
-<meta name="keywords" content="Nginx,配置">
+  <meta name="description" content="Nginx 能做的事实在太多，先遇到什么记录下什么吧。 和本博客其他很多汇总性日志一样，本文内容也会不定期更新。  http:&#x2F;&#x2F;nginx.org&#x2F;en&#x2F;docs&#x2F;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Nginx 「通用日志」">
 <meta property="og:url" content="http://blog.caoxl.com/2018/01/24/Nginx-Dev-Notes/index.html">
 <meta property="og:site_name" content="Keep It Simple And Stupid">
-<meta property="og:description" content="Nginx 能做的事实在太多，先遇到什么记录下什么吧。 和本博客其他很多汇总性日志一样，本文内容也会不定期更新。  http://nginx.org/en/docs/">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-28T03:28:12.000Z">
+<meta property="og:description" content="Nginx 能做的事实在太多，先遇到什么记录下什么吧。 和本博客其他很多汇总性日志一样，本文内容也会不定期更新。  http:&#x2F;&#x2F;nginx.org&#x2F;en&#x2F;docs&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-01-24T08:30:25.000Z">
+<meta property="article:modified_time" content="2018-08-28T03:28:12.000Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="Nginx">
+<meta property="article:tag" content="配置">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Nginx 「通用日志」">
-<meta name="twitter:description" content="Nginx 能做的事实在太多，先遇到什么记录下什么吧。 和本博客其他很多汇总性日志一样，本文内容也会不定期更新。  http://nginx.org/en/docs/">
   
     <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
   
@@ -42,30 +43,68 @@
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
     @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
-  <link rel="stylesheet" href="/css/style.css">
+  
+<link rel="stylesheet" href="/css/style.css">
 
-  <script src="/js/jquery-3.1.1.min.js"></script>
-  <script src="/js/bootstrap.js"></script>
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/bootstrap.css" >
 
   
-    <link rel="stylesheet" href="/css/dialog.css">
-  
+    
+<link rel="stylesheet" href="/css/dialog.css">
 
-  
-
-  
-    <link rel="stylesheet" href="/css/header-post.css">
   
 
   
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
   
   
 
-</head>
-</html>
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
 
 
   <body data-spy="scroll" data-target="#toc" data-offset="50">
@@ -143,7 +182,9 @@
     window.INSIGHT_CONFIG = INSIGHT_CONFIG;
 })(window);
 </script>
+
 <script src="/js/insight.js"></script>
+
 
 </div></li>
             </div>
@@ -199,52 +240,69 @@
           <p>Nginx 能做的事实在太多，先遇到什么记录下什么吧。</p>
 <p>和本博客其他很多汇总性日志一样，本文内容也会不定期更新。</p>
 <blockquote>
-<p><u><a href="http://nginx.org/en/docs/" target="_blank" rel="noopener">http://nginx.org/en/docs/</a></u></p>
+<p><u><a target="_blank" rel="noopener" href="http://nginx.org/en/docs/">http://nginx.org/en/docs/</a></u></p>
 </blockquote>
-<a id="more"></a>
-<h1 id="泛域名配置"><a href="#泛域名配置" class="headerlink" title="泛域名配置"></a>泛域名配置</h1><h2 id="自动关联子域名到目录名"><a href="#自动关联子域名到目录名" class="headerlink" title="自动关联子域名到目录名"></a>自动关联子域名到目录名</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">  <span class="comment"># ...</span></span><br><span class="line">  <span class="attribute">server_name</span> ~^(?&lt;subdomain&gt;.+).example.com$;</span><br><span class="line">  <span class="attribute">root</span> /data/wwwroot/example.com/<span class="variable">$subdomain</span>;</span><br><span class="line">  <span class="comment"># ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+
+<h1 id="泛域名配置"><a href="#泛域名配置" class="headerlink" title="泛域名配置"></a>泛域名配置</h1><h2 id="自动关联子域名到目录名"><a href="#自动关联子域名到目录名" class="headerlink" title="自动关联子域名到目录名"></a>自动关联子域名到目录名</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">  <span class="comment"># ...</span></span><br><span class="line">  server_name ~^(?&lt;subdomain&gt;.+).example.com$;</span><br><span class="line">  root <span class="regexp">/data/</span>wwwroot<span class="regexp">/example.com/</span><span class="variable">$subdomain</span>;</span><br><span class="line">  <span class="comment"># ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>如果 nginx 后面是 PHP，只是这样配置会出现 <code>$_SERVER[&#39;host&#39;]</code> 一字不差的为 <code>~^(?&lt;subdomain&gt;.+).example.com$</code>，因此还需要添加一个 <code>fastcgi_param</code> 的 <code>SERVER_NAME</code> 配置：</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">location</span> <span class="regexp">~ [^/]\.php(/|$)</span> &#123;</span><br><span class="line">  <span class="comment">#fastcgi_pass remote_php_ip:9000;</span></span><br><span class="line">  <span class="attribute">fastcgi_pass</span> unix:/dev/shm/php-cgi.sock;</span><br><span class="line">  <span class="attribute">fastcgi_index</span> index.php;</span><br><span class="line">  <span class="attribute">include</span> fastcgi.conf;</span><br><span class="line">  <span class="attribute">fastcgi_param</span> SERVER_NAME <span class="variable">$host</span>;    <span class="comment"># 重新赋值 SERVER_NAME 参数覆盖前面 `server_name` 的初始定义</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h1><h2 id="IP-访问频率限制"><a href="#IP-访问频率限制" class="headerlink" title="IP 访问频率限制"></a>IP 访问频率限制</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">geo <span class="variable">$whitelist</span> &#123;</span><br><span class="line">  <span class="built_in"> default </span>0;</span><br><span class="line">   # CIDR <span class="keyword">in</span> the list below are <span class="keyword">not</span> limited</span><br><span class="line">   1.2.3.0/24 1;</span><br><span class="line">   9.10.11.12/32 1;</span><br><span class="line">   127.0.0.1/32 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">map <span class="variable">$whitelist</span> <span class="variable">$limit</span> &#123;</span><br><span class="line">    0     <span class="variable">$binary_remote_addr</span>;</span><br><span class="line">    1     <span class="string">""</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. The directives below limit concurrent connections from a </span></span><br><span class="line"><span class="comment"># non-whitelisted IP address to five</span></span><br><span class="line">limit_conn_zone      <span class="variable">$limit</span>    <span class="attribute">zone</span>=connlimit:10m;</span><br><span class="line">limit_conn           connlimit 5;</span><br><span class="line">limit_conn_log_level warn;   #<span class="built_in"> logging </span>level when threshold exceeded</span><br><span class="line">limit_conn_status    503;    # the <span class="builtin-name">error</span> code <span class="keyword">to</span> return</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. Limits the number requests from a non-whitelisted IP to</span></span><br><span class="line"><span class="comment"># one every two seconds with up to 3 requests per IP delayed</span></span><br><span class="line"><span class="comment"># until the average time between responses reaches the threshold. </span></span><br><span class="line"><span class="comment"># Further requests over and above this limit will result </span></span><br><span class="line"><span class="comment"># in an immediate 503 error</span></span><br><span class="line">limit_req_zone       <span class="variable">$limit</span>   <span class="attribute">zone</span>=one:10m  <span class="attribute">rate</span>=30r/m;</span><br><span class="line">limit_req            <span class="attribute">zone</span>=one <span class="attribute">burst</span>=3;    # burst =&gt; 超过请求频率限制后最多允许多少次强制性访问</span><br><span class="line">limit_req_log_level  warn;</span><br><span class="line">limit_req_status     503;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> <span class="regexp">~ [^/]\.php(/|$)</span> &#123;</span><br><span class="line">  <span class="comment">#fastcgi_pass remote_php_ip:9000;</span></span><br><span class="line">  <span class="attribute">fastcgi_pass</span> unix:/dev/shm/php-cgi.sock;</span><br><span class="line">  <span class="attribute">fastcgi_index</span> index.php;</span><br><span class="line">  <span class="attribute">include</span> fastcgi.conf;</span><br><span class="line">  <span class="attribute">fastcgi_param</span> SERVER_NAME <span class="variable">$host</span>;    <span class="comment"># 重新赋值 SERVER_NAME 参数覆盖前面 `server_name` 的初始定义</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h1><h2 id="IP-访问频率限制"><a href="#IP-访问频率限制" class="headerlink" title="IP 访问频率限制"></a>IP 访问频率限制</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">geo <span class="variable">$whitelist</span> &#123;</span><br><span class="line">  <span class="built_in"> default </span>0;</span><br><span class="line">   # CIDR <span class="keyword">in</span> the list below are <span class="keyword">not</span> limited</span><br><span class="line">   1.2.3.0/24 1;</span><br><span class="line">   9.10.11.12/32 1;</span><br><span class="line">   127.0.0.1/32 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">map <span class="variable">$whitelist</span> <span class="variable">$limit</span> &#123;</span><br><span class="line">    0     <span class="variable">$binary_remote_addr</span>;</span><br><span class="line">    1     <span class="string">&quot;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. The directives below limit concurrent connections from a </span></span><br><span class="line"><span class="comment"># non-whitelisted IP address to five</span></span><br><span class="line">limit_conn_zone      <span class="variable">$limit</span>    <span class="attribute">zone</span>=connlimit:10m;</span><br><span class="line">limit_conn           connlimit 5;</span><br><span class="line">limit_conn_log_level warn;   #<span class="built_in"> logging </span>level when threshold exceeded</span><br><span class="line">limit_conn_status    503;    # the <span class="built_in">error</span> code <span class="keyword">to</span> return</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. Limits the number requests from a non-whitelisted IP to</span></span><br><span class="line"><span class="comment"># one every two seconds with up to 3 requests per IP delayed</span></span><br><span class="line"><span class="comment"># until the average time between responses reaches the threshold. </span></span><br><span class="line"><span class="comment"># Further requests over and above this limit will result </span></span><br><span class="line"><span class="comment"># in an immediate 503 error</span></span><br><span class="line">limit_req_zone       <span class="variable">$limit</span>   <span class="attribute">zone</span>=one:10m  <span class="attribute">rate</span>=30r/m;</span><br><span class="line">limit_req            <span class="attribute">zone</span>=one <span class="attribute">burst</span>=3;    # burst =&gt; 超过请求频率限制后最多允许多少次强制性访问</span><br><span class="line">limit_req_log_level  warn;</span><br><span class="line">limit_req_status     503;</span><br></pre></td></tr></table></figure>
+
 <p>配置好后可以简单通过命令来测试结果：<code>ab -n 5000 -c 100 http://www.example.com/</code>，会显示绝大部分请求均返回 <code>503</code>。</p>
 <p><strong>注</strong> ab是做压力测试的一种方法,如果显示没有这个命令,运行</p>
 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum <span class="keyword">install</span> httpd-tools</span><br></pre></td></tr></table></figure>
+
 <p><strong>配置说明：</strong></p>
 <ul>
 <li><code>geo</code> 定义了白名单 <code>$whitelist</code>：默认值为 0；如果请求 IP 与白名单中的 IP 匹配，则<code>$whitelist</code> 值为 1</li>
 <li>map 指令是将 <code>$whitelist</code> 值为 0 的，也就是受限制的 IP，映射为请求 IP。将 <code>$whitelist</code> 值为 1 的，也就是白名单 IP，映射为空的字符串。</li>
 <li><code>limit_conn_zone</code> 和 <code>limit_req_zone</code> 将忽略键值为空请求 IP，从而实现对白名单中的 IP 不限制而对其他 IP 做限制。</li>
 </ul>
-<h2 id="设置-nginx-密码认证"><a href="#设置-nginx-密码认证" class="headerlink" title="设置 nginx 密码认证"></a>设置 nginx 密码认证</h2><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">location</span> /<span class="type">path</span> &#123;</span><br><span class="line">  auth_basic "Restricted";</span><br><span class="line">  auth_basic_user_file /<span class="type">path</span>/<span class="keyword">to</span>/nginx/.htpasswd;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="设置-nginx-密码认证"><a href="#设置-nginx-密码认证" class="headerlink" title="设置 nginx 密码认证"></a>设置 nginx 密码认证</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">location /path &#123;</span><br><span class="line">  auth_basic <span class="string">&quot;Restricted&quot;</span>;</span><br><span class="line">  auth_basic_user_file <span class="regexp">/path/</span>to<span class="regexp">/nginx/</span>.htpasswd;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="IP-黑／白名单"><a href="#IP-黑／白名单" class="headerlink" title="IP 黑／白名单"></a>IP 黑／白名单</h2><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">location</span> <span class="title">/path</span> &#123;</span><br><span class="line">  allow whitelist;    <span class="comment"># whitelist 事先定义过</span></span><br><span class="line">  <span class="keyword">deny</span> all;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>被 <code>deny</code> 掉的 IP 会得到 <code>403</code> 状态码。可以制定一个拒绝访问的页面：</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">location</span> / &#123;</span><br><span class="line">  <span class="attribute">error_page</span> <span class="number">403</span> = <span class="variable">@deny</span>;</span><br><span class="line">  <span class="attribute">allow</span> whitelist;</span><br><span class="line">  <span class="attribute">deny</span> all;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="attribute">localtion</span> <span class="variable">@deny</span> &#123;</span><br><span class="line">  <span class="attribute">return</span> <span class="number">301</span> http://site.com/cominglater;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> / &#123;</span><br><span class="line">  <span class="attribute">error_page</span> <span class="number">403</span> = <span class="variable">@deny</span>;</span><br><span class="line">  <span class="attribute">allow</span> whitelist;</span><br><span class="line">  <span class="attribute">deny</span> all;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="attribute">localtion</span> <span class="variable">@deny</span> &#123;</span><br><span class="line">  <span class="attribute">return</span> <span class="number">301</span> http://site.com/cominglater;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="allow-和-deny-的顺序问题"><a href="#allow-和-deny-的顺序问题" class="headerlink" title="allow 和 deny 的顺序问题"></a><code>allow</code> 和 <code>deny</code> 的顺序问题</h3><ul>
 <li>先 <code>allow</code> 部分后 <code>deny all</code>，表示只允许部分 IP 访问</li>
 <li>先 <code>deny all</code> 后 <code>allow</code> 部分，表示拒绝全部</li>
 </ul>
-<h3 id="禁止指定-IP-或-IP-段"><a href="#禁止指定-IP-或-IP-段" class="headerlink" title="禁止指定 IP 或 IP 段"></a>禁止指定 IP 或 IP 段</h3><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># /path/to/blacklist.ip</span><br><span class="line">deny <span class="number">192.168</span><span class="number">.33</span><span class="number">.111</span>;</span><br><span class="line">deny <span class="number">192.168</span><span class="number">.44</span><span class="number">.222</span>;</span><br><span class="line">deny <span class="number">192.168</span><span class="number">.55</span><span class="number">.0</span>/<span class="number">24</span>;    # 禁止 <span class="number">192.168</span><span class="number">.10</span><span class="number">.1</span>~<span class="number">192.168</span><span class="number">.10</span><span class="number">.254</span></span><br><span class="line"></span><br><span class="line">--------------------------</span><br><span class="line"></span><br><span class="line"># /path/to/nginx.conf</span><br><span class="line">include /path/to/blacklist.ip    # 绝对路径</span><br><span class="line"># include blacklist.ip    # 相对于 nginx.conf 路径</span><br></pre></td></tr></table></figure>
+<h3 id="禁止指定-IP-或-IP-段"><a href="#禁止指定-IP-或-IP-段" class="headerlink" title="禁止指定 IP 或 IP 段"></a>禁止指定 IP 或 IP 段</h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># /<span class="type">path</span>/<span class="keyword">to</span>/blacklist.ip</span><br><span class="line">deny <span class="number">192.168</span><span class="number">.33</span><span class="number">.111</span>;</span><br><span class="line">deny <span class="number">192.168</span><span class="number">.44</span><span class="number">.222</span>;</span><br><span class="line">deny <span class="number">192.168</span><span class="number">.55</span><span class="number">.0</span>/<span class="number">24</span>;    # 禁止 <span class="number">192.168</span><span class="number">.10</span><span class="number">.1</span>~<span class="number">192.168</span><span class="number">.10</span><span class="number">.254</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--------------------------</span></span><br><span class="line"></span><br><span class="line"># /<span class="type">path</span>/<span class="keyword">to</span>/nginx.conf</span><br><span class="line"><span class="keyword">include</span> /<span class="type">path</span>/<span class="keyword">to</span>/blacklist.ip    # 绝对路径</span><br><span class="line"># <span class="keyword">include</span> blacklist.ip    # 相对于 nginx.conf 路径</span><br></pre></td></tr></table></figure>
+
 <h2 id="限制特定目录访问"><a href="#限制特定目录访问" class="headerlink" title="限制特定目录访问"></a>限制特定目录访问</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">localtion</span> <span class="regexp">~ .*(config|cache)/.*\.php$</span> &#123;</span><br><span class="line">  <span class="attribute">deny</span> all;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="限制-UA"><a href="#限制-UA" class="headerlink" title="限制 UA"></a>限制 UA</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">location</span> / &#123;</span><br><span class="line">  <span class="attribute">if</span> (<span class="variable">$http_user_agent</span> <span class="regexp">~ *</span> <span class="string">'ApacheBench|bingbot/2.0|Spider/3.0'</span>) &#123;</span><br><span class="line">    <span class="attribute">return</span> <span class="number">403</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="限制-UA"><a href="#限制-UA" class="headerlink" title="限制 UA"></a>限制 UA</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> / &#123;</span><br><span class="line">  <span class="attribute">if</span> (<span class="variable">$http_user_agent</span> <span class="regexp">~ *</span> <span class="string">&#x27;ApacheBench|bingbot/2.0|Spider/3.0&#x27;</span>) &#123;</span><br><span class="line">    <span class="attribute">return</span> <span class="number">403</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="Rewrite-规则"><a href="#Rewrite-规则" class="headerlink" title="Rewrite 规则"></a>Rewrite 规则</h1><h2 id="别忘了限制条件"><a href="#别忘了限制条件" class="headerlink" title="别忘了限制条件"></a>别忘了限制条件</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">if</span> (!-e <span class="variable">$request_filename</span>) &#123;</span><br><span class="line">  <span class="attribute">rewrite</span><span class="regexp"> ^(.*)$</span> /index.php <span class="literal">last</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h3 id="如果不在限制条件下使用-rewrite-规则，容易造成死循环。"><a href="#如果不在限制条件下使用-rewrite-规则，容易造成死循环。" class="headerlink" title="如果不在限制条件下使用 rewrite 规则，容易造成死循环。"></a>如果不在限制条件下使用 <code>rewrite</code> 规则，容易造成死循环。</h3><ul>
 <li>HTTP 重定向到 HTTPS</li>
 </ul>
 <figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">  <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">  <span class="attribute">server_name</span> www.example.com;</span><br><span class="line">  <span class="attribute">rewrite</span><span class="regexp"> ^/(.*)</span> https://<span class="variable">$server_name</span><span class="variable">$1</span> <span class="literal">permanent</span>;   <span class="comment"># 301</span></span><br><span class="line">  <span class="comment"># rewrite ^/(.*) https://$server_name$1 redirect;    # 302</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="PHP-项目常用-rewrite-规则"><a href="#PHP-项目常用-rewrite-规则" class="headerlink" title="PHP 项目常用 rewrite 规则"></a>PHP 项目常用 rewrite 规则</h2><ul>
 <li>Laravel</li>
 </ul>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">location</span> / &#123;</span><br><span class="line">  <span class="attribute">try_files</span> <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.php?<span class="variable">$query_string</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">  try_files <span class="variable">$uri</span> <span class="variable">$uri</span><span class="regexp">/ /i</span>ndex.php?<span class="variable">$query_string</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>禅道项目管理系统</li>
 </ul>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span>  zentao.example.com;</span><br><span class="line">    <span class="attribute">access_log</span> /data/wwwlogs/zentao.example.com_nginx.log combined;</span><br><span class="line">    <span class="attribute">index</span> index.html index.htm index.php;</span><br><span class="line">    <span class="attribute">root</span> /data/wwwroot/zentao.example.com/www;</span><br><span class="line">    <span class="attribute">charset</span> utf-<span class="number">8</span>;</span><br><span class="line">    <span class="attribute">location</span> / &#123;</span><br><span class="line">        <span class="attribute">try_files</span> <span class="variable">$uri</span> /index.php<span class="variable">$uri</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="attribute">location</span> <span class="regexp">~ \.php(/.+)?$</span> &#123;</span><br><span class="line">        <span class="attribute">fastcgi_pass</span> unix:/dev/shm/php-cgi.sock;</span><br><span class="line">        <span class="attribute">fastcgi_index</span> index.php;</span><br><span class="line">        <span class="attribute">include</span> fastcgi.conf;</span><br><span class="line">        <span class="attribute">fastcgi_split_path_info</span><span class="regexp"> ^(.+\.php)(/.+)$</span>;</span><br><span class="line">        <span class="attribute">fastcgi_param</span> PATH_INFO <span class="variable">$fastcgi_path_info</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="日志配置"><a href="#日志配置" class="headerlink" title="日志配置"></a>日志配置</h1><h2 id="关闭对-favicon-和-robot-txt-的日志记录"><a href="#关闭对-favicon-和-robot-txt-的日志记录" class="headerlink" title="关闭对 favicon 和 robot.txt 的日志记录"></a>关闭对 favicon 和 robot.txt 的日志记录</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">location</span> = /favicon.ico &#123;</span><br><span class="line">  <span class="attribute">access_log</span> <span class="literal">off</span>;</span><br><span class="line">  <span class="attribute">log_not_found</span> <span class="literal">off</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="attribute">location</span> = /robot.txt &#123;</span><br><span class="line">  <span class="attribute">access_log</span> <span class="literal">off</span>;</span><br><span class="line">  <span class="attribute">log_not_found</span> <span class="literal">off</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span>  zentao.example.com;</span><br><span class="line">    <span class="attribute">access_log</span> /data/wwwlogs/zentao.example.com_nginx.log combined;</span><br><span class="line">    <span class="attribute">index</span> index.html index.htm index.php;</span><br><span class="line">    <span class="attribute">root</span> /data/wwwroot/zentao.example.com/www;</span><br><span class="line">    <span class="attribute">charset</span> utf-<span class="number">8</span>;</span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">try_files</span> <span class="variable">$uri</span> /index.php<span class="variable">$uri</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="section">location</span> <span class="regexp">~ \.php(/.+)?$</span> &#123;</span><br><span class="line">        <span class="attribute">fastcgi_pass</span> unix:/dev/shm/php-cgi.sock;</span><br><span class="line">        <span class="attribute">fastcgi_index</span> index.php;</span><br><span class="line">        <span class="attribute">include</span> fastcgi.conf;</span><br><span class="line">        <span class="attribute">fastcgi_split_path_info</span><span class="regexp"> ^(.+\.php)(/.+)$</span>;</span><br><span class="line">        <span class="attribute">fastcgi_param</span> PATH_INFO <span class="variable">$fastcgi_path_info</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="日志配置"><a href="#日志配置" class="headerlink" title="日志配置"></a>日志配置</h1><h2 id="关闭对-favicon-和-robot-txt-的日志记录"><a href="#关闭对-favicon-和-robot-txt-的日志记录" class="headerlink" title="关闭对 favicon 和 robot.txt 的日志记录"></a>关闭对 favicon 和 robot.txt 的日志记录</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> = /favicon.ico &#123;</span><br><span class="line">  <span class="attribute">access_log</span> <span class="literal">off</span>;</span><br><span class="line">  <span class="attribute">log_not_found</span> <span class="literal">off</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="section">location</span> = /robot.txt &#123;</span><br><span class="line">  <span class="attribute">access_log</span> <span class="literal">off</span>;</span><br><span class="line">  <span class="attribute">log_not_found</span> <span class="literal">off</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="只记录特定状态的访问日志"><a href="#只记录特定状态的访问日志" class="headerlink" title="只记录特定状态的访问日志"></a>只记录特定状态的访问日志</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    map <span class="variable">$status</span> <span class="variable">$normal</span> &#123;</span><br><span class="line">        ~^2  1;</span><br><span class="line">       <span class="built_in"> default </span>0;</span><br><span class="line">    &#125;</span><br><span class="line">    map <span class="variable">$status</span> <span class="variable">$abnormal</span> &#123;</span><br><span class="line">        ~^2  0;</span><br><span class="line">       <span class="built_in"> default </span>1;</span><br><span class="line">    &#125;</span><br><span class="line">    map <span class="variable">$remote_addr</span> <span class="variable">$islocal</span> &#123;</span><br><span class="line">        ~^127  1;</span><br><span class="line">       <span class="built_in"> default </span>0;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">   <span class="built_in"> server </span>&#123;</span><br><span class="line">        access_log logs/access.log combined <span class="attribute">if</span>=<span class="variable">$normal</span>;</span><br><span class="line">        access_log logs/access_abnormal.log combined <span class="attribute">if</span>=<span class="variable">$abnormal</span>;</span><br><span class="line">        access_log logs/access_local.log combined <span class="attribute">if</span>=<span class="variable">$islocal</span>;</span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="With-PHP"><a href="#With-PHP" class="headerlink" title="With PHP"></a>With PHP</h1><h2 id="nginx-与-fastcgi／php-fpm-之间的关系"><a href="#nginx-与-fastcgi／php-fpm-之间的关系" class="headerlink" title="nginx 与 fastcgi／php-fpm 之间的关系"></a><code>nginx</code> 与 <code>fastcgi／php-fpm</code> 之间的关系</h2><ul>
 <li>Nginx：Web 服务器。</li>
 <li>FastCGI：同 <code>cgi</code> 一样只是一个协议，负责规范 Web 应用程序和 Web 服务器的连接，规定了传递给 PHP 等动态程序的有哪些参数以及通过什么形式传递。</li>
-<li><u><a href="http://php.net/manual/zh/install.fpm.php" target="_blank" rel="noopener">php-fpm</a></u>：PHP 官方采纳并使用的，实现了 <code>FastCGI</code> 协议的进程管理器，负责管理和调度 <code>php-cgi</code> 进程。</li>
+<li><u><a target="_blank" rel="noopener" href="http://php.net/manual/zh/install.fpm.php">php-fpm</a></u>：PHP 官方采纳并使用的，实现了 <code>FastCGI</code> 协议的进程管理器，负责管理和调度 <code>php-cgi</code> 进程。</li>
 </ul>
 <blockquote>
 <p>这里的「Web 应用程序」指的是 PHP 开放的应用程序，虽然我们常说 PHP 服务器后端开发，但是站在 Nginx 角度，PHP 开发的后端程序依然是应用程序的范畴。</p>
@@ -256,17 +314,21 @@
 <li><code>nginx</code> 和 <code>fpm</code> 的通信方式使用 <code>UNIX socket</code> 替换 <code>TCP</code> 端口</li>
 </ul>
 <figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">fastcgi_pass</span> <span class="number">127.0.0.1:9000</span>;</span><br><span class="line"><span class="comment"># 换为：</span></span><br><span class="line"><span class="attribute">fastcgi_pass</span> unix:/dev/shm/php-fpm.sock;</span><br></pre></td></tr></table></figure>
+
 <p>其中，<code>/dev/shm/php-fpm.sock</code> 是在 <code>php-fpm.conf</code> 中配置的。</p>
 <ul>
 <li>优化 Linux 内核参数</li>
 </ul>
-<p>修改 <em>/etc/sysctl.conf</em>（_/proc/sys/net/core/_somaxconn）后使用 <code>sysctl -p</code> 重启：</p>
+<p>修改 <em>&#x2F;etc&#x2F;sysctl.conf</em>（_&#x2F;proc&#x2F;sys&#x2F;net&#x2F;core&#x2F;_somaxconn）后使用 <code>sysctl -p</code> 重启：</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">net.ipv4.tcp_max_syn_backlog</span> = <span class="number">16384</span></span><br><span class="line"><span class="attr">net.core.netdev_max_backlog</span> = <span class="number">16384</span> </span><br><span class="line"><span class="attr">net.core.somaxconn</span> = <span class="number">2048</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>优化 <code>php-fpm</code> 参数</li>
 </ul>
-<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">listen</span>.backlog = <span class="number">8192</span>;     ; 默认为 <span class="number">-1</span>（由系统决定）</span><br><span class="line"><span class="section">listen</span> <span class="number">80</span> backlog = <span class="number">8192</span>;  ; 默认为 <span class="number">511</span></span><br></pre></td></tr></table></figure>
-<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">upstream</span> service_a &#123;</span><br><span class="line">  <span class="attribute">server</span> <span class="number">10.10.10.100:80</span>;</span><br><span class="line">  <span class="attribute">server</span> <span class="number">10.10.10.200:80</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">  <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">  <span class="attribute">server_name</span> _;</span><br><span class="line">  <span class="attribute">location</span> / &#123;</span><br><span class="line">    <span class="attribute">proxy_pass</span> http://service_a/;</span><br><span class="line">    <span class="attribute">proxy_set_header</span> Host   <span class="variable">$host</span>;</span><br><span class="line">    <span class="attribute">proxy_set_header</span> X-Real-IP      <span class="variable">$remote_addr</span>;</span><br><span class="line">    <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">listen</span>.backlog = <span class="number">8192</span>;     ; 默认为 -<span class="number">1</span>（由系统决定）</span><br><span class="line"><span class="attribute">listen</span> <span class="number">80</span> backlog = <span class="number">8192</span>;  ; 默认为 <span class="number">511</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">upstream</span> service_a &#123;</span><br><span class="line">  <span class="attribute">server</span> <span class="number">10.10.10.100:80</span>;</span><br><span class="line">  <span class="attribute">server</span> <span class="number">10.10.10.200:80</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">  <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">  <span class="attribute">server_name</span> _;</span><br><span class="line">  <span class="section">location</span> / &#123;</span><br><span class="line">    <span class="attribute">proxy_pass</span> http://service_a/;</span><br><span class="line">    <span class="attribute">proxy_set_header</span> Host   <span class="variable">$host</span>;</span><br><span class="line">    <span class="attribute">proxy_set_header</span> X-Real-IP      <span class="variable">$remote_addr</span>;</span><br><span class="line">    <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><h2 id="客户端获得-403-原因"><a href="#客户端获得-403-原因" class="headerlink" title="客户端获得 403 原因"></a>客户端获得 403 原因</h2><blockquote>
 <p>“403” is actually an HTTP status code that means that the web server has received and understood your request, but that it cannot take any further action.</p>
 </blockquote>
@@ -274,10 +336,9 @@
 <li><p>客户端访问目录而 <code>autoindex</code> 设置成 <code>off</code>。</p>
 <p>由于安全原因，目录索引默认是关闭的。打开方式：</p>
 <figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">location</span> <span class="title">/path</span> &#123;</span><br><span class="line">  autoindex on;</span><br><span class="line">  autoindex_exact_size_off;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>autoindx</code> 必须出现在 <code>location</code> 块中。</p>
 </li>
-</ul>
-<p>  <code>autoindx</code> 必须出现在 <code>location</code> 块中。</p>
-<ul>
 <li><p>客户端访问了只能在服务端内部访问的资源。</p>
 </li>
 <li><p>nginx 无需要的网站路径权限</p>
@@ -296,21 +357,21 @@
 <li><code>nginx 屏蔽了指定的客户端／IP</code>，通常通过 deny 等指令设置。</li>
 </ul>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><p><a href="http://nginx.org/en/docs/http/ngx_http_limit_conn_module.html" target="_blank" rel="noopener">Module ngx_http_limit_conn_module</a></p>
+<li><p><a target="_blank" rel="noopener" href="http://nginx.org/en/docs/http/ngx_http_limit_conn_module.html">Module ngx_http_limit_conn_module</a></p>
 </li>
-<li><p><a href="https://serverfault.com/questions/177461/how-to-rate-limit-in-nginx-but-including-excluding-certain-ip-addresses" target="_blank" rel="noopener">How to rate-limit in nginx, but including/excluding certain IP addresses?</a></p>
+<li><p><a target="_blank" rel="noopener" href="https://serverfault.com/questions/177461/how-to-rate-limit-in-nginx-but-including-excluding-certain-ip-addresses">How to rate-limit in nginx, but including&#x2F;excluding certain IP addresses?</a></p>
 </li>
-<li><p><a href="http://www.ttlsa.com/nginx/nginx-custom-header-to-return-information-module-ngx_headers_more/" target="_blank" rel="noopener">nginx定制header返回信息模块ngx_headers_more</a></p>
+<li><p><a target="_blank" rel="noopener" href="http://www.ttlsa.com/nginx/nginx-custom-header-to-return-information-module-ngx_headers_more/">nginx定制header返回信息模块ngx_headers_more</a></p>
 </li>
-<li><p><a href="http://yaxin-cn.github.io/Nginx/configure-static-access-for-zentao-under-nginx.html" target="_blank" rel="noopener">Nginx下禅道的伪静态(rewrite)规则</a></p>
+<li><p><a target="_blank" rel="noopener" href="http://yaxin-cn.github.io/Nginx/configure-static-access-for-zentao-under-nginx.html">Nginx下禅道的伪静态(rewrite)规则</a></p>
 </li>
-<li><p><a href="http://www.cnblogs.com/coolworld/p/6726538.html" target="_blank" rel="noopener">Nginx Access Log日志统计分析常用命令</a></p>
+<li><p><a target="_blank" rel="noopener" href="http://www.cnblogs.com/coolworld/p/6726538.html">Nginx Access Log日志统计分析常用命令</a></p>
 </li>
-<li><p><a href="https://www.52os.net/articles/nginx-anti-ddos-setting-2.html" target="_blank" rel="noopener">nginx防止DDOS攻击配置（2）</a></p>
+<li><p><a target="_blank" rel="noopener" href="https://www.52os.net/articles/nginx-anti-ddos-setting-2.html">nginx防止DDOS攻击配置（2）</a></p>
 </li>
-<li><p><a href="https://hostpresto.com/community/tutorials/how-to-secure-nginx-using-fail2ban-on-centos-7/" target="_blank" rel="noopener">How to Secure Nginx Using Fail2ban on Centos-7]</a></p>
+<li><p>[How to Secure Nginx Using Fail2ban on Centos-7]](<a target="_blank" rel="noopener" href="https://hostpresto.com/community/tutorials/how-to-secure-nginx-using-fail2ban-on-centos-7/">https://hostpresto.com/community/tutorials/how-to-secure-nginx-using-fail2ban-on-centos-7/</a>)</p>
 </li>
-<li><p><a href="http://www.voidcn.com/article/p-durjqmpt-bro.html" target="_blank" rel="noopener">nginx通过云负载均衡后作反向代理并限制制定ip访问</a></p>
+<li><p><a target="_blank" rel="noopener" href="http://www.voidcn.com/article/p-durjqmpt-bro.html">nginx通过云负载均衡后作反向代理并限制制定ip访问</a></p>
 </li>
 <li><p><a href="ip.cn">IP.cn - 每日中国大陆 IP 列表, 电信 IP 列表，联通 IP 列表，移动 IP 列表</a></p>
 </li>
@@ -346,7 +407,7 @@
       
       
         
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/配置/">配置</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%85%8D%E7%BD%AE/" rel="tag">配置</a></li></ul>
 
       
 
@@ -382,7 +443,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#泛域名配置"><span class="nav-number">1.</span> <span class="nav-text">泛域名配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#自动关联子域名到目录名"><span class="nav-number">1.1.</span> <span class="nav-text">自动关联子域名到目录名</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安全"><span class="nav-number">2.</span> <span class="nav-text">安全</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-访问频率限制"><span class="nav-number">2.1.</span> <span class="nav-text">IP 访问频率限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置-nginx-密码认证"><span class="nav-number">2.2.</span> <span class="nav-text">设置 nginx 密码认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-黑／白名单"><span class="nav-number">2.3.</span> <span class="nav-text">IP 黑／白名单</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#allow-和-deny-的顺序问题"><span class="nav-number">2.3.1.</span> <span class="nav-text">allow 和 deny 的顺序问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#禁止指定-IP-或-IP-段"><span class="nav-number">2.3.2.</span> <span class="nav-text">禁止指定 IP 或 IP 段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#限制特定目录访问"><span class="nav-number">2.4.</span> <span class="nav-text">限制特定目录访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#限制-UA"><span class="nav-number">2.5.</span> <span class="nav-text">限制 UA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rewrite-规则"><span class="nav-number">3.</span> <span class="nav-text">Rewrite 规则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#别忘了限制条件"><span class="nav-number">3.1.</span> <span class="nav-text">别忘了限制条件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#如果不在限制条件下使用-rewrite-规则，容易造成死循环。"><span class="nav-number">3.1.1.</span> <span class="nav-text">如果不在限制条件下使用 rewrite 规则，容易造成死循环。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-项目常用-rewrite-规则"><span class="nav-number">3.2.</span> <span class="nav-text">PHP 项目常用 rewrite 规则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#日志配置"><span class="nav-number">4.</span> <span class="nav-text">日志配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#关闭对-favicon-和-robot-txt-的日志记录"><span class="nav-number">4.1.</span> <span class="nav-text">关闭对 favicon 和 robot.txt 的日志记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#只记录特定状态的访问日志"><span class="nav-number">4.2.</span> <span class="nav-text">只记录特定状态的访问日志</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#With-PHP"><span class="nav-number">5.</span> <span class="nav-text">With PHP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx-与-fastcgi／php-fpm-之间的关系"><span class="nav-number">5.1.</span> <span class="nav-text">nginx 与 fastcgi／php-fpm 之间的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx-fpm-高并发优化思路"><span class="nav-number">5.2.</span> <span class="nav-text">nginx+fpm 高并发优化思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#反向代理"><span class="nav-number">6.</span> <span class="nav-text">反向代理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">7.</span> <span class="nav-text">FAQ</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端获得-403-原因"><span class="nav-number">7.1.</span> <span class="nav-text">客户端获得 403 原因</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%9B%E5%9F%9F%E5%90%8D%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">泛域名配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%85%B3%E8%81%94%E5%AD%90%E5%9F%9F%E5%90%8D%E5%88%B0%E7%9B%AE%E5%BD%95%E5%90%8D"><span class="nav-number">1.1.</span> <span class="nav-text">自动关联子域名到目录名</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E5%85%A8"><span class="nav-number">2.</span> <span class="nav-text">安全</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-%E8%AE%BF%E9%97%AE%E9%A2%91%E7%8E%87%E9%99%90%E5%88%B6"><span class="nav-number">2.1.</span> <span class="nav-text">IP 访问频率限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-nginx-%E5%AF%86%E7%A0%81%E8%AE%A4%E8%AF%81"><span class="nav-number">2.2.</span> <span class="nav-text">设置 nginx 密码认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-%E9%BB%91%EF%BC%8F%E7%99%BD%E5%90%8D%E5%8D%95"><span class="nav-number">2.3.</span> <span class="nav-text">IP 黑／白名单</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#allow-%E5%92%8C-deny-%E7%9A%84%E9%A1%BA%E5%BA%8F%E9%97%AE%E9%A2%98"><span class="nav-number">2.3.1.</span> <span class="nav-text">allow 和 deny 的顺序问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A6%81%E6%AD%A2%E6%8C%87%E5%AE%9A-IP-%E6%88%96-IP-%E6%AE%B5"><span class="nav-number">2.3.2.</span> <span class="nav-text">禁止指定 IP 或 IP 段</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%90%E5%88%B6%E7%89%B9%E5%AE%9A%E7%9B%AE%E5%BD%95%E8%AE%BF%E9%97%AE"><span class="nav-number">2.4.</span> <span class="nav-text">限制特定目录访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%90%E5%88%B6-UA"><span class="nav-number">2.5.</span> <span class="nav-text">限制 UA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rewrite-%E8%A7%84%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text">Rewrite 规则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%AB%E5%BF%98%E4%BA%86%E9%99%90%E5%88%B6%E6%9D%A1%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">别忘了限制条件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E4%B8%8D%E5%9C%A8%E9%99%90%E5%88%B6%E6%9D%A1%E4%BB%B6%E4%B8%8B%E4%BD%BF%E7%94%A8-rewrite-%E8%A7%84%E5%88%99%EF%BC%8C%E5%AE%B9%E6%98%93%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E3%80%82"><span class="nav-number">3.1.1.</span> <span class="nav-text">如果不在限制条件下使用 rewrite 规则，容易造成死循环。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-%E9%A1%B9%E7%9B%AE%E5%B8%B8%E7%94%A8-rewrite-%E8%A7%84%E5%88%99"><span class="nav-number">3.2.</span> <span class="nav-text">PHP 项目常用 rewrite 规则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">日志配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%97%AD%E5%AF%B9-favicon-%E5%92%8C-robot-txt-%E7%9A%84%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95"><span class="nav-number">4.1.</span> <span class="nav-text">关闭对 favicon 和 robot.txt 的日志记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AA%E8%AE%B0%E5%BD%95%E7%89%B9%E5%AE%9A%E7%8A%B6%E6%80%81%E7%9A%84%E8%AE%BF%E9%97%AE%E6%97%A5%E5%BF%97"><span class="nav-number">4.2.</span> <span class="nav-text">只记录特定状态的访问日志</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#With-PHP"><span class="nav-number">5.</span> <span class="nav-text">With PHP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx-%E4%B8%8E-fastcgi%EF%BC%8Fphp-fpm-%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">5.1.</span> <span class="nav-text">nginx 与 fastcgi／php-fpm 之间的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx-fpm-%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF"><span class="nav-number">5.2.</span> <span class="nav-text">nginx+fpm 高并发优化思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">反向代理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">7.</span> <span class="nav-text">FAQ</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%8E%B7%E5%BE%97-403-%E5%8E%9F%E5%9B%A0"><span class="nav-number">7.1.</span> <span class="nav-text">客户端获得 403 原因</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol>
     
     </div>
   </aside>
@@ -397,7 +458,7 @@
   <div class="container">
       	<div class="row">
 	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
-	      <p id="copyRightEn">Copyright &copy; 2017 - 2022 Keep It Simple And Stupid All Rights Reserved.</p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
 	      
 	      
     		<p class="busuanzi_uv">
@@ -477,12 +538,16 @@
 
 
 
+
 <script src="/js/scripts.js"></script>
 
 
 
 
-  <script src="/js/dialog.js"></script>
+
+  
+<script src="/js/dialog.js"></script>
+
 
 
 
@@ -550,7 +615,7 @@
             Keep It Simple And Stupid
           </div>
           <div class="panel-body">
-            Copyright © 2022 CAO XIAN LIANG All Rights Reserved.
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
           </div>
         </div>
       </div>
