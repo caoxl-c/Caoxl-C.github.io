@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>golang 每日一题 202302篇 | Keep It Simple And Stupid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="golanggo每日一题" />
+  
+  
+  
+  
+  <meta name="description" content="好似又过了几个秋">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang 每日一题 202302篇">
+<meta property="og:url" content="http://blog.caoxl.com/2023/03/07/Golang-Daily-Questions-3/index.html">
+<meta property="og:site_name" content="Keep It Simple And Stupid">
+<meta property="og:description" content="好似又过了几个秋">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-07T01:00:36.000Z">
+<meta property="article:modified_time" content="2023-03-07T07:24:04.801Z">
+<meta property="article:author" content="CAO XIAN LIANG">
+<meta property="article:tag" content="golang">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="每日一题">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Keep It Simple And Stupid" type="application/atom+xml">
+  
+
+  
+
+  <link rel="icon" href="https://images.unsplash.com/photo-1643801026603-63d4f50be313?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=767&q=80">
+  <link rel="apple-touch-icon" href="/https://images.unsplash.com/photo-1643801026603-63d4f50be313?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=767&q=80">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+<script src="/js/bootstrap.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+
+  
+    
+<link rel="stylesheet" href="/css/dialog.css">
+
+  
+
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
+  
+  
+
+<style type="text/css">
+.spoiler {
+  display: inline-flex;
+}
+p.spoiler {
+  display: flex;
+}
+.spoiler a {
+  pointer-events: none;
+}
+.spoiler-blur, .spoiler-blur > * {
+  transition: text-shadow .5s ease;
+}
+.spoiler .spoiler-blur, .spoiler .spoiler-blur > * {
+  color: rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  text-shadow: 0 0 10px grey;
+  cursor: pointer;
+}
+.spoiler .spoiler-blur:hover, .spoiler .spoiler-blur:hover > * {
+  text-shadow: 0 0 5px grey;
+}
+.spoiler-box, .spoiler-box > * {
+  transition: color .5s ease,
+  background-color .5s ease;
+}
+.spoiler .spoiler-box, .spoiler .spoiler-box > * {
+  color: black;
+  background-color: black;
+  text-shadow: none;
+}</style><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="
+                 margin-top: 0px;"  
+                href="#" data-toggle="modal" data-target="#myModal" >
+                  <img width="124px" height="124px" alt="Hike News" src="https://images.unsplash.com/photo-1643801026603-63d4f50be313?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=767&q=80">
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="hnav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">首页</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">归档</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">分类</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">标签</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/about">关于</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(无标题)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Golang-Daily-Questions-3" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Golang 每日一题 202302篇
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/03/07/Golang-Daily-Questions-3/" class="article-date">
+	  <time datetime="2023-03-07T01:00:36.000Z" itemprop="datePublished">2023-03-07</time>
+	</a>
+
+      
+    <a class="article-category-link" href="/categories/Go%E9%9D%A2%E8%AF%95%E9%A2%98/">Go面试题</a>
+
+      
+	<a class="article-views">
+	<span id="busuanzi_container_page_pv">
+		阅读量<span id="busuanzi_value_page_pv"></span>
+	</span>
+	</a>
+
+    </div>
+
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+          <blockquote>
+<p>好似又过了几个秋</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="Go每日一题-str"><a href="#Go每日一题-str" class="headerlink" title="Go每日一题 (str)"></a>Go每日一题 (str)</h2><p>关于字符串连接，下面语法正确的是？</p>
+<ul>
+<li>A. str :&#x3D; ‘abc’ + ‘123’</li>
+<li>B. str :&#x3D; “abc” + “123”</li>
+<li>C. str :&#x3D; ‘123’ + “abc”</li>
+<li>D. fmt.Sprintf(“abc%d”, 123)</li>
+</ul>
+<h3 id="答案解析"><a href="#答案解析" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>BD<br>除了以上两种连接方式，还有 <code>strings.Join()</code>、<code>buffer.WriteString()</code> 等。</p>
+</blockquote>
+<h2 id="Go每日一题-结构体-引用"><a href="#Go每日一题-结构体-引用" class="headerlink" title="Go每日一题 (结构体 引用)"></a>Go每日一题 (结构体 引用)</h2><p>以下代码能否编译？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> list <span class="keyword">map</span>[<span class="type">string</span>]Student</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    list = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]Student)</span><br><span class="line"></span><br><span class="line">    student := Student&#123;<span class="string">&quot;Aceld&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">    list[<span class="string">&quot;student&quot;</span>] = student</span><br><span class="line">    list[<span class="string">&quot;student&quot;</span>].Name = <span class="string">&quot;LDB&quot;</span></span><br><span class="line"></span><br><span class="line">    fmt.Println(list[<span class="string">&quot;student&quot;</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="答案解析-1"><a href="#答案解析-1" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>编译失败<br>.&#x2F;main.go:18:2: cannot assign to struct field list[“student”].Name in map</p>
+</blockquote>
+<ul>
+<li>修改成以下可编译运行</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> list <span class="keyword">map</span>[<span class="type">string</span>]*Student</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    list = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]*Student)</span><br><span class="line"></span><br><span class="line">    student := Student&#123;<span class="string">&quot;Aceld&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">    list[<span class="string">&quot;student&quot;</span>] = &amp;student</span><br><span class="line">    list[<span class="string">&quot;student&quot;</span>].Name = <span class="string">&quot;LDB&quot;</span></span><br><span class="line"></span><br><span class="line">    fmt.Println(list[<span class="string">&quot;student&quot;</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Go每日一题-结构体-range-遍历"><a href="#Go每日一题-结构体-range-遍历" class="headerlink" title="Go每日一题 (结构体 range 遍历)"></a>Go每日一题 (结构体 range 遍历)</h2><p>以下代码有什么问题，说明原因</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> student <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="type">string</span></span><br><span class="line">    Age  <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 定义map</span></span><br><span class="line">    m := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]*student)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义student数组</span></span><br><span class="line">    stus := []student&#123;</span><br><span class="line">        &#123;Name: <span class="string">&quot;zhou&quot;</span>, Age: <span class="number">24</span>&#125;,</span><br><span class="line">        &#123;Name: <span class="string">&quot;li&quot;</span>, Age: <span class="number">23</span>&#125;,</span><br><span class="line">        &#123;Name: <span class="string">&quot;wang&quot;</span>, Age: <span class="number">22</span>&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将数组依次添加到map中</span></span><br><span class="line">    <span class="keyword">for</span> _, stu := <span class="keyword">range</span> stus &#123;</span><br><span class="line">        m[stu.Name] = &amp;stu</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 打印map</span></span><br><span class="line">    <span class="keyword">for</span> k,v := <span class="keyword">range</span> m &#123;</span><br><span class="line">        fmt.Println(k ,<span class="string">&quot;=&gt;&quot;</span>, v.Name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="答案解析-2"><a href="#答案解析-2" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>遍历结果出现错误，输出结果为<br>zhou &#x3D;&gt; wang<br>li &#x3D;&gt; wang<br>wang &#x3D;&gt; wang</p>
+</blockquote>
+<ul>
+<li>正确写法</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> student <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="type">string</span></span><br><span class="line">    Age  <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 定义map</span></span><br><span class="line">    m := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]*student)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义student数组</span></span><br><span class="line">    stus := []student&#123;</span><br><span class="line">        &#123;Name: <span class="string">&quot;zhou&quot;</span>, Age: <span class="number">24</span>&#125;,</span><br><span class="line">        &#123;Name: <span class="string">&quot;li&quot;</span>, Age: <span class="number">23</span>&#125;,</span><br><span class="line">        &#123;Name: <span class="string">&quot;wang&quot;</span>, Age: <span class="number">22</span>&#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 遍历结构体数组，依次赋值给map</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(stus); i++  &#123;</span><br><span class="line">        m[stus[i].Name] = &amp;stus[i]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 打印map</span></span><br><span class="line">    <span class="keyword">for</span> k,v := <span class="keyword">range</span> m &#123;</span><br><span class="line">        fmt.Println(k ,<span class="string">&quot;=&gt;&quot;</span>, v.Name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>或者修改</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将数组依次添加到map中</span></span><br><span class="line"><span class="keyword">for</span> _, stu := <span class="keyword">range</span> stus &#123;</span><br><span class="line">	val := stu</span><br><span class="line">	m[stu.Name] = &amp;val</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Go每日一题-nil"><a href="#Go每日一题-nil" class="headerlink" title="Go每日一题 (nil)"></a>Go每日一题 (nil)</h2><p>下面赋值正确的是：</p>
+<ul>
+<li>A. var x &#x3D; nil</li>
+<li>B. var x interface{} &#x3D; nil</li>
+<li>C. var x string &#x3D; nil</li>
+<li>D. var x error &#x3D; nil</li>
+</ul>
+<h3 id="答案解析-3"><a href="#答案解析-3" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：BD。<br>nil 只能赋值给指针、chan、func、interface、map 或 slice 类型的变量。<br>强调下 D 选项的 error 类型，它是一种内置接口类型，看它的源码就知道，所以 D 是对的。</p>
+</blockquote>
+<h2 id="Go每日一题-继承与多态"><a href="#Go每日一题-继承与多态" class="headerlink" title="Go每日一题 (继承与多态)"></a>Go每日一题 (继承与多态)</h2><p>以下代码能通过编译吗？为什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> People <span class="keyword">interface</span> &#123;</span><br><span class="line">    Speak(<span class="type">string</span>) <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(stu *Student)</span></span> Speak(think <span class="type">string</span>) (talk <span class="type">string</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> think == <span class="string">&quot;love&quot;</span> &#123;</span><br><span class="line">        talk = <span class="string">&quot;You are a good boy&quot;</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        talk = <span class="string">&quot;hi&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> peo People = Student&#123;&#125;</span><br><span class="line">    think := <span class="string">&quot;love&quot;</span></span><br><span class="line">    fmt.Println(peo.Speak(think))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="答案解析-4"><a href="#答案解析-4" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>编译失败</p>
+</blockquote>
+<ul>
+<li>需要修改成以下</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> peo People = &amp;Student&#123;&#125;</span><br><span class="line">    think := <span class="string">&quot;love&quot;</span></span><br><span class="line">    fmt.Println(peo.Speak(think))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Go每日一题-interface-接口底层类型问题"><a href="#Go每日一题-interface-接口底层类型问题" class="headerlink" title="Go每日一题 (interface 接口底层类型问题)"></a>Go每日一题 (interface 接口底层类型问题)</h2><p>以下代码打印出来什么内容，说出为什么。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> People <span class="keyword">interface</span> &#123;</span><br><span class="line">    Show()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(stu *Student)</span></span> Show() &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">live</span><span class="params">()</span></span> People &#123;</span><br><span class="line">    <span class="keyword">var</span> stu *Student</span><br><span class="line">    <span class="keyword">return</span> stu</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> live() == <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;AAAAAAA&quot;</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;BBBBBBB&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="答案解析-5"><a href="#答案解析-5" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>BBBBBBB</p>
+</blockquote>
+<ul>
+<li>空接口eface</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> eface <span class="keyword">struct</span> &#123;      <span class="comment">// 空接口</span></span><br><span class="line">    _type *_type         <span class="comment">// 类型信息</span></span><br><span class="line">    data  unsafe.Pointer <span class="comment">// 指向数据的指针(go 语言中特殊的指针类型 unsafe.Pointer 类似于 c 语言中的void*)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>非空接口iface</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> iface <span class="keyword">struct</span> &#123;</span><br><span class="line">    tab  *itab</span><br><span class="line">    data unsafe.Pointer</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Go每日一题-encoding-x2F-json-导出"><a href="#Go每日一题-encoding-x2F-json-导出" class="headerlink" title="Go每日一题 (encoding&#x2F;json 导出)"></a>Go每日一题 (encoding&#x2F;json 导出)</h2><p>以下代码输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;encoding/json&quot;</span></span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    t := <span class="keyword">struct</span> &#123;</span><br><span class="line">        time.Time</span><br><span class="line">        N <span class="type">int</span></span><br><span class="line">    &#125;&#123;</span><br><span class="line">        time.Date(<span class="number">2020</span>, <span class="number">12</span>, <span class="number">20</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, time.UTC),</span><br><span class="line">        <span class="number">5</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    m, _ := json.Marshal(t)</span><br><span class="line">    fmt.Printf(<span class="string">&quot;%s&quot;</span>, m)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>A：{“Time”: “2020-12-20T00:00:00Z”, “N”: 5}；</li>
+<li>B：”2020-12-20T00:00:00Z”；</li>
+<li>C：{“N”: 5}；</li>
+<li>D</li>
+</ul>
+<h3 id="答案解析-6"><a href="#答案解析-6" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>B<br><code>json.Marshal</code> 函数优先调用 <code>MarshalJSON</code>，然后是 <code>MarshalText</code>，如果都没有，才会走正常的类型编码逻辑。<br>如果值实现了 <code>json.Marshaler</code> 接口并且不是 <code>nil</code> 指针，则 <code>Marshal</code> 函数会调用其 <code>MarshalJSON</code> 方法以生成 JSON。<br>如果不存在 <code>MarshalJSON</code> 方法，但该值实现 <code>encoding.TextMarshaler</code> 接口，则 <code>Marshal</code> 函数调用其 <code>MarshalText</code> 方法并将结果编码为 JSON 字符串。<br>在本题中匿名结构体内嵌了Time结构体，而该结构体实现了MarshalJSON 方法，因此会调用MarshalJSON方法以生成 JSON。</p>
+</blockquote>
+<h2 id="Go每日一题-类型-数据溢出-补码"><a href="#Go每日一题-类型-数据溢出-补码" class="headerlink" title="Go每日一题 (类型 数据溢出 补码)"></a>Go每日一题 (类型 数据溢出 补码)</h2><p>今天给两道类似的题目，注意，有半数以上的人可能会做错！</p>
+<ul>
+<li>题一</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> a <span class="type">int8</span> = <span class="number">-1</span></span><br><span class="line">    <span class="keyword">var</span> b <span class="type">int8</span> = <span class="number">-128</span> / a</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println</span>(b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>题二</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">const</span> a <span class="type">int8</span> = <span class="number">-1</span></span><br><span class="line">    <span class="keyword">var</span> b <span class="type">int8</span> = <span class="number">-128</span> / a</span><br><span class="line"></span><br><span class="line">    <span class="built_in">println</span>(b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它们分别输出什么？</p>
+<h3 id="答案解析-7"><a href="#答案解析-7" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>题一 -128，题二编译错误？</p>
+</blockquote>
+<p>因为 <code>var b int8 = -128 / a</code> 不是常量表达式，因此 untyped 常量 -128 隐式转换为 int8 类型（即和 a 的类型一致），<br>所以 <code>-128 / a</code> 的结果是 int8 类型，值是 128，超出了 int8 的范围。因为结果不是常量，允许溢出，<br>128 的二进制表示是 10000000，正好是 -128 的补码。所以，第一题的结果是 -128。</p>
+<p>对于 <code>var b int8 = -128 / a</code>，因为 a 是 int8 类型常量，所以 -128 &#x2F; a 是常量表达式，在编译器计算，结果必然也是常量。<br>因为 a 的类型是 int8，因此 -128 也会隐式转为 int8 类型，128 这个结果超过了 int8 的范围，但常量不允许溢出，因此编译报错。</p>
+<h2 id="Go每日一题-init"><a href="#Go每日一题-init" class="headerlink" title="Go每日一题 (init)"></a>Go每日一题 (init)</h2><p>关于 init 函数，下面说法正确的是：</p>
+<ul>
+<li>A. 一个包中，可以包含多个 init 函数；</li>
+<li>B. 程序运行时，先执行依赖包的 init 函数，再执行 main 包内的 init 函数；</li>
+<li>C. main 包中，不能有 init 函数；</li>
+<li>D. init 函数可以被其他函数调用；</li>
+</ul>
+<h3 id="答案解析-8"><a href="#答案解析-8" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>案及解析：AB。</p>
+</blockquote>
+<p>go文件的初始化顺序</p>
+<ol>
+<li>引入的包</li>
+<li>当前包中的常量变量</li>
+<li>当前包的init</li>
+<li>main函数</li>
+</ol>
+<h2 id="Go每日一题-Go-中-函数-是-一等公民"><a href="#Go每日一题-Go-中-函数-是-一等公民" class="headerlink" title="Go每日一题 (Go 中 函数 是 一等公民)"></a>Go每日一题 (Go 中 函数 是 一等公民)</h2><p>下面这段代码输出什么以及原因？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hello</span><span class="params">()</span></span> []<span class="type">string</span> &#123;  </span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;  </span><br><span class="line">    h := hello</span><br><span class="line">    <span class="keyword">if</span> h == <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;nil&quot;</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;not nil&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>A. nil</li>
+<li>B. not nil</li>
+<li>C. compilation error</li>
+</ul>
+<h3 id="答案解析-9"><a href="#答案解析-9" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>B<br>这道题目里面，是将函数 hello 赋值给变量 h，而不是函数的返回值（即不是进行函数调用），所以输出 not nil。注意 Go 中函数是一等公民。</p>
+</blockquote>
+<h2 id="Go每日一题-类型断言"><a href="#Go每日一题-类型断言" class="headerlink" title="Go每日一题 (类型断言)"></a>Go每日一题 (类型断言)</h2><p>下面这段代码能否编译通过？如果可以，输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetValue</span><span class="params">()</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    i := GetValue()</span><br><span class="line">    <span class="keyword">switch</span> i.(<span class="keyword">type</span>) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="type">int</span>:</span><br><span class="line">        <span class="built_in">println</span>(<span class="string">&quot;int&quot;</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="type">string</span>:</span><br><span class="line">        <span class="built_in">println</span>(<span class="string">&quot;string&quot;</span>)</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">interface</span>&#123;&#125;:</span><br><span class="line">        <span class="built_in">println</span>(<span class="string">&quot;interface&quot;</span>)</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="built_in">println</span>(<span class="string">&quot;unknown&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="答案解析-10"><a href="#答案解析-10" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：编译失败。</p>
+</blockquote>
+<p>考点：类型断言，类型断言的语法形如：i.(type)，其中 i 是接口，type 是固定关键字，需要注意的是，只有接口类型才可以使用类型断言。</p>
+<h2 id="Go每日一题-channel-延迟关闭"><a href="#Go每日一题-channel-延迟关闭" class="headerlink" title="Go每日一题 (channel 延迟关闭)"></a>Go每日一题 (channel 延迟关闭)</h2><p>执行下面的代码会发生什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;time&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">int</span>, <span class="number">1000</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">            ch &lt;- i</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            a, ok := &lt;-ch</span><br><span class="line">            <span class="keyword">if</span> !ok &#123;</span><br><span class="line">                fmt.Println(<span class="string">&quot;close&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">            fmt.Println(<span class="string">&quot;a: &quot;</span>, a)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="built_in">close</span>(ch)</span><br><span class="line">    fmt.Println(<span class="string">&quot;ok&quot;</span>)</span><br><span class="line">    time.Sleep(time.Second * <span class="number">100</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="答案解析-11"><a href="#答案解析-11" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>ok<br>close<br>panic: send on closed channel</p>
+</blockquote>
+<p>记住channel的一些关键特性</p>
+<ul>
+<li>给一个 nil channel 发送数据，造成永远阻塞</li>
+<li>从一个 nil channel 接收数据，造成永远阻塞</li>
+<li>给一个已经关闭的 channel 发送数据，引起 panic</li>
+<li>从一个已经关闭的 channel 接收数据，如果缓冲区中为空，则返回一个零值</li>
+<li>无缓冲的channel是同步的，而有缓冲的channel是非同步的</li>
+</ul>
+<blockquote>
+<p>15字口诀：“空读写阻塞，写关闭异常，读关闭空零”</p>
+</blockquote>
+<h2 id="Go每日一题-WaitGroup"><a href="#Go每日一题-WaitGroup" class="headerlink" title="Go每日一题 (WaitGroup)"></a>Go每日一题 (WaitGroup)</h2><p>以下代码有什么问题？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> N = <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg = &amp;sync.WaitGroup&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; N; i++ &#123;</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">            wg.Add(<span class="number">1</span>)</span><br><span class="line">            <span class="built_in">println</span>(i)</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        &#125;(i)</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="答案解析-12"><a href="#答案解析-12" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>输出结果不唯一，代码存在风险, 所有 go 语句未必都能执行到。<br>这是使用 WaitGroup 经常犯下的错误！请各位同学多次运行就会发现输出都会不同甚至又出现报错的问题。<br>这是因为 go 执行太快了，导致 wg.Add(1) 还没有执行 main 函数就执行完毕了。wg.Add 的位置放错了</p>
+</blockquote>
+<ul>
+<li>改为下面的代码试试:</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> N = <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg = &amp;sync.WaitGroup&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i:= <span class="number">0</span>; i&lt; N; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">            <span class="built_in">println</span>(i)</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        &#125;(i)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>原子操作边界问题，在边界前加锁，边界后解锁。</p>
+</blockquote>
+<h2 id="Go每日一题-channel"><a href="#Go每日一题-channel" class="headerlink" title="Go每日一题 (channel)"></a>Go每日一题 (channel)</h2><p>关于 channel，下面语法正确的是</p>
+<ul>
+<li>A. var ch chan int</li>
+<li>B. ch :&#x3D; make(chan int)</li>
+<li>C. &lt;- ch</li>
+<li>D. ch &lt;-</li>
+</ul>
+<h3 id="答案解析-13"><a href="#答案解析-13" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：ABC。<br>A、B 都是声明 channel；C 读取 channel；写 channel 是必须带上值，所以 D 错误。</p>
+</blockquote>
+<h2 id="Go每日一题-map-0-值"><a href="#Go每日一题-map-0-值" class="headerlink" title="Go每日一题 (map 0 值)"></a>Go每日一题 (map 0 值)</h2><p>下面这段代码输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> person <span class="keyword">struct</span> &#123;  </span><br><span class="line">    name <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;  </span><br><span class="line">    <span class="keyword">var</span> m <span class="keyword">map</span>[person]<span class="type">int</span></span><br><span class="line">    p := person&#123;<span class="string">&quot;mike&quot;</span>&#125;</span><br><span class="line">    fmt.Println(m[p])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>A. 0</li>
+<li>B. 1</li>
+<li>C. Compilation error</li>
+</ul>
+<h3 id="答案解析-14"><a href="#答案解析-14" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：A。<br>m 是一个 map，值是 nil。从 nil map 中取值不会报错，而是返回相应的零值，这里值是 int 类型，因此返回 0。</p>
+</blockquote>
+<p><code>map[p]</code> 在经过 编译后，走的是 <code>runtime.mapaccess1</code> 的逻辑；<br>而看到 <code>mapaccess1</code> 函数，对于 hmap 是 nil 的情况是直接返回空值；源代码如下：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">mapaccess1</span><span class="params">(t *maptype, h *hmap, key unsafe.Pointer)</span></span> unsafe.Pointer &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> h == <span class="literal">nil</span> || h.count == <span class="number">0</span> &#123;<span class="comment">// h 就是map指向的地址，因为题目中map还没有申请分配内存空间，所以h是nil</span></span><br><span class="line">        <span class="keyword">if</span> t.hashMightPanic() &#123;</span><br><span class="line">            t.hasher(key, <span class="number">0</span>) <span class="comment">// see issue 23734</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> unsafe.Pointer(&amp;zeroVal[<span class="number">0</span>])</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Go每日一题-可变参数函数"><a href="#Go每日一题-可变参数函数" class="headerlink" title="Go每日一题 (可变参数函数)"></a>Go每日一题 (可变参数函数)</h2><p>下面这段代码输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hello</span><span class="params">(num ...<span class="type">int</span>)</span></span> &#123;  </span><br><span class="line">    num[<span class="number">0</span>] = <span class="number">18</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;  </span><br><span class="line">    i := []<span class="type">int</span>&#123;<span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>&#125;</span><br><span class="line">    hello(i...)</span><br><span class="line">    fmt.Println(i[<span class="number">0</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>A. 18</li>
+<li>B. 5</li>
+<li>C. Compilation error</li>
+</ul>
+<h3 id="答案解析-15"><a href="#答案解析-15" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：A. 18。<br>可变参数是切片，切片是引用，所以func内赋值会带出来。</p>
+</blockquote>
+<h2 id="Go每日一题-强类型"><a href="#Go每日一题-强类型" class="headerlink" title="Go每日一题 (强类型)"></a>Go每日一题 (强类型)</h2><p>下面这段代码输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;  </span><br><span class="line">    a := <span class="number">5</span></span><br><span class="line">    b := <span class="number">8.1</span></span><br><span class="line">    fmt.Println(a + b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>A. 13.1</li>
+<li>B. 13</li>
+<li>C. compilation error</li>
+</ul>
+<h3 id="答案解析-16"><a href="#答案解析-16" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：C。<br>a 的类型是 int，b 的类型是 float，两个不同类型的数值不能相加，编译报错。<br>Go语言的类型机制更加严格，没有隐式类型转换，所以不同类型的数据不能直接参与同一个运算。</p>
+</blockquote>
+<h2 id="Go每日一题-json-slice"><a href="#Go每日一题-json-slice" class="headerlink" title="Go每日一题 (json slice)"></a>Go每日一题 (json slice)</h2><p>以下代码输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;encoding/json&quot;</span></span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> AutoGenerated <span class="keyword">struct</span> &#123;</span><br><span class="line">    Age   <span class="type">int</span>    <span class="string">`json:&quot;age&quot;`</span></span><br><span class="line">    Name  <span class="type">string</span> <span class="string">`json:&quot;name&quot;`</span></span><br><span class="line">    Child []<span class="type">int</span>  <span class="string">`json:&quot;child&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    jsonStr1 := <span class="string">`&#123;&quot;age&quot;: 14,&quot;name&quot;: &quot;potter&quot;, &quot;child&quot;:[1,2,3]&#125;`</span></span><br><span class="line">    a := AutoGenerated&#123;&#125;</span><br><span class="line">    json.Unmarshal([]<span class="type">byte</span>(jsonStr1), &amp;a)</span><br><span class="line">    aa := a.Child</span><br><span class="line">    fmt.Println(aa)</span><br><span class="line">    jsonStr2 := <span class="string">`&#123;&quot;age&quot;: 12,&quot;name&quot;: &quot;potter&quot;, &quot;child&quot;:[3,4,5,7,8,9]&#125;`</span></span><br><span class="line">    json.Unmarshal([]<span class="type">byte</span>(jsonStr2), &amp;a)</span><br><span class="line">    fmt.Println(aa)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>A： [1 2 3] [1 2 3] ；</li>
+<li>B： [1 2 3] [3 4 5]；</li>
+<li>C： [1 2 3] [3 4 5 6 7 8 9]；</li>
+<li>D： [1 2 3] [3 4 5 0 0 0]</li>
+</ul>
+<h3 id="答案解析-17"><a href="#答案解析-17" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>结果为什么是 [1 2 3] [3 4 5] 呢？</p>
+</blockquote>
+<p>这道题涉及到两个知识点：</p>
+<ul>
+<li>json解析</li>
+<li>slice</li>
+</ul>
+<p>第一次解析，aa.Child 是：[1 2 3]，cap &#x3D; 4。第二次解析，aa.Child 先被重置，之后将 3,4,5,7,8,9 一个个 append，<br>最后 aa.Child 是：[3 4 5 6 7 8 9], cap &#x3D; 6。</p>
+<p>aa在第一次赋值时，就已经确定了长度和容量；第二次反序列化json时，aa的长度和容量是没有变化的，<br>但是底层数组却发生了变化（底层数组的数据内容，长度，容量都改变了），aa是从底层数组上取数据的</p>
+<h2 id="Go每日一题-数据竞争-main-goroutine-和其他-goroutine-调度问题-局部变量问题"><a href="#Go每日一题-数据竞争-main-goroutine-和其他-goroutine-调度问题-局部变量问题" class="headerlink" title="Go每日一题 (数据竞争 main goroutine 和其他 goroutine 调度问题 局部变量问题)"></a>Go每日一题 (数据竞争 main goroutine 和其他 goroutine 调度问题 局部变量问题)</h2><p>以下代码有什么问题，怎么解决？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">total, sum := <span class="number">0</span>, <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i := <span class="number">1</span>; i &lt;= <span class="number">10</span>; i++ &#123;</span><br><span class="line">    sum += i</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        total += i</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br><span class="line">fmt.Printf(<span class="string">&quot;total:%d sum %d&quot;</span>, total, sum)</span><br></pre></td></tr></table></figure>
+
+<h3 id="答案解析-18"><a href="#答案解析-18" class="headerlink" title="答案解析"></a>答案解析</h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    total, sum := <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">1</span>; i &lt;= <span class="number">10</span>; i++ &#123;</span><br><span class="line">        sum += i</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">            fmt.Println(i)</span><br><span class="line">            total += i</span><br><span class="line">        &#125;(i)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    time.Sleep(<span class="number">1e9</span>)</span><br><span class="line">    fmt.Printf(<span class="string">&quot;total:%d sum %d&quot;</span>, total, sum)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解决一下问题:</p>
+<ul>
+<li>i 使用的问题</li>
+<li>data race。因为存在多 goroutine 同时写 total 变量的问题，所以有数据竞争。可以加上 -race 参数验证：</li>
+<li>main 函数先退出了，开启的 goroutine 根本没有机会执行。</li>
+</ul>
+<h2 id="Go每日一题-数据类型"><a href="#Go每日一题-数据类型" class="headerlink" title="Go每日一题 (数据类型)"></a>Go每日一题 (数据类型)</h2><p>下面这段代码输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    a := [<span class="number">2</span>]<span class="type">int</span>&#123;<span class="number">5</span>, <span class="number">6</span>&#125;</span><br><span class="line">    b := [<span class="number">3</span>]<span class="type">int</span>&#123;<span class="number">5</span>, <span class="number">6</span>&#125;</span><br><span class="line">    <span class="keyword">if</span> a == b &#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;equal&quot;</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;not equal&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>A. compilation error</li>
+<li>B. equal</li>
+<li>C. not equal</li>
+</ul>
+<h3 id="答案解析-19"><a href="#答案解析-19" class="headerlink" title="答案解析"></a>答案解析</h3><p>Go 中的数组是值类型，可比较，另外一方面，<br>数组的长度也是数组类型的组成部分，所以 a 和 b 是不同的类型，是不能比较的，所以编译错误。</p>
+<h2 id="Go每日一题-cap"><a href="#Go每日一题-cap" class="headerlink" title="Go每日一题 (cap)"></a>Go每日一题 (cap)</h2><p>以下哪种类型可以使用 cap() 函数？</p>
+<ul>
+<li>A. array</li>
+<li>B. slice</li>
+<li>C. map</li>
+<li>D. channel</li>
+</ul>
+<h3 id="答案解析-20"><a href="#答案解析-20" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：ABD。<br>知识点：cap()，cap() 函数不适用 map。</p>
+</blockquote>
+<h2 id="Go每日一题-interface-零值"><a href="#Go每日一题-interface-零值" class="headerlink" title="Go每日一题 (interface 零值)"></a>Go每日一题 (interface 零值)</h2><p>下面这段代码输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> i <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">    <span class="keyword">if</span> i == <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;nil&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(<span class="string">&quot;not nil&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>A. nil</li>
+<li>B. not nil</li>
+<li>C. compilation error</li>
+</ul>
+<h3 id="答案解析-21"><a href="#答案解析-21" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：A。<br>当且仅当接口的动态值和动态类型都为 nil 时，接口类型值才为 nil。</p>
+</blockquote>
+<h2 id="Go每日一题-map-零值"><a href="#Go每日一题-map-零值" class="headerlink" title="Go每日一题 (map 零值)"></a>Go每日一题 (map 零值)</h2><p>下面这段代码输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    s := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">string</span>]<span class="type">int</span>)</span><br><span class="line">    <span class="built_in">delete</span>(s, <span class="string">&quot;h&quot;</span>)</span><br><span class="line">    fmt.Println(s[<span class="string">&quot;h&quot;</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>A. runtime panic</li>
+<li>B. 0</li>
+<li>C. compilation error</li>
+</ul>
+<h3 id="答案解析-22"><a href="#答案解析-22" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：B。<br>删除 map 不存在的键值对时，不会报错，相当于没有任何作用；获取不存在的减值对时，返回值类型对应的零值，所以返回 0。</p>
+</blockquote>
+<h2 id="Go每日一题-符号输出"><a href="#Go每日一题-符号输出" class="headerlink" title="Go每日一题 (符号输出)"></a>Go每日一题 (符号输出)</h2><p>下面这段代码输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;  </span><br><span class="line">    i := <span class="number">-5</span></span><br><span class="line">    j := +<span class="number">5</span></span><br><span class="line">    fmt.Printf(<span class="string">&quot;%+d %+d&quot;</span>, i, j)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>A. -5 +5</li>
+<li>B. +5 +5</li>
+<li>C. 0 0</li>
+</ul>
+<h3 id="答案解析-23"><a href="#答案解析-23" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：A。<br><code>%d</code>表示输出十进制数字，<code>+</code>表示输出数值的符号。这里不表示取反。</p>
+</blockquote>
+<h2 id="Go每日一题-接口-内嵌-组合"><a href="#Go每日一题-接口-内嵌-组合" class="headerlink" title="Go每日一题 (接口 内嵌 组合)"></a>Go每日一题 (接口 内嵌 组合)</h2><p>下面这段代码输出什么？</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> People <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *People)</span></span> ShowA() &#123;</span><br><span class="line">    fmt.Println(<span class="string">&quot;showA&quot;</span>)</span><br><span class="line">    p.ShowB()</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *People)</span></span> ShowB() &#123;</span><br><span class="line">    fmt.Println(<span class="string">&quot;showB&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Teacher <span class="keyword">struct</span> &#123;</span><br><span class="line">    People</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Teacher)</span></span> ShowB() &#123;</span><br><span class="line">    fmt.Println(<span class="string">&quot;teacher showB&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    t := Teacher&#123;&#125;</span><br><span class="line">    t.ShowB()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="答案解析-24"><a href="#答案解析-24" class="headerlink" title="答案解析"></a>答案解析</h3><blockquote>
+<p>答案及解析：teacher showB。</p>
+</blockquote>
+<p>知识点：结构体嵌套。<br>在嵌套结构体中，People 称为内部类型，Teacher 称为外部类型；<br>通过嵌套，内部类型的属性、方法，可以为外部类型所有，就好像是外部类型自己的一样。<br>此外，外部类型还可以定义自己的属性和方法，甚至可以定义与内部相同的方法，这样内部类型的方法就会被“屏蔽”。<br>这个例子中的 <code>ShowB()</code> 就是同名方法。</p>
+
+        
+      
+    </div>
+
+    <footer class="article-footer">
+      
+      
+      <div>
+        <ul class="post-copyright">
+          <li class="post-copyright-author">
+          <strong>本文作者:  </strong>CAO XIAN LIANG</a>
+          </li>
+          <li class="post-copyright-link">
+          <strong>本文链接:  </strong>
+          <a href="/2023/03/07/Golang-Daily-Questions-3/" target="_blank" title="Golang 每日一题 202302篇">http://blog.caoxl.com/2023/03/07/Golang-Daily-Questions-3/</a>
+          </li>
+          <li class="post-copyright-license">
+            <strong>版权声明:   </strong>
+            本博客所有文章除特别声明外，均采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">CC BY-NC-ND 4.0</a>
+            许可协议。转载请注明出处
+          </li>
+         
+        </ul>
+<div>
+
+      
+      
+      
+      
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/go/" rel="tag">go</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/" rel="tag">golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98/" rel="tag">每日一题</a></li></ul>
+
+      
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/02/27/Golang-Daily-Questions-2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Golang 每日一题 202212篇</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="toc-sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-str"><span class="nav-number">1.</span> <span class="nav-text">Go每日一题 (str)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90"><span class="nav-number">1.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E7%BB%93%E6%9E%84%E4%BD%93-%E5%BC%95%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">Go每日一题 (结构体 引用)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-1"><span class="nav-number">2.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E7%BB%93%E6%9E%84%E4%BD%93-range-%E9%81%8D%E5%8E%86"><span class="nav-number">3.</span> <span class="nav-text">Go每日一题 (结构体 range 遍历)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-2"><span class="nav-number">3.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-nil"><span class="nav-number">4.</span> <span class="nav-text">Go每日一题 (nil)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-3"><span class="nav-number">4.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E7%BB%A7%E6%89%BF%E4%B8%8E%E5%A4%9A%E6%80%81"><span class="nav-number">5.</span> <span class="nav-text">Go每日一题 (继承与多态)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-4"><span class="nav-number">5.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-interface-%E6%8E%A5%E5%8F%A3%E5%BA%95%E5%B1%82%E7%B1%BB%E5%9E%8B%E9%97%AE%E9%A2%98"><span class="nav-number">6.</span> <span class="nav-text">Go每日一题 (interface 接口底层类型问题)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-5"><span class="nav-number">6.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-encoding-x2F-json-%E5%AF%BC%E5%87%BA"><span class="nav-number">7.</span> <span class="nav-text">Go每日一题 (encoding&#x2F;json 导出)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-6"><span class="nav-number">7.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E7%B1%BB%E5%9E%8B-%E6%95%B0%E6%8D%AE%E6%BA%A2%E5%87%BA-%E8%A1%A5%E7%A0%81"><span class="nav-number">8.</span> <span class="nav-text">Go每日一题 (类型 数据溢出 补码)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-7"><span class="nav-number">8.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-init"><span class="nav-number">9.</span> <span class="nav-text">Go每日一题 (init)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-8"><span class="nav-number">9.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-Go-%E4%B8%AD-%E5%87%BD%E6%95%B0-%E6%98%AF-%E4%B8%80%E7%AD%89%E5%85%AC%E6%B0%91"><span class="nav-number">10.</span> <span class="nav-text">Go每日一题 (Go 中 函数 是 一等公民)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-9"><span class="nav-number">10.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80"><span class="nav-number">11.</span> <span class="nav-text">Go每日一题 (类型断言)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-10"><span class="nav-number">11.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-channel-%E5%BB%B6%E8%BF%9F%E5%85%B3%E9%97%AD"><span class="nav-number">12.</span> <span class="nav-text">Go每日一题 (channel 延迟关闭)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-11"><span class="nav-number">12.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-WaitGroup"><span class="nav-number">13.</span> <span class="nav-text">Go每日一题 (WaitGroup)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-12"><span class="nav-number">13.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-channel"><span class="nav-number">14.</span> <span class="nav-text">Go每日一题 (channel)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-13"><span class="nav-number">14.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-map-0-%E5%80%BC"><span class="nav-number">15.</span> <span class="nav-text">Go每日一题 (map 0 值)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-14"><span class="nav-number">15.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E5%87%BD%E6%95%B0"><span class="nav-number">16.</span> <span class="nav-text">Go每日一题 (可变参数函数)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-15"><span class="nav-number">16.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E5%BC%BA%E7%B1%BB%E5%9E%8B"><span class="nav-number">17.</span> <span class="nav-text">Go每日一题 (强类型)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-16"><span class="nav-number">17.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-json-slice"><span class="nav-number">18.</span> <span class="nav-text">Go每日一题 (json slice)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-17"><span class="nav-number">18.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E6%95%B0%E6%8D%AE%E7%AB%9E%E4%BA%89-main-goroutine-%E5%92%8C%E5%85%B6%E4%BB%96-goroutine-%E8%B0%83%E5%BA%A6%E9%97%AE%E9%A2%98-%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E9%97%AE%E9%A2%98"><span class="nav-number">19.</span> <span class="nav-text">Go每日一题 (数据竞争 main goroutine 和其他 goroutine 调度问题 局部变量问题)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-18"><span class="nav-number">19.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">20.</span> <span class="nav-text">Go每日一题 (数据类型)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-19"><span class="nav-number">20.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-cap"><span class="nav-number">21.</span> <span class="nav-text">Go每日一题 (cap)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-20"><span class="nav-number">21.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-interface-%E9%9B%B6%E5%80%BC"><span class="nav-number">22.</span> <span class="nav-text">Go每日一题 (interface 零值)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-21"><span class="nav-number">22.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-map-%E9%9B%B6%E5%80%BC"><span class="nav-number">23.</span> <span class="nav-text">Go每日一题 (map 零值)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-22"><span class="nav-number">23.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E7%AC%A6%E5%8F%B7%E8%BE%93%E5%87%BA"><span class="nav-number">24.</span> <span class="nav-text">Go每日一题 (符号输出)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-23"><span class="nav-number">24.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%AF%8F%E6%97%A5%E4%B8%80%E9%A2%98-%E6%8E%A5%E5%8F%A3-%E5%86%85%E5%B5%8C-%E7%BB%84%E5%90%88"><span class="nav-number">25.</span> <span class="nav-text">Go每日一题 (接口 内嵌 组合)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AD%94%E6%A1%88%E8%A7%A3%E6%9E%90-24"><span class="nav-number">25.1.</span> <span class="nav-text">答案解析</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      	<div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2017 - 2023 Keep It Simple And Stupid All Rights Reserved.</p>
+	      
+	      
+    		<p class="busuanzi_uv">
+				访客数 : <span id="busuanzi_value_site_uv"></span> |  
+				访问量 : <span id="busuanzi_value_site_pv"></span>
+		    </p>
+  		   
+		</div>
+
+		
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+
+<script src="/js/scripts.js"></script>
+
+
+
+
+
+  
+<script src="/js/dialog.js"></script>
+
+
+
+
+
+
+
+
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Keep It Simple And Stupid
+          </div>
+          <div class="panel-body">
+            Copyright © 2023 CAO XIAN LIANG All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+    <a id="menu-switch"><i class="fa fa-bars fa-lg"></i></a>
+  
+</body>
+</html>
